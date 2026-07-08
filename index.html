@@ -1034,20 +1034,21 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 
 /* ===== v15 dashboard ===== */
 .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; align-items: stretch; }
-.dash-tile { margin-bottom: 0; padding: 1.1rem 1.3rem; }
-.dash-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
-.dash-label { font-size: 0.88rem; font-weight: 700; }
-.dash-big { font-size: 2.1rem; font-weight: 800; color: var(--brand-deep); font-variant-numeric: tabular-nums; line-height: 1.15; }
-.dash-sub { font-size: 0.82rem; color: var(--muted); margin-top: 0.3rem; }
-.dash-links { margin-top: 0.6rem; display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; font-size: 0.85rem; }
+.dash-tile { margin-bottom: 0; padding: 1rem 1.1rem; display: flex; flex-direction: column; word-break: keep-all; }
+.dash-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; flex-wrap: nowrap; }
+.dash-label { font-size: 0.85rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dash-head .badge { font-size: 0.68rem; padding: 0.16rem 0.45rem; margin-left: 0; white-space: nowrap; flex: none; }
+.dash-big { font-size: 1.6rem; font-weight: 800; color: var(--brand-deep); font-variant-numeric: tabular-nums; line-height: 1.15; }
+.dash-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.25rem; }
+.dash-links { margin-top: 0.45rem; display: flex; flex-wrap: wrap; gap: 0.3rem 0.7rem; font-size: 0.8rem; }
 .badge.live { background: var(--ok); color: #fff; }
-.fx-row { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; }
+.fx-row { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; padding: 0.3rem 0; white-space: nowrap; }
 .fx-row + .fx-row { border-top: 1px solid var(--line); }
 .month-nav { display: flex; align-items: center; gap: 0.4rem; }
-.month-nav button { border: 1.5px solid var(--line); background: var(--bg); border-radius: 7px; width: 1.7rem; height: 1.7rem; cursor: pointer; font-size: 0.95rem; line-height: 1; color: var(--ink); }
+.month-nav button { border: 1.5px solid var(--line); background: var(--bg); border-radius: 6px; width: 1.5rem; height: 1.5rem; cursor: pointer; font-size: 0.9rem; line-height: 1; color: var(--ink); flex: none; }
 .month-nav button:disabled { opacity: 0.35; cursor: default; }
-.month-nav .month-label { font-size: 0.88rem; font-weight: 700; min-width: 6.2rem; text-align: center; }
-.flight-row { padding: 0.45rem 0; }
+.month-nav .month-label { font-size: 0.82rem; font-weight: 700; min-width: 4.9rem; text-align: center; white-space: nowrap; }
+.flight-row { padding: 0.4rem 0; }
 .flight-row + .flight-row { border-top: 1px solid var(--line); }
 .season-strip { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; margin: 0.6rem 0 0.3rem; }
 .season-cell { border-radius: 5px; padding: 0.35rem 0; text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--ink); background: var(--line); }
@@ -2049,14 +2050,14 @@ function renderFxAll(rates, time) {
     const v = live ? rates[cur] : FX_BASE[cur].v;
     return `<div class="fx-row">
       <span class="dash-label">${flag} NZD 1</span>
-      <span><span class="dash-big" style="font-size: 1.7rem;">${fmtFx(v, digits)}</span><span style="font-weight: 600;"> ${unit}</span></span>
+      <span><span class="dash-big">${fmtFx(v, digits)}</span><span style="font-weight: 600;"> ${unit}</span></span>
     </div>`;
   };
   el.innerHTML = `
     <div class="dash-head"><span class="dash-label">💱 환율</span>${badge}</div>
     ${row('🇰🇷', 'KRW', '원', 1)}
     ${row('🇯🇵', 'JPY', '엔', 2)}
-    <div class="dash-sub">KRW ${FX_BASE.KRW.range} · JPY ${FX_BASE.JPY.range}</div>
+    <div class="dash-sub">최근 ₩859–904 · ¥90–95</div>
     <div class="dash-links">
       <button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="fetchFx()">↻ 새로고침</button>
       <a class="source-link" href="https://www.google.com/search?q=NZD+to+KRW" target="_blank">KRW↗</a>
@@ -2066,7 +2067,7 @@ function renderFxAll(rates, time) {
 
 function fetchFx() {
   const applyLive = rates => {
-    const t = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    const t = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
     renderFxAll(rates, t);
   };
   try {
@@ -2090,11 +2091,11 @@ function fetchFx() {
 
 // 월별 최저 편도가 스냅샷 (2026-07-08 조사·교차검증 보정 — 변동 큼, 추정)
 const FLIGHT_MONTHS = [
-  { ym: '2026-08', label: '2026년 8월', gm: 'August 2026', pusKrw: 740000, tyoJpy: 90000, note: '여름 끝물 — 부산→도쿄 LCC 프로모 많음' },
-  { ym: '2026-09', label: '2026년 9월', gm: 'September 2026', pusKrw: 700000, tyoJpy: 88000, note: '어깨 시즌 — 6개월 중 저렴한 편' },
-  { ym: '2026-10', label: '2026년 10월', gm: 'October 2026', pusKrw: 780000, tyoJpy: 92000, note: '단풍 수요 시작 — 부산→도쿄 구간 상승' },
-  { ym: '2026-11', label: '2026년 11월', gm: 'November 2026', pusKrw: 790000, tyoJpy: 90000, note: '일본 단풍 성수기 — 도쿄 경유가 비싸지는 달' },
-  { ym: '2026-12', label: '2026년 12월', gm: 'December 2026', pusKrw: 650000, tyoJpy: 95000, note: '12/15 이전 출발이면 의외의 저가 — 이후 급등' },
+  { ym: '2026-08', label: '2026년 8월', gm: 'August 2026', pusKrw: 740000, tyoJpy: 90000, note: 'LCC 프로모 많은 달' },
+  { ym: '2026-09', label: '2026년 9월', gm: 'September 2026', pusKrw: 700000, tyoJpy: 88000, note: '어깨 시즌 — 저렴' },
+  { ym: '2026-10', label: '2026년 10월', gm: 'October 2026', pusKrw: 780000, tyoJpy: 92000, note: '단풍 수요 시작' },
+  { ym: '2026-11', label: '2026년 11월', gm: 'November 2026', pusKrw: 790000, tyoJpy: 90000, note: '일본 단풍 성수기 — 경유 비쌈' },
+  { ym: '2026-12', label: '2026년 12월', gm: 'December 2026', pusKrw: 650000, tyoJpy: 95000, note: '12/15 前 출발이 저가' },
   { ym: '2027-01', label: '2027년 1월', gm: 'January 2027', pusKrw: 880000, tyoJpy: 95000, note: 'NZ 여름 최성수기' }
 ];
 let flightMonthIdx = 0;
@@ -2111,7 +2112,7 @@ function renderFlightTile() {
   const g = route => `https://www.google.com/travel/flights?q=${encodeURIComponent('Flights from ' + route + ' in ' + m.gm)}`;
   el.innerHTML = `
     <div class="dash-head">
-      <span class="dash-label">✈️ 오클랜드행 최저가</span>
+      <span class="dash-label">✈️ 최저 항공가</span>
       <span class="month-nav">
         <button onclick="moveFlightMonth(-1)" ${flightMonthIdx === 0 ? 'disabled' : ''} aria-label="이전 달">‹</button>
         <span class="month-label">${m.label}</span>
@@ -2119,17 +2120,17 @@ function renderFlightTile() {
       </span>
     </div>
     <div class="flight-row">
-      <div class="dash-label">🇰🇷 부산 → 도쿄 → 오클랜드</div>
-      <div><span class="dash-big" style="font-size: 1.55rem;">₩${Math.round(m.pusKrw / 10000)}만</span><span style="font-weight: 600;">~</span> <span class="dash-sub">편도 · 경유 최저 조합 · 총 15–18시간</span></div>
+      <div class="dash-label">🇰🇷 부산→도쿄→오클랜드</div>
+      <div><span class="dash-big">₩${Math.round(m.pusKrw / 10000)}만</span><span style="font-weight: 600;">~</span> <span class="dash-sub">편도·경유 조합·15–18h</span></div>
       <div class="dash-links"><a class="source-link" href="${g('PUS to AKL')}" target="_blank">이 달 실시간↗</a></div>
     </div>
     <div class="flight-row">
-      <div class="dash-label">🇯🇵 도쿄 → 오클랜드</div>
-      <div><span class="dash-big" style="font-size: 1.55rem;">¥${(m.tyoJpy / 10000).toFixed(1)}万</span><span style="font-weight: 600;">~</span> <span class="dash-sub">편도 · NZ 직항 · 10h30m</span></div>
+      <div class="dash-label">🇯🇵 도쿄→오클랜드 (직항)</div>
+      <div><span class="dash-big">¥${(m.tyoJpy / 10000).toFixed(1)}万</span><span style="font-weight: 600;">~</span> <span class="dash-sub">편도·10h30m</span></div>
       <div class="dash-links"><a class="source-link" href="${g('NRT to AKL')}" target="_blank">実時間↗</a></div>
     </div>
     <div class="dash-sub">💡 ${m.note}</div>
-    <div class="dash-sub"><span class="badge estimated">추정 · 2026-07 조사</span> 실제 가격은 링크에서 확인</div>`;
+    <div class="dash-sub"><span class="badge estimated" style="font-size: 0.66rem; padding: 0.12rem 0.4rem;">추정 · 26-07 조사</span> 실가격은 링크로</div>`;
 }
 
 function renderDdayTile() {
@@ -2137,17 +2138,17 @@ function renderDdayTile() {
   if (!el) return;
   const d = target => Math.ceil((new Date(target) - Date.now()) / 86400000);
   el.innerHTML = `
-    <div class="dash-head"><span class="dash-label">📅 제도 변경</span><span class="badge live">자동 재검증 예약</span></div>
+    <div class="dash-head"><span class="dash-label">📅 제도 변경</span><span class="badge live">자동 재검증</span></div>
     <div class="flight-row">
-      <div style="font-weight: 700;">SMC 개편 <span style="color: var(--warn); font-size: 1.25rem;">D-${d('2026-08-24')}</span></div>
-      <div class="dash-sub">08-24 시행 · 학사 3→4점 → 필요 NZ 근무 3년→2년 · 신규 경로 2개 · 영어성적 유효 5년 · CA/CPA 회계사 6점</div>
+      <div style="font-weight: 700; white-space: nowrap;">SMC 개편 <span class="dash-big" style="font-size: 1.2rem; color: var(--warn);">D-${d('2026-08-24')}</span> <span class="dash-sub">· 08-24</span></div>
+      <div class="dash-sub">학사 4점 → 근무 2년 · 새 경로 2 · 영어 5년 · CPA 6점</div>
     </div>
     <div class="flight-row">
-      <div style="font-weight: 700;">PSWV 개편 <span style="color: var(--info); font-size: 1.25rem;">D-${d('2026-11-16')}</span></div>
-      <div class="dash-sub">11-16 시행 · GD+학사 1년 PSWV · 비학위 6개월 SGWV 신설 — 유학 설계는 L7 학위과정 이상으로</div>
+      <div style="font-weight: 700; white-space: nowrap;">PSWV 개편 <span class="dash-big" style="font-size: 1.2rem; color: var(--info);">D-${d('2026-11-16')}</span> <span class="dash-sub">· 11-16</span></div>
+      <div class="dash-sub">GD+학사 1년 · SGWV 6개월 — 유학은 L7 이상</div>
     </div>
-    <div class="dash-sub" style="margin-top: 0.4rem;">다음 정기 변동: 2027-03 중위임금 · 2027-04 최저임금 인상 심사</div>
-    <div class="dash-links"><button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('snapshot', 'changeline')">변경 타임라인 전체 →</button></div>`;
+    <div class="dash-sub" style="margin-top: 0.35rem;">다음: 27-03 중위임금 · 27-04 최저임금 심사</div>
+    <div class="dash-links"><button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('snapshot', 'changeline')">타임라인 →</button></div>`;
 }
 
 function renderHomePlan() {
@@ -2184,7 +2185,7 @@ function renderSeasonTile() {
   const nowM = new Date().getMonth() + 1;
   const cur = SEASON_CAL.find(s => s.m === nowM);
   el.innerHTML = `
-    <div class="dash-head"><span class="dash-label">🌏 ${nowM}월의 뉴질랜드 일자리 시즌</span></div>
+    <div class="dash-head"><span class="dash-label">🌏 ${nowM}월의 일자리 시즌</span></div>
     <div style="font-size: 0.95rem;">${cur.tags}</div>
     ${seasonStripHtml(nowM)}
     <div class="dash-links"><button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('settle', 'timing')">언제 가는 게 좋은지 자세히 →</button></div>`;
@@ -2193,7 +2194,7 @@ function renderSeasonTile() {
 function renderDash() {
   const today = document.getElementById('homeToday');
   if (today) {
-    today.textContent = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }) + ' · 한국의 나와 일본의 친구를 위한 보드';
+    today.textContent = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }) + ' · 서울×도쿄 공용 보드';
   }
   renderHomePlan();
   renderFxAll(null, null);
