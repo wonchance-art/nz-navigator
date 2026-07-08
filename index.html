@@ -1213,6 +1213,8 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
           <label class="radio-option"><input type="radio" name="job" value="chef"> 셰프·호스피탈리티</label>
           <label class="radio-option"><input type="radio" name="job" value="trade"> 건설 트레이드</label>
           <label class="radio-option"><input type="radio" name="job" value="health"> 간호·헬스케어</label>
+          <label class="radio-option"><input type="radio" name="job" value="teacher"> 교사</label>
+          <label class="radio-option"><input type="radio" name="job" value="engineer"> 엔지니어</label>
           <label class="radio-option"><input type="radio" name="job" value="agri"> 원예·시즌</label>
           <label class="radio-option"><input type="radio" name="job" value="livestock"> 축산·데어리</label>
           <label class="radio-option"><input type="radio" name="job" value="fieldwork"> 현장직·물류</label>
@@ -1269,6 +1271,29 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
     <div id="pathwayCompare"></div>
 
     <div id="roadmapCards"></div>
+
+    <details class="fold" id="otherPathways">
+      <summary>
+        <span class="fold-title">📦 그 외 영주권 경로 — 전부 모아둠</span>
+        <span class="fold-sub">투자·사업·부모 초청·특수 — 대부분은 해당자가 적습니다</span>
+      </summary>
+      <div class="fold-body">
+        <div style="border-left: 4px solid var(--warn); background: #fdf9f0; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 1rem;">
+          <strong>⏳ 2026-08-24 SMC 개편 — 신설 2경로 (예고)</strong> <span class="badge official">[공식]</span>
+          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>① Skilled Work Experience:</strong> 학위 점수 없이 — 적격 직종(레벨 1–3) 경력 3년 + NZ 숙련근무 2년 + 중위임금 1.1배(시급 38.50). <strong>② Trades &amp; Technician:</strong> L4+ 자격 + 자격 후 경력 2.5년 + NZ 근무 1.5년. 학사 없는 셰프·트레이드·승격한 현장직에게 새 문 — 시행 후 자동 재검증이 예약돼 있습니다.</p>
+        </div>
+        <div style="overflow-x: auto;"><table class="snapshot-table"><thead><tr><th>경로</th><th>핵심 조건</th><th>비용(NZD)</th><th>왜 구석인가</th></tr></thead><tbody>
+          <tr><td style="font-weight:700;">투자 (Active Investor Plus)</td><td>Growth $5M·3년 투자 / Balanced $10M·5년</td><td>27,470~</td><td>투자금 규모 — 초고액 자산가용</td></tr>
+          <tr><td style="font-weight:700;">사업 (Business Investor)</td><td>기존 사업 매입 $1M(3년 후 영주권) / $2M(12개월) + 예비금 $500K + 사업경력 3년</td><td>12,380~</td><td>자본·경영 경험 전제. 기존 Entrepreneur Resident 경로도 별도로 여전히 활성</td></tr>
+          <tr><td style="font-weight:700;">부모 초청 (Parent Resident)</td><td>NZ 시민·영주권 자녀가 스폰서(거주 3년+·소득 요건) — 발롯 추첨</td><td>5,810~</td><td>본인이 아니라 부모용 — 정착 성공 후의 카드</td></tr>
+          <tr><td style="font-weight:700;">부모 은퇴 (Parent Retirement)</td><td>$1M 투자 4년 + 정착금 $500K + 연소득 $60K</td><td>12,850</td><td>고액 자산 전제</td></tr>
+          <tr><td style="font-weight:700;">운송 근무형 영주권</td><td><strong>버스·트럭 기사 경로는 2024-04-07 폐지</strong> — 현행은 선장·갑판원만</td><td>6,450</td><td>"운전으로 영주권" 정보는 이제 옛말 — 오해 주의</td></tr>
+          <tr><td style="font-weight:700;">태평양 전용 (PAC·사모아 쿼터·RSE)</td><td>피지·통가·사모아 등 태평양 국적 전용</td><td>—</td><td><strong>한국인 신청 불가</strong></td></tr>
+          <tr><td style="font-weight:700;">특수 (가정폭력 피해자·난민)</td><td>해당 상황 증빙 — 수수료 무료</td><td>0</td><td>특수 상황 전용 — 존재를 알아둘 것</td></tr>
+        </tbody></table></div>
+        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.6rem;">기준일 2026-07-08 · 출처: immigration.govt.nz 각 비자 페이지 — 표의 조건은 요약이며 신청 전 원문 확인 필수</p>
+      </div>
+    </details>
 
     <details class="fold" id="smcCalc" style="margin-top: 2rem;">
       <summary><span class="fold-title">SMC 점수 계산기</span><span class="fold-sub">학력·소득·근무 조합 직접 실험</span></summary>
@@ -1352,6 +1377,24 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
     </div>
 
     <div id="jobsContainer"></div>
+
+    <details class="fold" id="noPathJobs">
+      <summary>
+        <span class="fold-title">🚫 영주권 경로가 사실상 없는 일들 — 정직 목록</span>
+        <span class="fold-sub">워홀러가 많이 하지만 장기 체류로 이어지지 않는 일</span>
+      </summary>
+      <div class="fold-body">
+        <div style="overflow-x: auto;"><table class="snapshot-table"><thead><tr><th>일</th><th>왜 막히나</th><th>그나마의 우회로</th></tr></thead><tbody>
+          <tr><td style="font-weight:700;">바리스타·카페</td><td>ANZSCO 레벨 5 — 카페가 비자 스폰서를 서는 일이 극히 드묾</td><td>경력 쌓아 셰프·매니저 트랙 전환 or 유학</td></tr>
+          <tr><td style="font-weight:700;">리테일 판매</td><td>레벨 5 — 스폰서·임금 기준 모두 비현실</td><td>본사 관리직 승격(드묾) or 유학</td></tr>
+          <tr><td style="font-weight:700;">미용·네일·뷰티</td><td>뷰티 테라피스트는 <strong>Red List</strong>(스폰서 제한 목록) — 사실상 차단</td><td>없음에 가까움 — 다른 직군 설계 권장</td></tr>
+          <tr><td style="font-weight:700;">청소</td><td>스폰서 관행 거의 없음 + 하도급 구조라 적격 고용 어려움</td><td>수퍼바이저 승격 후 재평가</td></tr>
+          <tr><td style="font-weight:700;">우버·배달</td><td>독립 계약자 — <strong>고용관계 자체가 없어 스폰서 원천 불가</strong></td><td>없음 — 수입용으로만</td></tr>
+        </tbody></table></div>
+        <p style="color: var(--muted); font-size: 0.88rem; margin-top: 0.8rem;">⚠️ <strong>비자 만료 후 체류(오버스테이)는 42일을 넘기면 재입국 금지 사유</strong>가 될 수 있습니다. 그리고 2025-01-27부터 관광비자·NZeTA로 <strong>해외 고용주 원격근무는 허용</strong>되지만, NZ 고용주 일은 절대 불가입니다.</p>
+        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.4rem;">기준일 2026-07-08 · 이 목록은 "하지 말라"가 아니라 "이 일로는 영주권 설계가 안 된다"는 뜻 — 생활비 벌이로는 전부 유효합니다.</p>
+      </div>
+    </details>
   </section>
 
   <!-- SETTLE -->
@@ -1674,7 +1717,7 @@ const DB = {
       name: '건설 트레이드',
       salary: '75,000–110,000',
       hourly: '36–52',
-      gl: '전기공·용접 T2 (배관공 X)',
+      gl: '전기공·용접·자동차정비 T2',
       rating: 4,
       path: 'C(T2 WTR)',
       pitfall: '한국 자격 그대로 인정 안 됨 — NZ 등록(EWRB 등) 절차·비용 확인',
@@ -1686,7 +1729,7 @@ const DB = {
         demandSrc: 'https://www.careers.govt.nz/jobs-database/trades/construction-and-infrastructure/electrician/',
         pr: '유리 — 전기·용접 GL T2',
         prLv: 4,
-        prWhy: '24개월 근무 후 WTR로 영주권. 배관공은 GL 미포함 + PGDB 평가(경력 ~4년 요구) 선행 — AEWV→SMC 루트.',
+        prWhy: '24개월 근무 후 WTR로 영주권. 배관공은 GL 미포함 + PGDB 평가(경력 ~4년 요구) 선행 — AEWV→SMC 루트. 자동차 정비사(Automotive Electrician/Mechanic)도 Tier 2 — 신입 55–70k, NZQF L4 자동차공학 증서 요건.',
         study: '유학 불필요 — 대신 자격 인정 절차: 전기공은 EWRB 해외 등록(등록·심사비 약 NZD 1,650 [추정]) 선행, 용접·목수는 별도 등록 불필요.',
         studyShort: '불필요(자격 인정)',
         period: '36–42개월',
@@ -1719,6 +1762,58 @@ const DB = {
         periodShort: '15–39개월',
         cost: 'RN: NZD 10,500–12,000 + 등록비 / 케어: ~9,000–9,500',
         costShort: 'RN 10.5k+ / 케어 9k'
+      }
+    },
+    {
+      id: 'teacher',
+      name: '교사',
+      salary: '70,000–80,000 (봉급표 스텝)',
+      hourly: '—',
+      gl: 'Primary/Secondary T1',
+      rating: 4,
+      path: 'C(T1 직행)',
+      pitfall: '교육위원회 등록이 선결 — 학력 인정·서류 보완으로 수개월 지연이 흔함. 초등은 공급 과잉(2026년 530명 흑자)이라 중등·이공계 과목이 현실적',
+      tip: '등록 절차(NZQA 학력 인정 + Teaching Council)는 한국에서 원격으로 시작 가능 — 합계 약 NZD 1,400. 교실 운영 수준의 실전 영어가 면접의 실질 관문',
+      guide: {
+        demand: '중등은 부족 — 초등은 과잉',
+        demandLv: 4,
+        demandWhy: '2026년 중등교사 710명 부족(수학·과학 우선), 초등은 530명 공급 과잉 — 과목과 지역(지방 가산) 선택이 취업률을 가름.',
+        demandSrc: 'https://www.education.govt.nz/',
+        pr: '유리 — GL T1 즉시 영주권',
+        prLv: 5,
+        prWhy: '초·중등 교사는 Green List Tier 1 — 등록 + 잡오퍼면 근무 연수 없이 바로 영주권 신청. 관건은 영주권이 아니라 등록·취업.',
+        study: '한국 교원자격 보유 시 불필요(학력 인정 절차만). 미보유면 NZ 교육학 과정(L7+) 이수가 사실상 필수.',
+        studyShort: '자격 있으면 불필요',
+        period: '12–24개월 (등록 속도)',
+        periodShort: '12–24개월',
+        cost: 'NZD 10,500–12,000 + 등록 ~1,400 [추정]',
+        costShort: '~12k–13.5k'
+      }
+    },
+    {
+      id: 'engineer',
+      name: '엔지니어 (토목·구조 등)',
+      salary: '토목 78,700–126,400 / 구조 ~138,000',
+      hourly: '—',
+      gl: '토목·구조 등 T1',
+      rating: 5,
+      path: 'C(T1 직행)',
+      pitfall: '한국 경력 인정은 심사 재량 — 프로젝트 기술서 등 증빙 준비가 관건. CPEng(공인기술사) 등록은 통상 경력 4–6년 후',
+      tip: '한국은 Washington Accord 서명국 — ABEEK 인증 공학사는 학위 동등성 인정에 유리. 인프라 붐(전국 파이프라인 $65.4B)으로 토목 수요 지속',
+      guide: {
+        demand: '수요 큼 — 인프라 붐',
+        demandLv: 4,
+        demandWhy: '연 2,300명 규모 부족 추산·토목 구인 상시(오클랜드 인프라·크라이스트처치 재건) — 시니어일수록 유리.',
+        demandSrc: 'https://www.engineeringnz.org/',
+        pr: '유리 — GL T1 즉시 영주권',
+        prLv: 5,
+        prWhy: '토목·구조·전기 등 다수 엔지니어 직종이 Green List Tier 1 — 잡오퍼로 바로 영주권 신청. CPEng는 영주권 필수 요건이 아니라 커리어용.',
+        study: 'ABEEK 공학사 보유 시 불필요. 미보유면 공학 학사(3–4년) 유학.',
+        studyShort: '학위 있으면 불필요',
+        period: '12–24개월',
+        periodShort: '12–24개월',
+        cost: 'NZD 10,500–12,000',
+        costShort: '10.5k–12k'
       }
     },
     {
@@ -2457,6 +2552,8 @@ function recommend(input) {
   const jobPathMap = {
     dev: 'C-T1',
     health: input.experience === 'qualified' ? 'C-T1' : 'D',
+    teacher: 'C-T1',
+    engineer: input.experience === 'none' ? (input.funding === 'high' ? 'B' : 'C-T1') : 'C-T1',
     trade: input.experience === 'over2' ? 'C-T2' : 'A',
     chef: 'A',
     agri: 'A',
@@ -2488,6 +2585,12 @@ function recommend(input) {
   }
   if (input.job === 'livestock') {
     notes.push('데어리는 매니저(Dairy Cattle Farmer/Manager)가 <strong>Green List Tier 2</strong> — 보조로 시작해도 경력 2년 또는 NZQF L4로 매니저에 오르면 24개월 근무 → 영주권 트랙이 열립니다.');
+  }
+  if (input.job === 'teacher') {
+    notes.push('교사는 <strong>Green List Tier 1(즉시 영주권)</strong> — 단 NZ 교육위원회 등록이 선결 관문입니다. NZQA 학력 인정 + 등록(합계 약 NZD 1,400)을 한국에서 미리 시작하세요. 수요는 중등이 크고(2026년 710명 부족), 초등은 공급 과잉이라 자리가 귀합니다.');
+  }
+  if (input.job === 'engineer' && input.experience === 'none') {
+    warnings.push('엔지니어 GL 트랙은 학위+경력이 축 — 무경력이면 NZ 유학(공학 L7) 또는 한국에서 경력을 쌓은 뒤가 현실적입니다.');
   }
 
   if (input.english === 'none') {
@@ -2526,6 +2629,8 @@ function recommend(input) {
     office: '관리자급 승진 시 1.5배(52.50/h) 달성 가능',
     trade: '상단 시세(52/h)가 1.5배 경계선',
     chef: '시세상 1.5배 미달이 일반적 — 학력·근무 축 권장',
+    teacher: '봉급표 기반이라 소득 축 점수는 제한 — 단 GL T1이라 점수 자체가 불필요',
+    engineer: '시니어급은 1.5배 도달 가능 — GL T1이라 점수 필요 없음',
     agri: '시세상 1.5배 미달이 일반적 — 학력·근무 축 권장',
     livestock: '매니저급도 1.5배 미달 — 단 GL T2라 점수 자체가 불필요',
     fieldwork: '1.5배(52.50/h) 사실상 미달 — 승격·자격 축이 필수',
@@ -2560,7 +2665,7 @@ function recommend(input) {
   if (entry === 'none') {
     if (input.age === 'under30' && input.funding !== 'high') entryReco = '워킹홀리데이 — 18–30세라면 저비용(870)으로 현지 정찰 후 전환하는 것이 정석';
     else if (input.funding === 'high') entryReco = '유학(학생비자) — 자금이 받쳐주면 학위→PSWV 트랙이 가장 안정적';
-    else if (['over2', 'qualified'].includes(input.experience) && ['dev', 'health', 'trade', 'livestock'].includes(input.job)) entryReco = '오프쇼어 AEWV — 경력·Green List 직군이면 한국에서 잡오퍼 확보가 최단';
+    else if (['over2', 'qualified'].includes(input.experience) && ['dev', 'health', 'trade', 'livestock', 'teacher', 'engineer'].includes(input.job)) entryReco = '오프쇼어 AEWV — 경력·Green List 직군이면 한국에서 잡오퍼 확보가 최단';
     else if (input.age === 'under30') entryReco = '워킹홀리데이 또는 유학 — 두 트랙을 비교해 보세요';
     else entryReco = '오프쇼어 AEWV(잡오퍼 선확보) 또는 유학 — 31세+는 이 두 문이 현실적입니다';
   }
@@ -2672,7 +2777,7 @@ function renderCities() {
 
 // ===== 실행·머니 플랜 (저축·생활비는 전부 [추정]) =====
 const START_FUNDS = { low: 7000, mid: 20000, high: 35000 };
-const JOB_SAVE = { dev: [2500, 4000], trade: [1800, 3000], health: [1800, 3000], office: [1800, 3000], chef: [1200, 2200], agri: [1200, 2200], livestock: [1400, 2500], fieldwork: [1200, 2200], undecided: [1200, 2600] };
+const JOB_SAVE = { dev: [2500, 4000], trade: [1800, 3000], health: [1800, 3000], teacher: [1800, 3000], engineer: [2500, 4000], office: [1800, 3000], chef: [1200, 2200], agri: [1200, 2200], livestock: [1400, 2500], fieldwork: [1200, 2200], undecided: [1200, 2600] };
 const WHV_SAVE = [800, 1800]; // 월 저축 여력: 최저임금 풀타임 + 방셰어 기준 [추정]
 
 function moneyPlanRows(pathwayId, input) {
@@ -3147,6 +3252,21 @@ const JOB_PICK = [
       : fund === 'high' ? { ok: 1, cost: 1, via: '간호학사(3년) 유학 경유' }
       : { ok: 0, why: 'NZ 간호협회 등록이 필수 — 면허 또는 유학 없이 진입 불가' },
     caution: '해외 면허는 등록 절차(CAP 등)·비용·영어 요건이 별도로 붙음' },
+  { id: 'teacher', axes: { pr: 5, income: 3, speed: 3 },
+    gate: (exp, fund) => exp === 'qualified' ? { ok: 1, cost: 4, via: '교원자격 인정(NZQA+교육위 등록) 후 GL T1' }
+      : fund === 'high' ? { ok: 1, cost: 1, via: 'NZ 교육학 과정(L7+) 유학 경유' }
+      : { ok: 0, why: '교원자격 또는 교육학 유학이 필수 — 무자격 진입 경로 없음' },
+    caution: '등록 지연이 흔한 병목 — 중등·이공계 과목이 현실적(초등은 과잉)' },
+  { id: 'engineer', axes: { pr: 5, income: 5, speed: 3 },
+    gate: (exp, fund) => exp !== 'none' ? { ok: 1, cost: 4, via: 'ABEEK 공학사+경력으로 GL T1 직행' }
+      : fund === 'high' ? { ok: 1, cost: 1, via: '공학 학사(3–4년) 유학 경유' }
+      : { ok: 0, why: '공학사(ABEEK) 또는 유학 자금 필요 — 무학위·무자금 진입 경로 없음' },
+    caution: '한국 경력 인정은 심사 재량 — 증빙 준비가 관건' },
+  { id: 'health', axes: { pr: 5, income: 4, speed: 3 },
+    gate: (exp, fund) => exp === 'qualified' ? { ok: 1, cost: 4, via: '면허 인정(간호협회 등록) 후 Green List T1' }
+      : fund === 'high' ? { ok: 1, cost: 1, via: '간호학사(3년) 유학 경유' }
+      : { ok: 0, why: 'NZ 간호협회 등록이 필수 — 면허 또는 유학 없이 진입 불가' },
+    caution: '해외 면허는 등록 절차(CAP 등)·비용·영어 요건이 별도로 붙음' },
   { id: 'trade', axes: { pr: 4, income: 4, speed: 3 },
     gate: (exp, fund) => exp !== 'none' ? { ok: 1, cost: 4, via: '자격·경력으로 AEWV — 전기 등은 Green List T2(24개월 근무형)' }
       : { ok: 1, cost: 3, via: '견습(L4)부터 — 일하면서 자격 취득' },
@@ -3265,6 +3385,26 @@ const JOURNEYS = {
       { m: '+4개월', t: 'GL T1 Straight to Residence', type: 'rule', d: 'Registered Nurse는 Tier 1 — 잡오퍼로 바로 영주권 신청.', why: 'T1이라 근무 연수 요건 없음.' }
     ],
     sum: '변수(등록·구직) 7–12개월 + 처리 ~5개월 <span class="f">→ RN 15–24개월(등록 준비 포함). 무면허 케어 트랙: AEWV 24개월[규정] + 처리 3개월 = 36–39개월</span>'
+  },
+  teacher: {
+    note: '한국 교원자격 보유 기준 — 미보유면 NZ 교육학 과정(L7+) 유학이 선행',
+    steps: [
+      { m: '0–4개월', t: '학력 인정 + 교육위원회 등록', type: 'var', d: 'NZQA 학력 인정 → NZ Teaching Council 등록 — 한국에서 원격 시작 가능(합계 약 NZD 1,400).', why: '등록 없인 교단에 설 수 없음 — 서류 보완·지연이 이 경로 최대 변수.', risk: '한국 교육과정 정보 부족으로 추가 질의가 흔함 — 성적표·교육과정 영문 증빙을 두껍게 준비.' },
+      { m: '+2–6개월', t: '잡오퍼 확보', type: 'var', d: '중등(수학·과학·기술 과목)·지방 학교가 확률 높음. 원격 면접 일반적.', why: '중등 710명 부족 vs 초등 과잉 — 과목·지역 선택이 기간을 가름.' },
+      { m: '+2개월', t: 'AEWV 또는 곧장 영주권 신청', type: 'proc', d: 'GL 직종 우대 처리.', why: '공식 처리기간.' },
+      { m: '+4개월', t: 'GL T1 즉시 영주권 신청', type: 'rule', d: '등록 + 잡오퍼 상태에서 바로 신청 — 근무 연수 요건 없음.', why: 'T1 규정 — 이 직군의 존재 이유.' }
+    ],
+    sum: '변수(등록·구직) 6–15개월 + 처리 ~6개월 = <strong>12–24개월</strong>'
+  },
+  engineer: {
+    note: 'ABEEK 공학사 + 경력 보유 기준 — 한국은 Washington Accord 서명국이라 학위 인정에 유리',
+    steps: [
+      { m: '출국 전', t: '학위·경력 증빙 준비', type: 'var', d: 'ABEEK 인증 확인 + 프로젝트 기술서·경력증명 영문화.', why: '한국 경력 인정은 심사 재량 — 증빙 두께가 인정 확률을 가름.' },
+      { m: '0–9개월', t: 'NZ 잡오퍼 확보', type: 'var', d: '토목·구조 구인 상시(인프라 붐) — 오프쇼어 지원도 유효, 시니어일수록 빠름.', why: '구직 기간이 총기간 편차의 대부분 — 주니어는 현지 체류(워홀)가 유리.', risk: '주니어 + 원격 지원 조합은 성공률 낮음 — 워홀 입국 후 현지 구직으로 전환 고려.' },
+      { m: '+2개월', t: 'AEWV (GL 우대)', type: 'proc', d: 'Job Check + 비자 처리.', why: '공식 처리기간.' },
+      { m: '+4개월', t: 'GL T1 즉시 영주권 신청', type: 'rule', d: '잡오퍼 상태에서 바로 신청. CPEng 등록(경력 4–6년 후)은 별개의 커리어 트랙.', why: 'T1 규정 — 근무 연수 요건 없음.' }
+    ],
+    sum: '변수(구직) 2–12개월 + 처리 ~6개월 = <strong>12–24개월</strong>'
   },
   trade: {
     note: '자격·경력 보유 기준 — 무자격이면 BCITO 견습 3–4년이 선행(현장직 카드 참고)',
@@ -3753,6 +3893,10 @@ const SEARCH_INDEX = [
   { q: '셰프 요리사 주방 호스피탈리티 쿡', label: '직군: 셰프·호스피탈리티', desc: '55k–85k · SMC 시급 35 관건', go: 'jobs', target: 'job-chef' },
   { q: '트레이드 전기공 배관공 목수 용접 건설', label: '직군: 건설 트레이드', desc: '75k–110k · 전기공 GL T2', go: 'jobs', target: 'job-trade' },
   { q: '간호사 케어기버 요양 헬스케어 병원', label: '직군: 간호·헬스케어', desc: 'RN 85k–95k GL T1 / 케어 협약', go: 'jobs', target: 'job-health' },
+  { q: '교사 선생님 교육 티처 teacher 중등 초등', label: '직군: 교사', desc: 'GL T1 즉시 영주권 — 등록이 관문', go: 'jobs', target: 'job-teacher' },
+  { q: '엔지니어 토목 구조 기계 공학 설계 engineer', label: '직군: 엔지니어', desc: 'GL T1 — ABEEK 학위 인정 유리', go: 'jobs', target: 'job-engineer' },
+  { q: '투자 사업 이민 부모 초청 은퇴 그 외 경로 운송 버스 트럭', label: '그 외 영주권 경로 모음', desc: '투자·사업·부모·특수 — 조건과 왜 구석인지', go: 'diagnose', target: 'otherPathways' },
+  { q: '바리스타 리테일 미용 네일 청소 우버 배달 안되는 없는 경로', label: '경로 없는 일들 — 정직 목록', desc: '왜 막히는지 + 그나마의 우회로', go: 'jobs', target: 'noPathJobs' },
   { q: '농장 원예 시즌 과수원 픽킹 팩하우스 과일', label: '직군: 원예·시즌잡', desc: '시즌 상시 수요 + WHV 연장 카드', go: 'jobs', target: 'job-agri' },
   { q: '축산 데어리 목장 낙농 젖소 소 가축 우유', label: '직군: 축산·데어리', desc: '보조 63k · 매니저 GL T2 = 영주권 트랙', go: 'jobs', target: 'job-livestock' },
   { q: '현장직 공장 창고 물류 노무 포크리프트 생산직', label: '직군: 현장직·물류', desc: '구인 최다·진입 최속 — 승격이 열쇠', go: 'jobs', target: 'job-fieldwork' },
@@ -4025,7 +4169,7 @@ function initSearch() {
 const ALLOWED = {
   entry: ['whv', 'student', 'work', 'partner', 'none'],
   age: ['under30', 'over30', 'over55'],
-  job: ['dev', 'chef', 'trade', 'health', 'agri', 'livestock', 'fieldwork', 'office', 'undecided'],
+  job: ['dev', 'chef', 'trade', 'health', 'teacher', 'engineer', 'agri', 'livestock', 'fieldwork', 'office', 'undecided'],
   experience: ['none', 'under2', 'over2', 'qualified'],
   english: ['none', 'ielts4', 'ielts65'],
   funding: ['low', 'mid', 'high'],
