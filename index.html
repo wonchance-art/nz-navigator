@@ -1067,6 +1067,22 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .pick-medal { font-size: 1.15rem; flex: none; line-height: 1.3; }
 .pick-out { font-size: 0.85rem; color: var(--muted); margin-top: 0.15rem; }
 
+/* ===== v21 journey ===== */
+.jny { border: 1.5px solid var(--line); border-radius: 8px; padding: 0.9rem 1rem; margin-bottom: 1.2rem; }
+.jny-head { font-weight: 800; margin-bottom: 0.2rem; }
+.jny-legend { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.6rem; }
+.jny-step { display: flex; gap: 0.7rem; padding: 0.5rem 0; border-top: 1px dashed var(--line); }
+.jny-m { flex: none; min-width: 4.6rem; font-weight: 800; color: var(--brand-deep); font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+.jny-b { min-width: 0; font-size: 0.92rem; }
+.jny-b .why { color: var(--muted); margin-top: 0.15rem; }
+.jny-b .risk { color: var(--warn); margin-top: 0.15rem; font-size: 0.88rem; }
+.jt { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 999px; color: #fff; vertical-align: 1px; white-space: nowrap; }
+.jt-rule { background: var(--brand-deep); }
+.jt-var { background: var(--warn); }
+.jt-proc { background: var(--muted); }
+.jny-sum { border-top: 1.5px solid var(--line); margin-top: 0.3rem; padding-top: 0.55rem; font-size: 0.9rem; font-weight: 700; }
+.jny-sum .f { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+
 @media print {
   header,
   footer,
@@ -2419,6 +2435,13 @@ function recommend(input) {
 
   primary = jobPathMap[input.job] || 'A';
 
+  if (input.job !== 'undecided') {
+    const jn = DB.jobs.find(j => j.id === input.job);
+    if (jn && JOURNEYS[input.job]) {
+      notes.push(`${jn.name} 직군의 <strong>시작→영주권 단계별 여정</strong>(각 단계 기간의 산정 근거 포함)을 준비해 뒀습니다. <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('jobs', 'jny-${input.job}')">→ 여정 보기</button>`);
+    }
+  }
+
   if (input.job === 'undecided') {
     notes.push('직군 미정: 영주권 관점에서 <strong>직군 선택이 곧 전략</strong>입니다. 요건 기준으로 보면 — 즉시 영주권은 IT·간호(Green List T1), 24개월 근무형은 트레이드·케어(점수 무관), 수요 대비 진입이 빠른 건 셰프·호스피탈리티입니다. <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo(\'jobs\', \'jobPicker\')">→ 내 조건(경력·자금·목표)으로 직군 고르기</button> 후 다시 진단해 보세요.');
   }
@@ -3132,6 +3155,118 @@ function pickDiagnose(jobId) {
   jumpTo('diagnose', 'diagnoseForm');
 }
 
+// ===== v21 직군별 시작→영주권 여정 =====
+// type: rule=이민 규칙 고정 / var=개인 실행 속도 / proc=심사 대기
+const JT_LABEL = { rule: '규정', var: '변수', proc: '처리' };
+const JOURNEYS = {
+  dev: {
+    note: '워홀 진입 기준 — 경력 2년+면 한국에서 오프쇼어 AEWV 직행도 가능(첫 단계 생략)',
+    steps: [
+      { m: '출국 전', t: '포트폴리오·원격 지원', type: 'var', d: '이력서 현지화, GitHub 정리, 리크루터 접촉.', why: 'NZ IT는 현지 면접 선호 — 원격 오퍼는 시니어 위주라 입국 전 성과는 보너스로만.' },
+      { m: '0–9개월', t: 'WHV 입국 → 현지 구직', type: 'var', d: '밋업·리크루터·직접 지원. 오클랜드·웰링턴 집중.', why: '구직 1–9개월이 이 경로 총기간 편차의 대부분 — 주니어일수록 김.', risk: '9개월 내 오퍼 실패 시: 유학(B) 전환 또는 귀국 후 경력 보강이 현실적 분기.' },
+      { m: '+2개월', t: '잡오퍼 → AEWV', type: 'proc', d: 'Job Check + AEWV 발급(GL 직종 우대 — 평균 3주).', why: '공식 처리기간 — 지원자가 줄일 수 없는 구간.' },
+      { m: '+4개월', t: 'Straight to Residence 신청', type: 'rule', d: 'Software Engineer 등 GL Tier 1 — 잡오퍼 상태에서 바로 영주권 신청.', why: 'T1은 근무 연수 요건이 없음(24개월 근무가 필요한 T2와의 차이) — 그래서 최단 경로.' }
+    ],
+    sum: '변수(구직) 1–9개월 + 처리 ~6개월 <span class="f">→ 정착 포함 15–24개월. 학위·경력 없으면 유학 3년 선행 → 30–48개월</span>'
+  },
+  health: {
+    note: '한국 간호 면허 보유 기준 — 면허가 없으면 케어(D) 또는 간호학사 유학(B)',
+    steps: [
+      { m: '0–6개월', t: 'NZ 간호협회(NCNZ) 등록', type: 'var', d: 'IELTS 6.5/OET + 서류심사 + CAP/OSCE 절차.', why: '등록 없인 RN 취업 자체가 불가 — 이 절차가 초반 기간의 대부분.', risk: '등록 지연이 가장 흔한 병목 — 서류(경력증명·범죄경력)는 한국에서 미리 준비.' },
+      { m: '+1–3개월', t: 'RN 잡오퍼 → AEWV', type: 'var', d: '병원·요양기관(인증 고용주) — RN 수요 상시.', why: '등록만 되면 구직은 빠른 편 — 지방일수록 더.' },
+      { m: '+4개월', t: 'GL T1 Straight to Residence', type: 'rule', d: 'Registered Nurse는 Tier 1 — 잡오퍼로 바로 영주권 신청.', why: 'T1이라 근무 연수 요건 없음.' }
+    ],
+    sum: '변수(등록·구직) 7–12개월 + 처리 ~5개월 <span class="f">→ RN 15–24개월(등록 준비 포함). 무면허 케어 트랙: AEWV 24개월[규정] + 처리 3개월 = 36–39개월</span>'
+  },
+  trade: {
+    note: '자격·경력 보유 기준 — 무자격이면 BCITO 견습 3–4년이 선행(현장직 카드 참고)',
+    steps: [
+      { m: '0–12개월', t: '입국 → 자격 인정·등록', type: 'var', d: '전기 등 규제 직종은 NZ 등록(EWRB 등) + 수습 기간 필요.', why: '규제 직종은 등록 없이 단독 작업 불가 — 인정 절차 속도가 개인차.', risk: '자격 불인정 시: 갭 과정 이수 필요 — 기간 +6–12개월.' },
+      { m: '+1개월', t: 'AEWV (GL 우대)', type: 'proc', d: '인증 고용주 잡오퍼 — 트레이드 구인 상시.', why: 'GL 직종은 처리 평균 3주.' },
+      { m: '+24개월', t: 'GL T2 지정 직무로 24개월 근무', type: 'rule', d: '전기공·용접 등 Tier 2 — 중위임금 이상 유지.', why: 'Work to Residence 규정이 정한 최소 근무 기간 — 줄일 수 없음.' },
+      { m: '+4개월', t: 'WTR 영주권 신청', type: 'proc', d: '서류: 24개월 근무 증명 + 자격.', why: '심사 대기.' }
+    ],
+    sum: '규정 24개월 + 변수(등록) 6–12개월 + 처리 ~5개월 = <strong>36–42개월</strong>'
+  },
+  chef: {
+    note: '워홀 진입 기준 — 한국 주방 경력 2년+면 AEWV 요건이 이미 충족',
+    steps: [
+      { m: '0–2개월', t: 'WHV 입국 → 주방 취업', type: 'var', d: '수요 상시 — 퀸스타운·오클랜드 외식업.', why: '진입은 빠름. 목적은 급여가 아니라 경력·고용주 신뢰 쌓기.' },
+      { m: '+0–18개월', t: 'AEWV 요건 채우기', type: 'var', d: '적격 4택1: 경력 2년(한국 경력 인정) 또는 NZQCF L4 자격.', why: '한국 경력 2년 있으면 0개월, 없으면 NZ에서 채워야 — 이 직군 총기간 편차의 최대 원인.', risk: '고용주가 스폰서(인증·Job Check)를 안 해주면 이직이 답 — 시나리오 탭 S2 참고.' },
+      { m: '+2개월', t: 'AEWV 전환', type: 'proc', d: 'Job Check + 비자 처리(80% 7주).', why: '공식 처리기간.' },
+      { m: '+24개월', t: 'SMC 점수용 숙련 근무 24개월', type: 'rule', d: '2026-08-24 개편 기준: 학사(4점) + NZ 숙련근무 2년(2점) = 6점 충족.', why: '셰프 임금대(~$28–35/h)로는 소득 축(시급 $52.50) 점수가 비현실 — 근무 축이 유일한 6점 조합.', risk: 'IELTS 6.5는 이 기간 중 병행 확보.' },
+      { m: '+4개월', t: 'SMC 영주권 신청', type: 'proc', d: '', why: '심사 대기.' }
+    ],
+    sum: '규정 24개월 + 변수(경력) 2–20개월 + 처리 ~6개월 = <strong>30–48개월</strong>'
+  },
+  agri: {
+    note: '워홀 진입 기준 — 시즌잡은 발판이지 경로가 아님(승진이 경로)',
+    steps: [
+      { m: '0–12개월', t: '시즌잡 순환 + 눈도장', type: 'var', d: '수확 캘린더 따라 이동(키위·사과·포도) — 원예·포도 3개월이면 WHV +3개월 연장.', why: '시즌직 자체는 ANZSCO 레벨 5 — 영주권과 무관. 이 단계의 가치는 수퍼바이저 눈에 드는 것.' },
+      { m: '+12–24개월', t: '팩하우스 수퍼바이저·오차드 매니저 승진', type: 'var', d: '원예 자격(L3–4) 병행 취득, 한 고용주에 정착.', why: '영주권 문은 레벨 1–3 직무부터 열림 — 승진 속도가 총기간(36–60개월) 폭의 원인.', risk: '승진 없이 시즌 반복만 하면 몇 년이 지나도 제자리 — 이 경로 최대 함정.' },
+      { m: '+2개월', t: 'AEWV 전환', type: 'proc', d: '매니저급 잡오퍼 + Job Check.', why: '공식 처리기간.' },
+      { m: '+24개월', t: 'SMC 숙련 근무 24개월', type: 'rule', d: '학사(4점)+근무 2년(2점) 또는 자격·소득 조합.', why: 'SMC 점수 규정 — 매니저 연봉(60–80k)로 소득 축은 부족, 근무 축 필수.' },
+      { m: '+4개월', t: 'SMC 신청', type: 'proc', d: '', why: '심사 대기.' }
+    ],
+    sum: '규정 24개월 + 변수(승진) 12–24개월 + 처리 ~6개월 = <strong>36–60개월</strong>'
+  },
+  livestock: {
+    note: '워홀·PSV 진입 가능 — 한국 축산 경력 2년+면 2단계를 건너뜀(36개월대)',
+    steps: [
+      { m: '0–1개월', t: '데어리 보조 취업', type: 'var', d: '무경험 채용(현장 교육) — 와이카토·캔터베리·사우스랜드, 숙식 제공 일반적.', why: '연 4,000명이 떠나는 구조적 인력난 — 진입 자체는 몇 주.' },
+      { m: '+20–24개월', t: '매니저 요건 채우기', type: 'rule', d: '경력 2년 또는 NZQF L4(Primary ITO 데어리, 일하면서 ~20개월).', why: 'Dairy Farm Manager 직함 요건이 규정(2025-03부터 3년→2년 단축) — 한국 경력 2년+면 이 단계 생략.', risk: '숙소 공제는 시장가 서면 합의 — 계약서에 금액 명시 확인.' },
+      { m: '+0–6개월', t: '매니저 승진 + AEWV', type: 'var', d: 'Dairy Cattle Farmer/Manager(121313) 직함 확보.', why: 'GL T2 카운트는 매니저 직함부터 시작 — 승진 타이밍이 변수.' },
+      { m: '+24개월', t: '매니저로 24개월 근무', type: 'rule', d: 'GL Tier 2 Work to Residence — 중위임금 이상.', why: 'T2 규정이 정한 최소 근무 기간.' },
+      { m: '+4개월', t: 'WTR 영주권 신청', type: 'proc', d: '', why: '심사 대기.' }
+    ],
+    sum: '규정 24개월(매니저 근무) + 요건 0–24개월(한국 경력으로 대체 가능) + 변수·처리 ~10개월 = <strong>36–60개월</strong>'
+  },
+  fieldwork: {
+    note: '진입 최속·영주권 최난 — 3년(AEWV 레벨 4–5 제한) 안에 승격하는 게 경로의 전부',
+    steps: [
+      { m: '0–0.5개월', t: '창고·공장·노무 즉시 취업', type: 'var', d: '무경력 1–2주 내 시작(에이전시 등록) — 구인 최다.', why: '진입 속도가 이 직군의 존재 이유. 단 이 직무 그대로는 영주권 문이 없음.' },
+      { m: '+3–12개월', t: '자격 쌓기', type: 'var', d: '포크리프트·현장 자격(L2–4), Site Safe — 시급과 승격 재료.', why: '자격이 수퍼바이저 후보의 최소 조건.' },
+      { m: '+12–24개월', t: '수퍼바이저·매니저 승격 (최대 분기점)', type: 'var', d: '레벨 1–3 직무 확보. 대안: BCITO 견습으로 갈아타기(→ 건설 트레이드 여정).', why: '레벨 1–3이어야 AEWV 5년·SMC 응시가 열림 — 여기서 막히면 경로 자체가 없음.', risk: 'AEWV 레벨 4–5는 3년 제한 — 3년 안에 승격 못 하면 체류 연장이 막힘.' },
+      { m: '+24개월', t: '승격 직무로 SMC 근무 24개월', type: 'rule', d: '학사(4점)+근무 2년(2점) 조합.', why: 'SMC 점수 규정.' },
+      { m: '+4개월', t: 'SMC 신청', type: 'proc', d: '', why: '심사 대기.' }
+    ],
+    sum: '규정 24개월 + 변수(승격) 15–36개월 + 처리 ~6개월 = <strong>48개월+</strong> <span class="f">— 변수가 규정보다 큰 유일한 직군: 승격 실패 리스크를 안고 시작</span>'
+  },
+  office: {
+    note: '로컬 취업 시도(A)는 낮은 확률 — 유학 우회(B)가 현실 경로. 회계는 한국 경력 인정 시 단축',
+    steps: [
+      { m: '0–6개월', t: 'WHV 로컬 취업 시도', type: 'var', d: '사무직 스폰서가 가장 안 나오는 직군 — 시도 자체는 무료.', why: '로컬 지원자와 직접 경쟁 + 고용주가 비자 스폰서를 기피 — 실패가 표준이라 다음 단계를 전제로 설계.', risk: '여기서 성공하면(회계 등 전문직) 유학 없이 AEWV 직행 — 30개월대로 단축.' },
+      { m: '+12개월', t: 'GD 유학(L7, 1년)', type: 'rule', d: '2026-11-16 개편부터 GD도 PSWV 1년. 회계는 CA/CPA 트랙 시 SMC 6점 가산(2026-08 개편).', why: '과정 길이는 고정 — 학위가 PSWV(오픈워크)의 입장권.' },
+      { m: '+3–9개월', t: 'PSWV로 정규직 전환', type: 'var', d: '오픈워크 기간 내 인증 고용주 정규직 확보.', why: 'PSWV 1년이 사실상 구직 마감시계.' },
+      { m: '+24개월', t: 'AEWV → SMC 숙련 근무 24개월', type: 'rule', d: '학사(4점)+근무 2년(2점)=6점.', why: 'SMC 점수 규정.' },
+      { m: '+4개월', t: 'SMC 신청', type: 'proc', d: '', why: '심사 대기.' }
+    ],
+    sum: '규정 36개월(유학 12+근무 24) + 변수 9–15개월 + 처리 ~6개월 = <strong>회계 30–48개월 / 일반 48개월+</strong>'
+  }
+};
+
+function journeyHtml(job) {
+  const j = JOURNEYS[job.id];
+  if (!j) return '';
+  const badge = ty => `<span class="jt jt-${ty}">${JT_LABEL[ty]}</span>`;
+  return `
+    <div class="jny" id="jny-${job.id}">
+      <div class="jny-head">🗺️ 시작 → 영주권 단계별 여정</div>
+      <div class="jny-legend">기간 태그: <span class="jt jt-rule">규정</span> 이민 규칙 고정(줄일 수 없음) · <span class="jt jt-var">변수</span> 내 실행 속도(총기간 편차의 원인) · <span class="jt jt-proc">처리</span> 심사 대기 — ${j.note}</div>
+      ${j.steps.map(s => `
+      <div class="jny-step">
+        <span class="jny-m">${s.m}</span>
+        <div class="jny-b">
+          <div><strong>${s.t}</strong> ${badge(s.type)}</div>
+          ${s.d ? `<div>${s.d}</div>` : ''}
+          <div class="why">왜 이 기간: ${s.why}</div>
+          ${s.risk ? `<div class="risk">⚠️ ${s.risk}</div>` : ''}
+        </div>
+      </div>`).join('')}
+      <div class="jny-sum">🧮 총기간 산식: ${j.sum}</div>
+    </div>`;
+}
+
 function renderJobs() {
   let html = '';
   DB.jobs.forEach(job => {
@@ -3163,6 +3298,7 @@ function renderJobs() {
           <div style="margin-bottom: 1rem;">
             <strong>추천 경로:</strong> ${job.path}
           </div>
+          ${journeyHtml(job)}
           <div style="margin-bottom: 0.5rem;">
             <strong>함정:</strong>
             <p style="color: var(--muted); margin-top: 0.3rem;">${job.pitfall}</p>
@@ -3546,7 +3682,8 @@ const SEARCH_INDEX = [
   { q: '31세 32세 33세 34세 35세 나이 이상 워홀 불가 오프쇼어 offshore 늦은 넘은', label: '31세+ 워홀 없이 진입', desc: '오프쇼어 AEWV · 유학 · 답사 3루트', go: 'scenarios', target: 'sc-8' },
   { q: '로드맵 경로 비교 전체 한눈에', label: '전체 경로 비교', desc: '4개 경로 타임라인 비교', go: 'diagnose', target: 'fullRoadmaps' },
   { q: '홈 대시보드 환율 원화 엔화 항공권 비행기 시차 디데이', label: '홈 대시보드', desc: '환율·항공 월별 최저가·제도 D-day 한눈에', go: 'home', target: null },
-  { q: '언제 출국 시기 타이밍 몇월 도착 시즌 스키 수확 캘린더', label: '언제 가는 게 좋은가', desc: '월별 일자리 캘린더 — 최적 2–4월', go: 'settle', target: 'timing' }
+  { q: '언제 출국 시기 타이밍 몇월 도착 시즌 스키 수확 캘린더', label: '언제 가는 게 좋은가', desc: '월별 일자리 캘린더 — 최적 2–4월', go: 'settle', target: 'timing' },
+  { q: '여정 루트 단계 순서 몇 년 왜 기간 산정 어떻게 가는지 로드맵 과정', label: '직군별 시작→영주권 여정', desc: '단계마다 기간 근거(규정·변수·처리)를 태그로 표시', go: 'jobs', target: 'jny-dev' }
 ];
 
 const GLOSSARY = [
