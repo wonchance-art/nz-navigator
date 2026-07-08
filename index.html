@@ -1771,7 +1771,30 @@ const DB = {
         periodShort: '48개월+',
         cost: 'NZD 11,000–13,000',
         costShort: '11k–13k'
-      }
+      },
+      deep: `
+        <div style="border-top: 1px solid var(--line); margin-top: 1.2rem; padding-top: 1.2rem;">
+          <strong>업종별 심화 — 어디서 뭘 하고 얼마 받나</strong>
+          <div id="fw-meat" style="margin-top: 0.8rem; border-left: 4px solid var(--brand); background: var(--bg); padding: 0.8rem 1rem; border-radius: 6px;">
+            <strong>🥩 육가공 공장 (미트웍스)</strong> <span class="badge estimated">추정 · 26-07 조사</span>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;">Silver Fern Farms(전국 14개 공장)·Alliance·AFFCO·ANZCO — 대부분 지방 소도시(사우스랜드·호크스베이 등). 시즌은 <strong>11월~6월</strong>, 오프시즌(8–9월) 레이오프가 관행이라 그 기간 일자리는 따로 설계해야 합니다.</p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>임금:</strong> 훈련 기간 $23.95/h → 생산 라인 $28–30.5/h(2026-07 공고 기준). 성수기엔 초과근무 포함 주 $1,400–1,600(세전) 수준까지. <strong>진입:</strong> 무경험 채용이 표준(훈련 제공) — 약물검사·신체 평가 통과 필수, 지원→시작 약 1주. 시즌 개막 전 9–10월 대량 채용에 맞춰 지원.</p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><span class="badge official">[공식]</span> <strong>비자:</strong> WHV로 근무 가능하나 <strong>워홀 +3개월 연장은 원예·포도만 인정 — 육가공은 해당 없음</strong>. 재방문은 PSV(최대 7개월 · 지난 3년 내 1시즌 경험 필요 · 재신청 전 4개월 국외) 또는 GWSV(3년 유효 · 연 9개월 · 3시즌 경력) — Meat Process Worker·Meat Boner and Slicer가 공식 목록에 포함(Slaughterer는 미포함). <a class="source-link" href="https://www.immigration.govt.nz/work/requirements-for-work-visas/green-list-occupations-qualifications-and-skills/peak-seasonal-visa-jobs-list/" target="_blank">PSV 목록↗</a></p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><span class="badge official">[공식]</span> <strong>영주권:</strong> 일반 공정직은 ANZSCO 레벨 4라 직결 경로가 없습니다. 유일한 예외 — <strong>할랄 도축사(831212)는 Green List Tier 2</strong>: MPI 승인 할랄 시설에서 24개월 근무 + 중위임금 + IELTS 6.5로 영주권 신청 가능. 단 무슬림 신자 한정(FIANZ 승인·NZQA 자격)이라 일반 지원자에겐 사실상 닫힌 문입니다.</p>
+          </div>
+          <div id="fw-chain" style="margin-top: 0.8rem; border-left: 4px solid var(--accent); background: #fdf9f0; padding: 0.8rem 1rem; border-radius: 6px;">
+            <strong>🏭 공장 시즌 체인 — 연중 로테이션</strong> <span class="badge estimated">추정 · 26-07 조사</span>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>2–4월</strong> 와이너리 빈티지(cellar hand $25–32/h · 12시간 시프트 · Marlborough·Hawke's Bay — 지원은 전년 8–10월) → <strong>3–6월</strong> 키위 팩하우스(Bay of Plenty, $23.95–28.5/h) → <strong>5–9월</strong> 수산 가공 hoki(Sealord Nelson, 기본 $23.96/h + 교대·초과, 시즌 300명+ 채용) → <strong>10월~5월</strong> 조개·수산(Talley's Motueka·Blenheim, 성과급 중심) → <strong>11월~</strong> 육가공 개막. 유제품 공장(Fonterra 등)은 시즌 fixed-term 생산직 공고가 수시 — 조건은 공고별 확인.</p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;">💡 시즌을 이으면 연중 수요가 이어집니다. 단 PSV·GWSV는 시즌 사이 국외 스탠드다운(4개월/3개월)이 있어 체인이 끊깁니다 — <strong>WHV 12개월 동안은 WHV 하나로 도는 게 가장 유연</strong>합니다. 시기별 상세는 정착 탭의 월별 캘린더 참고.</p>
+          </div>
+          <div id="fw-build" style="margin-top: 0.8rem; border-left: 4px solid var(--info); background: var(--bg); padding: 0.8rem 1rem; border-radius: 6px;">
+            <strong>🏗️ 건설 노무 (labourer·hammerhand)</strong>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>임금:</strong> 공고 기준 $24–30/h <span class="badge estimated">추정</span> — 최저임금($23.95) 안팎만 제시하는 공고는 거르세요. <strong>진입:</strong> Site Safe 패스포트(반나절 과정 · 카드 2년 유효 · 비용 ~$200 추정)가 대형 현장 사실상 필수. PPE(안전화·하이비즈)는 고용주 부담이 원칙 <span class="badge official">[공식]</span>. 최속 진입은 labour hire 에이전시(AWF·Tradestaff) 등록.</p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>함정:</strong> casual 계약의 우천 무급(rain-day stand-down)은 계약서에 조항이 있어야만 유효 — 서명 전 확인하세요. 견습 계약 시 훈련 최저임금 $19.16/h가 적용될 수 있다는 점도 알고 계약하세요 <span class="badge official">[공식]</span>.</p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><span class="badge official">[공식]</span> <strong>승격이 곧 영주권 전략:</strong> hammerhand → BCITO 목공 견습 3–4년(NZ Certificate in Carpentry L4 · 학비 1년차 $1,984, 이후 연 $964) → 트레이드 직군 전환. 2026-08-24 SMC 개편의 Trades &amp; Technician 신경로와 직결됩니다. 수요는 견조 — 오클랜드 2026 건설활동 +13.5%(2024 대비), 전국 파이프라인 2030년 $65.4B(MBIE). <button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('jobs', 'job-trade')">→ 건설 트레이드 카드</button></p>
+          </div>
+          <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.6rem;">출처: immigration.govt.nz(PSV·Green List) · MBIE · BCITO · employment.govt.nz · 기업 채용공고 조사 — 기준일 2026-07-08</p>
+        </div>`
     },
     {
       id: 'office',
@@ -3173,6 +3196,7 @@ function renderJobs() {
             </div>
           </div>
           ` : ''}
+          ${job.deep || ''}
         </div>
       </details>
     `;
@@ -3506,6 +3530,9 @@ const SEARCH_INDEX = [
   { q: '농장 원예 시즌 과수원 픽킹 팩하우스 과일', label: '직군: 원예·시즌잡', desc: '시즌 상시 수요 + WHV 연장 카드', go: 'jobs', target: 'job-agri' },
   { q: '축산 데어리 목장 낙농 젖소 소 가축 우유', label: '직군: 축산·데어리', desc: '보조 63k · 매니저 GL T2 = 영주권 트랙', go: 'jobs', target: 'job-livestock' },
   { q: '현장직 공장 창고 물류 노무 포크리프트 생산직', label: '직군: 현장직·물류', desc: '구인 최다·진입 최속 — 승격이 열쇠', go: 'jobs', target: 'job-fieldwork' },
+  { q: '육가공 미트웍스 도축 고기 공장 실버펀 할랄 silver fern', label: '현장직 심화: 육가공 공장', desc: '생산 $28–30/h·시즌 11~6월·PSV 대상', go: 'jobs', target: 'fw-meat' },
+  { q: '공장 시즌 빈티지 와이너리 셀러핸드 팩하우스 수산 호키 폰테라 로테이션 체인', label: '현장직 심화: 공장 시즌 체인', desc: '빈티지→키위→호키→조개 — 연중 로테이션', go: 'jobs', target: 'fw-chain' },
+  { q: '건설 노무 레이버러 함마핸드 사이트세이프 site safe 견습 BCITO 빌더', label: '현장직 심화: 건설 노무', desc: '$24–30/h·Site Safe·견습→트레이드 승격', go: 'jobs', target: 'fw-build' },
   { q: '사무 회계 마케팅 오피스 화이트칼라', label: '직군: 일반 사무', desc: '최난도 — 유학 전환 권장', go: 'jobs', target: 'job-office' },
   { q: '용어 뜻 약어 사전 인터림 interim ivl nzqcf', label: '용어 사전', desc: 'AEWV·SMC·PSWV·GL 등 한 줄 설명', go: 'snapshot', target: 'glossary' },
   { q: '생활비 렌트 방셰어 저축 세금 ird 물가 돈 생존 버티기 감당 현금 흐름', label: '생활비 생존 전략', desc: '주거·첫 수입·세금·비자비 적립 6원칙', go: 'settle', target: 'survival' },
