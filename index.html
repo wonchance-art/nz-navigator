@@ -277,7 +277,7 @@ select {
 
 .timeline-bar {
   display: flex;
-  height: 60px;
+  min-height: 60px;
   background: var(--line);
   border-radius: 8px;
   overflow: hidden;
@@ -287,6 +287,8 @@ select {
 
 .timeline-segment {
   flex: 1;
+  min-width: 3.6rem;
+  overflow: hidden;
   background: var(--brand);
   border-right: 2px solid white;
   display: flex;
@@ -1865,10 +1867,32 @@ const DB = {
       cost: 'NZD 80,000–247,000',
       stages: [
         { name: 'WHV', months: 12 },
-        { name: '학업', months: 48 },
-        { name: 'PSWV', months: 36 },
-        { name: 'AEWV+SMC', months: 8 }
+        { name: '학업(GD 1년)', months: 12 },
+        { name: 'PSWV→AEWV 근무', months: 24 },
+        { name: 'SMC 처리', months: 4 }
       ],
+      studyVariants: {
+        gd: {
+          label: '학사 보유 → GD 1년', short: '유학 · GD 1년', duration: '48–60개월', cost: 'NZD 80,000–110,000',
+          note: 'GD(L7) 1년 → PSWV 1년은 2026-11-16 개편 시행 후 기준 — 지금 준비해 2027년 입학이면 해당. 학업 중 주 25h 근로 가능.',
+          stages: [
+            { name: 'WHV', months: 12 },
+            { name: '학업(GD 1년)', months: 12 },
+            { name: 'PSWV→AEWV 근무', months: 24 },
+            { name: 'SMC 처리', months: 4 }
+          ]
+        },
+        bach: {
+          label: '학사 없음 → 학사 3년', short: '유학 · 학사 3년', duration: '72–96개월+', cost: 'NZD 130,000–247,000',
+          note: '학사(L7, 3년)는 졸업 후 PSWV 최대 3년 — 학사 미보유자의 표준 경로. 학비 연 22,000–58,000.',
+          stages: [
+            { name: 'WHV', months: 12 },
+            { name: '학업(학사 3년)', months: 36 },
+            { name: 'PSWV→AEWV 근무', months: 24 },
+            { name: 'SMC 처리', months: 4 }
+          ]
+        }
+      },
       details: {
         requirements: ['학교 입학', '자금증명: 20,000/년', 'L7+ 학위(PSWV 자격)'],
         costs: ['학비: 22,000–58,000/년', '생활비: 20,000/년', 'PSWV: 1,670', 'AEWV: 1,540', 'SMC: 6,450'],
@@ -2668,11 +2692,19 @@ function moneyPlanRows(pathwayId, input) {
 
   // entry=student 진입 시 B형 rows
   if (entry === 'student') {
+    const hasL7 = ['bach', 'master', 'phd'].includes(input.education);
     push('0–1개월', '학생비자', '입국·정착', '정착비 −2,000~−3,500', -3500, -2000);
-    push('1–13개월', '학생비자', 'GD(L7) 1년 — 25h 근로로 생활비 일부 상쇄' + (ielts ? ' · IELTS 응시(−490)' : ''), '학비·생활 순지출: min −40000−12×1500, max −25000−12×300', -1 * ieltsCost - 40000 - 12 * 1500, -25000 - 12 * 300);
-    push('13–16개월', 'PSWV', '신청(−1,670)·구직', '비자비 + 구직기 수입 변동', -1670 - 3 * 500, -1670 + 3 * 800);
-    push('16–40개월', 'AEWV', '스킬드 근무(−1,540 포함)', tierTxt + ' · AEWV −1,540', -1540 + 24 * tier[0], -1540 + 24 * tier[1]);
-    push('40–44개월', 'SMC 신청', '(−6,450)', '영주권 비자비', -6450 + 4 * tier[0], -6450 + 4 * tier[1]);
+    if (hasL7) {
+      push('1–13개월', '학생비자', 'GD(L7) 1년 — 25h 근로로 생활비 일부 상쇄' + (ielts ? ' · IELTS 응시(−490)' : ''), '학비·생활 순지출: min −40000−12×1500, max −25000−12×300', -1 * ieltsCost - 40000 - 12 * 1500, -25000 - 12 * 300);
+      push('13–16개월', 'PSWV', '신청(−1,670)·구직', '비자비 + 구직기 수입 변동', -1670 - 3 * 500, -1670 + 3 * 800);
+      push('16–40개월', 'AEWV', '스킬드 근무(−1,540 포함)', tierTxt + ' · AEWV −1,540', -1540 + 24 * tier[0], -1540 + 24 * tier[1]);
+      push('40–44개월', 'SMC 신청', '(−6,450)', '영주권 비자비', -6450 + 4 * tier[0], -6450 + 4 * tier[1]);
+    } else {
+      push('1–37개월', '학생비자', '학사(L7) 3년 — 25h 근로로 생활비 일부 상쇄' + (ielts ? ' · IELTS 응시(−490)' : ''), '학비·생활 순지출: min −174000−36×1500, max −66000−36×300', -1 * ieltsCost - 174000 - 36 * 1500, -66000 - 36 * 300);
+      push('37–40개월', 'PSWV', '신청(−1,670)·구직', '비자비 + 구직기 수입 변동', -1670 - 3 * 500, -1670 + 3 * 800);
+      push('40–64개월', 'AEWV', '스킬드 근무(−1,540 포함)', tierTxt + ' · AEWV −1,540', -1540 + 24 * tier[0], -1540 + 24 * tier[1]);
+      push('64–68개월', 'SMC 신청', '(−6,450)', '영주권 비자비', -6450 + 4 * tier[0], -6450 + 4 * tier[1]);
+    }
     return rows;
   }
 
@@ -2680,11 +2712,20 @@ function moneyPlanRows(pathwayId, input) {
   push('0–1개월', 'WHV', '정착 — 도착 주에 IRD 번호·은행 계좌 만들고, 방셰어 확보 + 임시직 지원 시작', '정착비 −2,000~−3,500', -3500, -2000);
 
   if (pathwayId === 'B') {
-    push('1–12개월', 'WHV', '풀타임 임시직으로 학비 저축 + 학교 리서치·입학 지원' + ieltsTxt, '저축 +800~1,800/월', 11 * WHV_SAVE[0] - ieltsCost, 11 * WHV_SAVE[1]);
-    push('12–24개월', '학생비자', 'GD(L7) 1년 수학 — 학기 중 25h/주 근로(세전 ~599/주)로 생활비 일부 상쇄', '학비 −25,000~−40,000 · 비자 −850 · 생활 순지출', -850 - 40000 - 12 * 1500, -850 - 25000 - 12 * 300);
-    push('24–27개월', 'PSWV', '졸업 → PSWV 신청(−1,670) → 전공 직군 풀타임 구직', '비자비 + 구직기 수입 변동', -1670 - 3 * 500, -1670 + 3 * 800);
-    push('27–51개월', 'AEWV', '스킬드 근무 — 시급 35/h 목표 협상 + SMC 점수 적립', tierTxt + ' · AEWV −1,540', -1540 + 24 * tier[0], -1540 + 24 * tier[1]);
-    push('51–55개월', 'AEWV→영주권', 'SMC 신청(−6,450) → 처리 80% 4개월', '영주권 비자비', -6450 + 4 * tier[0], -6450 + 4 * tier[1]);
+    const hasL7 = ['bach', 'master', 'phd'].includes(input.education);
+    if (hasL7) {
+      push('1–12개월', 'WHV', '풀타임 임시직으로 학비 저축 + 학교 리서치·입학 지원' + ieltsTxt, '저축 +800~1,800/월', 11 * WHV_SAVE[0] - ieltsCost, 11 * WHV_SAVE[1]);
+      push('12–24개월', '학생비자', 'GD(L7) 1년 수학 — 학기 중 25h/주 근로(세전 ~599/주)로 생활비 일부 상쇄', '학비 −25,000~−40,000 · 비자 −850 · 생활 순지출', -850 - 40000 - 12 * 1500, -850 - 25000 - 12 * 300);
+      push('24–27개월', 'PSWV', '졸업 → PSWV 신청(−1,670) → 전공 직군 풀타임 구직', '비자비 + 구직기 수입 변동', -1670 - 3 * 500, -1670 + 3 * 800);
+      push('27–51개월', 'AEWV', '스킬드 근무 — 시급 35/h 목표 협상 + SMC 점수 적립', tierTxt + ' · AEWV −1,540', -1540 + 24 * tier[0], -1540 + 24 * tier[1]);
+      push('51–55개월', 'AEWV→영주권', 'SMC 신청(−6,450) → 처리 80% 4개월', '영주권 비자비', -6450 + 4 * tier[0], -6450 + 4 * tier[1]);
+    } else {
+      push('1–12개월', 'WHV', '풀타임 임시직으로 학비 저축 + 학교 리서치·입학 지원' + ieltsTxt, '저축 +800~1,800/월', 11 * WHV_SAVE[0] - ieltsCost, 11 * WHV_SAVE[1]);
+      push('12–48개월', '학생비자', '학사(L7) 3년 수학 — 학기 중 25h/주 근로(세전 ~599/주)로 생활비 일부 상쇄', '학비 −66,000~−174,000 · 비자 −850 · 생활 순지출', -850 - 174000 - 36 * 1500, -850 - 66000 - 36 * 300);
+      push('48–51개월', 'PSWV', '졸업 → PSWV 신청(−1,670) — 학사는 최대 3년 오픈워크', '비자비 + 구직기 수입 변동', -1670 - 3 * 500, -1670 + 3 * 800);
+      push('51–75개월', 'PSWV/AEWV', '스킬드 근무 — 시급 35/h 목표 + SMC 점수 적립(학사 4점+근무 2년)', tierTxt + ' · AEWV −1,540', -1540 + 24 * tier[0], -1540 + 24 * tier[1]);
+      push('75–79개월', 'AEWV→영주권', 'SMC 신청(−6,450) → 처리 80% 4개월', '영주권 비자비', -6450 + 4 * tier[0], -6450 + 4 * tier[1]);
+    }
   } else if (pathwayId === 'C-T1') {
     push('1–9개월', 'WHV', 'GL 직군 잡오퍼 공략 — 경력 증명·포트폴리오 정리, 인증 고용주 직접 접촉' + ieltsTxt, '저축 +800~1,800/월', 8 * WHV_SAVE[0] - ieltsCost, 8 * WHV_SAVE[1]);
     push('9–12개월', 'WHV→interim', '잡오퍼 확정 → Job Check(고용주) → AEWV 신청(−1,540)', '비자비 지출', -1540 + 3 * WHV_SAVE[0], -1540 + 3 * WHV_SAVE[1]);
@@ -2773,12 +2814,18 @@ function entryAdjustedPathway(p, entry) {
   if (!strip || !p.stages.length || p.stages[0].name !== 'WHV') return p;
   const adj = ENTRY_ADJUST[p.id];
   if (!adj) return p;
-  return Object.assign({}, p, { stages: p.stages.slice(1), duration: adj[0], cost: adj[1], summary: p.summary + ` (${ENTRY_LABEL[entry]} 진입 — WHV 단계 없음)` });
+  let duration = adj[0], cost = adj[1];
+  if (p.id === 'B' && p.studyVariants) {
+    const m = p.duration.match(/^(\d+)–(\d+)개월(\+?)$/);
+    if (m) { duration = `${+m[1] - 12}–${+m[2] - 12}개월${m[3]}`; cost = p.cost; }
+  }
+  return Object.assign({}, p, { stages: p.stages.slice(1), duration, cost, summary: p.summary + ` (${ENTRY_LABEL[entry]} 진입 — WHV 단계 없음)` });
 }
 
 function renderDiagnoseResult(result) {
   const primaryPath0 = DB.pathways.find(p => p.id === result.primary);
-  const primaryPath = entryAdjustedPathway(primaryPath0, result.input.entry || 'whv');
+  const bAuto = ['bach', 'master', 'phd'].includes(result.input.education) ? 'gd' : 'bach';
+  const primaryPath = entryAdjustedPathway(resolveBVariant(primaryPath0, bAuto), result.input.entry || 'whv');
   if (!primaryPath) {
     console.error('Pathway not found for ID:', result.primary);
     return;
@@ -2795,11 +2842,15 @@ function renderDiagnoseResult(result) {
   }
 
   html += `<p style="color: var(--muted); margin-bottom: 0.8rem;">${primaryPath.summary}</p>`;
-  html += buildTimelineBar(primaryPath, false);
+  const shownPath = primaryPath;
+  if (primaryPath0 && primaryPath0.studyVariants && primaryPath.id === 'B') {
+    html += `<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.4rem;">학업 길이: <strong>${primaryPath0.studyVariants[bAuto].label}</strong> (학력 답변으로 자동 선택) · ${shownPath.duration} · ${shownPath.cost}</div>`;
+  }
+  html += buildTimelineBar(shownPath, false);
 
   html += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">';
-  html += `<div><strong>예상 기간:</strong> ${primaryPath.duration}</div>`;
-  html += `<div><strong>총 비용:</strong> ${primaryPath.cost}</div>`;
+  html += `<div><strong>예상 기간:</strong> ${shownPath.duration}</div>`;
+  html += `<div><strong>총 비용:</strong> ${shownPath.cost}</div>`;
   html += '</div>';
 
   if (primaryPath.details && primaryPath.details.requirements) {
@@ -2889,11 +2940,13 @@ function renderPathwayCompare() {
   const box = document.getElementById('pathwayCompare');
   if (!box) return;
   const MAX = 96;
-  const rows = DB.pathways.map(p => {
-    const nums = (p.duration.match(/\d+/g) || [0]).map(Number);
-    const min = nums[0];
-    const max = nums[1] || nums[0];
-    return { id: p.id, name: p.name.split(' (')[0], min, max, label: p.duration };
+  const rows = DB.pathways.flatMap(p => {
+    const mk = (name, durStr) => {
+      const nums = (durStr.match(/\d+/g) || [0]).map(Number);
+      return { id: p.id, name, min: nums[0], max: nums[1] || nums[0], label: durStr };
+    };
+    if (p.studyVariants) return Object.values(p.studyVariants).map(v => mk('B. ' + v.short, v.duration));
+    return [mk(p.name.split(' (')[0], p.duration)];
   });
   box.innerHTML = `<div class="card">
     <h3 style="margin-bottom: 0.8rem;">한눈 비교 — 영주권까지 걸리는 시간</h3>
@@ -2937,7 +2990,26 @@ function buildTimelineBar(pathway, interactive) {
   return `<div class="timeline-bar">${stagesHtml}</div>`;
 }
 
-function renderPathwayCard(pathway) {
+// ===== v22 B 경로 학업 길이 분기 =====
+let bVariant = 'gd';
+function resolveBVariant(pathway, key) {
+  if (!pathway || pathway.id !== 'B' || !pathway.studyVariants) return pathway;
+  const v = pathway.studyVariants[key] || pathway.studyVariants.gd;
+  return Object.assign({}, pathway, { stages: v.stages, duration: v.duration, cost: v.cost });
+}
+function setBVariant(v) {
+  bVariant = v;
+  renderRoadmap();
+  const el = document.getElementById('path-B');
+  if (el) el.open = true;
+}
+
+function renderPathwayCard(rawPathway) {
+  const pathway = resolveBVariant(rawPathway, bVariant);
+  const isB = rawPathway.id === 'B' && rawPathway.studyVariants;
+  const toggleHtml = isB ? `
+        <div class="pick-row" style="margin-bottom: 0.5rem;"><span class="pick-q">학업 길이</span>${Object.entries(rawPathway.studyVariants).map(([k, sv]) => `<button class="pick-chip${bVariant === k ? ' sel' : ''}" onclick="setBVariant('${k}')">${sv.label}</button>`).join('')}</div>
+        <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 0.8rem;">ℹ️ ${rawPathway.studyVariants[bVariant].note}</p>` : '';
   const detailHtml = pathway.stages.map((stage, idx) => `
     <div id="stage-${pathway.id}-${idx}" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--bg); border: 1px solid var(--line); border-radius: 8px;">
       <strong>${stage.name} — ${stage.months}개월</strong>
@@ -2957,6 +3029,7 @@ function renderPathwayCard(pathway) {
       </summary>
       <div class="fold-body">
         <p style="color: var(--muted); margin: 0.5rem 0 1rem 0;">${pathway.summary}</p>
+        ${toggleHtml}
         ${buildTimelineBar(pathway, true)}
         ${detailHtml}
       </div>
