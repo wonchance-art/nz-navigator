@@ -1910,13 +1910,13 @@ const DB = {
     {
       id: 'C-T1',
       name: 'C. Green List T1 (즉시 영주권)',
-      summary: 'GL T1 직종 + 잡오퍼 → Straight to Residence',
+      summary: '그린리스트 T1 직종 + 잡오퍼 → 곧장 영주권 신청',
       duration: '15–24개월',
       cost: 'NZD 10,500–12,000',
       stages: [
         { name: 'WHV', months: 12 },
         { name: 'AEWV+StR', months: 6 },
-        { name: 'Residence 신청', months: 4 }
+        { name: '영주권 신청', months: 4 }
       ],
       details: {
         requirements: ['GL T1 직종(Software Engineer 등)', '잡오퍼 (인증 고용주)', '55세 이하'],
@@ -1926,13 +1926,13 @@ const DB = {
     },
     {
       id: 'C-T2',
-      name: 'C. Green List T2 (Work to Residence)',
-      summary: '트레이드 GL + 24개월 근무 → Residence',
+      name: 'C. 그린리스트 T2 (근무형 영주권)',
+      summary: '트레이드 그린리스트 직종으로 24개월 근무 → 영주권',
       duration: '36–42개월',
       cost: 'NZD 10,500–12,000',
       stages: [
         { name: 'WHV', months: 12 },
-        { name: 'AEWV (24개월)', months: 24 },
+        { name: 'AEWV', months: 24 },
         { name: 'WTR 신청', months: 4 }
       ],
       details: {
@@ -1943,14 +1943,14 @@ const DB = {
     },
     {
       id: 'D',
-      name: 'D. Care 협약 (Care Workforce)',
-      summary: '요양/간호 24개월 + Care Residence',
+      name: 'D. 케어 협약 (요양·간호보조)',
+      summary: '요양·간호보조로 24개월 근무 → 영주권',
       duration: '36–39개월',
       cost: 'NZD 9,000–9,500',
       stages: [
         { name: 'WHV', months: 12 },
-        { name: '케어 AEWV (24개월)', months: 24 },
-        { name: 'Care Residence', months: 3 }
+        { name: '케어 AEWV', months: 24 },
+        { name: '케어 영주권 신청', months: 3 }
       ],
       details: {
         requirements: ['승인 직종 (요양, 간호보조, 장애지원)', '중위임금 이상 유지', '24개월 근무 (첫 12개월 직종 변경 불가)'],
@@ -3481,6 +3481,7 @@ function updateCalc() {
     : `총액: NZD ${fmtTotal(total.min)}–${fmtTotal(total.max)}`;
 
   saveState('nzv.calc', readCalcForm());
+  annotateVisaTerms(document.getElementById('calc'));
 }
 
 function renderCostBar(items) {
@@ -3776,29 +3777,31 @@ const SEARCH_INDEX = [
 ];
 
 // ===== v23 비자 약어 풀어쓰기 =====
-const VISA_PLAIN = {
-  WHV: '워홀(워킹홀리데이 비자) — 18–30세 · 1년',
-  PSWV: '졸업비자(오픈워크) — 학위 따라 1–3년, GD는 1년(2026-11-16~)',
-  SGWV: '졸업비자 6개월 — 비학위 과정용(2026-11-16 신설)',
-  AEWV: '고용주 스폰서 워크비자(인증 고용주 잡오퍼 필요)',
-  SMC: '6점제 기술이민 영주권(학력·소득·NZ 근무 조합)',
-  StR: '즉시 영주권 신청 — Green List T1 전용',
-  WTR: '24개월 근무형 영주권 — Green List T2 전용',
-  PSV: '성수기 계절비자 — 최대 7개월(2025-12 신설)',
-  GWSV: '계절 순환 비자 — 3년 유효 · 연 9개월',
-  IVL: '관광·환경 부담금(NZD 100)',
-  ANZSCO: '직업 분류 체계 — 레벨 1(고숙련)~5(비숙련)',
-  NZQF: 'NZ 학력·자격 체계(L1–10, 학사=L7)',
-  NZQCF: 'NZ 학력·자격 체계(L1–10, 학사=L7)',
-  IELTS: '공인 영어시험(영주권은 보통 6.5)',
-  IRD: '국세청 — IRD 번호 = 세금 번호',
-  BCITO: '건설업 견습 훈련 기관(목공 등 L4 자격)',
-  MPI: '1차산업부(정부 부처)',
-  MSD: '사회개발부(정부) — 무료 구직 연결',
-  TPV: '총보수 — 숙식 포함 임금 산정 방식',
-  GL: 'Green List(인력난 직종) — T1 즉시 영주권 · T2 24개월 근무 후'
+const VISA_TERMS = {
+  'WHV': { ko: '워홀', tip: 'WHV · Working Holiday Visa — 18–30세 · 1년' },
+  'PSWV': { ko: '졸업비자', tip: 'PSWV · Post Study Work Visa — 학위 따라 1–3년 (GD는 1년, 2026-11-16~)' },
+  'SGWV': { ko: '단기 졸업비자', tip: 'SGWV · Short-term Graduate Work Visa — 비학위 과정용 6개월 (2026-11-16 신설)' },
+  'AEWV': { ko: '고용주 워크비자', tip: 'AEWV · Accredited Employer Work Visa — 인증 고용주 스폰서 워크비자' },
+  'SMC': { ko: '6점제 영주권', tip: 'SMC · Skilled Migrant Category — 6점제 기술이민 영주권 (학력·소득·NZ 근무 조합)' },
+  'StR': { ko: '즉시 영주권', tip: 'StR · Straight to Residence — 그린리스트 T1 전용 즉시 영주권 비자' },
+  'WTR': { ko: '근무형 영주권', tip: 'WTR · Work to Residence — 그린리스트 T2 직종 24개월 근무 후 영주권' },
+  'PSV': { ko: '성수기 계절비자', tip: 'PSV · Peak Seasonal Visa — 최대 7개월 (2025-12 신설)' },
+  'GWSV': { ko: '계절 순환비자', tip: 'GWSV · Global Workforce Seasonal Visa — 3년 유효 · 연 9개월' },
+  'GD': { ko: 'GD', tip: 'GD · Graduate Diploma — 학사 뒤에 얹는 1년짜리 L7 과정' },
+  'IVL': { ko: '관광·환경 부담금', tip: 'IVL · International Visitor Levy — NZD 100' },
+  'ANZSCO': { ko: 'ANZSCO', tip: 'ANZSCO · 직업 분류 체계 — 레벨 1(고숙련)~5(비숙련)' },
+  'NZQF': { ko: 'NZ학력체계', tip: 'NZQF — NZ 학력·자격 체계 (L1–10, 학사=L7)' },
+  'NZQCF': { ko: 'NZ학력체계', tip: 'NZQCF — NZ 학력·자격 체계 (L1–10, 학사=L7)' },
+  'IELTS': { ko: 'IELTS', tip: 'IELTS · 공인 영어시험 — 영주권은 보통 6.5' },
+  'IRD': { ko: 'IRD', tip: 'IRD · 국세청 — IRD 번호 = 세금 번호' },
+  'BCITO': { ko: 'BCITO', tip: 'BCITO · 건설업 견습 훈련 기관 — 목공 등 L4 자격' },
+  'MPI': { ko: 'MPI', tip: 'MPI · 1차산업부 (정부 부처)' },
+  'MSD': { ko: 'MSD', tip: 'MSD · 사회개발부 (정부) — 무료 구직 연결' },
+  'TPV': { ko: '총보수', tip: 'TPV · Total Package Value — 숙식 포함 임금 산정' },
+  'Green List': { ko: '그린리스트', tip: 'Green List — 인력난 직종 리스트 (T1 즉시 영주권 · T2 24개월 근무)' },
+  'GL': { ko: '그린리스트', tip: 'GL · Green List — 인력난 직종 리스트 (T1 즉시 영주권 · T2 24개월 근무)' }
 };
-const VT_KEYS = Object.keys(VISA_PLAIN).sort((a, b) => b.length - a.length).join('|');
+const VT_KEYS = Object.keys(VISA_TERMS).sort((a, b) => b.length - a.length).join('|');
 const VT_TEST = new RegExp('(^|[^A-Za-z])(' + VT_KEYS + ')(?![A-Za-z])');
 const VT_RE = new RegExp('(^|[^A-Za-z])(' + VT_KEYS + ')(?![A-Za-z])', 'g');
 
@@ -3808,7 +3811,7 @@ function annotateVisaTerms(root) {
     acceptNode(n) {
       if (!n.nodeValue || !VT_TEST.test(n.nodeValue)) return NodeFilter.FILTER_REJECT;
       const p = n.parentElement;
-      if (!p || p.closest('.vt, a, button, summary, .timeline-segment, .visa-legend, #glossaryTable, script, style')) return NodeFilter.FILTER_REJECT;
+      if (!p || p.closest('.vt, .visa-legend, #glossaryTable, script, style')) return NodeFilter.FILTER_REJECT;
       return NodeFilter.FILTER_ACCEPT;
     }
   });
@@ -3816,6 +3819,12 @@ function annotateVisaTerms(root) {
   while (walker.nextNode()) targets.push(walker.currentNode);
   targets.forEach(node => {
     const text = node.nodeValue;
+    const plainOnly = node.parentElement && node.parentElement.closest('a, button, summary, .timeline-segment');
+    if (plainOnly) {
+      VT_RE.lastIndex = 0;
+      node.nodeValue = text.replace(VT_RE, (all, pre, key) => pre + VISA_TERMS[key].ko);
+      return;
+    }
     const frag = document.createDocumentFragment();
     let last = 0, m;
     VT_RE.lastIndex = 0;
@@ -3823,8 +3832,8 @@ function annotateVisaTerms(root) {
       frag.appendChild(document.createTextNode(text.slice(last, m.index) + m[1]));
       const s = document.createElement('span');
       s.className = 'vt';
-      s.dataset.plain = VISA_PLAIN[m[2]];
-      s.textContent = m[2];
+      s.dataset.plain = VISA_TERMS[m[2]].tip;
+      s.textContent = VISA_TERMS[m[2]].ko;
       s.addEventListener('click', e => {
         e.stopPropagation();
         document.querySelectorAll('.vt.on').forEach(x => { if (x !== s) x.classList.remove('on'); });
@@ -3840,7 +3849,7 @@ function annotateVisaTerms(root) {
 document.addEventListener('click', () => document.querySelectorAll('.vt.on').forEach(x => x.classList.remove('on')));
 
 function visaLegendHtml() {
-  return `<div class="visa-legend">📖 <strong>WHV</strong> 워홀 · <strong>PSWV</strong> 졸업비자(1–3년) · <strong>SGWV</strong> 졸업비자(6개월) · <strong>AEWV</strong> 고용주 워크비자 · <strong>SMC</strong> 6점제 영주권 · <strong>GL</strong> 인력난 직종(T1 즉시·T2 24개월 근무) — 밑줄 친 용어는 탭하면 풀이가 뜹니다 · <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('snapshot', 'glossary')">전체 용어사전 →</button></div>`;
+  return `<div class="visa-legend">📖 공식 명칭: 워홀 <strong>WHV</strong> · 졸업비자 <strong>PSWV</strong> · 고용주 워크비자 <strong>AEWV</strong> · 6점제 영주권 <strong>SMC</strong>(기술이민) · 그린리스트 <strong>Green List</strong>(인력난 직종) — 점선 용어를 탭하면 공식 명칭·설명이 뜹니다 · <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('snapshot', 'glossary')">전체 용어사전 →</button></div>`;
 }
 
 
@@ -3979,6 +3988,7 @@ function attachSearch(input, box) {
       ? hits.map(h => `<button class="search-item" onclick="jumpTo('${h.go}', ${h.target ? `'${h.target}'` : 'null'})">${h.label}<small>${h.desc}</small></button>`).join('')
       : '<div class="search-item" style="cursor: default;">검색 결과 없음 — <strong>⚡ 1분 진단</strong>으로 시작해보세요</div>';
     box.classList.add('open');
+    annotateVisaTerms(box);
   };
 
   input.addEventListener('input', run);
@@ -4236,7 +4246,6 @@ window.addEventListener('DOMContentLoaded', () => {
   renderRoadmap();
   renderScenarios();
   renderJobs();
-  annotateVisaTerms(document.getElementById('settle')); annotateVisaTerms(document.getElementById('snapshot'));
   renderCalc();
   renderSnapshot();
   renderOnboardGate();
@@ -4245,6 +4254,7 @@ window.addEventListener('DOMContentLoaded', () => {
   renderTimingSection();
   initSearch();
   restoreState(savedDiagnose, savedCalc);
+  annotateVisaTerms(document.body);
 });
 </script>
 
