@@ -1085,6 +1085,14 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .jny-sum { border-top: 1.5px solid var(--line); margin-top: 0.3rem; padding-top: 0.55rem; font-size: 0.9rem; font-weight: 700; }
 .jny-sum .f { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
 
+/* ===== v23 visa term tooltip ===== */
+.vt { position: relative; border-bottom: 1.5px dotted var(--brand); cursor: help; }
+.vt::after { content: attr(data-plain); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; font-size: 0.78rem; font-weight: 500; line-height: 1.45; padding: 0.4rem 0.6rem; border-radius: 6px; white-space: normal; width: max-content; max-width: min(260px, 72vw); text-align: left; z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.12s; word-break: keep-all; }
+.vt:hover::after, .vt.on::after { opacity: 1; }
+.visa-legend { font-size: 0.78rem; color: var(--muted); word-break: keep-all; line-height: 1.7; margin: 0.6rem 0 0.8rem; }
+.visa-legend strong { color: var(--brand-deep); }
+
+
 @media print {
   header,
   footer,
@@ -2283,6 +2291,7 @@ function renderDdayTile() {
     </div>
     <div class="dash-sub" style="margin-top: 0.35rem;">다음: 27-03 중위임금 · 27-04 최저임금 심사</div>
     <div class="dash-links"><button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('snapshot', 'changeline')">타임라인 →</button></div>`;
+  annotateVisaTerms(document.getElementById('ddayTile'));
 }
 
 function renderHomePlan() {
@@ -2847,6 +2856,7 @@ function renderDiagnoseResult(result) {
     html += `<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.4rem;">학업 길이: <strong>${primaryPath0.studyVariants[bAuto].label}</strong> (학력 답변으로 자동 선택) · ${shownPath.duration} · ${shownPath.cost}</div>`;
   }
   html += buildTimelineBar(shownPath, false);
+  html += visaLegendHtml();
 
   html += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">';
   html += `<div><strong>예상 기간:</strong> ${shownPath.duration}</div>`;
@@ -2924,6 +2934,7 @@ function renderDiagnoseResult(result) {
   html += '</div></div>';
 
   document.getElementById('diagnoseResult').innerHTML = html;
+  annotateVisaTerms(document.getElementById('diagnoseResult'));
 }
 
 // ============ ROADMAP ============
@@ -2934,6 +2945,7 @@ function renderRoadmap() {
     html += renderPathwayCard(pathway);
   });
   document.getElementById('roadmapCards').innerHTML = html;
+  annotateVisaTerms(document.getElementById('roadmapCards')); annotateVisaTerms(document.getElementById('pathwayCompare'));
 }
 
 function renderPathwayCompare() {
@@ -2950,6 +2962,7 @@ function renderPathwayCompare() {
   });
   box.innerHTML = `<div class="card">
     <h3 style="margin-bottom: 0.8rem;">한눈 비교 — 영주권까지 걸리는 시간</h3>
+    ${visaLegendHtml()}
     ${rows.map(r => `
       <div class="cmp-row" onclick="jumpTo('diagnose', 'path-${r.id}')">
         <span class="cmp-name">${r.name}</span>
@@ -3101,6 +3114,7 @@ function renderScenarios() {
     `;
   });
   document.getElementById('scenariosContainer').innerHTML = html;
+  annotateVisaTerms(document.getElementById('scenariosContainer'));
 }
 
 function toggleScenario(idx) {
@@ -3219,6 +3233,7 @@ function renderJobPicker() {
       ${excluded.length ? `<div class="pick-out" style="margin-top: 0.4rem;">제외됨 — ${excluded.map(e => `<strong>${e.job.name}</strong>: ${e.g.why}`).join(' / ')}</div>` : ''}
       <div class="pick-out" style="margin-top: 0.6rem; border-top: 1px solid var(--line); padding-top: 0.5rem;">ℹ️ 어떤 직군이든 영주권 단계(SMC·Green List 공통)는 IELTS 6.5급 영어가 필요합니다. 최종 선택 전 각 직군 카드의 <strong>함정</strong> 항목을 꼭 확인하세요.</div>
     </div>`;
+  annotateVisaTerms(document.getElementById('jobPickerResult'));
 }
 
 function pickDiagnose(jobId) {
@@ -3412,6 +3427,7 @@ function renderJobs() {
   });
   document.getElementById('jobsContainer').innerHTML = html;
   renderJobsGuideTable();
+  annotateVisaTerms(document.getElementById('jobsContainer'));
 }
 
 function lvDots(n) {
@@ -3758,6 +3774,76 @@ const SEARCH_INDEX = [
   { q: '언제 출국 시기 타이밍 몇월 도착 시즌 스키 수확 캘린더', label: '언제 가는 게 좋은가', desc: '월별 일자리 캘린더 — 최적 2–4월', go: 'settle', target: 'timing' },
   { q: '여정 루트 단계 순서 몇 년 왜 기간 산정 어떻게 가는지 로드맵 과정', label: '직군별 시작→영주권 여정', desc: '단계마다 기간 근거(규정·변수·처리)를 태그로 표시', go: 'jobs', target: 'jny-dev' }
 ];
+
+// ===== v23 비자 약어 풀어쓰기 =====
+const VISA_PLAIN = {
+  WHV: '워홀(워킹홀리데이 비자) — 18–30세 · 1년',
+  PSWV: '졸업비자(오픈워크) — 학위 따라 1–3년, GD는 1년(2026-11-16~)',
+  SGWV: '졸업비자 6개월 — 비학위 과정용(2026-11-16 신설)',
+  AEWV: '고용주 스폰서 워크비자(인증 고용주 잡오퍼 필요)',
+  SMC: '6점제 기술이민 영주권(학력·소득·NZ 근무 조합)',
+  StR: '즉시 영주권 신청 — Green List T1 전용',
+  WTR: '24개월 근무형 영주권 — Green List T2 전용',
+  PSV: '성수기 계절비자 — 최대 7개월(2025-12 신설)',
+  GWSV: '계절 순환 비자 — 3년 유효 · 연 9개월',
+  IVL: '관광·환경 부담금(NZD 100)',
+  ANZSCO: '직업 분류 체계 — 레벨 1(고숙련)~5(비숙련)',
+  NZQF: 'NZ 학력·자격 체계(L1–10, 학사=L7)',
+  NZQCF: 'NZ 학력·자격 체계(L1–10, 학사=L7)',
+  IELTS: '공인 영어시험(영주권은 보통 6.5)',
+  IRD: '국세청 — IRD 번호 = 세금 번호',
+  BCITO: '건설업 견습 훈련 기관(목공 등 L4 자격)',
+  MPI: '1차산업부(정부 부처)',
+  MSD: '사회개발부(정부) — 무료 구직 연결',
+  TPV: '총보수 — 숙식 포함 임금 산정 방식',
+  GL: 'Green List(인력난 직종) — T1 즉시 영주권 · T2 24개월 근무 후'
+};
+const VT_KEYS = Object.keys(VISA_PLAIN).sort((a, b) => b.length - a.length).join('|');
+const VT_TEST = new RegExp('(^|[^A-Za-z])(' + VT_KEYS + ')(?![A-Za-z])');
+const VT_RE = new RegExp('(^|[^A-Za-z])(' + VT_KEYS + ')(?![A-Za-z])', 'g');
+
+function annotateVisaTerms(root) {
+  if (!root) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(n) {
+      if (!n.nodeValue || !VT_TEST.test(n.nodeValue)) return NodeFilter.FILTER_REJECT;
+      const p = n.parentElement;
+      if (!p || p.closest('.vt, a, button, summary, .timeline-segment, .visa-legend, #glossaryTable, script, style')) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const targets = [];
+  while (walker.nextNode()) targets.push(walker.currentNode);
+  targets.forEach(node => {
+    const text = node.nodeValue;
+    const frag = document.createDocumentFragment();
+    let last = 0, m;
+    VT_RE.lastIndex = 0;
+    while ((m = VT_RE.exec(text))) {
+      frag.appendChild(document.createTextNode(text.slice(last, m.index) + m[1]));
+      const s = document.createElement('span');
+      s.className = 'vt';
+      s.dataset.plain = VISA_PLAIN[m[2]];
+      s.textContent = m[2];
+      s.addEventListener('click', e => {
+        e.stopPropagation();
+        document.querySelectorAll('.vt.on').forEach(x => { if (x !== s) x.classList.remove('on'); });
+        s.classList.toggle('on');
+      });
+      frag.appendChild(s);
+      last = m.index + m[0].length;
+    }
+    frag.appendChild(document.createTextNode(text.slice(last)));
+    node.parentNode.replaceChild(frag, node);
+  });
+}
+document.addEventListener('click', () => document.querySelectorAll('.vt.on').forEach(x => x.classList.remove('on')));
+
+function visaLegendHtml() {
+  return `<div class="visa-legend">📖 <strong>WHV</strong> 워홀 · <strong>PSWV</strong> 졸업비자(1–3년) · <strong>SGWV</strong> 졸업비자(6개월) · <strong>AEWV</strong> 고용주 워크비자 · <strong>SMC</strong> 6점제 영주권 · <strong>GL</strong> 인력난 직종(T1 즉시·T2 24개월 근무) — 밑줄 친 용어는 탭하면 풀이가 뜹니다 · <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('snapshot', 'glossary')">전체 용어사전 →</button></div>`;
+}
+
+
 
 const GLOSSARY = [
   ['WHV', '워킹홀리데이 비자 — 18–30세, 12개월, 임시직만 가능 (퍼머넌트 고용 불가)'],
@@ -4150,6 +4236,7 @@ window.addEventListener('DOMContentLoaded', () => {
   renderRoadmap();
   renderScenarios();
   renderJobs();
+  annotateVisaTerms(document.getElementById('settle')); annotateVisaTerms(document.getElementById('snapshot'));
   renderCalc();
   renderSnapshot();
   renderOnboardGate();
