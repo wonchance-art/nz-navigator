@@ -1033,7 +1033,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .cost-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.82rem; }
 
 /* ===== v15 dashboard ===== */
-.dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1rem; }
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; align-items: stretch; }
 .dash-tile { margin-bottom: 0; padding: 1.1rem 1.3rem; }
 .dash-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
 .dash-label { font-size: 0.88rem; font-weight: 700; }
@@ -1041,6 +1041,14 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .dash-sub { font-size: 0.82rem; color: var(--muted); margin-top: 0.3rem; }
 .dash-links { margin-top: 0.6rem; display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; font-size: 0.85rem; }
 .badge.live { background: var(--ok); color: #fff; }
+.fx-row { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; }
+.fx-row + .fx-row { border-top: 1px solid var(--line); }
+.month-nav { display: flex; align-items: center; gap: 0.4rem; }
+.month-nav button { border: 1.5px solid var(--line); background: var(--bg); border-radius: 7px; width: 1.7rem; height: 1.7rem; cursor: pointer; font-size: 0.95rem; line-height: 1; color: var(--ink); }
+.month-nav button:disabled { opacity: 0.35; cursor: default; }
+.month-nav .month-label { font-size: 0.88rem; font-weight: 700; min-width: 6.2rem; text-align: center; }
+.flight-row { padding: 0.45rem 0; }
+.flight-row + .flight-row { border-top: 1px solid var(--line); }
 .season-strip { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; margin: 0.6rem 0 0.3rem; }
 .season-cell { border-radius: 5px; padding: 0.35rem 0; text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--ink); background: var(--line); }
 .season-cell.lv2 { background: #bcd9c8; }
@@ -1112,11 +1120,8 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
     <div id="homePlan"></div>
 
     <div class="dash-grid">
-      <div class="card dash-tile" id="fxKrw"></div>
-      <div class="card dash-tile" id="fxJpy"></div>
-      <div class="card dash-tile" id="flightPus"></div>
-      <div class="card dash-tile" id="flightTyo"></div>
-      <div class="card dash-tile" id="clockTile"></div>
+      <div class="card dash-tile" id="fxTile"></div>
+      <div class="card dash-tile" id="flightTile"></div>
       <div class="card dash-tile" id="ddayTile"></div>
       <div class="card dash-tile" id="seasonTile" style="grid-column: 1 / -1;"></div>
     </div>
@@ -2033,27 +2038,30 @@ const SEASON_CAL = [
 
 function fmtFx(n, digits) { return n.toLocaleString('en-NZ', { minimumFractionDigits: digits, maximumFractionDigits: digits }); }
 
-function renderFxTile(id, cur, flag, digits, live, liveTime) {
-  const el = document.getElementById(id);
+function renderFxAll(rates, time) {
+  const el = document.getElementById('fxTile');
   if (!el) return;
-  const base = FX_BASE[cur];
-  const v = live != null ? live : base.v;
-  const badge = live != null
-    ? `<span class="badge live">실시간 ${liveTime}</span>`
-    : `<span class="badge estimated">기준값 ${base.asOf}</span>`;
+  const live = rates != null;
+  const badge = live
+    ? `<span class="badge live">실시간 ${time}</span>`
+    : `<span class="badge estimated">기준값 ${FX_BASE.KRW.asOf}</span>`;
+  const row = (flag, cur, unit, digits) => {
+    const v = live ? rates[cur] : FX_BASE[cur].v;
+    return `<div class="fx-row">
+      <span class="dash-label">${flag} NZD 1</span>
+      <span><span class="dash-big" style="font-size: 1.7rem;">${fmtFx(v, digits)}</span><span style="font-weight: 600;"> ${unit}</span></span>
+    </div>`;
+  };
   el.innerHTML = `
-    <div class="dash-head"><span class="dash-label">${flag} NZD 1 = ${cur}</span>${badge}</div>
-    <div class="dash-big">${fmtFx(v, digits)}<span style="font-size: 1rem; font-weight: 600;"> ${cur === 'KRW' ? '원' : '엔'}</span></div>
-    <div class="dash-sub">${base.range}</div>
+    <div class="dash-head"><span class="dash-label">💱 환율</span>${badge}</div>
+    ${row('🇰🇷', 'KRW', '원', 1)}
+    ${row('🇯🇵', 'JPY', '엔', 2)}
+    <div class="dash-sub">KRW ${FX_BASE.KRW.range} · JPY ${FX_BASE.JPY.range}</div>
     <div class="dash-links">
       <button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="fetchFx()">↻ 새로고침</button>
-      <a class="source-link" href="https://www.google.com/search?q=NZD+to+${cur}" target="_blank">실시간 보기↗</a>
+      <a class="source-link" href="https://www.google.com/search?q=NZD+to+KRW" target="_blank">KRW↗</a>
+      <a class="source-link" href="https://www.google.com/search?q=NZD+to+JPY" target="_blank">JPY↗</a>
     </div>`;
-}
-
-function renderFxAll(rates, time) {
-  renderFxTile('fxKrw', 'KRW', '🇰🇷', 1, rates ? rates.KRW : null, time);
-  renderFxTile('fxJpy', 'JPY', '🇯🇵', 2, rates ? rates.JPY : null, time);
 }
 
 function fetchFx() {
@@ -2080,51 +2088,66 @@ function fetchFx() {
   } catch (e) {}
 }
 
-function renderFlightTiles() {
-  const pus = document.getElementById('flightPus');
-  if (pus) pus.innerHTML = `
-    <div class="dash-head"><span class="dash-label">✈️ 부산 → 오클랜드</span><span class="badge estimated">2026-07 기준</span></div>
-    <div style="font-size: 0.95rem; font-weight: 700;">직항 없음 — 인천 경유가 정석</div>
-    <div class="dash-sub">인천→AKL 대한항공 직항 11h35m(성수기 매일·평시 주 5–6회) · 부산발 총 14–17시간</div>
-    <div class="dash-sub">✈️ 티켓: 12–2월 +30–50% 비쌈 · 3월 최저 · 비수기 5–6·9–11월</div>
-    <div class="dash-links"><a class="source-link" href="https://www.google.com/travel/flights?q=PUS%20to%20AKL" target="_blank">실시간 가격↗</a><a class="source-link" href="https://www.google.com/travel/flights?q=ICN%20to%20AKL" target="_blank">인천 출발↗</a></div>`;
-  const tyo = document.getElementById('flightTyo');
-  if (tyo) tyo.innerHTML = `
-    <div class="dash-head"><span class="dash-label">✈️ 도쿄 → 오클랜드</span><span class="badge estimated">2026-07 기준</span></div>
-    <div style="font-size: 0.95rem; font-weight: 700;">에어뉴질랜드 직항 · 매일 · 10h30m</div>
-    <div class="dash-sub">나리타(NRT) 출발 B787-9 · 왕복 약 ¥104k–173k(시즌별, 추정)</div>
-    <div class="dash-sub">🆕 2026-11-28부터 나리타→크라이스트처치 신규 취항</div>
-    <div class="dash-links"><a class="source-link" href="https://www.google.com/travel/flights?q=NRT%20to%20AKL" target="_blank">実時間の価格↗</a></div>`;
+// 월별 최저 편도가 스냅샷 (2026-07-08 조사·교차검증 보정 — 변동 큼, 추정)
+const FLIGHT_MONTHS = [
+  { ym: '2026-08', label: '2026년 8월', gm: 'August 2026', pusKrw: 740000, tyoJpy: 90000, note: '여름 끝물 — 부산→도쿄 LCC 프로모 많음' },
+  { ym: '2026-09', label: '2026년 9월', gm: 'September 2026', pusKrw: 700000, tyoJpy: 88000, note: '어깨 시즌 — 6개월 중 저렴한 편' },
+  { ym: '2026-10', label: '2026년 10월', gm: 'October 2026', pusKrw: 780000, tyoJpy: 92000, note: '단풍 수요 시작 — 부산→도쿄 구간 상승' },
+  { ym: '2026-11', label: '2026년 11월', gm: 'November 2026', pusKrw: 790000, tyoJpy: 90000, note: '일본 단풍 성수기 — 도쿄 경유가 비싸지는 달' },
+  { ym: '2026-12', label: '2026년 12월', gm: 'December 2026', pusKrw: 650000, tyoJpy: 95000, note: '12/15 이전 출발이면 의외의 저가 — 이후 급등' },
+  { ym: '2027-01', label: '2027년 1월', gm: 'January 2027', pusKrw: 880000, tyoJpy: 95000, note: 'NZ 여름 최성수기' }
+];
+let flightMonthIdx = 0;
+
+function moveFlightMonth(d) {
+  flightMonthIdx = Math.min(FLIGHT_MONTHS.length - 1, Math.max(0, flightMonthIdx + d));
+  renderFlightTile();
 }
 
-function renderClockTile() {
-  const el = document.getElementById('clockTile');
+function renderFlightTile() {
+  const el = document.getElementById('flightTile');
   if (!el) return;
-  const now = new Date();
-  const akl = now.toLocaleTimeString('ko-KR', { timeZone: 'Pacific/Auckland', hour: '2-digit', minute: '2-digit' });
-  const aklDay = now.toLocaleDateString('ko-KR', { timeZone: 'Pacific/Auckland', weekday: 'short', month: 'numeric', day: 'numeric' });
-  const aklH = parseInt(now.toLocaleString('en-US', { timeZone: 'Pacific/Auckland', hour: 'numeric', hour12: false }), 10);
-  const seoulH = parseInt(now.toLocaleString('en-US', { timeZone: 'Asia/Seoul', hour: 'numeric', hour12: false }), 10);
-  let diff = aklH - seoulH;
-  if (diff < -12) diff += 24; if (diff > 12) diff -= 24;
+  const m = FLIGHT_MONTHS[flightMonthIdx];
+  const g = route => `https://www.google.com/travel/flights?q=${encodeURIComponent('Flights from ' + route + ' in ' + m.gm)}`;
   el.innerHTML = `
-    <div class="dash-head"><span class="dash-label">🕐 오클랜드 지금</span><span class="badge live">실시간</span></div>
-    <div class="dash-big">${akl}</div>
-    <div class="dash-sub">${aklDay} · 서울·도쿄보다 ${diff >= 0 ? '+' : ''}${diff}시간</div>`;
+    <div class="dash-head">
+      <span class="dash-label">✈️ 오클랜드행 최저가</span>
+      <span class="month-nav">
+        <button onclick="moveFlightMonth(-1)" ${flightMonthIdx === 0 ? 'disabled' : ''} aria-label="이전 달">‹</button>
+        <span class="month-label">${m.label}</span>
+        <button onclick="moveFlightMonth(1)" ${flightMonthIdx === FLIGHT_MONTHS.length - 1 ? 'disabled' : ''} aria-label="다음 달">›</button>
+      </span>
+    </div>
+    <div class="flight-row">
+      <div class="dash-label">🇰🇷 부산 → 도쿄 → 오클랜드</div>
+      <div><span class="dash-big" style="font-size: 1.55rem;">₩${Math.round(m.pusKrw / 10000)}만</span><span style="font-weight: 600;">~</span> <span class="dash-sub">편도 · 경유 최저 조합 · 총 15–18시간</span></div>
+      <div class="dash-links"><a class="source-link" href="${g('PUS to AKL')}" target="_blank">이 달 실시간↗</a></div>
+    </div>
+    <div class="flight-row">
+      <div class="dash-label">🇯🇵 도쿄 → 오클랜드</div>
+      <div><span class="dash-big" style="font-size: 1.55rem;">¥${(m.tyoJpy / 10000).toFixed(1)}万</span><span style="font-weight: 600;">~</span> <span class="dash-sub">편도 · NZ 직항 · 10h30m</span></div>
+      <div class="dash-links"><a class="source-link" href="${g('NRT to AKL')}" target="_blank">実時間↗</a></div>
+    </div>
+    <div class="dash-sub">💡 ${m.note}</div>
+    <div class="dash-sub"><span class="badge estimated">추정 · 2026-07 조사</span> 실제 가격은 링크에서 확인</div>`;
 }
 
 function renderDdayTile() {
   const el = document.getElementById('ddayTile');
   if (!el) return;
   const d = target => Math.ceil((new Date(target) - Date.now()) / 86400000);
-  const smc = d('2026-08-24');
-  const pswv = d('2026-11-16');
   el.innerHTML = `
-    <div class="dash-head"><span class="dash-label">📅 제도 변경 D-day</span></div>
-    <div style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.2rem;">SMC 개편 <span style="color: var(--warn);">D-${smc}</span></div>
-    <div class="dash-sub">2026-08-24 · 학사 3점→4점 (필요 근무 3년→2년)</div>
-    <div style="font-size: 1.05rem; font-weight: 700; margin: 0.5rem 0 0.2rem;">PSWV 개편 <span style="color: var(--info);">D-${pswv}</span></div>
-    <div class="dash-sub">2026-11-16 · GD+학사 1년 PSWV · SGWV 신설 — 시행 직후 자동 재검증 예약됨</div>`;
+    <div class="dash-head"><span class="dash-label">📅 제도 변경</span><span class="badge live">자동 재검증 예약</span></div>
+    <div class="flight-row">
+      <div style="font-weight: 700;">SMC 개편 <span style="color: var(--warn); font-size: 1.25rem;">D-${d('2026-08-24')}</span></div>
+      <div class="dash-sub">08-24 시행 · 학사 3→4점 → 필요 NZ 근무 3년→2년 · 신규 경로 2개 · 영어성적 유효 5년 · CA/CPA 회계사 6점</div>
+    </div>
+    <div class="flight-row">
+      <div style="font-weight: 700;">PSWV 개편 <span style="color: var(--info); font-size: 1.25rem;">D-${d('2026-11-16')}</span></div>
+      <div class="dash-sub">11-16 시행 · GD+학사 1년 PSWV · 비학위 6개월 SGWV 신설 — 유학 설계는 L7 학위과정 이상으로</div>
+    </div>
+    <div class="dash-sub" style="margin-top: 0.4rem;">다음 정기 변동: 2027-03 중위임금 · 2027-04 최저임금 인상 심사</div>
+    <div class="dash-links"><button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('snapshot', 'changeline')">변경 타임라인 전체 →</button></div>`;
 }
 
 function renderHomePlan() {
@@ -2174,9 +2197,7 @@ function renderDash() {
   }
   renderHomePlan();
   renderFxAll(null, null);
-  renderFlightTiles();
-  renderClockTile();
-  setInterval(renderClockTile, 30000);
+  renderFlightTile();
   renderDdayTile();
   renderSeasonTile();
   fetchFx();
@@ -3299,7 +3320,7 @@ const SEARCH_INDEX = [
   { q: '파트너 연애 결혼 배우자 커플 동거 여자친구 남자친구 partnership', label: '파트너가 생겼을 때', desc: '파트너십 워크 1,630 · 영주권 5,360 · 동거 12개월', go: 'scenarios', target: 'sc-7' },
   { q: '31세 32세 33세 34세 35세 나이 이상 워홀 불가 오프쇼어 offshore 늦은 넘은', label: '31세+ 워홀 없이 진입', desc: '오프쇼어 AEWV · 유학 · 답사 3루트', go: 'scenarios', target: 'sc-8' },
   { q: '로드맵 경로 비교 전체 한눈에', label: '전체 경로 비교', desc: '4개 경로 타임라인 비교', go: 'diagnose', target: 'fullRoadmaps' },
-  { q: '홈 대시보드 환율 원화 엔화 항공권 비행기 시차 디데이', label: '홈 대시보드', desc: '환율·항공·시차·제도 D-day 한눈에', go: 'home', target: null },
+  { q: '홈 대시보드 환율 원화 엔화 항공권 비행기 시차 디데이', label: '홈 대시보드', desc: '환율·항공 월별 최저가·제도 D-day 한눈에', go: 'home', target: null },
   { q: '언제 출국 시기 타이밍 몇월 도착 시즌 스키 수확 캘린더', label: '언제 가는 게 좋은가', desc: '월별 일자리 캘린더 — 최적 2–4월', go: 'settle', target: 'timing' }
 ];
 
