@@ -1177,7 +1177,9 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
           <label class="radio-option"><input type="radio" name="job" value="chef"> 셰프·호스피탈리티</label>
           <label class="radio-option"><input type="radio" name="job" value="trade"> 건설 트레이드</label>
           <label class="radio-option"><input type="radio" name="job" value="health"> 간호·헬스케어</label>
-          <label class="radio-option"><input type="radio" name="job" value="agri"> 농축산·원예</label>
+          <label class="radio-option"><input type="radio" name="job" value="agri"> 원예·시즌</label>
+          <label class="radio-option"><input type="radio" name="job" value="livestock"> 축산·데어리</label>
+          <label class="radio-option"><input type="radio" name="job" value="fieldwork"> 현장직·물류</label>
           <label class="radio-option"><input type="radio" name="job" value="office"> 일반 사무</label>
           <label class="radio-option"><input type="radio" name="job" value="undecided"> 미정·탐색 중</label>
         </div>
@@ -1678,27 +1680,79 @@ const DB = {
     },
     {
       id: 'agri',
-      name: '농축산·원예',
-      salary: '시즌 시급 23.95–30 / 매니저 60,000–80,000',
+      name: '원예·시즌잡',
+      salary: '시즌 시급 23.95–30 / 과수 매니저 60,000–80,000',
       hourly: '—',
       gl: '일부 매니저급',
       rating: 3,
       path: 'A 변형(시즌→매니저)',
       pitfall: '시즌직 자체는 영주권으로 연결 안 됨 — 매니저 트랙 전환이 관건',
-      tip: '시즌잡(원예·포도)은 WHV 연장 +3개월 카드',
+      tip: '시즌잡(원예·포도)은 WHV 연장 +3개월 카드 · 숙식 제공이 표준',
       guide: {
-        demand: '쉬움 — 상시 인력난',
+        demand: '쉬움 — 시즌 상시 수요',
         demandLv: 5,
-        demandWhy: '데어리는 연 4,000명이 업계를 떠나는 구조적 부족 — Farm Assistant는 무자격·무경험 진입 가능(현장 교육 제공, 연봉 60,000–70,000).',
-        demandSrc: 'https://skillshortages.immigration.govt.nz/dairy-cattle-farm-worker/',
-        pr: '중간 — 승진이 열쇠',
+        demandWhy: '키위 수확만 1.9만 일자리(2026) — 체리 12–2월·사과 2–5월·포도 2–4월·키위 3–6월로 시즌이 이어짐. 무경험 즉시 진입.',
+        demandSrc: 'https://www.picknz.co.nz/',
+        pr: '중간 — 매니저 승진이 열쇠',
         prLv: 3,
-        prWhy: 'Herd/Farm Manager(74,000–100,000)로 올라서야 영주권 그림 — NZQF L4+ 자격 또는 경력(2025-03부터 3년→2년 단축). 2025-12부터 계절 AEWV(최대 7개월)도 신설.',
-        study: '불필요 — 일하면서 Primary ITO 데어리 L4(약 20개월) 취득으로 대체 가능.',
+        prWhy: 'Orchard 매니저급 승진 후 AEWV→SMC 트랙 — 시즌 반복만으로는 경로가 없음. 팩하우스 수퍼바이저도 계단이 됨.',
+        study: '불필요 — 현장 원예 자격(L3–4) 병행 취득 가능.',
         studyShort: '불필요',
         period: '36–60개월 (승진 속도에 따라)',
         periodShort: '36–60개월',
         cost: 'NZD 11,000–13,000 (비자비 + 자격 과정)',
+        costShort: '11k–13k'
+      }
+    },
+    {
+      id: 'livestock',
+      name: '축산·데어리',
+      salary: '보조 ~63,000 / 매니저 71,500–87,000',
+      hourly: '—',
+      gl: 'Dairy Farmer/Manager T2',
+      rating: 4,
+      path: 'C(T2 WTR — 승진 트랙)',
+      pitfall: '농장 숙소 공제는 법정 비율이 아니라 시장가 서면 합의 — 계약서에 금액 명시를 확인. 새벽 착유 등 체력 소모 큼',
+      tip: '숙식이 총보수(TPV)로 인정돼 이민 임금 산정에 포함 — 지방 생활로 저축 극대화. 계절 진입은 PSV(최대 7개월, 2025-12~)',
+      guide: {
+        demand: '쉬움 — 상시 인력난',
+        demandLv: 5,
+        demandWhy: '데어리는 연 4,000명이 떠나는 구조적 부족 — 무경험 보조 진입 가능(현장 교육). 와이카토·캔터베리·사우스랜드 집중.',
+        demandSrc: 'https://skillshortages.immigration.govt.nz/dairy-cattle-farm-worker/',
+        pr: '유리 — 매니저 = GL T2',
+        prLv: 4,
+        prWhy: 'Dairy Cattle Farmer/Manager(ANZSCO 121313)는 Green List Tier 2 — 매니저로 24개월 근무하면 영주권 신청. 매니저 요건은 경력 2년(2025-03 단축) 또는 NZQF L4.',
+        study: '불필요 — Primary ITO 데어리 L4(약 20개월)를 일하면서 취득.',
+        studyShort: '불필요',
+        period: '36–60개월 (승진 속도에 따라)',
+        periodShort: '36–60개월',
+        cost: 'NZD 10,500–13,000',
+        costShort: '10.5k–13k'
+      }
+    },
+    {
+      id: 'fieldwork',
+      name: '현장직·물류',
+      salary: '창고 60–65k / 공장 60–70k / 노무 55–65k',
+      hourly: '23.95–30',
+      gl: '없음',
+      rating: 2,
+      path: 'A(승격 전제) 또는 B',
+      pitfall: '대부분 ANZSCO 레벨 4–5 — AEWV 3년 제한 + SMC는 1.5배(52.50/h) 벽. 현장직 그대로는 영주권이 막힘',
+      tip: '진입 최속(무경력 1–2주 내 시작). 포크리프트 자격 → 수퍼바이저 → 트레이드 견습(L4)이 다음 계단',
+      guide: {
+        demand: '매우 쉬움 — 구인 최다',
+        demandLv: 5,
+        demandWhy: 'SEEK 기준 창고 4,000건+·공장 1,400건+ 상시 구인(2026-03). 오클랜드 동부·크라이스트처치 집중, 무경력 즉시 진입.',
+        demandSrc: 'https://www.seek.co.nz/warehouse-jobs',
+        pr: '어려움 — 승격이 유일한 길',
+        prLv: 1,
+        prWhy: '레벨 4–5 직무라 AEWV 3년 제한·영주권 직결 없음. 수퍼바이저·트레이드 견습(L4)·매니저로 레벨 1–3에 올라서야 SMC·GL 문이 열림.',
+        study: '불필요 — 대신 현장 자격(포크리프트·유통/건설 L2–4)이 승격의 열쇠.',
+        studyShort: '불필요(자격 승격)',
+        period: '48개월+ (승격 경유)',
+        periodShort: '48개월+',
+        cost: 'NZD 11,000–13,000',
         costShort: '11k–13k'
       }
     },
@@ -2317,6 +2371,8 @@ function recommend(input) {
     trade: input.experience === 'over2' ? 'C-T2' : 'A',
     chef: 'A',
     agri: 'A',
+    livestock: (input.experience === 'over2' || input.experience === 'qualified') ? 'C-T2' : 'A',
+    fieldwork: input.funding === 'high' ? 'B' : 'A',
     office: input.funding === 'high' ? 'B' : 'A',
     undecided: input.funding === 'high' ? 'B' : 'A'
   };
@@ -2329,6 +2385,13 @@ function recommend(input) {
 
   if ((input.job === 'dev' || input.job === 'trade') && input.experience === 'none') {
     warnings.push('경력 2년 요건: AEWV 적격 4택1 중 경력 대신 NZQCF L4+ 자격·GL로 충족 가능');
+  }
+
+  if (input.job === 'fieldwork') {
+    notes.push('현장직은 대부분 ANZSCO 레벨 4–5 — AEWV가 3년 제한이고 SMC는 시급 52.50/h(1.5배) 벽이 있습니다. 수퍼바이저·트레이드 견습(L4)·매니저로의 <strong>승격을 로드맵의 축</strong>으로 잡으세요.');
+  }
+  if (input.job === 'livestock') {
+    notes.push('데어리는 매니저(Dairy Cattle Farmer/Manager)가 <strong>Green List Tier 2</strong> — 보조로 시작해도 경력 2년 또는 NZQF L4로 매니저에 오르면 24개월 근무 → 영주권 트랙이 열립니다.');
   }
 
   if (input.english === 'none') {
@@ -2368,6 +2431,8 @@ function recommend(input) {
     trade: '상단 시세(52/h)가 1.5배 경계선',
     chef: '시세상 1.5배 미달이 일반적 — 학력·근무 축 권장',
     agri: '시세상 1.5배 미달이 일반적 — 학력·근무 축 권장',
+    livestock: '매니저급도 1.5배 미달 — 단 GL T2라 점수 자체가 불필요',
+    fieldwork: '1.5배(52.50/h) 사실상 미달 — 승격·자격 축이 필수',
     health: 'RN 시세는 1.5배 미달 — 단 GL T1이라 점수 자체가 불필요',
     undecided: '직군 선택에 따라 달라짐 — 직군 비교에서 확인'
   };
@@ -2399,7 +2464,7 @@ function recommend(input) {
   if (entry === 'none') {
     if (input.age === 'under30' && input.funding !== 'high') entryReco = '워킹홀리데이 — 18–30세라면 저비용(870)으로 현지 정찰 후 전환하는 것이 정석';
     else if (input.funding === 'high') entryReco = '유학(학생비자) — 자금이 받쳐주면 학위→PSWV 트랙이 가장 안정적';
-    else if (['over2', 'qualified'].includes(input.experience) && ['dev', 'health', 'trade'].includes(input.job)) entryReco = '오프쇼어 AEWV — 경력·Green List 직군이면 한국에서 잡오퍼 확보가 최단';
+    else if (['over2', 'qualified'].includes(input.experience) && ['dev', 'health', 'trade', 'livestock'].includes(input.job)) entryReco = '오프쇼어 AEWV — 경력·Green List 직군이면 한국에서 잡오퍼 확보가 최단';
     else if (input.age === 'under30') entryReco = '워킹홀리데이 또는 유학 — 두 트랙을 비교해 보세요';
     else entryReco = '오프쇼어 AEWV(잡오퍼 선확보) 또는 유학 — 31세+는 이 두 문이 현실적입니다';
   }
@@ -2511,7 +2576,7 @@ function renderCities() {
 
 // ===== 실행·머니 플랜 (저축·생활비는 전부 [추정]) =====
 const START_FUNDS = { low: 7000, mid: 20000, high: 35000 };
-const JOB_SAVE = { dev: [2500, 4000], trade: [1800, 3000], health: [1800, 3000], office: [1800, 3000], chef: [1200, 2200], agri: [1200, 2200], undecided: [1200, 2600] };
+const JOB_SAVE = { dev: [2500, 4000], trade: [1800, 3000], health: [1800, 3000], office: [1800, 3000], chef: [1200, 2200], agri: [1200, 2200], livestock: [1400, 2500], fieldwork: [1200, 2200], undecided: [1200, 2600] };
 const WHV_SAVE = [800, 1800]; // 월 저축 여력: 최저임금 풀타임 + 방셰어 기준 [추정]
 
 function moneyPlanRows(pathwayId, input) {
@@ -3308,7 +3373,9 @@ const SEARCH_INDEX = [
   { q: '셰프 요리사 주방 호스피탈리티 쿡', label: '직군: 셰프·호스피탈리티', desc: '55k–85k · SMC 시급 35 관건', go: 'jobs', target: 'job-chef' },
   { q: '트레이드 전기공 배관공 목수 용접 건설', label: '직군: 건설 트레이드', desc: '75k–110k · 전기공 GL T2', go: 'jobs', target: 'job-trade' },
   { q: '간호사 케어기버 요양 헬스케어 병원', label: '직군: 간호·헬스케어', desc: 'RN 85k–95k GL T1 / 케어 협약', go: 'jobs', target: 'job-health' },
-  { q: '농장 원예 시즌 과수원 농축산 픽킹', label: '직군: 농축산·원예', desc: '시즌잡 연장 카드 + 매니저 트랙', go: 'jobs', target: 'job-agri' },
+  { q: '농장 원예 시즌 과수원 픽킹 팩하우스 과일', label: '직군: 원예·시즌잡', desc: '시즌 상시 수요 + WHV 연장 카드', go: 'jobs', target: 'job-agri' },
+  { q: '축산 데어리 목장 낙농 젖소 소 가축 우유', label: '직군: 축산·데어리', desc: '보조 63k · 매니저 GL T2 = 영주권 트랙', go: 'jobs', target: 'job-livestock' },
+  { q: '현장직 공장 창고 물류 노무 포크리프트 생산직', label: '직군: 현장직·물류', desc: '구인 최다·진입 최속 — 승격이 열쇠', go: 'jobs', target: 'job-fieldwork' },
   { q: '사무 회계 마케팅 오피스 화이트칼라', label: '직군: 일반 사무', desc: '최난도 — 유학 전환 권장', go: 'jobs', target: 'job-office' },
   { q: '용어 뜻 약어 사전 인터림 interim ivl nzqcf', label: '용어 사전', desc: 'AEWV·SMC·PSWV·GL 등 한 줄 설명', go: 'snapshot', target: 'glossary' },
   { q: '생활비 렌트 방셰어 저축 세금 ird 물가 돈 생존 버티기 감당 현금 흐름', label: '생활비 생존 전략', desc: '주거·첫 수입·세금·비자비 적립 6원칙', go: 'settle', target: 'survival' },
@@ -3495,7 +3562,7 @@ function initSearch() {
 const ALLOWED = {
   entry: ['whv', 'student', 'work', 'partner', 'none'],
   age: ['under30', 'over30', 'over55'],
-  job: ['dev', 'chef', 'trade', 'health', 'agri', 'office', 'undecided'],
+  job: ['dev', 'chef', 'trade', 'health', 'agri', 'livestock', 'fieldwork', 'office', 'undecided'],
   experience: ['none', 'under2', 'over2', 'qualified'],
   english: ['none', 'ielts4', 'ielts65'],
   funding: ['low', 'mid', 'high'],
