@@ -636,6 +636,9 @@ select {
   outline: 3px solid var(--accent);
 }
 
+/* 언어 전환 */
+.lang-link { flex: 0 0 auto; font-size: 0.78rem; font-weight: 700; color: var(--muted); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 0.25rem 0.6rem; white-space: nowrap; }
+.lang-link:hover { color: var(--brand); border-color: var(--brand); }
 .search-toggle {
   border: 1.5px solid var(--line);
   background: var(--card);
@@ -1253,6 +1256,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
       <button class="tab" data-tab="settle">정착</button>
       <button class="tab" data-tab="snapshot">정책 현황</button>
     </div>
+    <a class="lang-link" href="./ja/" aria-label="日本語版">🇯🇵 日本語</a>
     <button class="search-toggle" onclick="toggleHeaderSearch()" aria-label="키워드 검색 열기">🔍</button>
   </div>
   <div class="header-search-row" id="headerSearchRow">
