@@ -1114,6 +1114,29 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .city-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.6rem; }
 .cs-l { font-size: 0.75rem; color: var(--muted); }
 .cs-v { font-weight: 700; font-size: 0.92rem; }
+/* v29 커뮤니티·생활 링크 */
+.link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
+.link-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 0.9rem 1rem; box-shadow: 0 1px 3px rgba(23, 37, 29, 0.05); }
+.link-card h3 { font-size: 0.98rem; margin-bottom: 0.55rem; padding-bottom: 0.45rem; border-bottom: 1.5px solid var(--line); }
+.link-card ul { list-style: none; margin: 0; }
+.link-card li { padding: 0.32rem 0; font-size: 0.88rem; line-height: 1.45; }
+.link-card li + li { border-top: 1px dashed var(--line); }
+.link-card a { color: var(--brand); font-weight: 700; text-decoration: none; }
+.link-card a:hover { text-decoration: underline; }
+.link-desc { display: block; color: var(--muted); font-size: 0.8rem; }
+/* v29 세계 지표 유리 vs 불리 */
+.vs-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; margin-bottom: 1.5rem; }
+@media (max-width: 820px) { .vs-split { grid-template-columns: 1fr; } }
+.vs-h { margin-bottom: 0.6rem; padding-bottom: 0.45rem; border-bottom: 2px solid var(--line); }
+.vs-h.good { border-bottom-color: var(--ok); }
+.vs-h.bad { border-bottom-color: var(--danger); }
+.vs-col ul { list-style: none; margin: 0; }
+.vs-item { display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.42rem 0; font-size: 0.88rem; line-height: 1.45; }
+.vs-item + .vs-item { border-top: 1px dashed var(--line); }
+.vs-rank { flex: 0 0 auto; min-width: 3.4rem; text-align: center; font-weight: 800; font-size: 0.82rem; border-radius: 8px; padding: 0.18rem 0.35rem; white-space: nowrap; }
+.vs-rank.good { background: #d9ecdf; color: var(--brand-deep); }
+.vs-rank.bad { background: #f6ddd4; color: var(--danger); }
+.vs-body { min-width: 0; }
 .cost-bar { display: flex; height: 22px; border-radius: 6px; overflow: hidden; margin: 0.7rem 0 0.5rem; border: 1px solid var(--line); }
 .cost-seg { height: 100%; }
 .cost-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.82rem; }
@@ -1644,6 +1667,14 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
     </div>
 
     <div id="citiesContainer"></div>
+
+    <h2 id="worldstats" style="margin-top: 2.5rem;">세계 지표로 본 뉴질랜드</h2>
+    <p class="dash-sub" style="margin-bottom: 1rem;">국제 순위로 보는 유리 vs 불리 — 전 지표 1차 출처 확인 + 적대 검증 통과분만 수록 (2026-07-09)</p>
+    <div class="vs-split" id="worldStats"></div>
+
+    <h2 id="links" style="margin-top: 2.5rem;">커뮤니티·생활 링크</h2>
+    <p class="dash-sub" style="margin-bottom: 1rem;">한인·일본·아시안 커뮤니티 + 공식 지원 + 생활 실용 — 전부 2026-07-09 접속 확인</p>
+    <div class="link-grid" id="linkGrid"></div>
   </section>
 
   <!-- CALCULATOR -->
@@ -2991,6 +3022,123 @@ function renderCities() {
   `).join('');
 }
 
+// ===== v29 커뮤니티·생활 링크 (2026-07-09 전 링크 실접속 검증) =====
+const LINKS_DB = [
+  {
+    cat: '🇰🇷 한인 — 공식·단체', items: [
+      { n: '주뉴질랜드 대사관', u: 'https://overseas.mofa.go.kr/nz-ko/index.do', d: '웰링턴 · 여권·영사·재외국민 등록' },
+      { n: '오클랜드 분관', u: 'https://overseas.mofa.go.kr/nz-auckland-ko/index.do', d: '오클랜드 영사 서비스' },
+      { n: '재뉴질랜드한인회총연합회', u: 'https://koreansociety.nz/', d: '전국 한인회 연합 · 행사·소식' },
+      { n: '오클랜드 한인회', u: 'https://nz.korean.net/', d: '최대 한인 단체 · 법률·회계 상담' },
+      { n: '한민족 한글학교', u: 'https://www.nzsok.school.nz/', d: '한글·한국문화 교육 (오클랜드)' },
+      { n: 'K Directory', u: 'https://kdirectory.nz/', d: '한인 업소록 600+ · 지역별 검색' }
+    ]
+  },
+  {
+    cat: '🇰🇷 한인 — 커뮤니티·뉴스', items: [
+      { n: 'NZ 코리아포스트', u: 'https://www.nzkoreapost.com/', d: '구인구직·부동산·벼룩시장 게시판' },
+      { n: '코위스토리', u: 'https://www.kowistory.com/', d: '생활정보·뉴스·벼룩시장 포털' },
+      { n: '위클리코리아', u: 'https://www.weeklykoreanz.com/', d: '한인 신문 · 교육·이민 뉴스' },
+      { n: '코리아리뷰', u: 'https://koreareview.co.nz/', d: '크라이스트처치 한인 뉴스·커뮤니티' },
+      { n: '뉴질랜드 이야기 (FB 그룹)', u: 'https://www.facebook.com/groups/nzstory/', d: '대형 한인 페이스북 그룹 (로그인)' }
+    ]
+  },
+  {
+    cat: '🇯🇵🌏 일본·아시안 커뮤니티', items: [
+      { n: 'NZdaisuki', u: 'https://nzdaisuki.co.nz/', d: '일본어 최대 커뮤니티 · 게시판·구인' },
+      { n: 'Japan Cultural Trust', u: 'https://www.jcta.org.nz/', d: '일본 문화 교류 · Japan Day 주최' },
+      { n: 'Skykiwi 天维网', u: 'https://www.skykiwi.com/', d: '중국어 최대 포털 · 30만+ 회원' },
+      { n: 'CNSST Foundation', u: 'https://cnsst.org.nz/', d: '아시안 정착 지원 · 한국어 서비스 포함' },
+      { n: 'Asian Family Services', u: 'https://www.asianfamilyservices.nz/', d: '정신건강·상담 · 한국어·일본어 지원' },
+      { n: 'Belong Aotearoa', u: 'https://www.belong.org.nz/', d: '이민자·난민 정착 프로그램' },
+      { n: 'Asian Network', u: 'https://www.asiannetwork.org.nz/', d: '팬아시안 건강·웰빙 (오클랜드)' }
+    ]
+  },
+  {
+    cat: '🏛️ 정착 행정 (공식)', items: [
+      { n: 'INZ 정착 가이드', u: 'https://www.immigration.govt.nz/live/setting-up-your-life-in-new-zealand/', d: '주거·은행·의료·교육 공식 안내' },
+      { n: 'IRD 번호 신청 (신규 입국)', u: 'https://www.ird.govt.nz/managing-my-tax/ird-numbers/ird-numbers-for-individuals/new-arrival-to-new-zealand---ird-number-application', d: '세금 번호 — 도착 주에 필수' },
+      { n: 'Tenancy Services', u: 'https://www.tenancy.govt.nz/', d: '임차인 권리·본드·분쟁 해결' },
+      { n: 'Work and Income', u: 'https://www.workandincome.govt.nz/', d: '주거 보조·취업 지원·수당' },
+      { n: '정부 무료 통역', u: 'https://www.mbie.govt.nz/cross-government-functions/language-assistance-services', d: '정부 기관 이용 시 한국어 통역' },
+      { n: 'Govt.nz', u: 'https://www.govt.nz/browse/immigration-and-visas/', d: '정부 서비스 통합 포털' }
+    ]
+  },
+  {
+    cat: '🆘 상담·긴급·의료', items: [
+      { n: '긴급 111 · 비긴급 105', u: 'https://www.police.govt.nz/contact-us/111-police-emergency', d: '경찰·소방·구급 — 105는 온라인 신고' },
+      { n: 'Healthline', u: 'https://www.healthnz.govt.nz/online-phone-healthcare/healthline', d: '24시간 무료 건강상담 0800 611 116 · 통역' },
+      { n: 'ACC', u: 'https://www.acc.co.nz/', d: '사고 보상 공사 — 치료비·재활 (무과실)' },
+      { n: 'CAB 시민상담소', u: 'https://www.cab.org.nz/', d: '무료 상담 전국 91곳 · 다국어 0800 367 222' },
+      { n: 'Community Law', u: 'https://communitylaw.org.nz/', d: '무료 법률 센터 24곳 · 고용·임대 분쟁' },
+      { n: 'Shakti', u: 'https://www.shakti.org.nz/', d: '아시안 여성 위기 지원 0800 742 584' }
+    ]
+  },
+  {
+    cat: '🧰 생활 실용', items: [
+      { n: 'Trade Me', u: 'https://www.trademe.co.nz/', d: '중고·렌트·구인 국민 플랫폼' },
+      { n: 'SEEK', u: 'https://nz.seek.com/', d: '최대 취업 사이트 · 정규직 공고' },
+      { n: 'Backpacker Job Board', u: 'https://www.backpackerjobboard.co.nz/', d: '워홀러 구인 · 농장 시즌잡' },
+      { n: 'Student Job Search', u: 'https://www.sjs.co.nz/', d: '학생·졸업생 구직 (유학생)' },
+      { n: 'Powerswitch', u: 'https://www.powerswitch.org.nz/', d: '전기·가스 요금 비교 — 연 ~450 절감' },
+      { n: 'MetService', u: 'https://www.metservice.com/', d: '기상청 · 날씨·경보' },
+      { n: 'NZTA 차량 등록', u: 'https://www.nzta.govt.nz/vehicles/vehicle-registration', d: '중고차 구매 시 명의 이전·등록' },
+      { n: 'ANZ 이민자 뱅킹', u: 'https://www.anz.co.nz/personal/accounts/everyday-banking/migrant-banking-package/', d: '입국 전 계좌 개설 가능 패키지' }
+    ]
+  }
+];
+
+function renderLinks() {
+  const grid = document.getElementById('linkGrid');
+  if (!grid) return;
+  grid.innerHTML = LINKS_DB.map(c => `
+    <div class="link-card">
+      <h3>${c.cat}</h3>
+      <ul>${c.items.map(l => `<li><a href="${l.u}" target="_blank" rel="noopener">${l.n} ↗</a><span class="link-desc">${l.d}</span></li>`).join('')}</ul>
+    </div>`).join('');
+}
+
+// ===== v29 세계 지표 유리 vs 불리 (전 지표 1차 출처 확인 + 적대 검증 2026-07-09) =====
+const WORLD_STATS = {
+  pros: [
+    { rank: '2위', metric: '세계평화지수', d: '치안·분쟁 위험 세계 최저 수준', src: 'IEP 2026 · 163국', u: 'https://gpi.economicsandpeace.org/' },
+    { rank: '4위', metric: '부패인식지수', d: '공공 청렴 최상위 — 행정 신뢰 높음', src: 'TI 2025 · 182국', u: 'https://www.transparency.org/en/cpi/2025' },
+    { rank: '5위', metric: '성격차지수 (성평등)', d: '아시아·태평양 유일 톱10', src: 'WEF 2025', u: 'https://www.weforum.org/publications/global-gender-gap-report-2025/' },
+    { rank: '12위', metric: '세계행복보고서', d: '삶의 만족도 세계 상위권', src: 'WHR 2025', u: 'https://worldhappiness.report/' },
+    { rank: '12위', metric: '경제자유지수', d: '창업·투자 자유로움 — 아태 4위', src: 'Heritage 2026 · 77.8점', u: 'https://www.heritage.org/index/pages/country-pages/new-zealand' },
+    { rank: '18위', metric: '인간개발지수', d: '건강·교육·소득 종합 상위권', src: 'UNDP 2023 · 193국', u: 'https://hdr.undp.org/data-center/human-development-index' },
+    { rank: '22위', metric: '언론자유지수', d: '표현·언론 환경 상위 12%', src: 'RSF 2026 · 180국', u: 'https://rsf.org/en/index' }
+  ],
+  cons: [
+    { rank: '80위/95', metric: '주택 구입 부담 (오클랜드)', d: "집값 부담 세계 최상위권 'severely unaffordable' — 초기엔 렌트 전략", src: 'Demographia 2025', u: 'https://demographia.com/' },
+    { rank: '4위', metric: '흑색종(피부암) 발병률', d: '자외선 세계 최강급 — 선크림 생활화', src: 'WCRF 2024 · 29.8/10만', u: 'https://www.wcrf.org/preventing-cancer/cancer-statistics/skin-cancer-statistics/' },
+    { rank: '−20%', metric: '호주 대비 평균 임금', d: '같은 일 해도 호주가 더 받음 — 인력 유출 원인', src: 'Stats NZ·ABS 2024–25', u: 'https://www.stats.govt.nz/topics/income' },
+    { rank: '3만/년', metric: '對호주 순유출', d: '시민권자 호주행 러시 — 반대로 이민자에겐 빈자리', src: 'Stats NZ 2024', u: 'https://www.stats.govt.nz/topics/migration' },
+    { rank: '−40%', metric: '노동생산성 (OECD 상위권 대비)', d: '임금 인상 여력 제약 — 고성장 커리어는 한계', src: 'OECD 2024', u: 'https://www.oecd.org/en/publications/oecd-compendium-of-productivity-indicators-2025_b024d9e1-en/' },
+    { rank: '7.4만 명', metric: '전문의 4개월+ 대기', d: '공공의료 대기 김 — 민간 건강보험 고려', src: 'Health NZ 2025-02', u: 'https://www.policywise.co.nz/resources/waiting-list' },
+    { rank: '20.6%', metric: '주택 습기 (곰팡이 16.5%)', d: '겨울 집 춥고 습함 — 매물 단열·히트펌프 확인 필수', src: '2023 센서스', u: 'https://www.stats.govt.nz/topics/housing' }
+  ]
+};
+
+function renderWorldStats() {
+  const box = document.getElementById('worldStats');
+  if (!box) return;
+  const item = (s, cls) => `<li class="vs-item">
+    <span class="vs-rank ${cls}">${s.rank}</span>
+    <div class="vs-body"><strong>${s.metric}</strong> <a href="${s.u}" target="_blank" rel="noopener" class="source-link">출처↗</a>
+      <span class="link-desc">${s.d} · ${s.src}</span></div>
+  </li>`;
+  box.innerHTML = `
+    <div class="card vs-col" style="margin-bottom: 0;">
+      <h3 class="vs-h good">👍 유리 — 세계 상위권</h3>
+      <ul>${WORLD_STATS.pros.map(s => item(s, 'good')).join('')}</ul>
+    </div>
+    <div class="card vs-col" style="margin-bottom: 0;">
+      <h3 class="vs-h bad">👎 불리 — 각오할 것</h3>
+      <ul>${WORLD_STATS.cons.map(s => item(s, 'bad')).join('')}</ul>
+    </div>`;
+}
+
 // ===== 실행·머니 플랜 (저축·생활비는 전부 [추정]) =====
 const START_FUNDS = { low: 7000, mid: 20000, high: 35000 };
 const JOB_SAVE = { dev: [2500, 4000], trade: [1800, 3000], health: [1800, 3000], teacher: [1800, 3000], engineer: [2500, 4000], office: [1800, 3000], chef: [1200, 2200], agri: [1200, 2200], livestock: [1400, 2500], fieldwork: [1200, 2200], undecided: [1200, 2600] };
@@ -4072,6 +4220,19 @@ function renderSnapshotTable() {
     </tr>`;
   });
 
+  // 연봉 환산 (주 40h × 52주 — INZ 기준 근로시간)
+  html += `<tr><td colspan="5" style="background: var(--bg); font-weight: 700; padding: 0.8rem;">📅 연봉 환산 <span style="font-weight: 400; font-size: 0.8rem; color: var(--muted);">주 40h × 52주 · 세전</span></td></tr>`;
+  [['최저임금 연봉', DB.wages.minWage], ['중위임금 연봉', DB.wages.medianWage], ['중위 1.5배 연봉', DB.wages.median15]].forEach(([label, w]) => {
+    const yr = w.v * 40 * 52;
+    html += `<tr>
+      <td>${label}</td>
+      <td style="font-weight: 700; white-space: nowrap;">$${Math.round(yr).toLocaleString('en-NZ')}</td>
+      <td class="fx-eq">${fmtKrw(yr)}</td>
+      <td class="fx-eq">${fmtJpy(yr)}</td>
+      <td><span class="badge estimated">[환산]</span></td>
+    </tr>`;
+  });
+
   // Fees
   html += `<tr><td colspan="5" style="background: var(--bg); font-weight: 700; padding: 0.8rem;">💳 비자 수수료 (From)</td></tr>`;
   Object.entries(DB.fees).forEach(([key, val]) => {
@@ -4161,6 +4322,8 @@ const SEARCH_INDEX = [
   { q: '용어 뜻 약어 사전 인터림 interim ivl nzqcf', label: '용어 사전', desc: 'AEWV·SMC·PSWV·GL 등 한 줄 설명', go: 'snapshot', target: 'glossary' },
   { q: '생활비 렌트 방셰어 저축 세금 ird 물가 돈 생존 버티기 감당 현금 흐름', label: '생활비 생존 전략', desc: '주거·첫 수입·세금·비자비 적립 6원칙', go: 'settle', target: 'survival' },
   { q: '도시 어디 살까 정착 지역 선택 비교', label: '도시별 정착 가이드', desc: '렌트·교통·일자리 성격 5개 도시권 비교', go: 'settle', target: 'cities' },
+  { q: '한인회 커뮤니티 링크 대사관 교민 일본인 아시안 코리아포스트 상담 통역 긴급 111', label: '커뮤니티·생활 링크 모음', desc: '한인·일본·아시안 커뮤니티 + 공식 지원 38곳', go: 'settle', target: 'links' },
+  { q: '장점 단점 순위 통계 지표 평화 부패 행복 집값 피부암 생산성 살만한 나라 비교', label: '세계 지표로 본 뉴질랜드', desc: '유리 7 vs 불리 7 — 검증된 국제 순위', go: 'settle', target: 'worldstats' },
   { q: '오클랜드 auckland 한인마트', label: '오클랜드 정착 정보', desc: '방셰어 200–315 · AT HOP · 한인 인프라 최대', go: 'settle', target: 'city-akl' },
   { q: '웰링턴 wellington 수도', label: '웰링턴 정착 정보', desc: '방셰어 215–280 · Snapper · 정부·IT', go: 'settle', target: 'city-wlg' },
   { q: '크라이스트처치 christchurch 크라이스트 처치', label: '크라이스트처치 정착 정보', desc: '방셰어 200–285 · 최저 생활비 · 건설 수요', go: 'settle', target: 'city-chc' },
@@ -4656,6 +4819,8 @@ window.addEventListener('DOMContentLoaded', () => {
   renderOnboardGate();
   renderGlossary();
   renderCities();
+  renderLinks();
+  renderWorldStats();
   renderTimingSection();
   initSearch();
   restoreState(savedDiagnose, savedCalc);
