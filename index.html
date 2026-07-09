@@ -1546,12 +1546,13 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
     <h1>직군 선택 가이드</h1>
     <p style="color: var(--muted); margin-bottom: 1.5rem;">2026년 수요·공급 기준 취업 난이도, 영주권 난이도, 유학 필요 여부, 영주권까지의 견적을 직군별로 정리했습니다. 표의 직군을 클릭하면 상세로 이동합니다. <strong>●가 많을수록 취업이 쉽고, 영주권이 유리합니다</strong> (5점 척도).</p>
 
-    <div class="card" id="jobPicker" style="margin-bottom: 2rem;">
-      <div style="font-weight: 800; font-size: 1.05rem; margin-bottom: 0.2rem;">🧭 직군을 아직 못 정했다면 — 조건으로 고르기</div>
-      <p style="color: var(--muted); font-size: 0.88rem; margin-bottom: 0.9rem;">성향·적성 테스트가 아닙니다. 비자 요건(경력·자격)·자금·목표라는 <strong>사실만으로</strong> 8개 직군을 거릅니다.</p>
-      <div id="jobPickerForm"></div>
-      <div id="jobPickerResult"></div>
-    </div>
+    <details class="fold" id="jobPicker" style="margin-bottom: 2rem;">
+      <summary><span class="fold-title">🧭 직군 선택기 — 조건으로 고르기</span><span class="fold-sub">경력·자격·자금·목표만으로 거름 (테스트 아님)</span></summary>
+      <div class="fold-body">
+        <div id="jobPickerForm"></div>
+        <div id="jobPickerResult"></div>
+      </div>
+    </details>
 
     <div style="overflow-x: auto; margin-bottom: 2rem;">
       <table class="snapshot-table">
@@ -1668,13 +1669,20 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 
     <div id="citiesContainer"></div>
 
-    <h2 id="worldstats" style="margin-top: 2.5rem;">세계 지표로 본 뉴질랜드</h2>
-    <p class="dash-sub" style="margin-bottom: 1rem;">국제 순위로 보는 유리 vs 불리 — 전 지표 1차 출처 확인 + 적대 검증 통과분만 수록 (2026-07-09)</p>
-    <div class="vs-split" id="worldStats"></div>
+    <details class="fold" id="worldstats" style="margin-top: 2rem;">
+      <summary><span class="fold-title">🌏 세계 지표로 본 뉴질랜드</span><span class="fold-sub">유리 7 (평화 2위·청렴 4위…) vs 불리 7 (집값·피부암…) — 검증 통과분만</span></summary>
+      <div class="fold-body">
+        <p class="dash-sub" style="margin-bottom: 1rem;">전 지표 1차 출처 확인 + 적대 검증 (2026-07-09)</p>
+        <div class="vs-split" id="worldStats"></div>
+      </div>
+    </details>
 
-    <h2 id="links" style="margin-top: 2.5rem;">커뮤니티·생활 링크</h2>
-    <p class="dash-sub" style="margin-bottom: 1rem;">한인·일본·아시안 커뮤니티 + 공식 지원 + 생활 실용 — 전부 2026-07-09 접속 확인</p>
-    <div class="link-grid" id="linkGrid"></div>
+    <details class="fold" id="links">
+      <summary><span class="fold-title">🔗 커뮤니티·생활 링크</span><span class="fold-sub">38곳 — 한인·일본·아시안·공식·긴급·실용 (전부 접속 확인)</span></summary>
+      <div class="fold-body">
+        <div class="link-grid" id="linkGrid"></div>
+      </div>
+    </details>
   </section>
 
   <!-- CALCULATOR -->
@@ -3265,9 +3273,8 @@ function buildMoneyPlanTable(pathwayId, input) {
   const entryLabel = ENTRY_LABEL[entry] || '워킹홀리데이';
   const partnerNote = entry === 'partner' ? '(오픈워크 가정)' : '';
   return `
-  <div style="margin: 1rem 0; min-width: 0; max-width: 100%;">
-    <strong>💰 실행·머니 플랜 — 언제 뭘 하고, 얼마가 오가나</strong> <span class="badge estimated">[추정]</span>
-    <p style="color: var(--muted); font-size: 0.85rem; margin: 0.3rem 0 0.6rem;">진입: ${entryLabel} ${partnerNote} · 시작 자금 ${start.toLocaleString('en-NZ')} 가정. 저축은 최저임금 풀타임 + 방셰어 200–320 기준 — 소비·환율 따라 달라짐. 처리기간은 80% 기준.</p>
+  <div style="min-width: 0; max-width: 100%;">
+    <p style="color: var(--muted); font-size: 0.85rem; margin: 0 0 0.6rem;">진입: ${entryLabel} ${partnerNote} · 시작 자금 ${start.toLocaleString('en-NZ')} 가정. 저축은 최저임금 풀타임 + 방셰어 200–320 기준 — 소비·환율 따라 달라짐. 처리기간은 80% 기준.</p>
     <div style="overflow-x: auto;">
       <table class="snapshot-table">
         <thead><tr><th>시기</th><th>비자</th><th>해야 할 일</th><th>돈 흐름 (NZD)</th><th>예상 잔고</th></tr></thead>
@@ -3353,7 +3360,11 @@ function renderDiagnoseResult(result) {
   }
 
   const planInput = Object.assign({}, input, { funding: adj.funding, english: adj.ielts === 'no' ? 'ielts65' : (input.english === 'ielts65' ? 'ielts4' : input.english) });
-  html += buildMoneyPlanTable(adj.path, planInput);
+  const planStart = START_FUNDS[planInput.funding] || 20000;
+  html += `<details class="fold" style="margin: 1rem 0;">
+    <summary><span class="fold-title">💰 실행·머니 플랜</span><span class="fold-sub">시작 자금 ${planStart.toLocaleString('en-NZ')} 가정 — 단계별 돈 흐름·잔고 [추정]</span></summary>
+    <div class="fold-body">${buildMoneyPlanTable(adj.path, planInput)}</div>
+  </details>`;
 
   if (result.warnings.length > 0) {
     html += '<div class="warning-banner">';
@@ -3361,11 +3372,12 @@ function renderDiagnoseResult(result) {
     html += '</div>';
   }
 
-  // SMC 6점 진단 박스
+  // SMC 6점 진단 박스 (fold — 인지 부하 분산)
   if (result.smc) {
     const s = result.smc;
-    html += '<div style="background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 1rem; margin: 1rem 0;">';
-    html += '<strong>🎯 영주권 점수 진단 (SMC 6점 체계)</strong>';
+    html += `<details class="fold" style="margin: 1rem 0;">
+      <summary><span class="fold-title">🎯 영주권 점수 진단 (6점제)</span><span class="fold-sub">${s.exemptReason ? '점수 면제 경로 — 참고용' : `학력 ${s.eduLabel} ${s.eduPts}점 기준 진단`}</span></summary>
+      <div class="fold-body">`;
     if (s.exemptReason) {
       html += `<p style="margin-top: 0.5rem;"><span class="badge official">점수 면제</span> ${s.exemptReason} — 아래 점수는 참고용입니다.</p>`;
     }
@@ -3389,7 +3401,7 @@ function renderDiagnoseResult(result) {
     html += gauge;
 
     html += `<p style="margin-top: 0.4rem;"><button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('diagnose', 'smcCalc')">점수 조합 직접 바꿔보기 →</button></p>`;
-    html += '</div>';
+    html += '</div></details>';
   }
 
   if (result.notes && result.notes.length > 0) {
