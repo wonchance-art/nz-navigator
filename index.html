@@ -1030,6 +1030,90 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .trail-now::before { content: ''; position: absolute; left: -1.45rem; top: 0.4rem; width: 12px; height: 12px; border-radius: 50%; background: var(--warn); box-shadow: 0 0 0 3px var(--card); }
 .trail-date { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
 .trail-you { font-size: 0.85rem; color: var(--brand-deep); margin-top: 0.15rem; }
+/* v27 정책 현황 */
+.policy-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; margin-bottom: 1.2rem; }
+@media (max-width: 820px) { .policy-split { grid-template-columns: 1fr; } }
+.policy-col { margin-bottom: 0; }
+.policy-h { margin-bottom: 0.7rem; }
+.trail-node.up::before { background: var(--ok); }
+.trail-node.down::before { background: var(--danger); }
+.trail-node.flat::before { background: #9aa8a0; }
+.trail-node.future::before { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
+.trail-node { transition: background 0.15s; border-radius: 6px; }
+.trail-node:hover { background: var(--bg); }
+.dir-ic { font-size: 0.72rem; font-weight: 800; margin-right: 0.35rem; vertical-align: 0.06em; }
+.dir-ic.up { color: var(--ok); }
+.dir-ic.down { color: var(--danger); }
+.dir-ic.flat { color: #9aa8a0; }
+.verdict-headline { font-size: 1.02rem; font-weight: 800; line-height: 1.45; margin-bottom: 0.6rem; }
+.hl-up { background: linear-gradient(transparent 62%, #cdeedd 62%); color: var(--brand-deep); padding: 0 0.1em; }
+.hl-down { background: linear-gradient(transparent 62%, #f6d5c8 62%); color: var(--danger); padding: 0 0.1em; }
+.trend-meter { display: flex; height: 1.35rem; border-radius: 999px; overflow: hidden; margin-bottom: 0.7rem; font-size: 0.72rem; font-weight: 800; color: #fff; text-align: center; }
+.trend-seg { display: flex; align-items: center; justify-content: center; white-space: nowrap; }
+.trend-seg.up { background: var(--ok); }
+.trend-seg.flat { background: #9aa8a0; }
+.trend-seg.down { background: var(--danger); }
+.verdict-list { list-style: none; margin: 0; font-size: 0.88rem; line-height: 1.55; }
+.verdict-list li { margin-bottom: 0.25rem; }
+.verdict-sub { font-size: 0.78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 0.6rem 0 0.25rem; }
+.verdict-next { border-top: 1px dashed var(--line); margin-top: 0.5rem; }
+.fx-note { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem; }
+.fx-eq { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* v27 로드맵 조정 바 */
+.adjust-bar { background: linear-gradient(135deg, #f2f8f4, #eef4f8); border: 1.5px solid var(--brand); border-radius: 12px; padding: 0.85rem 1rem 0.55rem; margin-bottom: 1.1rem; }
+.adjust-title { font-weight: 800; margin-bottom: 0.55rem; }
+.adjust-title .dash-sub { font-weight: 400; margin-left: 0.4rem; }
+.pick-chip.rec::after { content: '★추천'; font-size: 0.66rem; font-weight: 800; color: var(--accent); margin-left: 0.3rem; vertical-align: 0.12em; }
+.pick-chip.sel.rec::after { color: #ffe08a; }
+.pick-chip { transition: transform 0.12s, box-shadow 0.12s; }
+.pick-chip:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(14, 92, 63, 0.18); }
+/* v28 정착 — 타이밍 매트릭스 */
+.timing-split { display: grid; grid-template-columns: 1.55fr 1fr; gap: 1rem; align-items: start; margin-bottom: 1.2rem; }
+@media (max-width: 880px) { .timing-split { grid-template-columns: 1fr; } }
+.verdict-stack { display: flex; flex-direction: column; gap: 0.6rem; }
+.mini-card { border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 10px; background: var(--card); padding: 0.65rem 0.85rem; font-size: 0.87rem; line-height: 1.5; }
+.mini-card strong { display: block; margin-bottom: 0.15rem; }
+.mini-card div { color: var(--muted); }
+.mini-card.best { border-left-color: var(--ok); }
+.mini-card.ok { border-left-color: var(--accent); }
+.mini-card.ski { border-left-color: var(--info); }
+.mini-card.avoid { border-left-color: var(--danger); }
+.season-matrix { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.season-matrix th { font-size: 0.72rem; color: var(--muted); padding: 0.25rem 0.4rem; border-bottom: 1.5px solid var(--line); text-align: left; white-space: nowrap; }
+.season-matrix td { padding: 0.26rem 0.4rem; border-bottom: 1px solid var(--line); word-break: keep-all; }
+.season-matrix tr:last-child td { border-bottom: none; }
+.season-matrix td.dim { color: var(--line); text-align: center; }
+.season-matrix tr.now td { background: #fdf6e3; }
+.m-cell { display: inline-block; min-width: 1.5rem; text-align: center; font-weight: 800; font-size: 0.75rem; border-radius: 6px; padding: 0.08rem 0.2rem; }
+.m-lv3 { background: var(--brand); color: #fff; }
+.m-lv2 { background: #bcd9c8; color: var(--brand-deep); }
+.m-lv1 { background: var(--line); color: var(--muted); }
+/* v28 정착 — 팁 카드 */
+.tip-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0.8rem; margin-bottom: 1.2rem; }
+.tip-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 0.9rem 1rem; font-size: 0.88rem; box-shadow: 0 1px 3px rgba(23, 37, 29, 0.05); transition: transform 0.12s, box-shadow 0.12s; }
+.tip-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(23, 37, 29, 0.1); }
+.tip-ic { font-size: 1.35rem; margin-bottom: 0.2rem; }
+.tip-card strong { display: block; margin-bottom: 0.25rem; }
+.tip-card p { color: var(--muted); line-height: 1.5; }
+/* v28 정착 — NZ 지도 */
+.city-map-split { display: grid; grid-template-columns: minmax(230px, 320px) 1fr; gap: 1rem; align-items: stretch; margin-bottom: 1.5rem; }
+@media (max-width: 760px) { .city-map-split { grid-template-columns: 1fr; } }
+.nzmap { display: block; width: 100%; max-width: 300px; margin: 0 auto; }
+.nz-land { fill: #e2ede6; stroke: var(--brand); stroke-width: 1.3; stroke-linejoin: round; }
+.city-g { cursor: pointer; }
+.city-dot { fill: var(--brand); stroke: #fff; stroke-width: 1.5; transition: fill 0.12s; }
+.city-g:hover .city-dot { fill: var(--brand-deep); }
+.city-ring { fill: none; stroke: var(--accent); stroke-width: 2; opacity: 0; }
+.city-g.sel .city-ring { opacity: 1; animation: ringPulse 1.6s ease-in-out infinite; }
+.city-g.sel .city-dot { fill: var(--accent); stroke: var(--brand-deep); }
+@keyframes ringPulse { 0%, 100% { r: 8; opacity: 1; } 50% { r: 11; opacity: 0.45; } }
+.city-lbl { font-size: 10.5px; font-weight: 700; fill: var(--ink); paint-order: stroke; stroke: #fff; stroke-width: 2.5px; }
+.city-lbl.minor { font-size: 8.5px; font-weight: 600; fill: var(--muted); }
+.city-g.sel .city-lbl { fill: var(--brand-deep); }
+.city-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.6rem; }
+.cs-l { font-size: 0.75rem; color: var(--muted); }
+.cs-v { font-weight: 700; font-size: 0.92rem; }
 .cost-bar { display: flex; height: 22px; border-radius: 6px; overflow: hidden; margin: 0.7rem 0 0.5rem; border: 1px solid var(--line); }
 .cost-seg { height: 100%; }
 .cost-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.82rem; }
@@ -1052,6 +1136,17 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .month-nav .month-label { font-size: 0.82rem; font-weight: 700; min-width: 4.9rem; text-align: center; white-space: nowrap; }
 .flight-row { padding: 0.4rem 0; }
 .flight-row + .flight-row { border-top: 1px solid var(--line); }
+.flight-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.flight-head .source-link { white-space: nowrap; flex: none; }
+.flight-price { display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap; }
+.flight-price .dash-sub { margin-top: 0; }
+.dday-grid { display: grid; grid-template-columns: max-content max-content 1fr; column-gap: 0.55rem; align-items: baseline; padding-top: 0.3rem; }
+.dday-name { font-weight: 700; white-space: nowrap; }
+.dday-count { font-size: 1.2rem; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.dday-date { font-size: 0.78rem; color: var(--muted); justify-self: end; }
+.dday-desc { grid-column: 1 / -1; font-size: 0.78rem; color: var(--muted); margin-top: 0.15rem; }
+.dday-desc:not(:last-child) { border-bottom: 1px solid var(--line); padding-bottom: 0.45rem; margin-bottom: 0.45rem; }
+.dash-foot { margin-top: auto; }
 .season-strip { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; margin: 0.6rem 0 0.3rem; }
 .season-cell { border-radius: 5px; padding: 0.35rem 0; text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--ink); background: var(--line); }
 .season-cell.lv2 { background: #bcd9c8; }
@@ -1106,7 +1201,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
   #smcCalc,
   #survival,
   #survival + p,
-  #survival + p + .card,
+  .tip-grid,
   section:not(.active) {
     display: none !important;
   }
@@ -1129,12 +1224,11 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
     <div class="logo">🥝 NZ 영주권 내비게이터</div>
     <div class="tabs" id="tabsContainer">
       <button class="tab active" data-tab="home">홈</button>
-      <button class="tab" data-tab="diagnose">시작·로드맵</button>
+      <button class="tab" data-tab="diagnose">로드맵</button>
       <button class="tab" data-tab="scenarios">시나리오</button>
       <button class="tab" data-tab="jobs">직군</button>
       <button class="tab" data-tab="settle">정착</button>
-      <button class="tab" data-tab="calc">계산기</button>
-      <button class="tab" data-tab="snapshot">제도 스냅샷</button>
+      <button class="tab" data-tab="snapshot">정책 현황</button>
     </div>
     <button class="search-toggle" onclick="toggleHeaderSearch()" aria-label="키워드 검색 열기">🔍</button>
   </div>
@@ -1272,6 +1366,82 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 
     <div id="roadmapCards"></div>
 
+    <details class="fold" id="calcFold">
+      <summary>
+        <span class="fold-title">💰 비용 계산기</span>
+        <span class="fold-sub">경로·옵션 선택 → 항목별 상세·총액</span>
+      </summary>
+      <div class="fold-body">
+        <div class="card" style="box-shadow: none; border: 1px solid var(--line);">
+          <div class="form-group">
+            <label>경로 선택</label>
+            <div class="radio-group">
+              <label class="radio-option"><input type="radio" name="pathway" value="A" checked onchange="updateCalc()"> A. 직행 (WHV → AEWV → SMC)</label>
+              <label class="radio-option"><input type="radio" name="pathway" value="B" onchange="updateCalc()"> B. 유학 경유 (WHV → 학업 → PSWV → AEWV → SMC)</label>
+              <label class="radio-option"><input type="radio" name="pathway" value="C-T1" onchange="updateCalc()"> C. Green List T1 직행</label>
+              <label class="radio-option"><input type="radio" name="pathway" value="C-T2" onchange="updateCalc()"> C. Green List T2 (24개월 근무)</label>
+              <label class="radio-option"><input type="radio" name="pathway" value="D" onchange="updateCalc()"> D. Care 협약</label>
+            </div>
+          </div>
+
+          <div id="pathwayBOptions" style="display: none;">
+            <div class="form-group">
+              <label>학업 유형 (경로 B)</label>
+              <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="studyType" value="gd" checked onchange="updateCalc()"> Graduate Diploma 1년</label>
+                <label class="radio-option"><input type="radio" name="studyType" value="bach3" onchange="updateCalc()"> 학사 3년</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>옵션 선택</label>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <label class="radio-option"><input type="checkbox" name="option" value="ielts" onchange="updateCalc()"> IELTS 시험 (490)</label>
+              <label class="radio-option"><input type="checkbox" name="option" value="medical" onchange="updateCalc()"> 신체검사 (200–450)</label>
+              <label class="radio-option"><input type="checkbox" name="option" value="insurance" onchange="updateCalc()"> 의료보험 1년 (600–800)</label>
+              <label class="radio-option"><input type="checkbox" name="option" value="flight" onchange="updateCalc()"> 편도 항공 (800–1500)</label>
+              <label class="radio-option"><input type="checkbox" name="option" value="settle" onchange="updateCalc()"> 초기 정착비 — 방셰어 본드+4주+버퍼 (도시별 2,000–3,800)</label>
+            </div>
+          </div>
+
+          <div id="settleOption" style="display: none;">
+            <div class="form-group">
+              <label>초기 정착 도시</label>
+              <select id="settleCity" onchange="updateCalc()">
+                <option value="akl">오클랜드</option>
+                <option value="chc">크라이스트처치</option>
+                <option value="qtn">퀸스타운</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <table class="calc-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>금액(범위)</th>
+              <th>구분</th>
+              <th>출처</th>
+            </tr>
+          </thead>
+          <tbody id="calcTable"></tbody>
+        </table>
+
+        <div class="total-cost" id="totalCost">총액: NZD 0–0</div>
+        <div id="costBar"></div>
+
+        <div style="margin-top: 0.8rem; text-align: right;">
+          <button class="cta-btn" style="font-size: 0.9rem; padding: 0.5rem 1.2rem;" onclick="copyShareLink(this, buildCalcShareUrl())">🔗 설정 링크 복사</button>
+        </div>
+
+        <div class="employer-note">
+          <strong>고용주 부담 (참고):</strong> 인증 NZD 775 + Job Check NZD 735 = NZD 1,510 (총비용에 미포함)
+        </div>
+      </div>
+    </details>
+
     <details class="fold" id="otherPathways">
       <summary>
         <span class="fold-title">📦 그 외 영주권 경로 — 전부 모아둠</span>
@@ -1374,6 +1544,45 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
         </thead>
         <tbody id="jobsGuideTable"></tbody>
       </table>
+        <details class="fold" id="courseEntry">
+      <summary>
+        <span class="fold-title">🎓 과정 등록으로 시작하기 — 무경력자용 유학·훈련 비교</span>
+        <span class="fold-sub">과정 레벨이 졸업 후 근로권을 결정합니다</span>
+      </summary>
+      <div class="fold-body">
+        <p style="color: var(--muted); font-size: 0.92rem; margin-bottom: 0.8rem;">기술·경력 없이 그 직군을 새로 시작하려면 과정 등록이 출발점입니다. 단, <strong>어떤 레벨의 과정이냐가 졸업 후 일할 권리를 결정</strong>합니다 — 지금 등록하면 졸업 시점엔 2026-11-16 개편 규칙이 적용됩니다.</p>
+        <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 1rem;">
+          <strong>📜 졸업 후 근로권 (2026-11-16 개편 기준)</strong> <span class="badge official">[공식]</span>
+          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;">학사(L7)·석사(L9) = <strong>졸업비자 최대 3년</strong> · GD(L7, 학사 선행 필수) = <strong>1년</strong> · L5–7 비학위 정규과정(24주+) = <strong>단기 졸업비자 6개월(평생 1회)</strong> · <strong>L4 이하 = 없음</strong>. 유학생은 학업 중 주 25h 근로 가능, 학생비자 $850 + 자금증명 연 $20,000 별도.</p>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="snapshot-table">
+            <thead><tr><th>직군</th><th>과정 (레벨·기간)</th><th>유학생 학비 (NZD)</th><th>졸업 후 근로권</th><th>취업·연봉</th><th>영주권</th></tr></thead>
+            <tbody>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-dev')"><td style="font-weight:700; color: var(--brand);">IT·개발<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">매력: 최고 연봉 + GL T1 — 학사 있으면 1년 GD가 최단</div></td><td>GD IT (L7·1년, 학사 선행)<br>학사 IT (L7·3년)</td><td>GD 26,415 (Unitec) <span class="badge official">[공식]</span><br>학사 연 20,000–42,600 (폴리텍~AUT)</td><td>GD → 1년<br>학사 → 3년</td><td>●●○○○ · 80–120k+</td><td>●●●●● GL T1</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-engineer')"><td style="font-weight:700; color: var(--brand);">엔지니어<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">매력: 소득·영주권 최상 — 단 가장 비싼 과정</div></td><td>BE(Hons) (L8·4년)</td><td>연 45,700–58,000 · 4년 총 ~196k–232k <span class="badge official">[공식]</span></td><td>3년</td><td>●●●○○ · 78.7–138k</td><td>●●●●● GL T1</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-office')"><td style="font-weight:700; color: var(--brand);">회계 (사무)<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">매력: 비전공 학사가 1.5년에 전문직 전환 — 폴리텍 MPA가 가성비 최고</div></td><td>MPA 회계석사 (L9·15–18개월, 학사 선행)</td><td>총 30,415 (Unitec) ~ 76,723 (오클랜드대) <span class="badge official">[공식]</span></td><td>3년</td><td>●●○○○ · 75–116k</td><td>●●○○○ SMC + CA 가산</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-health')"><td style="font-weight:700; color: var(--brand);">간호<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">매력: 졸업 = 등록 직결 + 수요 상시 — 등록 영어(IELTS 7.0급)는 별도 관문</div></td><td>간호학사 (L7·3년)</td><td>연 30,185 (Unitec) <span class="badge official">[공식]</span> · 3년 총 ~91k+</td><td>3년 + 간호 등록</td><td>●●●○○ · 85–95k</td><td>●●●●● GL T1</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-teacher')"><td style="font-weight:700; color: var(--brand);">교사<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">매력: 1년 과정으로 GL T1 — 단 IELTS 7.0 전 영역, 영어 장벽 최고</div></td><td>GradDip Teaching (L7·1년, 학사 선행)<br>Master of Teaching (L9·1년)</td><td>28,706 (중등)–35,890 (초등, NZGSE) <span class="badge official">[공식]</span><br>석사 51,000 (UC)</td><td>GD → 1년<br>석사 → 3년</td><td>●●○○○(중등)~●(초등) · 70–80k</td><td>●●●●● GL T1</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-chef')"><td style="font-weight:700; color: var(--warn);">셰프 ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">정직: 요리는 졸업비자 지정 직업에서 빠짐 — 유학 가치 급락, 워홀 주방 경력이 낫다</div></td><td>Cookery L4 (1년) / L5 (2년)</td><td>L4 26,572 (Ara) <span class="badge official">[공식]</span> / L5 2년 ~50k <span class="badge estimated">[추정]</span></td><td><strong>L4 → 없음 · L5 → 6개월 1회</strong></td><td>●●●●○ · 55–85k</td><td>●●●○○ 경력 축</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-trade')"><td style="font-weight:700; color: var(--warn);">트레이드 ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">정직: 견습은 고용 전제 — 유학생 직행 불가. 워홀→현장→견습이 현실 경로</div></td><td>Pre-trade L3 (1년) / 전기 디플로마 L6 (2년)</td><td>L3 26,415 (Unitec) / L6 2년 29,615 <span class="badge official">[공식]</span></td><td>L3 → 없음 · L6 → 6개월 1회</td><td>●●●○○ · 85–110k (자격 후)</td><td>●●●●○ GL T2 (자격 후)</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-trade')"><td style="font-weight:700; color: var(--brand);">자동차 정비<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">주의: 과정만으론 근로권 부족 — 고용주 스폰서 확보가 관건</div></td><td>Automotive L4 (1년)</td><td>26,600 (Otago) <span class="badge official">[공식]</span></td><td>없음 (L4) — 고용주 워크비자 전환 필요</td><td>●●●○○ · 55–90k</td><td>●●●●○ GL T2</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-livestock')"><td style="font-weight:700; color: var(--brand);">축산·데어리<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">매력: 학비 0 — 취업해서 일하며 배우는 게 공식 트랙</div></td><td>과정 불필요 — Primary ITO L4 (일하면서 ~20개월)</td><td>~0 (고용 기반)</td><td>— (처음부터 근로)</td><td>●●●●● · 63–87k</td><td>●●●●○ GL T2 (매니저)</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-agri')"><td style="font-weight:700; color: var(--warn);">원예 ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">정직: 유학 비추 — 현장에서 배우며 자격 병행이 상위 호환</div></td><td>Horticulture L4 (1년)</td><td>18,000–25,000 <span class="badge estimated">[추정]</span></td><td><strong>없음 (L4)</strong></td><td>●●●●● · 시급 23.95–30</td><td>●●●○○ 승진 축</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-fieldwork')"><td style="font-weight:700; color: var(--brand);">현장직·물류<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">과정 불필요 — 단기 자격(포크리프트 등)이면 충분</div></td><td>과정 불필요</td><td>~수백 (단기 자격)</td><td>—</td><td>●●●●● · 55–70k</td><td>●○○○○ 승격 전제</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.8rem;">
+          <div style="border-left: 4px solid var(--brand); background: var(--bg); padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>💰 가성비 순위</strong><div style="color: var(--muted); margin-top: 0.3rem;">① 축산 ~0 (일하며 배움) ② 회계 MPA 30.4k (Unitec, 1.5년→졸업비자 3년) ③ IT GD 26.4k (1년→1년, 학사 보유자) ④ 교사 GradDip 28.7k~ (1년→GL T1) — 반대편 끝은 엔지니어 학사 ~200k+.</div></div>
+          <div style="border-left: 4px solid var(--warn); background: #fdf9f0; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>⚠️ 유학이 함정인 직군</strong><div style="color: var(--muted); margin-top: 0.3rem;">요리·원예는 졸업비자 지정 직업이 아니라 과정을 마쳐도 근로권이 6개월 이하 — 학비 26k+를 쓰고도 경력자보다 불리합니다. 이 둘은 워홀로 현장 진입이 상위 호환.</div></div>
+          <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>🗣️ 영어 관문 순위</strong><div style="color: var(--muted); margin-top: 0.3rem;">교사 IELTS 7.0 전 영역 &gt; 간호 등록 7.0급 <span class="badge estimated">[추정]</span> &gt; 석사 입학 6.5 &gt; 학사 입학 6.0 &gt; 직업과정 5.0–5.5. 입학 영어와 (간호·교사의) 등록 영어는 별개 관문.</div></div>
+        </div>
+        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.8rem;">학비는 2026년 international fee — 기관·연도별 변동이 크고 다수 기관이 미공표 상태이므로 등록 전 해당 기관 공식 페이지에서 확인 필수. 생활비(연 ~20k)·비자비 별도 — 총액 시뮬레이션은 <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('diagnose', 'calcFold')">로드맵 탭 비용 계산기</button>에서. 기준일 2026-07-08 · 출처: 각 기관 공식 페이지·immigration.govt.nz</p>
+      </div>
+    </details>
+
+
     </div>
 
     <div id="jobsContainer"></div>
@@ -1400,168 +1609,93 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
   <!-- SETTLE -->
   <section id="settle">
     <h1>정착 — 생활비와 도시</h1>
-    <p style="color: var(--muted); margin-bottom: 1.5rem;">비자 전략의 실행력은 현금 흐름에서 나옵니다. 현지에서 버티는 법과 도시 선택을 한곳에 모았습니다.</p>
 
-    <h2 id="timing">언제 가는 게 좋은가 — 월별 일자리 캘린더</h2>
-    <p style="color: var(--muted); margin-bottom: 1rem;">남반구 기준. 진할수록 도착 직후 일자리 잡기 좋은 달.</p>
-    <div class="card">
-      <div id="seasonStripFull"></div>
-      <div id="seasonMonthList" style="margin-top: 0.8rem;"></div>
-    </div>
-    <div class="card">
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
-        <div><strong>✅ 최적 — 2~4월 도착</strong><p class="dash-sub" style="margin-top: 0.3rem;">사과·포도·키위 수확이 겹쳐 일자리 최다(키위만 1.9만 명). 3월은 항공권도 최저. 시즌잡은 도착 4–8주 전 지원이 원칙.</p></div>
-        <div><strong>✅ 차선 — 10~11월 도착</strong><p class="dash-sub" style="margin-top: 0.3rem;">여름 성수기(12–2월) 채용이 이때 열림. 체리(12월 중순 시작)는 11월에 지원. 항공도 비수기라 저렴.</p></div>
-        <div><strong>⛷️ 스키가 목표라면</strong><p class="dash-sub" style="margin-top: 0.3rem;">시즌은 6–10월이지만 채용 공고는 2–4월(NZSki·Cardrona 등). 5–6월 도착은 늦다 — 미리 원격 지원 후 개막 맞춰 입국.</p></div>
-        <div><strong>❌ 피할 — 12월 · 7~9월</strong><p class="dash-sub" style="margin-top: 0.3rem;">12월: 도시 채용 동결 + 렌트 경쟁 + 항공 +30~50%. 7~9월: 수확·도시 채용 모두 비수기(스키는 이미 채용 마감), 1월 도시 채용 급증(IT +80%)을 기다리는 시기.</p></div>
+    <h2 id="timing">언제 가는 게 좋을까?</h2>
+    <p class="dash-sub" style="margin-bottom: 1rem;">남반구 기준 · 월 색 = 도착 직후 일자리 잡기 좋은 정도</p>
+    <div class="timing-split">
+      <div class="card" style="margin-bottom: 0;">
+        <div style="overflow-x: auto;"><div id="seasonMatrix"></div></div>
       </div>
-      <div class="dash-sub" style="margin-top: 0.8rem;">출처: <a class="source-link" href="https://www.picknz.co.nz/" target="_blank">PickNZ↗</a> <a class="source-link" href="https://www.backpackerjobboard.co.nz/blog/fruit-picking-seasons-in-new-zealand/" target="_blank">수확 캘린더↗</a> · 2026-07 조사·교차검증</div>
+      <div class="verdict-stack">
+        <div class="mini-card best"><strong>✅ 최적 — 2~4월</strong><div>수확 최다(사과·포도·키위) · 3월 항공 최저. 시즌잡은 4–8주 전 지원.</div></div>
+        <div class="mini-card ok"><strong>🌤️ 차선 — 10~11월</strong><div>여름 채용 오픈 · 체리는 11월 지원 · 항공 저렴.</div></div>
+        <div class="mini-card ski"><strong>⛷️ 스키 목표</strong><div>채용 공고 2–4월 — 원격 지원 후 6월 개막 맞춰 입국. 5–6월 도착은 늦음.</div></div>
+        <div class="mini-card avoid"><strong>❌ 피할 — 12월 · 7~9월</strong><div>12월 채용 동결·렌트 경쟁·항공 +30~50%. 7~9월 전반 비수기.</div></div>
+        <div class="dash-sub">출처: <a class="source-link" href="https://www.picknz.co.nz/" target="_blank">PickNZ↗</a> <a class="source-link" href="https://www.backpackerjobboard.co.nz/blog/fruit-picking-seasons-in-new-zealand/" target="_blank">수확 캘린더↗</a> · 2026-07 교차검증</div>
+      </div>
     </div>
 
-    <h2 id="survival" style="margin-top: 2.5rem;">생활비 생존 전략 — 현지에서 버티는 법</h2>
-    <p style="color: var(--muted); margin-bottom: 1.5rem;">돈이 마르지 않게 하는 6가지 원칙. <span style="font-size: 0.85rem;">(비자비·임금은 공식 · 시세·버퍼는 2026-07 추정)</span></p>
-
-    <div class="card">
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem;">
-        <div>
-          <strong>1. 도착 버퍼는 6,000+</strong>
-          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.3rem;">자금증명 4,200은 심사용일 뿐. 첫 4–6주 무수입 가정 + 정착비 2,000–3,500 + 다음 달 렌트까지 준비.</p>
-        </div>
-        <div>
-          <strong>2. 첫 수입은 2주 안에</strong>
-          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.3rem;">호스피탈리티·리테일·시즌잡이 가장 빠름. 최저임금 풀타임 주 ~958(세전). NZ식 이력서는 출국 전에 준비.</p>
-        </div>
-        <div>
-          <strong>3. 주거가 저축을 결정한다</strong>
-          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.3rem;">방셰어 200–320 vs 스튜디오 400+. 시즌잡 숙식 제공이면 월 저축 2배 + 원예·포도 3개월은 WHV +3개월 연장.</p>
-        </div>
-        <div>
-          <strong>4. 세금 셋업 — 도착 주에 IRD</strong>
-          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.3rem;">도착 주에 IRD 발급(무료). 없이 일하면 45% 원천징수. 3월 말 마감 후 환급 확인.</p>
-        </div>
-        <div>
-          <strong>5. 비자비는 이벤트성 지출</strong>
-          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.3rem;">AEWV 1,540·영주권 6,450은 목돈. 신청 2–3개월 전 별도 계좌에 분리 적립.</p>
-        </div>
-        <div>
-          <strong>6. 유학 경로의 현금 흐름</strong>
-          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.3rem;">학기 중 25h 근로(주 ~599)로 생활비만 상쇄. 학비는 미리 확보가 원칙.</p>
-        </div>
-      </div>
+    <h2 id="survival" style="margin-top: 2.5rem;">생활비 생존 전략</h2>
+    <p class="dash-sub" style="margin-bottom: 1rem;">6원칙 — 비자비·임금 [공식] · 시세·버퍼 [추정 2026-07]</p>
+    <div class="tip-grid">
+      <div class="tip-card"><div class="tip-ic">💵</div><strong>도착 버퍼 6,000+</strong><p>자금증명 4,200은 심사용. 첫 4–6주 무수입 + 정착비 2,000–3,500 + 다음 렌트 대비.</p></div>
+      <div class="tip-card"><div class="tip-ic">⚡</div><strong>첫 수입 2주 안에</strong><p>호스피탈리티·시즌잡이 최속. 최저임금 풀타임 주 ~958(세전). 이력서는 출국 전 준비.</p></div>
+      <div class="tip-card"><div class="tip-ic">🏠</div><strong>주거 = 저축 속도</strong><p>방셰어 200–320 vs 스튜디오 400+. 시즌잡 숙식 제공이면 저축 2배 + 원예 3개월 = WHV 연장.</p></div>
+      <div class="tip-card"><div class="tip-ic">🧾</div><strong>도착 주에 IRD</strong><p>무료 발급 — 없으면 45% 원천징수. 3월 말 이후 환급 확인.</p></div>
+      <div class="tip-card"><div class="tip-ic">🏦</div><strong>비자비 분리 적립</strong><p>AEWV 1,540 · 영주권 6,450 — 신청 2–3개월 전 별도 계좌에.</p></div>
+      <div class="tip-card"><div class="tip-ic">🎓</div><strong>유학 현금 흐름</strong><p>학기 중 25h(주 ~599)는 생활비만 상쇄 — 학비는 사전 확보.</p></div>
     </div>
 
     <h2 id="cities" style="margin-top: 2.5rem;">도시별 정착 가이드</h2>
-    <p style="color: var(--muted); margin-bottom: 1.5rem;">도시가 곧 저축 속도. 방셰어 = 플랫 1룸 주당 NZD, 2026-07 시세. 도시를 누르면 상세.</p>
-
-    <div style="overflow-x: auto; margin-bottom: 2rem;">
-      <table class="snapshot-table">
-        <thead>
-          <tr>
-            <th>도시</th>
-            <th>방셰어/주</th>
-            <th>대중교통</th>
-            <th>한 줄 전략</th>
-          </tr>
-        </thead>
-        <tbody id="citiesTable"></tbody>
-      </table>
+    <p class="dash-sub" style="margin-bottom: 1rem;">지도에서 도시 선택 · 방셰어 = 주당 NZD (2026-07 시세)</p>
+    <div class="city-map-split">
+      <div class="card" style="margin-bottom: 0;" id="cityMapBox"></div>
+      <div class="card" style="margin-bottom: 0;" id="cityInfoPanel"></div>
     </div>
 
     <div id="citiesContainer"></div>
   </section>
 
   <!-- CALCULATOR -->
-  <section id="calc">
-    <h1>비용 계산기</h1>
-    <p style="color: var(--muted); margin-bottom: 1.5rem;">경로와 옵션을 선택해 예상 총비용을 계산하세요.</p>
-
-    <div class="card">
-      <div class="form-group">
-        <label>경로 선택</label>
-        <div class="radio-group">
-          <label class="radio-option"><input type="radio" name="pathway" value="A" checked onchange="updateCalc()"> A. 직행 (WHV → AEWV → SMC)</label>
-          <label class="radio-option"><input type="radio" name="pathway" value="B" onchange="updateCalc()"> B. 유학 경유 (WHV → 학업 → PSWV → AEWV → SMC)</label>
-          <label class="radio-option"><input type="radio" name="pathway" value="C-T1" onchange="updateCalc()"> C. Green List T1 직행</label>
-          <label class="radio-option"><input type="radio" name="pathway" value="C-T2" onchange="updateCalc()"> C. Green List T2 (24개월 근무)</label>
-          <label class="radio-option"><input type="radio" name="pathway" value="D" onchange="updateCalc()"> D. Care 협약</label>
-        </div>
-      </div>
-
-      <div id="pathwayBOptions" style="display: none;">
-        <div class="form-group">
-          <label>학업 유형 (경로 B)</label>
-          <div class="radio-group">
-            <label class="radio-option"><input type="radio" name="studyType" value="gd" checked onchange="updateCalc()"> Graduate Diploma 1년</label>
-            <label class="radio-option"><input type="radio" name="studyType" value="bach3" onchange="updateCalc()"> 학사 3년</label>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>옵션 선택</label>
-        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <label class="radio-option"><input type="checkbox" name="option" value="ielts" onchange="updateCalc()"> IELTS 시험 (490)</label>
-          <label class="radio-option"><input type="checkbox" name="option" value="medical" onchange="updateCalc()"> 신체검사 (200–450)</label>
-          <label class="radio-option"><input type="checkbox" name="option" value="insurance" onchange="updateCalc()"> 의료보험 1년 (600–800)</label>
-          <label class="radio-option"><input type="checkbox" name="option" value="flight" onchange="updateCalc()"> 편도 항공 (800–1500)</label>
-          <label class="radio-option"><input type="checkbox" name="option" value="settle" onchange="updateCalc()"> 초기 정착비 — 방셰어 본드+4주+버퍼 (도시별 2,000–3,800)</label>
-        </div>
-      </div>
-
-      <div id="settleOption" style="display: none;">
-        <div class="form-group">
-          <label>초기 정착 도시</label>
-          <select id="settleCity" onchange="updateCalc()">
-            <option value="akl">오클랜드</option>
-            <option value="chc">크라이스트처치</option>
-            <option value="qtn">퀸스타운</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <table class="calc-table">
-      <thead>
-        <tr>
-          <th>항목</th>
-          <th>금액(범위)</th>
-          <th>구분</th>
-          <th>출처</th>
-        </tr>
-      </thead>
-      <tbody id="calcTable"></tbody>
-    </table>
-
-    <div class="total-cost" id="totalCost">총액: NZD 0–0</div>
-    <div id="costBar"></div>
-
-    <div style="margin-top: 0.8rem; text-align: right;">
-      <button class="cta-btn" style="font-size: 0.9rem; padding: 0.5rem 1.2rem;" onclick="copyShareLink(this, buildCalcShareUrl())">🔗 설정 링크 복사</button>
-    </div>
-
-    <div class="employer-note">
-      <strong>고용주 부담 (참고):</strong> 인증 NZD 775 + Job Check NZD 735 = NZD 1,510 (총비용에 미포함)
-    </div>
-  </section>
-
   <!-- SNAPSHOT -->
   <section id="snapshot">
-    <h1>2026 제도 스냅샷</h1>
+    <h1>2026 이민정책 현황</h1>
+
+    <div class="policy-split" id="changeline">
+      <div class="card policy-col">
+        <h3 class="policy-h">📅 변경 타임라인</h3>
+        <div id="changelineContainer"></div>
+      </div>
+      <div class="card policy-col policy-verdict">
+        <h3 class="policy-h">🧭 흐름 종합 — 좋아지고 있나?</h3>
+        <div class="verdict-headline">숙련·학위엔 <span class="hl-up">개방</span> · 저숙련·비학위엔 <span class="hl-down">긴축</span></div>
+        <div class="trend-meter" title="최근 9건: 완화 4 · 기준조정 2 · 긴축 3">
+          <div class="trend-seg up" style="flex: 4;">완화 4</div>
+          <div class="trend-seg flat" style="flex: 2;">기준 2</div>
+          <div class="trend-seg down" style="flex: 3;">긴축 3</div>
+        </div>
+        <ul class="verdict-list">
+          <li><span class="dir-ic up">▲</span>임금 문턱 폐지 · GL 트레이드 확대 · 학생 근로 25h · 학사 4점</li>
+          <li><span class="dir-ic down">▼</span>interim 근로권 축소 · AEWV 영어 요건 신설 · 비학위 PSWV 6개월로</li>
+        </ul>
+        <div class="verdict-next">
+          <div class="verdict-sub">앞으로</div>
+          <ul class="verdict-list">
+            <li><span class="dir-ic up">▲</span><strong>08-24 SMC 개편</strong> — 학사 근무 2년 단축 + 무학위 신경로 2개</li>
+            <li><span class="dir-ic down">▼</span><strong>11-16 PSWV 개편</strong> — 비학위 유학 메리트 소멸</li>
+            <li><span class="dir-ic flat">▶</span>매년 3월 중위임금 인상 — 목표 시급 계속 상승</li>
+          </ul>
+        </div>
+        <div class="advice-box" style="margin-top: 0.7rem;">💡 <strong>설계 방향:</strong> L7+ 학위·GL 직군·중위임금 이상 잡오퍼 축이면 순풍. 저숙련 진입이면 2년 내 승격·L4+ 자격 확보가 생존선. 유학은 L7 학위과정 이상만.</div>
+      </div>
+    </div>
 
     <div class="info-box">
-      이 사이트의 모든 수치는 2026-07-06 기준 immigration.govt.nz 등 공식 출처로 교차 검증됨. <strong>이민 제도는 수시로 바뀝니다 — 신청 전 반드시 공식 페이지와 IAA 등록 어드바이저를 통해 재확인하세요.</strong>
-      <div style="margin-top: 0.5rem; font-size: 0.9rem;">🔄 <strong>다음 재검증 예정:</strong> 2026-08-25 (SMC 개편 시행 직후) · 2026-11-17 (PSWV 개편 시행 직후). PSWV 학위레벨별 기간·SGWV(6개월) 세부 규정은 2026-07-07 immigration.govt.nz 공식 페이지로 확정 확인됨(<strong>시행일 2026-11-16 — 그 전까지는 개편 전 규정 적용</strong>).</div>
+      전 수치 2026-07-06 기준 공식 출처 교차 검증. <strong>제도 수시 변경 — 신청 전 공식 페이지·IAA 어드바이저 재확인 필수.</strong>
+      <span style="font-size: 0.88rem;">🔄 다음 재검증: 08-25(SMC 시행 직후) · 11-17(PSWV 시행 직후)</span>
     </div>
 
     <h2 id="keyfigures">핵심 수치</h2>
+    <p class="fx-note">전 항목 <span class="badge official">[공식]</span> · 원·엔 환산은 환율 반영 <span id="fxNoteRate"></span></p>
     <div style="overflow-x: auto;">
       <table class="snapshot-table">
         <thead>
           <tr>
             <th>항목</th>
-            <th>수치</th>
-            <th>구분</th>
-            <th>기준일</th>
+            <th>NZD</th>
+            <th>₩ 원화</th>
+            <th>¥ 엔화</th>
+            <th>출처</th>
           </tr>
         </thead>
         <tbody id="snapshotTable"></tbody>
@@ -1577,11 +1711,6 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
           </table>
         </div>
       </div>
-    </details>
-
-    <details class="fold" id="changeline">
-      <summary><span class="fold-title">변경 타임라인</span><span class="fold-sub">9건 · 다음: 2026-08-24 SMC 개편</span></summary>
-      <div class="fold-body" id="changelineContainer"></div>
     </details>
 
     <details class="fold" id="refNotes">
@@ -1977,7 +2106,7 @@ const DB = {
       studyVariants: {
         gd: {
           label: '학사 보유 → GD 1년', short: '유학 · GD 1년', duration: '48–60개월', cost: 'NZD 80,000–110,000',
-          note: 'GD(L7) 1년 → PSWV 1년은 2026-11-16 개편 시행 후 기준 — 지금 준비해 2027년 입학이면 해당. 학업 중 주 25h 근로 가능.',
+          note: 'GD(L7) 1년 → PSWV 1년은 2026-11-16 개편 시행 후 기준 — 지금 준비해 2027년 입학이면 해당. 학업 중 주 25h 근로 가능. 직군별 과정·학비 비교는 직군 탭의 \'과정 등록으로 시작하기\' 참고.',
           stages: [
             { name: 'WHV', months: 12 },
             { name: '학업(GD 1년)', months: 12 },
@@ -2241,15 +2370,15 @@ const DB = {
     }
   ],
   changes: [
-    { date: '2025-03-10', text: 'AEWV 중위임금 요건 폐지', planned: false, you: 'AEWV 잡오퍼의 임금 문턱이 낮아짐 — 시장임금이면 OK' },
-    { date: '2025-04-08', text: 'interim 근로권 축소(방문비자 제외)', planned: false, you: '방문비자 상태로 AEWV를 신청하면 승인까지 일할 수 없음' },
-    { date: '2025-08-18', text: '트레이드 10개 GL T2 추가', planned: false, you: '용접·금속 직군이면 24개월 근무 영주권 루트가 열림' },
-    { date: '2025-11-03', text: '학생 근로 25h', planned: false, you: '유학 중 생활비 자체 조달력이 25% 늘어남' },
-    { date: '2026-03-09', text: '중위임금 35.00·NOL 47개 직종', planned: false, you: 'SMC·GL 목표 시급이 35 — 임금 협상의 기준점' },
-    { date: '2026-04-01', text: '최저임금 23.95', planned: false, you: '워홀 초기 시급 하한 — 풀타임 주 ~958(세전)' },
-    { date: '2026-06-01', text: 'AEWV 레벨3 영어 IELTS 4.0', planned: false, you: '사무·트레이드급 AEWV도 이제 영어 점수 필요' },
-    { date: '2026-08-24', text: 'SMC 개편(학사 4점·신규 경로 2개·영어성적 유효 5년)', planned: true, you: '학사 보유자는 필요 NZ 근무가 3년 → 2년으로 단축' },
-    { date: '2026-11-16', text: 'PSWV 세분화(GD+학사 최대 1년 · 학위과정 최대 3년) · SGWV(L5–7, 6개월) 신설', planned: true, you: '비학위 유학은 6개월 근로권뿐 — 유학은 L7 학위과정 이상으로 설계' }
+    { date: '2025-03-10', dir: 'up', text: 'AEWV 중위임금 요건 폐지', planned: false, you: 'AEWV 잡오퍼 임금 문턱 하락 — 시장임금이면 OK' },
+    { date: '2025-04-08', dir: 'down', text: 'interim 근로권 축소(방문비자 제외)', planned: false, you: '방문비자 상태 AEWV 신청 시 승인까지 근로 불가' },
+    { date: '2025-08-18', dir: 'up', text: '트레이드 10개 GL T2 추가', planned: false, you: '용접·금속 직군 24개월 근무 영주권 루트 개방' },
+    { date: '2025-11-03', dir: 'up', text: '학생 근로 25h', planned: false, you: '유학 중 생활비 자체 조달력 25% 증가' },
+    { date: '2026-03-09', dir: 'flat', text: '중위임금 35.00·NOL 47개 직종', planned: false, you: 'SMC·GL 목표 시급 35 — 임금 협상 기준점' },
+    { date: '2026-04-01', dir: 'flat', text: '최저임금 23.95', planned: false, you: '워홀 초기 시급 하한 — 풀타임 주 ~958(세전)' },
+    { date: '2026-06-01', dir: 'down', text: 'AEWV 레벨3 영어 IELTS 4.0', planned: false, you: '사무·트레이드급 AEWV도 영어 점수 필요' },
+    { date: '2026-08-24', dir: 'up', text: 'SMC 개편(학사 4점·신규 경로 2개·영어성적 유효 5년)', planned: true, you: '학사 보유자 필요 NZ 근무 3년 → 2년 단축' },
+    { date: '2026-11-16', dir: 'down', text: 'PSWV 세분화(GD+학사 최대 1년 · 학위과정 최대 3년) · SGWV(L5–7, 6개월) 신설', planned: true, you: '비학위 유학 근로권 6개월뿐 — 유학은 L7 학위과정 이상으로 설계' }
   ]
 };
 
@@ -2294,11 +2423,13 @@ function renderFxAll(rates, time) {
     <div class="dash-head"><span class="dash-label">💱 환율</span>${badge}</div>
     ${row('🇰🇷', 'KRW', '원', 1)}
     ${row('🇯🇵', 'JPY', '엔', 2)}
-    <div class="dash-sub">최근 ₩859–904 · ¥90–95</div>
-    <div class="dash-links">
-      <button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="fetchFx()">↻ 새로고침</button>
-      <a class="source-link" href="https://www.google.com/search?q=NZD+to+KRW" target="_blank">KRW↗</a>
-      <a class="source-link" href="https://www.google.com/search?q=NZD+to+JPY" target="_blank">JPY↗</a>
+    <div class="dash-foot">
+      <div class="dash-sub">최근 ₩859–904 · ¥90–95</div>
+      <div class="dash-links">
+        <button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="fetchFx()">↻ 새로고침</button>
+        <a class="source-link" href="https://www.google.com/search?q=NZD+to+KRW" target="_blank">KRW↗</a>
+        <a class="source-link" href="https://www.google.com/search?q=NZD+to+JPY" target="_blank">JPY↗</a>
+      </div>
     </div>`;
 }
 
@@ -2306,6 +2437,8 @@ function fetchFx() {
   const applyLive = rates => {
     const t = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
     renderFxAll(rates, t);
+    FX_NOW = { KRW: rates.KRW, JPY: rates.JPY, live: true };
+    renderSnapshotTable();
   };
   try {
     fetch('https://api.frankfurter.dev/v1/latest?base=NZD&symbols=KRW,JPY')
@@ -2357,17 +2490,23 @@ function renderFlightTile() {
       </span>
     </div>
     <div class="flight-row">
-      <div class="dash-label">🇰🇷 부산→도쿄→오클랜드</div>
-      <div><span class="dash-big">₩${Math.round(m.pusKrw / 10000)}만</span><span style="font-weight: 600;">~</span> <span class="dash-sub">편도·경유 조합·15–18h</span></div>
-      <div class="dash-links"><a class="source-link" href="${g('PUS to AKL')}" target="_blank">이 달 실시간↗</a></div>
+      <div class="flight-head">
+        <span class="dash-label">🇰🇷 부산→도쿄→오클랜드</span>
+        <a class="source-link" href="${g('PUS to AKL')}" target="_blank">이 달 실시간↗</a>
+      </div>
+      <div class="flight-price"><span><span class="dash-big">₩${Math.round(m.pusKrw / 10000)}만</span><span style="font-weight: 600;">~</span></span><span class="dash-sub">편도·경유 조합·15–18h</span></div>
     </div>
     <div class="flight-row">
-      <div class="dash-label">🇯🇵 도쿄→오클랜드 (직항)</div>
-      <div><span class="dash-big">¥${(m.tyoJpy / 10000).toFixed(1)}万</span><span style="font-weight: 600;">~</span> <span class="dash-sub">편도·10h30m</span></div>
-      <div class="dash-links"><a class="source-link" href="${g('NRT to AKL')}" target="_blank">実時間↗</a></div>
+      <div class="flight-head">
+        <span class="dash-label">🇯🇵 도쿄→오클랜드 (직항)</span>
+        <a class="source-link" href="${g('NRT to AKL')}" target="_blank">実時間↗</a>
+      </div>
+      <div class="flight-price"><span><span class="dash-big">¥${(m.tyoJpy / 10000).toFixed(1)}万</span><span style="font-weight: 600;">~</span></span><span class="dash-sub">편도·10h30m</span></div>
     </div>
-    <div class="dash-sub">💡 ${m.note}</div>
-    <div class="dash-sub"><span class="badge estimated" style="font-size: 0.66rem; padding: 0.12rem 0.4rem;">추정 · 26-07 조사</span> 실가격은 링크로</div>`;
+    <div class="dash-foot">
+      <div class="dash-sub">💡 ${m.note}</div>
+      <div class="dash-sub"><span class="badge estimated" style="font-size: 0.66rem; padding: 0.12rem 0.4rem;">추정 · 26-07 조사</span> 실가격은 링크로</div>
+    </div>`;
 }
 
 function renderDdayTile() {
@@ -2376,16 +2515,20 @@ function renderDdayTile() {
   const d = target => Math.ceil((new Date(target) - Date.now()) / 86400000);
   el.innerHTML = `
     <div class="dash-head"><span class="dash-label">📅 제도 변경</span><span class="badge live">자동 재검증</span></div>
-    <div class="flight-row">
-      <div style="font-weight: 700; white-space: nowrap;">SMC 개편 <span class="dash-big" style="font-size: 1.2rem; color: var(--warn);">D-${d('2026-08-24')}</span> <span class="dash-sub">· 08-24</span></div>
-      <div class="dash-sub">학사 4점 → 근무 2년 · 새 경로 2 · 영어 5년 · CPA 6점</div>
+    <div class="dday-grid">
+      <span class="dday-name">SMC 개편</span>
+      <span class="dday-count" style="color: var(--warn);">D-${d('2026-08-24')}</span>
+      <span class="dday-date">08-24</span>
+      <span class="dday-desc">학사 4점 → 근무 2년 · 새 경로 2 · 영어 5년 · CPA 6점</span>
+      <span class="dday-name">PSWV 개편</span>
+      <span class="dday-count" style="color: var(--info);">D-${d('2026-11-16')}</span>
+      <span class="dday-date">11-16</span>
+      <span class="dday-desc">GD+학사 1년 · SGWV 6개월 — 유학은 L7 이상</span>
     </div>
-    <div class="flight-row">
-      <div style="font-weight: 700; white-space: nowrap;">PSWV 개편 <span class="dash-big" style="font-size: 1.2rem; color: var(--info);">D-${d('2026-11-16')}</span> <span class="dash-sub">· 11-16</span></div>
-      <div class="dash-sub">GD+학사 1년 · SGWV 6개월 — 유학은 L7 이상</div>
-    </div>
-    <div class="dash-sub" style="margin-top: 0.35rem;">다음: 27-03 중위임금 · 27-04 최저임금 심사</div>
-    <div class="dash-links"><button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('snapshot', 'changeline')">타임라인 →</button></div>`;
+    <div class="dash-foot">
+      <div class="dash-sub">다음: 27-03 중위임금 · 27-04 최저임금 심사</div>
+      <div class="dash-links"><button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('snapshot', 'changeline')">타임라인 →</button></div>
+    </div>`;
   annotateVisaTerms(document.getElementById('ddayTile'));
 }
 
@@ -2426,7 +2569,7 @@ function renderSeasonTile() {
     <div class="dash-head"><span class="dash-label">🌏 ${nowM}월의 일자리 시즌</span></div>
     <div style="font-size: 0.95rem;">${cur.tags}</div>
     ${seasonStripHtml(nowM)}
-    <div class="dash-links"><button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('settle', 'timing')">언제 가는 게 좋은지 자세히 →</button></div>`;
+    <div class="dash-foot dash-links"><button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('settle', 'timing')">언제 가는 게 좋은지 자세히 →</button></div>`;
 }
 
 function renderDash() {
@@ -2442,13 +2585,34 @@ function renderDash() {
   fetchFx();
 }
 
+// v28 월×부류 매트릭스 — 같은 부류는 같은 열에 정렬
+const SEASON_MATRIX = [
+  { m: 1, lv: 3, harvest: '체리 끝물', ski: '', city: 'IT 채용 +80%', tour: '성수기', fly: '' },
+  { m: 2, lv: 3, harvest: '포도·사과', ski: '', city: '', tour: '성수기', fly: '' },
+  { m: 3, lv: 3, harvest: '사과·포도·키위', ski: '', city: '', tour: '', fly: '최저' },
+  { m: 4, lv: 3, harvest: '수확 피크', ski: '채용 공고', city: '', tour: '', fly: '' },
+  { m: 5, lv: 2, harvest: '키위 끝물', ski: '개막 준비', city: '', tour: '', fly: '' },
+  { m: 6, lv: 2, harvest: '패킹', ski: '개막', city: '', tour: '', fly: '' },
+  { m: 7, lv: 1, harvest: '', ski: '피크', city: '', tour: '', fly: '' },
+  { m: 8, lv: 1, harvest: '패킹 끝물', ski: '피크', city: '', tour: '', fly: '' },
+  { m: 9, lv: 1, harvest: '', ski: '', city: '', tour: '', fly: '저렴' },
+  { m: 10, lv: 2, harvest: '', ski: '', city: '여름 채용 시작', tour: '', fly: '저렴' },
+  { m: 11, lv: 2, harvest: '체리 지원 시점', ski: '', city: '', tour: '여름 채용', fly: '저렴' },
+  { m: 12, lv: 1, harvest: '', ski: '', city: '채용 동결', tour: '최성수기', fly: '+30~50%' }
+];
+
 function renderTimingSection() {
-  const strip = document.getElementById('seasonStripFull');
-  if (!strip) return;
+  const box = document.getElementById('seasonMatrix');
+  if (!box) return;
   const nowM = new Date().getMonth() + 1;
-  strip.innerHTML = seasonStripHtml(nowM);
-  const list = document.getElementById('seasonMonthList');
-  if (list) list.innerHTML = SEASON_CAL.map(s => `<div style="font-size: 0.88rem; padding: 0.2rem 0;${s.m === nowM ? ' font-weight: 700;' : ''}"><span style="display: inline-block; width: 2.4rem; color: var(--muted);">${s.m}월</span> ${s.tags}</div>`).join('');
+  const cell = v => v ? `<td>${v}</td>` : '<td class="dim">·</td>';
+  box.innerHTML = `<table class="season-matrix">
+    <thead><tr><th>월</th><th>🍎 수확</th><th>⛷️ 스키</th><th>🏢 도시 채용</th><th>🍽️ 관광·서빙</th><th>✈️ 항공</th></tr></thead>
+    <tbody>${SEASON_MATRIX.map(s => `<tr${s.m === nowM ? ' class="now"' : ''}>
+      <td><span class="m-cell m-lv${s.lv}">${s.m}</span></td>${cell(s.harvest)}${cell(s.ski)}${cell(s.city)}${cell(s.tour)}${cell(s.fly)}
+    </tr>`).join('')}</tbody>
+  </table>
+  <div class="dash-sub" style="margin-top: 0.5rem;"><span class="m-cell m-lv3" style="padding: 0 0.4rem;">진초록</span> 좋음 · <span class="m-cell m-lv2" style="padding: 0 0.4rem;">연초록</span> 보통 · <span class="m-cell m-lv1" style="padding: 0 0.4rem;">회색</span> 비수기 · 노란 행 = 이번 달</div>`;
 }
 
 // ============ UTILS ============
@@ -2496,7 +2660,7 @@ function initTabs() {
 }
 
 function showSection(section) {
-  if (section === 'roadmap') section = 'diagnose'; // 구버전 공유 링크 호환 (로드맵은 진단에 통합됨)
+  if (section === 'roadmap' || section === 'calc') section = 'diagnose'; // 구버전 공유 링크 호환 (로드맵·계산기는 진단에 통합됨)
   document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
 
@@ -2522,6 +2686,7 @@ function runDiagnose() {
 
     const result = recommend({entry, age, job, experience, english, funding, education, family});
     lastDiagnoseResult = result;
+    roadmapAdjust = null; // 재진단 = 추천값으로 리셋
     renderDiagnoseResult(result);
     saveState('nzv.diagnose', { entry, age, job, experience, english, funding, education, family });
     injectDiagnoseShareBar();
@@ -2742,18 +2907,69 @@ const CITIES = [
   }
 ];
 
+// v28 인터랙티브 NZ 지도
+const CITY_POS = {
+  akl: { x: 104, y: 64, name: '오클랜드' },
+  wlg: { x: 130, y: 168, name: '웰링턴' },
+  chc: { x: 136, y: 244, name: '크라이스트처치' },
+  qtn: { x: 94, y: 288, name: '퀸스타운', anchor: 'end' },
+  reg: [
+    { x: 108, y: 88, n: '해밀턴', anchor: 'end' },
+    { x: 134, y: 86, n: '타우랑가' },
+    { x: 104, y: 314, n: '더니든' }
+  ]
+};
+let selCity = 'akl';
+
+function cityMapSvg() {
+  const NI = 'M 84 14 C 90 22, 96 34, 100 46 C 103 54, 108 60, 114 64 C 120 60, 124 54, 126 50 C 130 56, 130 66, 128 74 C 138 82, 152 86, 166 82 C 174 80, 178 84, 176 92 C 170 104, 162 118, 154 132 C 150 142, 146 154, 142 164 C 138 172, 132 176, 126 174 C 120 168, 118 160, 114 152 C 108 144, 100 140, 92 138 C 84 134, 80 126, 86 118 C 92 112, 98 108, 100 100 C 98 90, 94 80, 92 70 C 88 56, 82 40, 78 28 C 79 20, 82 16, 84 14 Z';
+  const SI = 'M 120 194 C 128 202, 132 212, 134 222 C 138 232, 142 240, 144 246 C 150 248, 152 254, 146 258 C 140 262, 136 266, 132 272 C 126 284, 120 296, 114 306 C 110 314, 104 318, 98 322 C 90 328, 82 330, 76 328 C 68 324, 64 316, 66 308 C 70 298, 76 286, 82 274 C 90 258, 98 242, 106 226 C 110 216, 114 206, 116 200 C 117 196, 118 194, 120 194 Z';
+  const main = ['akl', 'wlg', 'chc', 'qtn'].map(id => {
+    const p = CITY_POS[id];
+    const sel = selCity === id;
+    return `<g class="city-g${sel ? ' sel' : ''}" onclick="selectCity('${id}')">
+      <circle class="city-ring" cx="${p.x}" cy="${p.y}" r="9"></circle>
+      <circle class="city-dot" cx="${p.x}" cy="${p.y}" r="5.5"></circle>
+      <text class="city-lbl" x="${p.x + (p.anchor === 'end' ? -9 : 9)}" y="${p.y + 4}"${p.anchor ? ` text-anchor="${p.anchor}"` : ''}>${p.name}</text>
+    </g>`;
+  }).join('');
+  const regs = CITY_POS.reg.map(r => `<g class="city-g minor${selCity === 'reg' ? ' sel' : ''}" onclick="selectCity('reg')">
+      <circle class="city-dot" cx="${r.x}" cy="${r.y}" r="3.6"></circle>
+      <text class="city-lbl minor" x="${r.x + (r.anchor === 'end' ? -6 : 6)}" y="${r.y + 3.5}"${r.anchor ? ` text-anchor="${r.anchor}"` : ''}>${r.n}</text>
+    </g>`).join('');
+  return `<svg class="nzmap" viewBox="0 0 235 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="뉴질랜드 지도 — 도시를 클릭해 정착 정보 보기">
+    <path class="nz-land" d="${NI}"/>
+    <path class="nz-land" d="${SI}"/>
+    <ellipse class="nz-land" cx="72" cy="344" rx="7" ry="5"/>
+    ${main}${regs}
+  </svg>
+  <div class="dash-sub" style="text-align: center; margin-top: 0.4rem;">작은 점 = 지방 거점 (하나로 묶어 안내)</div>`;
+}
+
+function selectCity(id) {
+  selCity = id;
+  const box = document.getElementById('cityMapBox');
+  if (box) box.innerHTML = cityMapSvg();
+  const panel = document.getElementById('cityInfoPanel');
+  const c = CITIES.find(x => x.id === id);
+  if (!panel || !c) return;
+  panel.innerHTML = `
+    <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem; margin-bottom: 0.2rem;"><strong style="font-size: 1.05rem;">${c.name}</strong><span class="badge estimated">[시세 추정]</span></div>
+    <div class="dash-sub" style="margin-bottom: 0.7rem;">${c.tag}</div>
+    <div class="city-stats">
+      <div><div class="cs-l">방셰어/주</div><div class="cs-v">${c.room}</div></div>
+      <div><div class="cs-l">스튜디오·1베드</div><div class="cs-v">${c.unit}</div></div>
+      <div><div class="cs-l">대중교통</div><div class="cs-v">${c.transport.split(' — ')[0]}</div></div>
+    </div>
+    <div class="advice-box" style="margin: 0.8rem 0;">💡 ${c.strategy}</div>
+    <button class="pill-btn" onclick="jumpTo('settle', 'city-${c.id}')">일자리·한인 인프라 상세 ↓</button>`;
+  annotateVisaTerms(panel);
+}
+
 function renderCities() {
-  const tbody = document.getElementById('citiesTable');
   const box = document.getElementById('citiesContainer');
-  if (!tbody || !box) return;
-  tbody.innerHTML = CITIES.map(c => `
-    <tr style="cursor: pointer;" onclick="jumpTo('settle', 'city-${c.id}')">
-      <td style="font-weight: 700; color: var(--brand);">${c.name.split(' — ')[0]}</td>
-      <td>${c.room}</td>
-      <td>${c.transport.split(' — ')[0]}</td>
-      <td>${c.tag}</td>
-    </tr>
-  `).join('');
+  if (!box) return;
+  selectCity(selCity);
   box.innerHTML = CITIES.map(c => `
     <details class="fold" id="city-${c.id}">
       <summary>
@@ -2936,30 +3152,46 @@ function entryAdjustedPathway(p, entry) {
   return Object.assign({}, p, { stages: p.stages.slice(1), duration, cost, summary: p.summary + ` (${ENTRY_LABEL[entry]} 진입 — WHV 단계 없음)` });
 }
 
+let roadmapAdjust = null;
+function setRoadmapOpt(k, v) {
+  if (!lastDiagnoseResult) return;
+  roadmapAdjust = Object.assign({}, roadmapAdjust, { [k]: v });
+  renderDiagnoseResult(lastDiagnoseResult);
+}
+
 function renderDiagnoseResult(result) {
-  const primaryPath0 = DB.pathways.find(p => p.id === result.primary);
-  const bAuto = ['bach', 'master', 'phd'].includes(result.input.education) ? 'gd' : 'bach';
-  const primaryPath = entryAdjustedPathway(resolveBVariant(primaryPath0, bAuto), result.input.entry || 'whv');
-  if (!primaryPath) {
-    console.error('Pathway not found for ID:', result.primary);
+  const input = result.input;
+  const bAuto = ['bach', 'master', 'phd'].includes(input.education) ? 'gd' : 'bach';
+  // 추천 = 조정 칩 초기값 — 사용자가 칩으로 덮어씀
+  const rec = { path: result.primary, bVar: bAuto, funding: input.funding, ielts: input.english !== 'ielts65' ? 'yes' : 'no' };
+  const adj = Object.assign({}, rec, roadmapAdjust || {});
+  const shownPath0 = DB.pathways.find(p => p.id === adj.path) || DB.pathways.find(p => p.id === result.primary);
+  const shownPath = entryAdjustedPathway(resolveBVariant(shownPath0, adj.bVar), input.entry || 'whv');
+  if (!shownPath) {
+    console.error('Pathway not found for ID:', adj.path);
     return;
   }
+  const isAdjusted = adj.path !== rec.path;
 
   const altPath = result.alt ? DB.pathways.find(p => p.id === result.alt) : null;
 
   let html = '<div class="result-card">';
-  html += `<div class="result-title">당신의 추천 경로: ${primaryPath.name}</div>`;
+  html += `<div class="result-title">${isAdjusted ? `실험 중: ${shownPath.name}` : `당신의 추천 경로: ${shownPath.name}`}</div>`;
   html += '<div class="result-content">';
 
+  const chip = (k, v, label, isRec) => `<button class="pick-chip${adj[k] === v ? ' sel' : ''}${isRec ? ' rec' : ''}" onclick="setRoadmapOpt('${k}', '${v}')">${label}</button>`;
+  html += `<div class="adjust-bar">
+    <div class="adjust-title">🎛️ 로드맵 조정<span class="dash-sub">★추천 = 진단 초기값 · 칩으로 직접 실험</span></div>
+    <div class="pick-row"><span class="pick-q">경로</span>${chip('path', 'A', '직행', rec.path === 'A')}${chip('path', 'B', '유학', rec.path === 'B')}${chip('path', 'C-T1', 'GL 즉시', rec.path === 'C-T1')}${chip('path', 'C-T2', 'GL 근무형', rec.path === 'C-T2')}${chip('path', 'D', '케어', rec.path === 'D')}</div>
+    ${adj.path === 'B' ? `<div class="pick-row"><span class="pick-q">학업</span>${chip('bVar', 'gd', 'GD 1년', rec.bVar === 'gd')}${chip('bVar', 'bach', '학사 3년', rec.bVar === 'bach')}</div>` : ''}
+    <div class="pick-row"><span class="pick-q">자금</span>${chip('funding', 'low', '1만↓', rec.funding === 'low')}${chip('funding', 'mid', '1–3만', rec.funding === 'mid')}${chip('funding', 'high', '3만↑', rec.funding === 'high')}<span class="pick-q" style="margin-left: 0.6rem;">IELTS</span>${chip('ielts', 'yes', '응시 포함', rec.ielts === 'yes')}${chip('ielts', 'no', '면제·보유', rec.ielts === 'no')}</div>
+  </div>`;
+
   if (result.entryReco) {
-    html += `<div style="border-left: 4px solid var(--accent); background: #fdf9f0; padding: 0.8rem 1rem; border-radius: 4px; margin-bottom: 1rem;"><strong>🚪 진입 비자 추천:</strong> ${result.entryReco}<div style="font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem;">아래 로드맵은 워홀 진입 가정 기준입니다 — 진입 비자를 정하면 위 폼에서 바꿔 다시 진단하세요.</div></div>`;
+    html += `<div style="border-left: 4px solid var(--accent); background: #fdf9f0; padding: 0.8rem 1rem; border-radius: 4px; margin-bottom: 1rem;"><strong>🚪 진입 비자 추천:</strong> ${result.entryReco}<div style="font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem;">아래 로드맵은 워홀 진입 가정 — 진입 비자 정하면 위 폼에서 바꿔 재진단.</div></div>`;
   }
 
-  html += `<p style="color: var(--muted); margin-bottom: 0.8rem;">${primaryPath.summary}</p>`;
-  const shownPath = primaryPath;
-  if (primaryPath0 && primaryPath0.studyVariants && primaryPath.id === 'B') {
-    html += `<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.4rem;">학업 길이: <strong>${primaryPath0.studyVariants[bAuto].label}</strong> (학력 답변으로 자동 선택) · ${shownPath.duration} · ${shownPath.cost}</div>`;
-  }
+  html += `<p style="color: var(--muted); margin-bottom: 0.8rem;">${shownPath.summary}</p>`;
   html += buildTimelineBar(shownPath, false);
   html += visaLegendHtml();
 
@@ -2968,11 +3200,12 @@ function renderDiagnoseResult(result) {
   html += `<div><strong>총 비용:</strong> ${shownPath.cost}</div>`;
   html += '</div>';
 
-  if (primaryPath.details && primaryPath.details.requirements) {
-    html += `<div style="font-size: 0.93rem; margin: -0.4rem 0 0.8rem;">🔑 <strong>관문:</strong> ${primaryPath.details.requirements.join(' · ')}</div>`;
+  if (shownPath.details && shownPath.details.requirements) {
+    html += `<div style="font-size: 0.93rem; margin: -0.4rem 0 0.8rem;">🔑 <strong>관문:</strong> ${shownPath.details.requirements.join(' · ')}</div>`;
   }
 
-  html += buildMoneyPlanTable(result.primary, result.input);
+  const planInput = Object.assign({}, input, { funding: adj.funding, english: adj.ielts === 'no' ? 'ielts65' : (input.english === 'ielts65' ? 'ielts4' : input.english) });
+  html += buildMoneyPlanTable(adj.path, planInput);
 
   if (result.warnings.length > 0) {
     html += '<div class="warning-banner">';
@@ -3621,7 +3854,7 @@ function updateCalc() {
     : `총액: NZD ${fmtTotal(total.min)}–${fmtTotal(total.max)}`;
 
   saveState('nzv.calc', readCalcForm());
-  annotateVisaTerms(document.getElementById('calc'));
+  annotateVisaTerms(document.getElementById('calcFold'));
 }
 
 function renderCostBar(items) {
@@ -3810,22 +4043,37 @@ function renderSnapshot() {
   renderChangeline();
 }
 
+let FX_NOW = { KRW: FX_BASE.KRW.v, JPY: FX_BASE.JPY.v, live: false };
+function fmtKrw(nzd) {
+  const k = nzd * FX_NOW.KRW;
+  return k >= 1e5 ? `₩${Math.round(k / 1e4).toLocaleString('en-NZ')}만` : `₩${(Math.round(k / 10) * 10).toLocaleString('en-NZ')}`;
+}
+function fmtJpy(nzd) {
+  const j = nzd * FX_NOW.JPY;
+  if (j < 1e4) return `¥${(Math.round(j / 10) * 10).toLocaleString('en-NZ')}`;
+  const man = j / 1e4;
+  return `¥${(man >= 10 ? Math.round(man) : man.toFixed(1))}万`;
+}
+
 function renderSnapshotTable() {
+  const el = document.getElementById('snapshotTable');
+  if (!el) return;
   let html = '';
 
   // Wages
-  html += `<tr><td colspan="4" style="background: var(--bg); font-weight: 700; padding: 0.8rem;">📊 임금</td></tr>`;
+  html += `<tr><td colspan="5" style="background: var(--bg); font-weight: 700; padding: 0.8rem;">📊 임금 (시급)</td></tr>`;
   Object.entries(DB.wages).forEach(([key, val]) => {
     html += `<tr>
-      <td>${key === 'minWage' ? '최저임금' : key === 'medianWage' ? '중위임금' : key === 'median15' ? '1.5배' : key === 'median20' ? '2배' : '3배'}</td>
-      <td>NZD ${val.v}/시간</td>
-      <td><span class="badge official">[공식]</span></td>
+      <td>${key === 'minWage' ? '최저임금' : key === 'medianWage' ? '중위임금' : key === 'median15' ? '중위 1.5배' : key === 'median20' ? '중위 2배' : '중위 3배'}</td>
+      <td style="font-weight: 700; white-space: nowrap;">$${val.v.toFixed(2)}</td>
+      <td class="fx-eq">${fmtKrw(val.v)}</td>
+      <td class="fx-eq">${fmtJpy(val.v)}</td>
       <td><a href="${val.src}" target="_blank" class="source-link">출처↗</a></td>
     </tr>`;
   });
 
   // Fees
-  html += `<tr><td colspan="4" style="background: var(--bg); font-weight: 700; padding: 0.8rem;">💳 수수료</td></tr>`;
+  html += `<tr><td colspan="5" style="background: var(--bg); font-weight: 700; padding: 0.8rem;">💳 비자 수수료 (From)</td></tr>`;
   Object.entries(DB.fees).forEach(([key, val]) => {
     const names = {
       whv: 'WHV 비자',
@@ -3841,30 +4089,35 @@ function renderSnapshotTable() {
     };
     html += `<tr>
       <td>${names[key]}</td>
-      <td>From NZD ${val.v.toLocaleString('en-NZ')}</td>
-      <td><span class="badge official">[공식]</span></td>
+      <td style="font-weight: 700; white-space: nowrap;">$${val.v.toLocaleString('en-NZ')}</td>
+      <td class="fx-eq">${fmtKrw(val.v)}</td>
+      <td class="fx-eq">${fmtJpy(val.v)}</td>
       <td><a href="${val.src}" target="_blank" class="source-link">출처↗</a></td>
     </tr>`;
   });
 
-  document.getElementById('snapshotTable').innerHTML = html;
+  el.innerHTML = html;
+  const note = document.getElementById('fxNoteRate');
+  if (note) note.textContent = `(NZD 1 = ₩${Math.round(FX_NOW.KRW)} · ¥${FX_NOW.JPY.toFixed(1)}${FX_NOW.live ? ' 실시간' : ' · 2026-07-08 기준'})`;
 }
 
 function renderChangeline() {
   const NOW = '2026-07-08';
+  const ARROW = { up: '▲', down: '▼', flat: '▶' };
   let html = '<div class="trail">';
   let nowShown = false;
   DB.changes.forEach(change => {
+    const dir = change.dir || 'flat';
     if (!nowShown && change.date > NOW) { html += `<div class="trail-now">지금 · 2026-07</div>`; nowShown = true; }
-    html += `<div class="trail-node${change.planned ? ' future' : ''}">
+    html += `<div class="trail-node ${dir}${change.planned ? ' future' : ''}">
       <div class="trail-date">${change.date}${change.planned ? ' · 예정' : ''}</div>
-      <div>${change.text}</div>
+      <div><span class="dir-ic ${dir}">${ARROW[dir]}</span>${change.text}</div>
       ${change.you ? `<div class="trail-you">→ 나에게: ${change.you}</div>` : ''}
     </div>`;
   });
   if (!nowShown) html += `<div class="trail-now">지금 · 2026-07</div>`;
   html += '</div>';
-  html += `<div style="font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem;"><span style="color: var(--brand);">●</span> 시행 완료 &nbsp; <span style="color: var(--accent);">◉</span> 시행 예정</div>`;
+  html += `<div style="font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem;"><span class="dir-ic up">▲</span>완화 <span class="dir-ic down">▼</span>긴축 <span class="dir-ic flat">▶</span>기준조정 · 깜빡임 = 시행 예정</div>`;
   document.getElementById('changelineContainer').innerHTML = html;
 }
 
@@ -3885,10 +4138,11 @@ const SEARCH_INDEX = [
   { q: '돈 자금 부족 저축 저렴 싸게', label: '자금이 부족할 때', desc: 'Care·트레이드·저축 플랜 비교', go: 'scenarios', target: 'sc-5' },
   { q: '만료 연장 시즌잡 오버스테이 잡오퍼 없음 임박', label: '만료가 코앞일 때', desc: '시즌 연장 +3개월 / 학생비자 / 귀국', go: 'scenarios', target: 'sc-6' },
   { q: '6개월 골든타임 준비 언제 타이밍', label: '워홀 6개월 차 체크리스트', desc: '만료 3개월 전이 잡오퍼 마지노선', go: 'scenarios', target: 'sc-0' },
-  { q: '수수료 비용 계산기 총비용 얼마 예산', label: '총비용 계산기', desc: '경로·옵션별 총액 산출', go: 'calc', target: null },
+  { q: '수수료 비용 계산기 총비용 얼마 예산', label: '총비용 계산기', desc: '경로·옵션별 총액 산출 — 로드맵 탭', go: 'diagnose', target: 'calcFold' },
   { q: '중위임금 최저임금 시급 임금 wage 23.95 35', label: '임금 기준 (2026)', desc: '최저 23.95 · 중위 35.00/h', go: 'snapshot', target: 'keyfigures' },
   { q: '개편 변경 2026 타임라인 8월 11월 새 제도', label: '2025–26 변경 타임라인', desc: 'SMC 개편(8/24) · PSWV 개편(11/16)', go: 'snapshot', target: 'changeline' },
   { q: '직군 추천 미정 탐색 뭐 하지 뭘 할까 선택 고르기 비교 결정', label: '직군 선택기 — 조건으로 고르기', desc: '경력·자금·목표만으로 8개 직군을 거름', go: 'jobs', target: 'jobPicker' },
+  { q: '유학 과정 학비 등록 코스 학교 폴리텍 배우기 시작 무경력 훈련', label: '과정 등록으로 시작하기 — 유학·훈련 비교', desc: '직군별 과정 레벨·학비·졸업 후 근로권 한눈에', go: 'jobs', target: 'courseEntry' },
   { q: '개발자 it 프로그래머 소프트웨어', label: '직군: IT·개발', desc: '80k–120k+ · GL T1 · ★5', go: 'jobs', target: 'job-dev' },
   { q: '셰프 요리사 주방 호스피탈리티 쿡', label: '직군: 셰프·호스피탈리티', desc: '55k–85k · SMC 시급 35 관건', go: 'jobs', target: 'job-chef' },
   { q: '트레이드 전기공 배관공 목수 용접 건설', label: '직군: 건설 트레이드', desc: '75k–110k · 전기공 GL T2', go: 'jobs', target: 'job-trade' },
@@ -4065,7 +4319,7 @@ function onboardRoute(entry, goal) {
     if (ALLOWED.entry && ALLOWED.entry.includes(entry)) setRadio('entry', entry);
     jumpTo('diagnose', 'diagnoseForm');
   } else if (goal === 'money') {
-    if (entry === 'student') { setCalcForm({ pathway: 'B', study: 'gd', city: 'akl', opts: [] }); updateCalc(); jumpTo('calc', null); }
+    if (entry === 'student') { setCalcForm({ pathway: 'B', study: 'gd', city: 'akl', opts: [] }); updateCalc(); jumpTo('diagnose', 'calcFold'); }
     else jumpTo('settle', 'survival');
   } else if (goal === 'job') {
     jumpTo('jobs', 'jobPicker');
@@ -4365,7 +4619,14 @@ function applySharedParams(section, query) {
   if (section === 'calc' && params.get('c')) {
     const parts = params.get('c').split('.');
     const s = { pathway: parts[0], study: parts[1], city: parts[2], opts: parts[3] ? parts[3].split('-') : [] };
-    if (setCalcForm(s)) updateCalc();
+    if (setCalcForm(s)) {
+      updateCalc();
+      const fold = document.getElementById('calcFold');
+      if (fold) {
+        fold.open = true;
+        setTimeout(() => fold.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
+      }
+    }
   }
 }
 
