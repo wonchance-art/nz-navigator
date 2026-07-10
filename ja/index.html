@@ -1175,7 +1175,7 @@ details.fold:not([open]) > .fold-body { display: none; }
 .job-sum { display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem; align-items: baseline; }
 .job-sum > span { white-space: nowrap; font-size: 0.82rem; }
 .job-sal { font-weight: 700; color: var(--brand-deep); }
-.jobs-list-m { display: none; margin-bottom: 1.2rem; }
+
 .jl-row { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 0.7rem 0.85rem; margin-bottom: 0.5rem; cursor: pointer; }
 .jl-row:active { background: var(--bg); }
 .jl-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
@@ -1184,10 +1184,31 @@ details.fold:not([open]) > .fold-body { display: none; }
 .jl-dots { display: flex; gap: 1rem; font-size: 0.8rem; margin-top: 0.25rem; }
 .jl-dots > span { white-space: nowrap; }
 .jl-meta { color: var(--muted); font-size: 0.78rem; margin-top: 0.25rem; line-height: 1.4; }
-@media (max-width: 680px) {
-  .jobs-table-wrap { display: none; }
-  .jobs-list-m { display: block; }
+.course-grid { display: grid; grid-template-columns: 1fr; gap: 0.6rem; }
+@media (min-width: 681px) { .course-grid { grid-template-columns: 1fr 1fr; } }
+.course-grid .jl-row { margin-bottom: 0; }
+.course-grid .jl-sal { white-space: normal; text-align: right; max-width: 46%; word-break: keep-all; }
+/* job fold summary — desktop columns / mobile stack */
+.job-fold summary.job-summary { display: flex; flex-wrap: wrap; gap: 0.15rem 0.9rem; align-items: baseline; }
+.job-summary .fold-title { flex: 1 1 auto; }
+.job-summary .job-sal { margin-left: auto; font-weight: 700; color: var(--brand-deep); white-space: nowrap; }
+.js-demand, .js-pr { font-size: 0.82rem; white-space: nowrap; }
+.job-summary .job-meta { flex-basis: 100%; color: var(--muted); font-size: 0.78rem; }
+@media (max-width: 860px) {
+  .job-fold summary.job-summary { display: grid; grid-template-columns: 1.1rem auto 1fr; column-gap: 0.55rem; row-gap: 0.25rem; align-items: baseline; }
+  .job-summary .fold-title { grid-column: 2; grid-row: 1; }
+  .job-summary .job-sal { grid-column: 3; grid-row: 1; justify-self: end; margin-left: 0; }
+  .js-demand { grid-column: 2; grid-row: 2; }
+  .js-pr { grid-column: 3; grid-row: 2; justify-self: start; }
+  .job-summary .job-meta { grid-column: 2 / 4; grid-row: 3; }
 }
+@media (min-width: 861px) {
+  .job-fold summary.job-summary { display: grid; grid-template-columns: 1.1rem minmax(150px, 200px) 128px 145px minmax(0, 1fr) auto; column-gap: 1rem; align-items: center; }
+  .job-summary .fold-title { flex: none; }
+  .job-summary .job-meta { flex-basis: auto; }
+  .job-summary .job-sal { margin-left: 0; text-align: right; }
+}
+
 .cost-bar { display: flex; height: 22px; border-radius: 6px; overflow: hidden; margin: 0.7rem 0 0.5rem; border: 1px solid var(--line); }
 .cost-seg { height: 100%; }
 .cost-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.82rem; }
@@ -1611,30 +1632,13 @@ details.fold:not([open]) > .fold-body { display: none; }
       </div>
     </details>
 
-    <div class="jobs-table-wrap" style="overflow-x: auto; margin-bottom: 1.2rem;">
-      <table class="snapshot-table">
-        <thead>
-          <tr>
-            <th>職種</th>
-            <th>就職難易度</th>
-            <th>永住権難易度</th>
-            <th>留学必要?</th>
-            <th>予想期間</th>
-            <th>予想費用(NZD)</th>
-          </tr>
-        </thead>
-        <tbody id="jobsGuideTable"></tbody>
-      </table>
-    </div>
-    <div class="jobs-list-m" id="jobsListM"></div>
-
     <details class="fold" id="courseEntry">
       <summary>
         <span class="fold-title">🎓 過程登録で開始 — 無経歴者用留学・訓練比較</span>
         <span class="fold-sub">過程レベルが卒業後の労働権を決定します</span>
       </summary>
       <div class="fold-body">
-        <p style="color: var(--muted); font-size: 0.92rem; margin-bottom: 0.8rem;">技術・経歴なしでその職種を新たに開始するなら過程登録が出発点です。ただし、<strong>どのレベルの過程かが卒業後の就労権を決定</strong>します — 今登録すれば卒業時点で2026-11-16改編規則が適用されます。</p>
+        <p style="color: var(--muted); font-size: 0.92rem; margin-bottom: 0.8rem;">無経歴スタート = 課程登録から。ただし<strong>課程レベルが卒業後の労働権を決定</strong> — 今登録すれば卒業時は2026-11-16規則が適用。</p>
         <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 1rem;">
           <strong>📜 卒業後労働権 (2026-11-16改編基準)</strong> <span class="badge official">[公式]</span>
           <ul class="jt-list" style="color: var(--muted); font-size: 0.92rem;">
@@ -1645,30 +1649,28 @@ details.fold:not([open]) > .fold-body { display: none; }
             <li>学業中の労働は週25h ・ 学生ビザ $850 + 資金証明 年 $20,000 別途</li>
           </ul>
         </div>
-        <div style="overflow-x: auto;">
-          <table class="snapshot-table">
-            <thead><tr><th>職種</th><th>過程 (レベル・期間)</th><th>留学生学費 (NZD)</th><th>卒業後労働権</th><th>就職・年収</th><th>永住権</th></tr></thead>
-            <tbody>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-dev')"><td style="font-weight:700; color: var(--brand);">IT・開発<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 最高年収 + GL T1 — 学士あれば1年GDが最短</div></td><td>GD IT (L7・1年, 学士先行)<br>学士 IT (L7・3年)</td><td>GD 26,415 (Unitec) <span class="badge official">[公式]</span><br>学士 年 20,000–42,600 (ポリテク~AUT)</td><td>GD → 1年<br>学士 → 3年</td><td>●●○○○ ・ 80–120k+</td><td>●●●●● GL T1</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-engineer')"><td style="font-weight:700; color: var(--brand);">エンジニア<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 所得・永住権最良 — ただし最も高い過程</div></td><td>BE(Hons) (L8・4年)</td><td>年 45,700–58,000 ・ 4年計 ~196k–232k <span class="badge official">[公式]</span></td><td>3年</td><td>●●●○○ ・ 78.7–138k</td><td>●●●●● GL T1</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-office')"><td style="font-weight:700; color: var(--brand);">会計 (事務)<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 非専攻学士が1.5年で専門職転換 — ポリテクMPAが最高コスパ</div></td><td>MPA会計修士 (L9・15–18ヶ月, 学士先行)</td><td>計 30,415 (Unitec) ~ 76,723 (オークランド大) <span class="badge official">[公式]</span></td><td>3年</td><td>●●○○○ ・ 75–116k</td><td>●●○○○ SMC + CA加算</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-health')"><td style="font-weight:700; color: var(--brand);">看護<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 卒業 = 登録直結 + 需要常時 — 登録英語(IELTS 7.0級)は別の関門</div></td><td>看護学士 (L7・3年)</td><td>年 30,185 (Unitec) <span class="badge official">[公式]</span> ・ 3年計 ~91k+</td><td>3年 + 看護登録</td><td>●●●○○ ・ 85–95k</td><td>●●●●● GL T1</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-teacher')"><td style="font-weight:700; color: var(--brand);">教師<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 1年過程でGL T1 — ただしIELTS 7.0全領域、英語の壁最高</div></td><td>GradDip Teaching (L7・1年, 学士先行)<br>Master of Teaching (L9・1年)</td><td>28,706 (中等)–35,890 (初等, NZGSE) <span class="badge official">[公式]</span><br>修士 51,000 (UC)</td><td>GD → 1年<br>修士 → 3年</td><td>●●○○○(中等)~●(初等) ・ 70–80k</td><td>●●●●● GL T1</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-chef')"><td style="font-weight:700; color: var(--warn);">シェフ ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">正直: 調理は卒業ビザ指定職業から漏れ — 留学価値急減、ワーホリ厨房経歴が良い</div></td><td>Cookery L4 (1年) / L5 (2年)</td><td>L4 26,572 (Ara) <span class="badge official">[公式]</span> / L5 2年 ~50k <span class="badge estimated">[推定]</span></td><td><strong>L4 → なし ・ L5 → 6ヶ月1回</strong></td><td>●●●●○ ・ 55–85k</td><td>●●●○○ 経歴軸</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-trade')"><td style="font-weight:700; color: var(--warn);">トレード ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">正直: 見習いは雇用前提 — 留学生直行不可。ワーホリ→現場→見習いが現実経路</div></td><td>Pre-trade L3 (1年) / 電気ディプロマ L6 (2年)</td><td>L3 26,415 (Unitec) / L6 2年 29,615 <span class="badge official">[公式]</span></td><td>L3 → なし ・ L6 → 6ヶ月1回</td><td>●●●○○ ・ 85–110k (資格後)</td><td>●●●●○ GL T2 (資格後)</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-trade')"><td style="font-weight:700; color: var(--brand);">自動車整備<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">注意: 過程のみでは労働権不足 — 雇用主スポンサー確保が鍵</div></td><td>Automotive L4 (1年)</td><td>26,600 (Otago) <span class="badge official">[公式]</span></td><td>なし (L4) — 雇用主ワークビザ転換必要</td><td>●●●○○ ・ 55–90k</td><td>●●●●○ GL T2</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-livestock')"><td style="font-weight:700; color: var(--brand);">畜産・酪農<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 学費 0 — 就職して働きながら学ぶが公式トラック</div></td><td>過程不要 — Primary ITO L4 (働きながら ~20ヶ月)</td><td>~0 (雇用基盤)</td><td>— (最初から労働)</td><td>●●●●● ・ 63–87k</td><td>●●●●○ GL T2 (マネージャー)</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-agri')"><td style="font-weight:700; color: var(--warn);">園芸 ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">正直: 留学非推奨 — 現場で学びながら資格並行が上位互換</div></td><td>Horticulture L4 (1年)</td><td>18,000–25,000 <span class="badge estimated">[推定]</span></td><td><strong>なし (L4)</strong></td><td>●●●●● ・ 時給 23.95–30</td><td>●●●○○ 昇進軸</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-fieldwork')"><td style="font-weight:700; color: var(--brand);">現場職・物流<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">過程不要 — 短期資格(フォークリフト等)で十分</div></td><td>過程不要</td><td>~数百 (短期資格)</td><td>—</td><td>●●●●● ・ 55–70k</td><td>●○○○○ 昇格前提</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <div class="course-grid" id="courseListM"></div>
         <div style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.8rem;">
-          <div style="border-left: 4px solid var(--brand); background: var(--bg); padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>💰 コスパランキング</strong><div style="color: var(--muted); margin-top: 0.3rem;">① 畜産 ~0 (働きながら学ぶ) ② 会計 MPA 30.4k (Unitec, 1.5年→卒業ビザ3年) ③ IT GD 26.4k (1年→1年, 学士保有者) ④ 教師 GradDip 28.7k~ (1年→GL T1) — 反対側の端はエンジニア学士 ~200k+.</div></div>
-          <div style="border-left: 4px solid var(--warn); background: #fdf9f0; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>⚠️ 留学が罠の職種</strong><div style="color: var(--muted); margin-top: 0.3rem;">調理・園芸は卒業ビザ指定職業ではないため過程を終わらせても労働権が6ヶ月以下 — 学費26k+を使っても経歴者より不利です。この2つはワーホリで現場進入が上位互換。</div></div>
-          <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>🗣️ 英語の関門ランキング</strong><div style="color: var(--muted); margin-top: 0.3rem;">教師 IELTS 7.0全領域 &gt; 看護登録 7.0級 <span class="badge estimated">[推定]</span> &gt; 修士入学 6.5 &gt; 学士入学 6.0 &gt; 職業過程 5.0–5.5. 入学英語と(看護・教師の)登録英語は別の関門。</div></div>
+          <div style="border-left: 4px solid var(--brand); background: var(--bg); padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>💰 コスパランキング</strong><ul class="jt-list" style="color: var(--muted); font-size: 0.88rem;">
+            <li>① 畜産 ~0 — 働きながら学ぶ</li>
+            <li>② 会計 MPA 30.4k — 1.5年 → 卒業ビザ3年</li>
+            <li>③ IT GD 26.4k — 1年 → 1年 (学士保有者)</li>
+            <li>④ 教師 GradDip 28.7k~ — 1年 → GL T1</li>
+            <li>対極: エンジニア学士 ~200k+</li>
+          </ul></div>
+          <div style="border-left: 4px solid var(--warn); background: #fdf9f0; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>⚠️ 留学が罠の職種</strong><ul class="jt-list" style="color: var(--muted); font-size: 0.88rem;">
+            <li>調理・園芸 — 卒業ビザ指定職業ではない</li>
+            <li>課程を終えても労働権6ヶ月以下 — 学費26k+が無駄に</li>
+            <li>この2つはワーホリ現場参入が上位互換</li>
+          </ul></div>
+          <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>🗣️ 英語の関門ランキング</strong><ul class="jt-list" style="color: var(--muted); font-size: 0.88rem;">
+            <li>教師 — IELTS 7.0 全領域 (最高の壁)</li>
+            <li>看護登録 — 7.0級 <span class="badge estimated">[推定]</span></li>
+            <li>修士 6.5 ・ 学士 6.0 ・ 職業課程 5.0–5.5</li>
+            <li>入学英語 ≠ 登録英語(看護・教師) — 別の関門</li>
+          </ul></div>
         </div>
-        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.8rem;">学費は2026年international fee — 機関・年度別変動が大きく多くの機関が未公表状態のため登録前に該当機関公式ページで確認必須。生活費(年 ~20k)・ビザ費用別途 — 総額シミュレーションは <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('diagnose', 'calcFold')">ロードマップタブ費用計算機</button>から。基準日 2026-07-08 ・ 出典: 各機関公式ページ・immigration.govt.nz</p>
+        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.8rem;">学費 = 2026年 international fee (変動大 — 登録前に機関公式ページで確認必須)。生活費 年 ~20k・ビザ費用別途 — 総額は <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('diagnose', 'calcFold')">ロードマップタブ費用計算機</button>から。基準日 2026-07-08 ・ 出典: 各機関公式ページ・immigration.govt.nz</p>
       </div>
     </details>
 
@@ -3960,6 +3962,39 @@ function journeyHtml(job) {
     </div>`;
 }
 
+const COURSE_DB = [
+  { id: 'dev', n: 'IT・開発', hook: '魅力: 最高年収 + GL T1 — 学士あれば1年GDが最短', c: ['GD IT (L7・1年, 学士先行)', '学士 IT (L7・3年)'], fee: ['GD 26,415 (Unitec) [公式]', '学士 年 20,000–42,600'], w: ['GD → 1年', '学士 → 3年'], sal: '●●○○○ ・ 80–120k+', pr: '●●●●● GL T1' },
+  { id: 'engineer', n: 'エンジニア', hook: '魅力: 所得・永住権最良 — ただし最も高い課程', c: ['BE(Hons) (L8・4年)'], fee: ['年 45,700–58,000 ・ 4年計 ~196k–232k [公式]'], w: ['3年'], sal: '●●●○○ ・ 78.7–138k', pr: '●●●●● GL T1' },
+  { id: 'office', n: '会計 (事務)', hook: '魅力: 非専攻学士が1.5年で専門職転換 — ポリテクMPAが最高コスパ', c: ['MPA会計修士 (L9・15–18ヶ月, 学士先行)'], fee: ['計 30,415 (Unitec) ~ 76,723 (オークランド大) [公式]'], w: ['3年'], sal: '●●○○○ ・ 75–116k', pr: '●●○○○ SMC + CA加算' },
+  { id: 'health', n: '看護', hook: '魅力: 卒業 = 登録直結 + 需要常時 — 登録英語(IELTS 7.0級)は別の関門', c: ['看護学士 (L7・3年)'], fee: ['年 30,185 (Unitec) [公式] ・ 3年計 ~91k+'], w: ['3年 + 看護登録'], sal: '●●●○○ ・ 85–95k', pr: '●●●●● GL T1' },
+  { id: 'teacher', n: '教師', hook: '魅力: 1年課程でGL T1 — ただしIELTS 7.0全領域、英語の壁最高', c: ['GradDip Teaching (L7・1年, 学士先行)', 'Master of Teaching (L9・1年)'], fee: ['28,706 (中等)–35,890 (初等) [公式]', '修士 51,000 (UC)'], w: ['GD → 1年', '修士 → 3年'], sal: '●●○○○(中等)~●(初等) ・ 70–80k', pr: '●●●●● GL T1' },
+  { id: 'chef', n: 'シェフ ⚠️', warn: 1, hook: '正直: 調理は卒業ビザ指定職業から漏れ — 留学価値急減、ワーホリ厨房経歴が良い', c: ['Cookery L4 (1年) / L5 (2年)'], fee: ['L4 26,572 (Ara) [公式] / L5 2年 ~50k [推定]'], w: ['<strong>L4 → なし ・ L5 → 6ヶ月1回</strong>'], sal: '●●●●○ ・ 55–85k', pr: '●●●○○ 経歴軸' },
+  { id: 'trade', n: 'トレード ⚠️', warn: 1, hook: '正直: 見習いは雇用前提 — 留学生直行不可。ワーホリ→現場→見習いが現実経路', c: ['Pre-trade L3 (1年) / 電気ディプロマ L6 (2年)'], fee: ['L3 26,415 (Unitec) / L6 2年 29,615 [公式]'], w: ['L3 → なし ・ L6 → 6ヶ月1回'], sal: '●●●○○ ・ 85–110k (資格後)', pr: '●●●●○ GL T2 (資格後)' },
+  { id: 'trade', n: '自動車整備', hook: '注意: 課程のみでは労働権不足 — 雇用主スポンサー確保が鍵', c: ['Automotive L4 (1年)'], fee: ['26,600 (Otago) [公式]'], w: ['なし (L4) — 雇用主ワークビザ転換必要'], sal: '●●●○○ ・ 55–90k', pr: '●●●●○ GL T2' },
+  { id: 'livestock', n: '畜産・酪農', hook: '魅力: 学費 0 — 就職して働きながら学ぶのが公式トラック', c: ['課程不要 — Primary ITO L4 (働きながら ~20ヶ月)'], fee: ['~0 (雇用基盤)'], w: ['— (最初から労働)'], sal: '●●●●● ・ 63–87k', pr: '●●●●○ GL T2 (マネージャー)' },
+  { id: 'agri', n: '園芸 ⚠️', warn: 1, hook: '正直: 留学非推奨 — 現場で学びながら資格並行が上位互換', c: ['Horticulture L4 (1年)'], fee: ['18,000–25,000 [推定]'], w: ['<strong>なし (L4)</strong>'], sal: '●●●●● ・ 時給 23.95–30', pr: '●●●○○ 昇進軸' },
+  { id: 'fieldwork', n: '現場職・物流', hook: '課程不要 — 短期資格(フォークリフト等)で十分', c: ['課程不要'], fee: ['~数百 (短期資格)'], w: ['—'], sal: '●●●●● ・ 55–70k', pr: '●○○○○ 昇格前提' }
+];
+
+function courseBadge(s) {
+  return s.replace(/\[公式\]/g, '<span class="badge official">[公式]</span>').replace(/\[推定\]/g, '<span class="badge estimated">[推定]</span>');
+}
+
+function renderCourseEntry() {
+  const list = document.getElementById('courseListM');
+  if (list) list.innerHTML = COURSE_DB.map(r => `
+    <div class="jl-row" onclick="jumpTo('jobs', 'job-${r.id}')">
+      <div class="jl-top"><span class="jl-name" ${r.warn ? 'style="color: var(--warn);"' : ''}>${r.n}</span><span class="jl-sal">${r.pr}</span></div>
+      <div class="jl-meta">${r.hook}</div>
+      <ul class="jt-list" style="font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem;">
+        <li>課程: ${courseBadge(r.c.join(' / '))}</li>
+        <li>学費: ${courseBadge(r.fee.join(' / '))}</li>
+        <li>労働権: ${r.w.join(' / ')}</li>
+        <li>就職・年収: ${r.sal}</li>
+      </ul>
+    </div>`).join('');
+}
+
 const JOB_GROUPS = [
   { t: '🎯 GL専門職 — 永住権が最有利', ids: ['dev', 'engineer', 'health', 'teacher'] },
   { t: '🔧 技術・経験職 — 経験が資格', ids: ['trade', 'chef'] },
@@ -3979,15 +4014,20 @@ function renderJobs() {
   DB.jobs.filter(j => !JOB_GROUPS.some(g => g.ids.includes(j.id))).forEach(job => { html += jobFoldHtml(job); });
   document.getElementById('jobsContainer').innerHTML = html;
   renderJobsGuideTable();
+  renderCourseEntry();
   annotateVisaTerms(document.getElementById('jobsContainer'));
 }
 
 function jobFoldHtml(job) {
+  const g = job.guide;
   let html = `
-      <details class="fold" id="job-${job.id}">
-        <summary>
+      <details class="fold job-fold" id="job-${job.id}">
+        <summary class="job-summary">
           <span class="fold-title">${job.name}</span>
-          <span class="fold-sub job-sum"><span>就職 ${lvDots(job.guide ? job.guide.demandLv : 3)}</span><span>永住権 ${lvDots(job.guide ? job.guide.prLv : 3)}</span><span class="job-sal">${SALARY_SHORT[job.id] || job.salary}</span></span>
+          <span class="js-demand">就職 ${lvDots(g ? g.demandLv : 3)}</span>
+          <span class="js-pr">永住権 ${lvDots(g ? g.prLv : 3)}</span>
+          <span class="job-meta">${g ? `${g.studyShort} ・ ${g.periodShort} ・ ${g.costShort}` : ''}</span>
+          <span class="job-sal">${SALARY_SHORT[job.id] || job.salary}</span>
         </summary>
         <div class="fold-body">
           <div class="job-stats">
@@ -4057,33 +4097,6 @@ function lvDots(n) {
 }
 
 function renderJobsGuideTable() {
-  const tbody = document.getElementById('jobsGuideTable');
-  if (!tbody) return;
-  const ordered = JOB_GROUPS.flatMap(g => [{ g }].concat(
-    g.ids.map(id => DB.jobs.find(j => j.id === id)).filter(j => j && j.guide).map(j => ({ j }))
-  ));
-  tbody.innerHTML = ordered.map(x => x.g
-    ? `<tr><td colspan="6" style="background: var(--bg); font-weight: 700; padding: 0.55rem 0.8rem; font-size: 0.85rem;">${x.g.t}</td></tr>`
-    : `
-    <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-${x.j.id}')">
-      <td style="font-weight: 700; color: var(--brand);">${x.j.name}</td>
-      <td>${lvDots(x.j.guide.demandLv || 3)}<div style="font-size: 0.78rem; color: var(--muted);">${x.j.guide.demand}</div></td>
-      <td>${lvDots(x.j.guide.prLv || 3)}<div style="font-size: 0.78rem; color: var(--muted);">${x.j.guide.pr}</div></td>
-      <td>${x.j.guide.studyShort}</td>
-      <td>${x.j.guide.periodShort}</td>
-      <td>${x.j.guide.costShort}</td>
-    </tr>`).join('');
-  const listEl = document.getElementById('jobsListM');
-  if (listEl) {
-    listEl.innerHTML = JOB_GROUPS.map(g => `
-      <div class="job-group-h">${g.t}</div>
-      ${g.ids.map(id => DB.jobs.find(j => j.id === id)).filter(j => j && j.guide).map(j => `
-      <div class="jl-row" onclick="jumpTo('jobs', 'job-${j.id}')">
-        <div class="jl-top"><span class="jl-name">${j.name}</span><span class="jl-sal">${SALARY_SHORT[j.id] || ''}</span></div>
-        <div class="jl-dots"><span>就職 ${lvDots(j.guide.demandLv || 3)}</span><span>永住権 ${lvDots(j.guide.prLv || 3)}</span></div>
-        <div class="jl-meta">${j.guide.studyShort} ・ ${j.guide.periodShort} ・ ${j.guide.costShort}</div>
-      </div>`).join('')}`).join('');
-  }
   const savedPick = loadState('nzv.jobpick');
   if (savedPick && ['none', 'over2', 'qualified'].includes(savedPick.exp) && ['low', 'high'].includes(savedPick.fund) && PICK_PRI.some(p => p.v === savedPick.pri)) pickState = savedPick;
   renderJobPicker();

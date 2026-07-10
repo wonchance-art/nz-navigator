@@ -1175,7 +1175,7 @@ details.fold:not([open]) > .fold-body { display: none; }
 .job-sum { display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem; align-items: baseline; }
 .job-sum > span { white-space: nowrap; font-size: 0.82rem; }
 .job-sal { font-weight: 700; color: var(--brand-deep); }
-.jobs-list-m { display: none; margin-bottom: 1.2rem; }
+
 .jl-row { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 0.7rem 0.85rem; margin-bottom: 0.5rem; cursor: pointer; }
 .jl-row:active { background: var(--bg); }
 .jl-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
@@ -1184,10 +1184,31 @@ details.fold:not([open]) > .fold-body { display: none; }
 .jl-dots { display: flex; gap: 1rem; font-size: 0.8rem; margin-top: 0.25rem; }
 .jl-dots > span { white-space: nowrap; }
 .jl-meta { color: var(--muted); font-size: 0.78rem; margin-top: 0.25rem; line-height: 1.4; }
-@media (max-width: 680px) {
-  .jobs-table-wrap { display: none; }
-  .jobs-list-m { display: block; }
+.course-grid { display: grid; grid-template-columns: 1fr; gap: 0.6rem; }
+@media (min-width: 681px) { .course-grid { grid-template-columns: 1fr 1fr; } }
+.course-grid .jl-row { margin-bottom: 0; }
+.course-grid .jl-sal { white-space: normal; text-align: right; max-width: 46%; word-break: keep-all; }
+/* 직군 fold 요약 — 데스크톱 열 정렬 / 모바일 스택 */
+.job-fold summary.job-summary { display: flex; flex-wrap: wrap; gap: 0.15rem 0.9rem; align-items: baseline; }
+.job-summary .fold-title { flex: 1 1 auto; }
+.job-summary .job-sal { margin-left: auto; font-weight: 700; color: var(--brand-deep); white-space: nowrap; }
+.js-demand, .js-pr { font-size: 0.82rem; white-space: nowrap; }
+.job-summary .job-meta { flex-basis: 100%; color: var(--muted); font-size: 0.78rem; }
+@media (max-width: 860px) {
+  .job-fold summary.job-summary { display: grid; grid-template-columns: 1.1rem auto 1fr; column-gap: 0.55rem; row-gap: 0.25rem; align-items: baseline; }
+  .job-summary .fold-title { grid-column: 2; grid-row: 1; }
+  .job-summary .job-sal { grid-column: 3; grid-row: 1; justify-self: end; margin-left: 0; }
+  .js-demand { grid-column: 2; grid-row: 2; }
+  .js-pr { grid-column: 3; grid-row: 2; justify-self: start; }
+  .job-summary .job-meta { grid-column: 2 / 4; grid-row: 3; }
 }
+@media (min-width: 861px) {
+  .job-fold summary.job-summary { display: grid; grid-template-columns: 1.1rem minmax(150px, 200px) 128px 145px minmax(0, 1fr) auto; column-gap: 1rem; align-items: center; }
+  .job-summary .fold-title { flex: none; }
+  .job-summary .job-meta { flex-basis: auto; }
+  .job-summary .job-sal { margin-left: 0; text-align: right; }
+}
+
 .cost-bar { display: flex; height: 22px; border-radius: 6px; overflow: hidden; margin: 0.7rem 0 0.5rem; border: 1px solid var(--line); }
 .cost-seg { height: 100%; }
 .cost-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.82rem; }
@@ -1611,30 +1632,13 @@ details.fold:not([open]) > .fold-body { display: none; }
       </div>
     </details>
 
-    <div class="jobs-table-wrap" style="overflow-x: auto; margin-bottom: 1.2rem;">
-      <table class="snapshot-table">
-        <thead>
-          <tr>
-            <th>직군</th>
-            <th>취업 난이도</th>
-            <th>영주권 난이도</th>
-            <th>유학 필요?</th>
-            <th>예상 기간</th>
-            <th>예상 비용(NZD)</th>
-          </tr>
-        </thead>
-        <tbody id="jobsGuideTable"></tbody>
-      </table>
-    </div>
-    <div class="jobs-list-m" id="jobsListM"></div>
-
     <details class="fold" id="courseEntry">
       <summary>
         <span class="fold-title">🎓 과정 등록으로 시작하기 — 무경력자용 유학·훈련 비교</span>
         <span class="fold-sub">과정 레벨이 졸업 후 근로권을 결정합니다</span>
       </summary>
       <div class="fold-body">
-        <p style="color: var(--muted); font-size: 0.92rem; margin-bottom: 0.8rem;">기술·경력 없이 그 직군을 새로 시작하려면 과정 등록이 출발점입니다. 단, <strong>어떤 레벨의 과정이냐가 졸업 후 일할 권리를 결정</strong>합니다 — 지금 등록하면 졸업 시점엔 2026-11-16 개편 규칙이 적용됩니다.</p>
+        <p style="color: var(--muted); font-size: 0.92rem; margin-bottom: 0.8rem;">무경력 출발 = 과정 등록부터. 단 <strong>과정 레벨이 졸업 후 근로권을 결정</strong> — 지금 등록하면 졸업 땐 2026-11-16 규칙 적용.</p>
         <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 1rem;">
           <strong>📜 졸업 후 근로권 (2026-11-16 개편 기준)</strong> <span class="badge official">[공식]</span>
           <ul class="jt-list" style="color: var(--muted); font-size: 0.92rem;">
@@ -1645,30 +1649,28 @@ details.fold:not([open]) > .fold-body { display: none; }
             <li>학업 중 근로 주 25h · 학생비자 $850 + 자금증명 연 $20,000 별도</li>
           </ul>
         </div>
-        <div style="overflow-x: auto;">
-          <table class="snapshot-table">
-            <thead><tr><th>직군</th><th>과정 (레벨·기간)</th><th>유학생 학비 (NZD)</th><th>졸업 후 근로권</th><th>취업·연봉</th><th>영주권</th></tr></thead>
-            <tbody>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-dev')"><td style="font-weight:700; color: var(--brand);">IT·개발<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">매력: 최고 연봉 + GL T1 — 학사 있으면 1년 GD가 최단</div></td><td>GD IT (L7·1년, 학사 선행)<br>학사 IT (L7·3년)</td><td>GD 26,415 (Unitec) <span class="badge official">[공식]</span><br>학사 연 20,000–42,600 (폴리텍~AUT)</td><td>GD → 1년<br>학사 → 3년</td><td>●●○○○ · 80–120k+</td><td>●●●●● GL T1</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-engineer')"><td style="font-weight:700; color: var(--brand);">엔지니어<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">매력: 소득·영주권 최상 — 단 가장 비싼 과정</div></td><td>BE(Hons) (L8·4년)</td><td>연 45,700–58,000 · 4년 총 ~196k–232k <span class="badge official">[공식]</span></td><td>3년</td><td>●●●○○ · 78.7–138k</td><td>●●●●● GL T1</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-office')"><td style="font-weight:700; color: var(--brand);">회계 (사무)<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">매력: 비전공 학사가 1.5년에 전문직 전환 — 폴리텍 MPA가 가성비 최고</div></td><td>MPA 회계석사 (L9·15–18개월, 학사 선행)</td><td>총 30,415 (Unitec) ~ 76,723 (오클랜드대) <span class="badge official">[공식]</span></td><td>3년</td><td>●●○○○ · 75–116k</td><td>●●○○○ SMC + CA 가산</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-health')"><td style="font-weight:700; color: var(--brand);">간호<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">매력: 졸업 = 등록 직결 + 수요 상시 — 등록 영어(IELTS 7.0급)는 별도 관문</div></td><td>간호학사 (L7·3년)</td><td>연 30,185 (Unitec) <span class="badge official">[공식]</span> · 3년 총 ~91k+</td><td>3년 + 간호 등록</td><td>●●●○○ · 85–95k</td><td>●●●●● GL T1</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-teacher')"><td style="font-weight:700; color: var(--brand);">교사<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">매력: 1년 과정으로 GL T1 — 단 IELTS 7.0 전 영역, 영어 장벽 최고</div></td><td>GradDip Teaching (L7·1년, 학사 선행)<br>Master of Teaching (L9·1년)</td><td>28,706 (중등)–35,890 (초등, NZGSE) <span class="badge official">[공식]</span><br>석사 51,000 (UC)</td><td>GD → 1년<br>석사 → 3년</td><td>●●○○○(중등)~●(초등) · 70–80k</td><td>●●●●● GL T1</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-chef')"><td style="font-weight:700; color: var(--warn);">셰프 ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">정직: 요리는 졸업비자 지정 직업에서 빠짐 — 유학 가치 급락, 워홀 주방 경력이 낫다</div></td><td>Cookery L4 (1년) / L5 (2년)</td><td>L4 26,572 (Ara) <span class="badge official">[공식]</span> / L5 2년 ~50k <span class="badge estimated">[추정]</span></td><td><strong>L4 → 없음 · L5 → 6개월 1회</strong></td><td>●●●●○ · 55–85k</td><td>●●●○○ 경력 축</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-trade')"><td style="font-weight:700; color: var(--warn);">트레이드 ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">정직: 견습은 고용 전제 — 유학생 직행 불가. 워홀→현장→견습이 현실 경로</div></td><td>Pre-trade L3 (1년) / 전기 디플로마 L6 (2년)</td><td>L3 26,415 (Unitec) / L6 2년 29,615 <span class="badge official">[공식]</span></td><td>L3 → 없음 · L6 → 6개월 1회</td><td>●●●○○ · 85–110k (자격 후)</td><td>●●●●○ GL T2 (자격 후)</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-trade')"><td style="font-weight:700; color: var(--brand);">자동차 정비<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">주의: 과정만으론 근로권 부족 — 고용주 스폰서 확보가 관건</div></td><td>Automotive L4 (1년)</td><td>26,600 (Otago) <span class="badge official">[공식]</span></td><td>없음 (L4) — 고용주 워크비자 전환 필요</td><td>●●●○○ · 55–90k</td><td>●●●●○ GL T2</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-livestock')"><td style="font-weight:700; color: var(--brand);">축산·데어리<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">매력: 학비 0 — 취업해서 일하며 배우는 게 공식 트랙</div></td><td>과정 불필요 — Primary ITO L4 (일하면서 ~20개월)</td><td>~0 (고용 기반)</td><td>— (처음부터 근로)</td><td>●●●●● · 63–87k</td><td>●●●●○ GL T2 (매니저)</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-agri')"><td style="font-weight:700; color: var(--warn);">원예 ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">정직: 유학 비추 — 현장에서 배우며 자격 병행이 상위 호환</div></td><td>Horticulture L4 (1년)</td><td>18,000–25,000 <span class="badge estimated">[추정]</span></td><td><strong>없음 (L4)</strong></td><td>●●●●● · 시급 23.95–30</td><td>●●●○○ 승진 축</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-fieldwork')"><td style="font-weight:700; color: var(--brand);">현장직·물류<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">과정 불필요 — 단기 자격(포크리프트 등)이면 충분</div></td><td>과정 불필요</td><td>~수백 (단기 자격)</td><td>—</td><td>●●●●● · 55–70k</td><td>●○○○○ 승격 전제</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <div class="course-grid" id="courseListM"></div>
         <div style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.8rem;">
-          <div style="border-left: 4px solid var(--brand); background: var(--bg); padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>💰 가성비 순위</strong><div style="color: var(--muted); margin-top: 0.3rem;">① 축산 ~0 (일하며 배움) ② 회계 MPA 30.4k (Unitec, 1.5년→졸업비자 3년) ③ IT GD 26.4k (1년→1년, 학사 보유자) ④ 교사 GradDip 28.7k~ (1년→GL T1) — 반대편 끝은 엔지니어 학사 ~200k+.</div></div>
-          <div style="border-left: 4px solid var(--warn); background: #fdf9f0; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>⚠️ 유학이 함정인 직군</strong><div style="color: var(--muted); margin-top: 0.3rem;">요리·원예는 졸업비자 지정 직업이 아니라 과정을 마쳐도 근로권이 6개월 이하 — 학비 26k+를 쓰고도 경력자보다 불리합니다. 이 둘은 워홀로 현장 진입이 상위 호환.</div></div>
-          <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>🗣️ 영어 관문 순위</strong><div style="color: var(--muted); margin-top: 0.3rem;">교사 IELTS 7.0 전 영역 &gt; 간호 등록 7.0급 <span class="badge estimated">[추정]</span> &gt; 석사 입학 6.5 &gt; 학사 입학 6.0 &gt; 직업과정 5.0–5.5. 입학 영어와 (간호·교사의) 등록 영어는 별개 관문.</div></div>
+          <div style="border-left: 4px solid var(--brand); background: var(--bg); padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>💰 가성비 순위</strong><ul class="jt-list" style="color: var(--muted); font-size: 0.88rem;">
+            <li>① 축산 ~0 — 일하며 배움</li>
+            <li>② 회계 MPA 30.4k — 1.5년 → 졸업비자 3년</li>
+            <li>③ IT GD 26.4k — 1년 → 1년 (학사 보유자)</li>
+            <li>④ 교사 GradDip 28.7k~ — 1년 → GL T1</li>
+            <li>반대편 끝: 엔지니어 학사 ~200k+</li>
+          </ul></div>
+          <div style="border-left: 4px solid var(--warn); background: #fdf9f0; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>⚠️ 유학이 함정인 직군</strong><ul class="jt-list" style="color: var(--muted); font-size: 0.88rem;">
+            <li>요리·원예 — 졸업비자 지정 직업 아님</li>
+            <li>과정 마쳐도 근로권 6개월 이하 — 학비 26k+ 낭비</li>
+            <li>이 둘은 워홀 현장 진입이 상위 호환</li>
+          </ul></div>
+          <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>🗣️ 영어 관문 순위</strong><ul class="jt-list" style="color: var(--muted); font-size: 0.88rem;">
+            <li>교사 — IELTS 7.0 전 영역 (최고 장벽)</li>
+            <li>간호 등록 — 7.0급 <span class="badge estimated">[추정]</span></li>
+            <li>석사 6.5 · 학사 6.0 · 직업과정 5.0–5.5</li>
+            <li>입학 영어 ≠ 등록 영어(간호·교사) — 별개 관문</li>
+          </ul></div>
         </div>
-        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.8rem;">학비는 2026년 international fee — 기관·연도별 변동이 크고 다수 기관이 미공표 상태이므로 등록 전 해당 기관 공식 페이지에서 확인 필수. 생활비(연 ~20k)·비자비 별도 — 총액 시뮬레이션은 <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('diagnose', 'calcFold')">로드맵 탭 비용 계산기</button>에서. 기준일 2026-07-08 · 출처: 각 기관 공식 페이지·immigration.govt.nz</p>
+        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.8rem;">학비 = 2026 international fee (변동 큼 — 등록 전 기관 공식 페이지 확인 필수). 생활비 연 ~20k·비자비 별도 — 총액은 <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('diagnose', 'calcFold')">로드맵 탭 비용 계산기</button>에서. 기준일 2026-07-08 · 출처: 각 기관 공식 페이지·immigration.govt.nz</p>
       </div>
     </details>
 
@@ -3980,6 +3982,39 @@ function journeyHtml(job) {
     </div>`;
 }
 
+const COURSE_DB = [
+  { id: 'dev', n: 'IT·개발', hook: '매력: 최고 연봉 + GL T1 — 학사 있으면 1년 GD가 최단', c: ['GD IT (L7·1년, 학사 선행)', '학사 IT (L7·3년)'], fee: ['GD 26,415 (Unitec) [공식]', '학사 연 20,000–42,600'], w: ['GD → 1년', '학사 → 3년'], sal: '●●○○○ · 80–120k+', pr: '●●●●● GL T1' },
+  { id: 'engineer', n: '엔지니어', hook: '매력: 소득·영주권 최상 — 단 가장 비싼 과정', c: ['BE(Hons) (L8·4년)'], fee: ['연 45,700–58,000 · 4년 총 ~196k–232k [공식]'], w: ['3년'], sal: '●●●○○ · 78.7–138k', pr: '●●●●● GL T1' },
+  { id: 'office', n: '회계 (사무)', hook: '매력: 비전공 학사가 1.5년에 전문직 전환 — 폴리텍 MPA가 가성비 최고', c: ['MPA 회계석사 (L9·15–18개월, 학사 선행)'], fee: ['총 30,415 (Unitec) ~ 76,723 (오클랜드대) [공식]'], w: ['3년'], sal: '●●○○○ · 75–116k', pr: '●●○○○ SMC + CA 가산' },
+  { id: 'health', n: '간호', hook: '매력: 졸업 = 등록 직결 + 수요 상시 — 등록 영어(IELTS 7.0급)는 별도 관문', c: ['간호학사 (L7·3년)'], fee: ['연 30,185 (Unitec) [공식] · 3년 총 ~91k+'], w: ['3년 + 간호 등록'], sal: '●●●○○ · 85–95k', pr: '●●●●● GL T1' },
+  { id: 'teacher', n: '교사', hook: '매력: 1년 과정으로 GL T1 — 단 IELTS 7.0 전 영역, 영어 장벽 최고', c: ['GradDip Teaching (L7·1년, 학사 선행)', 'Master of Teaching (L9·1년)'], fee: ['28,706 (중등)–35,890 (초등) [공식]', '석사 51,000 (UC)'], w: ['GD → 1년', '석사 → 3년'], sal: '●●○○○(중등)~●(초등) · 70–80k', pr: '●●●●● GL T1' },
+  { id: 'chef', n: '셰프 ⚠️', warn: 1, hook: '정직: 요리는 졸업비자 지정 직업에서 빠짐 — 유학 가치 급락, 워홀 주방 경력이 낫다', c: ['Cookery L4 (1년) / L5 (2년)'], fee: ['L4 26,572 (Ara) [공식] / L5 2년 ~50k [추정]'], w: ['<strong>L4 → 없음 · L5 → 6개월 1회</strong>'], sal: '●●●●○ · 55–85k', pr: '●●●○○ 경력 축' },
+  { id: 'trade', n: '트레이드 ⚠️', warn: 1, hook: '정직: 견습은 고용 전제 — 유학생 직행 불가. 워홀→현장→견습이 현실 경로', c: ['Pre-trade L3 (1년) / 전기 디플로마 L6 (2년)'], fee: ['L3 26,415 (Unitec) / L6 2년 29,615 [공식]'], w: ['L3 → 없음 · L6 → 6개월 1회'], sal: '●●●○○ · 85–110k (자격 후)', pr: '●●●●○ GL T2 (자격 후)' },
+  { id: 'trade', n: '자동차 정비', hook: '주의: 과정만으론 근로권 부족 — 고용주 스폰서 확보가 관건', c: ['Automotive L4 (1년)'], fee: ['26,600 (Otago) [공식]'], w: ['없음 (L4) — 고용주 워크비자 전환 필요'], sal: '●●●○○ · 55–90k', pr: '●●●●○ GL T2' },
+  { id: 'livestock', n: '축산·데어리', hook: '매력: 학비 0 — 취업해서 일하며 배우는 게 공식 트랙', c: ['과정 불필요 — Primary ITO L4 (일하면서 ~20개월)'], fee: ['~0 (고용 기반)'], w: ['— (처음부터 근로)'], sal: '●●●●● · 63–87k', pr: '●●●●○ GL T2 (매니저)' },
+  { id: 'agri', n: '원예 ⚠️', warn: 1, hook: '정직: 유학 비추 — 현장에서 배우며 자격 병행이 상위 호환', c: ['Horticulture L4 (1년)'], fee: ['18,000–25,000 [추정]'], w: ['<strong>없음 (L4)</strong>'], sal: '●●●●● · 시급 23.95–30', pr: '●●●○○ 승진 축' },
+  { id: 'fieldwork', n: '현장직·물류', hook: '과정 불필요 — 단기 자격(포크리프트 등)이면 충분', c: ['과정 불필요'], fee: ['~수백 (단기 자격)'], w: ['—'], sal: '●●●●● · 55–70k', pr: '●○○○○ 승격 전제' }
+];
+
+function courseBadge(s) {
+  return s.replace(/\[공식\]/g, '<span class="badge official">[공식]</span>').replace(/\[추정\]/g, '<span class="badge estimated">[추정]</span>');
+}
+
+function renderCourseEntry() {
+  const list = document.getElementById('courseListM');
+  if (list) list.innerHTML = COURSE_DB.map(r => `
+    <div class="jl-row" onclick="jumpTo('jobs', 'job-${r.id}')">
+      <div class="jl-top"><span class="jl-name" ${r.warn ? 'style="color: var(--warn);"' : ''}>${r.n}</span><span class="jl-sal">${r.pr}</span></div>
+      <div class="jl-meta">${r.hook}</div>
+      <ul class="jt-list" style="font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem;">
+        <li>과정: ${courseBadge(r.c.join(' / '))}</li>
+        <li>학비: ${courseBadge(r.fee.join(' / '))}</li>
+        <li>근로권: ${r.w.join(' / ')}</li>
+        <li>취업·연봉: ${r.sal}</li>
+      </ul>
+    </div>`).join('');
+}
+
 const JOB_GROUPS = [
   { t: '🎯 GL 전문직 — 영주권 최상', ids: ['dev', 'engineer', 'health', 'teacher'] },
   { t: '🔧 기술·경력직 — 경력이 자격', ids: ['trade', 'chef'] },
@@ -4000,15 +4035,20 @@ function renderJobs() {
   DB.jobs.filter(j => !JOB_GROUPS.some(g => g.ids.includes(j.id))).forEach(job => { html += jobFoldHtml(job); });
   document.getElementById('jobsContainer').innerHTML = html;
   renderJobsGuideTable();
+  renderCourseEntry();
   annotateVisaTerms(document.getElementById('jobsContainer'));
 }
 
 function jobFoldHtml(job) {
+  const g = job.guide;
   let html = `
-      <details class="fold" id="job-${job.id}">
-        <summary>
+      <details class="fold job-fold" id="job-${job.id}">
+        <summary class="job-summary">
           <span class="fold-title">${job.name}</span>
-          <span class="fold-sub job-sum"><span>취업 ${lvDots(job.guide ? job.guide.demandLv : 3)}</span><span>영주권 ${lvDots(job.guide ? job.guide.prLv : 3)}</span><span class="job-sal">${SALARY_SHORT[job.id] || job.salary}</span></span>
+          <span class="js-demand">취업 ${lvDots(g ? g.demandLv : 3)}</span>
+          <span class="js-pr">영주권 ${lvDots(g ? g.prLv : 3)}</span>
+          <span class="job-meta">${g ? `${g.studyShort} · ${g.periodShort} · ${g.costShort}` : ''}</span>
+          <span class="job-sal">${SALARY_SHORT[job.id] || job.salary}</span>
         </summary>
         <div class="fold-body">
           <div class="job-stats">
@@ -4078,33 +4118,6 @@ function lvDots(n) {
 }
 
 function renderJobsGuideTable() {
-  const tbody = document.getElementById('jobsGuideTable');
-  if (!tbody) return;
-  const ordered = JOB_GROUPS.flatMap(g => [{ g }].concat(
-    g.ids.map(id => DB.jobs.find(j => j.id === id)).filter(j => j && j.guide).map(j => ({ j }))
-  ));
-  tbody.innerHTML = ordered.map(x => x.g
-    ? `<tr><td colspan="6" style="background: var(--bg); font-weight: 700; padding: 0.55rem 0.8rem; font-size: 0.85rem;">${x.g.t}</td></tr>`
-    : `
-    <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-${x.j.id}')">
-      <td style="font-weight: 700; color: var(--brand);">${x.j.name}</td>
-      <td>${lvDots(x.j.guide.demandLv || 3)}<div style="font-size: 0.78rem; color: var(--muted);">${x.j.guide.demand}</div></td>
-      <td>${lvDots(x.j.guide.prLv || 3)}<div style="font-size: 0.78rem; color: var(--muted);">${x.j.guide.pr}</div></td>
-      <td>${x.j.guide.studyShort}</td>
-      <td>${x.j.guide.periodShort}</td>
-      <td>${x.j.guide.costShort}</td>
-    </tr>`).join('');
-  const listEl = document.getElementById('jobsListM');
-  if (listEl) {
-    listEl.innerHTML = JOB_GROUPS.map(g => `
-      <div class="job-group-h">${g.t}</div>
-      ${g.ids.map(id => DB.jobs.find(j => j.id === id)).filter(j => j && j.guide).map(j => `
-      <div class="jl-row" onclick="jumpTo('jobs', 'job-${j.id}')">
-        <div class="jl-top"><span class="jl-name">${j.name}</span><span class="jl-sal">${SALARY_SHORT[j.id] || ''}</span></div>
-        <div class="jl-dots"><span>취업 ${lvDots(j.guide.demandLv || 3)}</span><span>영주권 ${lvDots(j.guide.prLv || 3)}</span></div>
-        <div class="jl-meta">${j.guide.studyShort} · ${j.guide.periodShort} · ${j.guide.costShort}</div>
-      </div>`).join('')}`).join('');
-  }
   const savedPick = loadState('nzv.jobpick');
   if (savedPick && ['none', 'over2', 'qualified'].includes(savedPick.exp) && ['low', 'high'].includes(savedPick.fund) && PICK_PRI.some(p => p.v === savedPick.pri)) pickState = savedPick;
   renderJobPicker();
