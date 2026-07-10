@@ -8,6 +8,11 @@
 <meta property="og:title" content="NZ永住権ナビゲーター">
 <meta property="og:description" content="どのビザで来ても — 永住権までの条件・費用・タイムラインを設計。">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/ja/">
+<meta property="og:image" content="https://wonchance-art.github.io/nz-navigator/ja/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 :root {
   --bg: #f6f8f5;
@@ -979,6 +984,28 @@ select {
     top: 0.1rem;
     right: 1rem;
   }
+
+  .lang-link {
+    position: absolute;
+    top: 0.3rem;
+    right: 4rem;
+    font-size: 0.95rem;
+    padding: 0.22rem 0.5rem;
+  }
+
+  .lang-link .lang-label { display: none; }
+
+  .logo { align-self: flex-start; max-width: calc(100% - 8rem); font-size: 1.12rem; }
+
+  /* mobile readability */
+  .card { padding: 1rem; }
+  .fold-body { padding: 0.9rem 1rem; }
+  .snapshot-table th, .snapshot-table td { padding: 0.55rem 0.5rem; font-size: 0.85rem; }
+  h2 { font-size: 1.25rem; }
+  .link-card { padding: 0.8rem 0.85rem; }
+  .tip-card { padding: 0.8rem 0.85rem; }
+  .vs-item { font-size: 0.85rem; }
+  .m-cell { font-size: 0.8rem; }
 }
 
 /* ===== v12 fold ===== */
@@ -1033,9 +1060,9 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .trail-now::before { content: ''; position: absolute; left: -1.45rem; top: 0.4rem; width: 12px; height: 12px; border-radius: 50%; background: var(--warn); box-shadow: 0 0 0 3px var(--card); }
 .trail-date { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
 .trail-you { font-size: 0.85rem; color: var(--brand-deep); margin-top: 0.15rem; }
-/* v27 政策動向 */
+/* v27 政策トレンド */
 .policy-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; margin-bottom: 1.2rem; }
-@media (max-width: 820px) { .policy-split { grid-template-columns: 1fr; } }
+@media (max-width: 820px) { .policy-split { grid-template-columns: minmax(0, 1fr); } .policy-col { min-width: 0; } }
 .policy-col { margin-bottom: 0; }
 .policy-h { margin-bottom: 0.7rem; }
 .trail-node.up::before { background: var(--ok); }
@@ -1073,7 +1100,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .pick-chip:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(14, 92, 63, 0.18); }
 /* v28 定住 — タイミング マトリックス */
 .timing-split { display: grid; grid-template-columns: 1.55fr 1fr; gap: 1rem; align-items: start; margin-bottom: 1.2rem; }
-@media (max-width: 880px) { .timing-split { grid-template-columns: 1fr; } }
+@media (max-width: 880px) { .timing-split { grid-template-columns: minmax(0, 1fr); } .timing-split > * { min-width: 0; } }
 .verdict-stack { display: flex; flex-direction: column; gap: 0.6rem; }
 .mini-card { border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 10px; background: var(--card); padding: 0.65rem 0.85rem; font-size: 0.87rem; line-height: 1.5; }
 .mini-card strong { display: block; margin-bottom: 0.15rem; }
@@ -1101,7 +1128,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .tip-card p { color: var(--muted); line-height: 1.5; }
 /* v28 定住 — NZ 地図 */
 .city-map-split { display: grid; grid-template-columns: minmax(230px, 320px) 1fr; gap: 1rem; align-items: stretch; margin-bottom: 1.5rem; }
-@media (max-width: 760px) { .city-map-split { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .city-map-split { grid-template-columns: minmax(0, 1fr); } .city-map-split > * { min-width: 0; } }
 .nzmap { display: block; width: 100%; max-width: 300px; margin: 0 auto; }
 .nz-land { fill: #e2ede6; stroke: var(--brand); stroke-width: 1.3; stroke-linejoin: round; }
 .city-g { cursor: pointer; }
@@ -1117,7 +1144,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .city-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.6rem; }
 .cs-l { font-size: 0.75rem; color: var(--muted); }
 .cs-v { font-weight: 700; font-size: 0.92rem; }
-/* v29 コミュニティ·生活 リンク */
+/* v29 コミュニティ・生活 リンク */
 .link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
 .link-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 0.9rem 1rem; box-shadow: 0 1px 3px rgba(23, 37, 29, 0.05); }
 .link-card h3 { font-size: 0.98rem; margin-bottom: 0.55rem; padding-bottom: 0.45rem; border-bottom: 1.5px solid var(--line); }
@@ -1129,7 +1156,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .link-desc { display: block; color: var(--muted); font-size: 0.8rem; }
 /* v29 世界指標 有利 vs 不利 */
 .vs-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; margin-bottom: 1.5rem; }
-@media (max-width: 820px) { .vs-split { grid-template-columns: 1fr; } }
+@media (max-width: 820px) { .vs-split { grid-template-columns: minmax(0, 1fr); } .vs-col { min-width: 0; } }
 .vs-h { margin-bottom: 0.6rem; padding-bottom: 0.45rem; border-bottom: 2px solid var(--line); }
 .vs-h.good { border-bottom-color: var(--ok); }
 .vs-h.bad { border-bottom-color: var(--danger); }
@@ -1149,7 +1176,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .dash-tile { margin-bottom: 0; padding: 1rem 1.1rem; display: flex; flex-direction: column; word-break: keep-all; }
 .dash-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; flex-wrap: nowrap; }
 .dash-label { font-size: 0.85rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.dash-head .badge { font-size: 0.68rem; padding: 0.16rem 0.45rem; margin-left: 0; white-space: nowrap; flex: none; }
+.dash-head .badge { font-size: 0.72rem; padding: 0.16rem 0.45rem; margin-left: 0; white-space: nowrap; flex: none; }
 .dash-big { font-size: 1.6rem; font-weight: 800; color: var(--brand-deep); font-variant-numeric: tabular-nums; line-height: 1.15; }
 .dash-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.25rem; }
 .dash-links { margin-top: 0.45rem; display: flex; flex-wrap: wrap; gap: 0.3rem 0.7rem; font-size: 0.8rem; }
@@ -1256,12 +1283,12 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
       <button class="tab" data-tab="settle">定住</button>
       <button class="tab" data-tab="snapshot">政策動向</button>
     </div>
-    <a class="lang-link" href="../" aria-label="韓国語版">🇰🇷 韓国語</a>
+    <a class="lang-link" href="../" aria-label="韓国語版">🇰🇷 <span class="lang-label">한국어</span></a>
     <button class="search-toggle" onclick="toggleHeaderSearch()" aria-label="キーワード検索を開く">🔍</button>
   </div>
   <div class="header-search-row" id="headerSearchRow">
     <div class="hero-search-wrap">
-      <input class="hero-search header-variant" id="headerSearchInput" type="search" placeholder="キーワード検索: IELTS, 手数料, シェフ, 生活費…" autocomplete="off" aria-label="キーワード検索">
+      <input class="hero-search header-variant" id="headerSearchInput" type="search" placeholder="キーワード検索：IELTS、手数料、シェフ、生活費…" autocomplete="off" aria-label="キーワード検索">
       <div class="search-results" id="headerSearchResults"></div>
     </div>
   </div>
@@ -1288,8 +1315,8 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
   <!-- DIAGNOSE -->
   <section id="diagnose">
     <div class="hero">
-      <h1>ニュージーランド 滞在 設計図</h1>
-      <p>どのビザで来ても — 永住権までの条件·費用·タイムラインを設計します (2026-07 公式検証データ)</p>
+      <h1>ニュージーランド滞在 設計図</h1>
+      <p>どのビザで入国しても — 永住権までの条件・費用・タイムラインを設計します (2026-07 公式検証データ)</p>
       <div id="onboardGate"></div>
     </div>
 
@@ -1320,7 +1347,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
         <label>最終学歴 <span style="font-weight: 400; color: var(--muted); font-size: 0.85rem;">(SMC スコア軸)</span></label>
         <div class="radio-group">
           <label class="radio-option"><input type="radio" name="education" value="none"> 高卒以下</label>
-          <label class="radio-option"><input type="radio" name="education" value="dip"> 専門学士·ディプロマ (L5–6)</label>
+          <label class="radio-option"><input type="radio" name="education" value="dip"> 専門学士・ディプロマ (L5–6)</label>
           <label class="radio-option"><input type="radio" name="education" value="bach" checked> 学士 (L7)</label>
           <label class="radio-option"><input type="radio" name="education" value="master"> 修士 (L9)</label>
           <label class="radio-option"><input type="radio" name="education" value="phd"> 博士 (L10)</label>
@@ -1337,7 +1364,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
           <label class="radio-option"><input type="radio" name="job" value="teacher"> 教師</label>
           <label class="radio-option"><input type="radio" name="job" value="engineer"> エンジニア</label>
           <label class="radio-option"><input type="radio" name="job" value="agri"> 園芸・シーズン</label>
-          <label class="radio-option"><input type="radio" name="job" value="livestock"> 畜産・ダイアリ</label>
+          <label class="radio-option"><input type="radio" name="job" value="livestock"> 畜産・酪農</label>
           <label class="radio-option"><input type="radio" name="job" value="fieldwork"> 現場職・物流</label>
           <label class="radio-option"><input type="radio" name="job" value="office"> 一般事務</label>
           <label class="radio-option"><input type="radio" name="job" value="undecided"> 未定・模索中</label>
@@ -1488,7 +1515,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
           <tr><td style="font-weight:700;">太平洋専用 (PAC・サモアクォータ・RSE)</td><td>フィジー・トンガ・サモア等太平洋国籍専用</td><td>—</td><td><strong>日本人申請不可</strong></td></tr>
           <tr><td style="font-weight:700;">特殊 (家庭暴力被害者・難民)</td><td>該当状況証明 — 手数料無料</td><td>0</td><td>特殊状況専用 — 存在を認識しておくこと</td></tr>
         </tbody></table></div>
-        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.6rem;">基準日 2026-07-08 · 出典: immigration.govt.nz 各ビザページ — 表の条件は要約であり申請前原文確認必須</p>
+        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.6rem;">基準日 2026-07-08 ・ 出典: immigration.govt.nz 各ビザページ — 表の条件は要約であり申請前原文確認必須</p>
       </div>
     </details>
 
@@ -1581,23 +1608,23 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
         <p style="color: var(--muted); font-size: 0.92rem; margin-bottom: 0.8rem;">技術・経歴なしでその職種を新たに開始するなら過程登録が出発点です。ただし、<strong>どのレベルの過程かが卒業後の就労権を決定</strong>します — 今登録すれば卒業時点で2026-11-16改編規則が適用されます。</p>
         <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 1rem;">
           <strong>📜 卒業後労働権 (2026-11-16改編基準)</strong> <span class="badge official">[公式]</span>
-          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;">学士(L7)・修士(L9) = <strong>卒業ビザ最大3年</strong> · GD(L7, 学士先行必須) = <strong>1年</strong> · L5–7 非学位正規過程(24週+) = <strong>短期卒業ビザ6ヶ月(生涯1回)</strong> · <strong>L4以下 = なし</strong>. 留学生は学業中週25h労働可能、学生ビザ $850 + 資金証明年 $20,000 別途。</p>
+          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;">学士(L7)・修士(L9) = <strong>卒業ビザ最大3年</strong> ・ GD(L7, 学士先行必須) = <strong>1年</strong> ・ L5–7 非学位正規過程(24週+) = <strong>短期卒業ビザ6ヶ月(生涯1回)</strong> ・ <strong>L4以下 = なし</strong>. 留学生は学業中週25h労働可能、学生ビザ $850 + 資金証明年 $20,000 別途。</p>
         </div>
         <div style="overflow-x: auto;">
           <table class="snapshot-table">
             <thead><tr><th>職種</th><th>過程 (レベル・期間)</th><th>留学生学費 (NZD)</th><th>卒業後労働権</th><th>就職・年収</th><th>永住権</th></tr></thead>
             <tbody>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-dev')"><td style="font-weight:700; color: var(--brand);">IT・開発<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 最高年収 + GL T1 — 学士あれば1年GDが最短</div></td><td>GD IT (L7・1年, 学士先行)<br>学士 IT (L7・3年)</td><td>GD 26,415 (Unitec) <span class="badge official">[公式]</span><br>学士 年 20,000–42,600 (ポリテク~AUT)</td><td>GD → 1年<br>学士 → 3年</td><td>●●○○○ · 80–120k+</td><td>●●●●● GL T1</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-engineer')"><td style="font-weight:700; color: var(--brand);">エンジニア<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 所得・永住権最良 — ただし最も高い過程</div></td><td>BE(Hons) (L8・4年)</td><td>年 45,700–58,000 · 4年計 ~196k–232k <span class="badge official">[公式]</span></td><td>3年</td><td>●●●○○ · 78.7–138k</td><td>●●●●● GL T1</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-office')"><td style="font-weight:700; color: var(--brand);">会計 (事務)<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 非専攻学士が1.5年で専門職転換 — ポリテクMPAが最高コスパ</div></td><td>MPA会計修士 (L9・15–18ヶ月, 学士先行)</td><td>計 30,415 (Unitec) ~ 76,723 (オークランド大) <span class="badge official">[公式]</span></td><td>3年</td><td>●●○○○ · 75–116k</td><td>●●○○○ SMC + CA加算</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-health')"><td style="font-weight:700; color: var(--brand);">看護<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 卒業 = 登録直結 + 需要常時 — 登録英語(IELTS 7.0級)は別の関門</div></td><td>看護学士 (L7・3年)</td><td>年 30,185 (Unitec) <span class="badge official">[公式]</span> · 3年計 ~91k+</td><td>3年 + 看護登録</td><td>●●●○○ · 85–95k</td><td>●●●●● GL T1</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-teacher')"><td style="font-weight:700; color: var(--brand);">教師<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 1年過程でGL T1 — ただしIELTS 7.0全領域、英語の壁最高</div></td><td>GradDip Teaching (L7・1年, 学士先行)<br>Master of Teaching (L9・1年)</td><td>28,706 (中等)–35,890 (初等, NZGSE) <span class="badge official">[公式]</span><br>修士 51,000 (UC)</td><td>GD → 1年<br>修士 → 3年</td><td>●●○○○(中等)~●(初等) · 70–80k</td><td>●●●●● GL T1</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-chef')"><td style="font-weight:700; color: var(--warn);">シェフ ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">正直: 調理は卒業ビザ指定職業から漏れ — 留学価値急減、ワーホリ厨房経歴が良い</div></td><td>Cookery L4 (1年) / L5 (2年)</td><td>L4 26,572 (Ara) <span class="badge official">[公式]</span> / L5 2年 ~50k <span class="badge estimated">[推定]</span></td><td><strong>L4 → なし · L5 → 6ヶ月1回</strong></td><td>●●●●○ · 55–85k</td><td>●●●○○ 経歴軸</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-trade')"><td style="font-weight:700; color: var(--warn);">トレード ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">正直: 見習いは雇用前提 — 留学生直行不可。ワーホリ→現場→見習いが現実経路</div></td><td>Pre-trade L3 (1年) / 電気ディプロマ L6 (2年)</td><td>L3 26,415 (Unitec) / L6 2年 29,615 <span class="badge official">[公式]</span></td><td>L3 → なし · L6 → 6ヶ月1回</td><td>●●●○○ · 85–110k (資格後)</td><td>●●●●○ GL T2 (資格後)</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-trade')"><td style="font-weight:700; color: var(--brand);">自動車整備<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">注意: 過程のみでは労働権不足 — 雇用主スポンサー確保が鍵</div></td><td>Automotive L4 (1年)</td><td>26,600 (Otago) <span class="badge official">[公式]</span></td><td>なし (L4) — 雇用主ワークビザ転換必要</td><td>●●●○○ · 55–90k</td><td>●●●●○ GL T2</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-livestock')"><td style="font-weight:700; color: var(--brand);">畜産・ダイアリ<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 学費 0 — 就職して働きながら学ぶが公式トラック</div></td><td>過程不要 — Primary ITO L4 (働きながら ~20ヶ月)</td><td>~0 (雇用基盤)</td><td>— (最初から労働)</td><td>●●●●● · 63–87k</td><td>●●●●○ GL T2 (マネージャー)</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-agri')"><td style="font-weight:700; color: var(--warn);">園芸 ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">正直: 留学非推奨 — 現場で学びながら資格並行が上位互換</div></td><td>Horticulture L4 (1年)</td><td>18,000–25,000 <span class="badge estimated">[推定]</span></td><td><strong>なし (L4)</strong></td><td>●●●●● · 時給 23.95–30</td><td>●●●○○ 昇進軸</td></tr>
-              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-fieldwork')"><td style="font-weight:700; color: var(--brand);">現場職・物流<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">過程不要 — 短期資格(フォークリフト等)で十分</div></td><td>過程不要</td><td>~数百 (短期資格)</td><td>—</td><td>●●●●● · 55–70k</td><td>●○○○○ 昇格前提</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-dev')"><td style="font-weight:700; color: var(--brand);">IT・開発<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 最高年収 + GL T1 — 学士あれば1年GDが最短</div></td><td>GD IT (L7・1年, 学士先行)<br>学士 IT (L7・3年)</td><td>GD 26,415 (Unitec) <span class="badge official">[公式]</span><br>学士 年 20,000–42,600 (ポリテク~AUT)</td><td>GD → 1年<br>学士 → 3年</td><td>●●○○○ ・ 80–120k+</td><td>●●●●● GL T1</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-engineer')"><td style="font-weight:700; color: var(--brand);">エンジニア<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 所得・永住権最良 — ただし最も高い過程</div></td><td>BE(Hons) (L8・4年)</td><td>年 45,700–58,000 ・ 4年計 ~196k–232k <span class="badge official">[公式]</span></td><td>3年</td><td>●●●○○ ・ 78.7–138k</td><td>●●●●● GL T1</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-office')"><td style="font-weight:700; color: var(--brand);">会計 (事務)<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 非専攻学士が1.5年で専門職転換 — ポリテクMPAが最高コスパ</div></td><td>MPA会計修士 (L9・15–18ヶ月, 学士先行)</td><td>計 30,415 (Unitec) ~ 76,723 (オークランド大) <span class="badge official">[公式]</span></td><td>3年</td><td>●●○○○ ・ 75–116k</td><td>●●○○○ SMC + CA加算</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-health')"><td style="font-weight:700; color: var(--brand);">看護<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 卒業 = 登録直結 + 需要常時 — 登録英語(IELTS 7.0級)は別の関門</div></td><td>看護学士 (L7・3年)</td><td>年 30,185 (Unitec) <span class="badge official">[公式]</span> ・ 3年計 ~91k+</td><td>3年 + 看護登録</td><td>●●●○○ ・ 85–95k</td><td>●●●●● GL T1</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-teacher')"><td style="font-weight:700; color: var(--brand);">教師<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 1年過程でGL T1 — ただしIELTS 7.0全領域、英語の壁最高</div></td><td>GradDip Teaching (L7・1年, 学士先行)<br>Master of Teaching (L9・1年)</td><td>28,706 (中等)–35,890 (初等, NZGSE) <span class="badge official">[公式]</span><br>修士 51,000 (UC)</td><td>GD → 1年<br>修士 → 3年</td><td>●●○○○(中等)~●(初等) ・ 70–80k</td><td>●●●●● GL T1</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-chef')"><td style="font-weight:700; color: var(--warn);">シェフ ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">正直: 調理は卒業ビザ指定職業から漏れ — 留学価値急減、ワーホリ厨房経歴が良い</div></td><td>Cookery L4 (1年) / L5 (2年)</td><td>L4 26,572 (Ara) <span class="badge official">[公式]</span> / L5 2年 ~50k <span class="badge estimated">[推定]</span></td><td><strong>L4 → なし ・ L5 → 6ヶ月1回</strong></td><td>●●●●○ ・ 55–85k</td><td>●●●○○ 経歴軸</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-trade')"><td style="font-weight:700; color: var(--warn);">トレード ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">正直: 見習いは雇用前提 — 留学生直行不可。ワーホリ→現場→見習いが現実経路</div></td><td>Pre-trade L3 (1年) / 電気ディプロマ L6 (2年)</td><td>L3 26,415 (Unitec) / L6 2年 29,615 <span class="badge official">[公式]</span></td><td>L3 → なし ・ L6 → 6ヶ月1回</td><td>●●●○○ ・ 85–110k (資格後)</td><td>●●●●○ GL T2 (資格後)</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-trade')"><td style="font-weight:700; color: var(--brand);">自動車整備<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">注意: 過程のみでは労働権不足 — 雇用主スポンサー確保が鍵</div></td><td>Automotive L4 (1年)</td><td>26,600 (Otago) <span class="badge official">[公式]</span></td><td>なし (L4) — 雇用主ワークビザ転換必要</td><td>●●●○○ ・ 55–90k</td><td>●●●●○ GL T2</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-livestock')"><td style="font-weight:700; color: var(--brand);">畜産・酪農<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">魅力: 学費 0 — 就職して働きながら学ぶが公式トラック</div></td><td>過程不要 — Primary ITO L4 (働きながら ~20ヶ月)</td><td>~0 (雇用基盤)</td><td>— (最初から労働)</td><td>●●●●● ・ 63–87k</td><td>●●●●○ GL T2 (マネージャー)</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-agri')"><td style="font-weight:700; color: var(--warn);">園芸 ⚠️<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">正直: 留学非推奨 — 現場で学びながら資格並行が上位互換</div></td><td>Horticulture L4 (1年)</td><td>18,000–25,000 <span class="badge estimated">[推定]</span></td><td><strong>なし (L4)</strong></td><td>●●●●● ・ 時給 23.95–30</td><td>●●●○○ 昇進軸</td></tr>
+              <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-fieldwork')"><td style="font-weight:700; color: var(--brand);">現場職・物流<div style="font-size:0.78rem; color:var(--muted); font-weight:400;">過程不要 — 短期資格(フォークリフト等)で十分</div></td><td>過程不要</td><td>~数百 (短期資格)</td><td>—</td><td>●●●●● ・ 55–70k</td><td>●○○○○ 昇格前提</td></tr>
             </tbody>
           </table>
         </div>
@@ -1606,7 +1633,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
           <div style="border-left: 4px solid var(--warn); background: #fdf9f0; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>⚠️ 留学が罠の職種</strong><div style="color: var(--muted); margin-top: 0.3rem;">調理・園芸は卒業ビザ指定職業ではないため過程を終わらせても労働権が6ヶ月以下 — 学費26k+を使っても経歴者より不利です。この2つはワーホリで現場進入が上位互換。</div></div>
           <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>🗣️ 英語の関門ランキング</strong><div style="color: var(--muted); margin-top: 0.3rem;">教師 IELTS 7.0全領域 &gt; 看護登録 7.0級 <span class="badge estimated">[推定]</span> &gt; 修士入学 6.5 &gt; 学士入学 6.0 &gt; 職業過程 5.0–5.5. 入学英語と(看護・教師の)登録英語は別の関門。</div></div>
         </div>
-        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.8rem;">学費は2026年international fee — 機関・年度別変動が大きく多くの機関が未公表状態のため登録前に該当機関公式ページで確認必須。生活費(年 ~20k)・ビザ費用別途 — 総額シミュレーションは <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('diagnose', 'calcFold')">ロードマップタブ費用計算機</button>から。基準日 2026-07-08 · 出典: 各機関公式ページ・immigration.govt.nz</p>
+        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.8rem;">学費は2026年international fee — 機関・年度別変動が大きく多くの機関が未公表状態のため登録前に該当機関公式ページで確認必須。生活費(年 ~20k)・ビザ費用別途 — 総額シミュレーションは <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('diagnose', 'calcFold')">ロードマップタブ費用計算機</button>から。基準日 2026-07-08 ・ 出典: 各機関公式ページ・immigration.govt.nz</p>
       </div>
     </details>
 
@@ -1629,7 +1656,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
           <tr><td style="font-weight:700;">ウーバー・デリバリー</td><td>独立契約者 — <strong>雇用関係そのものがなくスポンサー根本的に不可</strong></td><td>なし — 収入用のみ</td></tr>
         </tbody></table></div>
         <p style="color: var(--muted); font-size: 0.88rem; margin-top: 0.8rem;">⚠️ <strong>ビザ満期後滞在(オーバーステイ)は42日を超えると再入国禁止事由</strong>になりうる。また2025-01-27から観光ビザ・NZeTAで<strong>海外雇用主遠隔勤務は許可</strong>されますが、NZ雇用主の仕事は絶対不可。</p>
-        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.4rem;">基準日 2026-07-08 · このリストは "するな" ではなく "この仕事では永住権設計ができない" という意味 — 生活費稼ぎとしてはすべて有効です。</p>
+        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.4rem;">基準日 2026-07-08 ・ このリストは "するな" ではなく "この仕事では永住権設計ができない" という意味 — 生活費稼ぎとしてはすべて有効です。</p>
       </div>
     </details>
   </section>
@@ -1639,33 +1666,33 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
     <h1>定住 — 生活費と都市</h1>
 
     <h2 id="timing">いつ行くのが良い?</h2>
-    <p class="dash-sub" style="margin-bottom: 1rem;">南半球基準 · 月色 = 到着直後に仕事を得やすい度合い</p>
+    <p class="dash-sub" style="margin-bottom: 1rem;">南半球基準 ・ 月色 = 到着直後に仕事を得やすい度合い</p>
     <div class="timing-split">
       <div class="card" style="margin-bottom: 0;">
         <div style="overflow-x: auto;"><div id="seasonMatrix"></div></div>
       </div>
       <div class="verdict-stack">
-        <div class="mini-card best"><strong>✅ 最適 — 2~4月</strong><div>収穫最多(りんご・葡萄・キウイ) · 3月航空最低。シーズンジョブは4–8週前に応募。</div></div>
-        <div class="mini-card ok"><strong>🌤️ 次善 — 10~11月</strong><div>夏採用オープン · チェリーは11月応募 · 航空安い。</div></div>
+        <div class="mini-card best"><strong>✅ 最適 — 2~4月</strong><div>収穫最多(りんご・葡萄・キウイ) ・ 3月航空最低。シーズンジョブは4–8週前に応募。</div></div>
+        <div class="mini-card ok"><strong>🌤️ 次善 — 10~11月</strong><div>夏採用オープン ・ チェリーは11月応募 ・ 航空安い。</div></div>
         <div class="mini-card ski"><strong>⛷️ スキー目標</strong><div>採用広告2–4月 — 遠隔応募後6月シーズン開始に合わせて入国。5–6月到着は遅い。</div></div>
-        <div class="mini-card avoid"><strong>❌ 避ける — 12月 · 7~9月</strong><div>12月採用停止・レント競争・航空 +30~50%. 7~9月全般が閑散期。</div></div>
-        <div class="dash-sub">出典: <a class="source-link" href="https://www.picknz.co.nz/" target="_blank">PickNZ↗</a> <a class="source-link" href="https://www.backpackerjobboard.co.nz/blog/fruit-picking-seasons-in-new-zealand/" target="_blank">収穫カレンダー↗</a> · 2026-07 交差検証</div>
+        <div class="mini-card avoid"><strong>❌ 避ける — 12月 ・ 7~9月</strong><div>12月採用停止・レント競争・航空 +30~50%. 7~9月全般が閑散期。</div></div>
+        <div class="dash-sub">出典: <a class="source-link" href="https://www.picknz.co.nz/" target="_blank">PickNZ↗</a> <a class="source-link" href="https://www.backpackerjobboard.co.nz/blog/fruit-picking-seasons-in-new-zealand/" target="_blank">収穫カレンダー↗</a> ・ 2026-07 交差検証</div>
       </div>
     </div>
 
     <h2 id="survival" style="margin-top: 2.5rem;">生活費生存戦略</h2>
-    <p class="dash-sub" style="margin-bottom: 1rem;">6原則 — ビザ費・賃金 [公式] · 相場・バッファ [推定 2026-07]</p>
+    <p class="dash-sub" style="margin-bottom: 1rem;">6原則 — ビザ費・賃金 [公式] ・ 相場・バッファ [推定 2026-07]</p>
     <div class="tip-grid">
       <div class="tip-card"><div class="tip-ic">💵</div><strong>到着バッファ 6,000+</strong><p>資金証明 4,200は審査用。最初4–6週無収入 + 定住費 2,000–3,500 + 次のレント対備。</p></div>
       <div class="tip-card"><div class="tip-ic">⚡</div><strong>初收入 2週以内</strong><p>ホスピタリティ・シーズンジョブが最速。最低賃金フルタイム週 ~958(税前)。履歴書は出国前に準備。</p></div>
       <div class="tip-card"><div class="tip-ic">🏠</div><strong>住居 = 貯蓄速度</strong><p>ルームシェア 200–320 vs スタジオ 400+. シーズンジョブ食事提供なら貯蓄2倍 + 園芸3ヶ月 = WHV延長。</p></div>
       <div class="tip-card"><div class="tip-ic">🧾</div><strong>到着週にIRD</strong><p>無料発行 — なければ45% 源泉徴収。3月末以降還付確認。</p></div>
-      <div class="tip-card"><div class="tip-ic">🏦</div><strong>ビザ費分離積立</strong><p>AEWV 1,540 · 永住権 6,450 — 申請2–3ヶ月前に別口座に。</p></div>
+      <div class="tip-card"><div class="tip-ic">🏦</div><strong>ビザ費分離積立</strong><p>AEWV 1,540 ・ 永住権 6,450 — 申請2–3ヶ月前に別口座に。</p></div>
       <div class="tip-card"><div class="tip-ic">🎓</div><strong>留学現金フロー</strong><p>学期中 25h(週 ~599)は生活費のみ相殺 — 学費は事前確保。</p></div>
     </div>
 
     <h2 id="cities" style="margin-top: 2.5rem;">都市別定住ガイド</h2>
-    <p class="dash-sub" style="margin-bottom: 1rem;">地図から都市を選択 · ルームシェア = 週当たり NZD (2026-07 相場)</p>
+    <p class="dash-sub" style="margin-bottom: 1rem;">地図から都市を選択 ・ ルームシェア = 週当たり NZD (2026-07 相場)</p>
     <div class="city-map-split">
       <div class="card" style="margin-bottom: 0;" id="cityMapBox"></div>
       <div class="card" style="margin-bottom: 0;" id="cityInfoPanel"></div>
@@ -1701,15 +1728,15 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
       </div>
       <div class="card policy-col policy-verdict">
         <h3 class="policy-h">🧭 流れ総合 — 良くなっている?</h3>
-        <div class="verdict-headline">熟練・学位には <span class="hl-up">開放</span> · 低熟練・非学位には <span class="hl-down">緊縮</span></div>
-        <div class="trend-meter" title="最近9件: 緩和 4 · 基準調整 2 · 緊縮 3">
+        <div class="verdict-headline">熟練・学位には <span class="hl-up">開放</span> ・ 低熟練・非学位には <span class="hl-down">緊縮</span></div>
+        <div class="trend-meter" title="最近9件: 緩和 4 ・ 基準調整 2 ・ 緊縮 3">
           <div class="trend-seg up" style="flex: 4;">緩和 4</div>
           <div class="trend-seg flat" style="flex: 2;">基準 2</div>
           <div class="trend-seg down" style="flex: 3;">緊縮 3</div>
         </div>
         <ul class="verdict-list">
-          <li><span class="dir-ic up">▲</span>賃金閾値廃止 · GL トレード拡大 · 学生労働 25h · 学士 4点</li>
-          <li><span class="dir-ic down">▼</span>interim 労働権縮小 · AEWV 英語要件新設 · 非学位 PSWV 6ヶ月に</li>
+          <li><span class="dir-ic up">▲</span>賃金閾値廃止 ・ GL トレード拡大 ・ 学生労働 25h ・ 学士 4点</li>
+          <li><span class="dir-ic down">▼</span>interim 労働権縮小 ・ AEWV 英語要件新設 ・ 非学位 PSWV 6ヶ月に</li>
         </ul>
         <div class="verdict-next">
           <div class="verdict-sub">今後</div>
@@ -1725,11 +1752,11 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 
     <div class="info-box">
       全数値 2026-07-06 基準公式出典交差検証. <strong>制度随時変更 — 申請前公式ページ・IAA顧問再確認必須。</strong>
-      <span style="font-size: 0.88rem;">🔄 次再検証: 08-25(SMC施行直後) · 11-17(PSWV施行直後)</span>
+      <span style="font-size: 0.88rem;">🔄 次再検証: 08-25(SMC施行直後) ・ 11-17(PSWV施行直後)</span>
     </div>
 
     <h2 id="keyfigures">主要数値</h2>
-    <p class="fx-note">全項目 <span class="badge official">[公式]</span> · 円・ウォン換算は為替反映 <span id="fxNoteRate"></span></p>
+    <p class="fx-note">全項目 <span class="badge official">[公式]</span> ・ 円・ウォン換算は為替反映 <span id="fxNoteRate"></span></p>
     <div style="overflow-x: auto;">
       <table class="snapshot-table">
         <thead>
@@ -1757,14 +1784,14 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
     </details>
 
     <details class="fold" id="refNotes">
-      <summary><span class="fold-title">リスクノート · 全出典</span></summary>
+      <summary><span class="fold-title">リスクノート ・ 全出典</span></summary>
       <div class="fold-body">
         <h3>リスクノート</h3>
         <ul style="margin-left: 1.5rem; line-height: 1.8; color: var(--muted);">
-          <li>中央値賃金毎年引き上げ審査</li>
-          <li>Green List職種リスト変動</li>
-          <li>SMC スコアインフレ可能性</li>
-          <li>配偶者開放労働権 (レベル1–3 限定, 2024-12~) 縮小可能性</li>
+          <li>中央値賃金の毎年見直し</li>
+          <li>Green List職種の変動</li>
+          <li>SMCスコアのインフレーション</li>
+          <li>配偶者就労権（レベル1～3限定、2024-12以降）の縮小可能性</li>
         </ul>
 
         <h3>全体出典</h3>
@@ -1792,6 +1819,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
     </div>
     <p><strong>情報基準日：</strong> 2026-07-06</p>
     <p><strong>出典基準：</strong> immigration.govt.nz、employment.govt.nz公式ページ</p>
+    <p>🐛 誤った数値・リンク切れを見つけましたか？ <a href="https://github.com/wonchance-art/nz-navigator/issues" target="_blank" rel="noopener" class="source-link">GitHubで報告 →</a></p>
   </div>
 </footer>
 </div>
@@ -1840,17 +1868,17 @@ const DB = {
       gl: 'T1',
       rating: 5,
       path: 'C(T1直行)',
-      pitfall: 'ジュニアはローカルレファレンスなしでは書類通過率が低い — ワーホリ中に小規模コントラクト・オープンソース・ローカルミートアップで実績を作ること',
-      tip: 'ジョブオファーさえ獲得できればGL T1なのでワーホリ15ヶ月目で永住権申請まで可能な唯一の職種クラスのスピード',
+      pitfall: 'ジュニアはローカルレファレンスがないと書類通過率が低い — ワーホリ中に小規模コントラクト・オープンソース・ローカルミートアップで実績を積むこと',
+      tip: 'ジョブオファーを獲得できればGL T1なので、ワーホリ開始から15ヶ月で永住権申請まで可能な唯一の職種クラスの速さ',
       guide: {
         demand: 'ジュニア狭い・経歴者良好',
         demandLv: 3,
-        demandWhy: '需要はシニア・AIに偏りジュニアはローカル・リモートスタッフとの競争が激しい（ビザスポンサー公告～116件、2026-06 SEEK）。デジタル職種自体は2030年まで58,000個まで成長予見（MBIE）。',
+        demandWhy: '需要はシニアとAIに偏り、ジュニアはローカル・リモートスタッフとの競争が激しい（ビザスポンサー公告約116件、2026年6月SEEK調査）。デジタル職種全体では2030年までに5万8千職の成長が見込まれている（MBIE）。',
         demandSrc: 'https://www.mbie.govt.nz/business-and-employment/employment-and-skills/labour-market-reports-data-and-analysis/archives/labour-market-forecasting/medium-to-long-term-employment-outlook-looking-ahead-to-2026',
         pr: '非常に有利（条件付き）',
         prLv: 5,
-        prWhy: 'GL T1即時永住権トラック。ただしGL認定には学士（優等・L8相当）+海外学位IQA検証が事実上必要 — 無学位経歴者はAEWV（経歴2年）→SMC一般ルートで回避。',
-        study: '学位保有時は不要。無学位ならGL認定用として事実上必要 — ブートキャンプはPSWV資格にならないため正規L7+課程のみ意味がある（2026-11-16新設SGWV6ヶ月もNZQCF認定L5～7課程が条件で非認定ブートキャンプは除外）。',
+        prWhy: 'GL T1で直ぐ永住権申請が可能。ただしGL認定には学士（優等・L8相当）+海外学位のIQA検証が事実上必要 — 無学位経歴者はAEWV（経歴2年以上）→SMC一般ルートで対応可能。',
+        study: '学位を持っていれば不要。無学位の場合はGL認定要件として実質的に必須 — ブートキャンプはPSWVの対象にならないため、正規のL7以上課程のみが有効です（2026年11月16日に新設されたSGWVの6ヶ月プログラムもNZQCF認定のL5～7課程が条件で、認定されていないブートキャンプは除外）。',
         studyShort: '無学位なら必要',
         period: '学位+経歴：15～24ヶ月/無学位：30～48ヶ月',
         periodShort: '15～48ヶ月',
@@ -1866,17 +1894,17 @@ const DB = {
       gl: 'なし',
       rating: 3,
       path: 'A(AEWV→SMC)',
-      pitfall: 'AEWVは市場賃金でいいがSMCは35/h — 入社交渉時からSMC目標時給を釘打ちする必要がある。スーシェフ以上職級推奨',
+      pitfall: 'AEWVは市場賃金でいいがSMCは時給35以上必須 — 入社交渉時からSMC目標時給を明記する必要がある。スーシェフ以上職級推奨',
       tip: 'クィーンズタウン・オークランドのファインダイニングが賃金上限',
       guide: {
         demand: '簡単 — 公式等級Good',
         demandLv: 5,
-        demandWhy: '熟練シェフ常時不足 — Food Trades雇用年2.6%成長予見（MBIE）、離職率が高い（5年後現職残存～40%）で席が継続して開く。',
+        demandWhy: '熟練シェフが常に不足している — Food Tradesの雇用は年2.6%の成長が見込まれ（MBIE）、離職率が高い（5年後現職残存率約40%）ため、ポジションが継続して出現します。',
         demandSrc: 'https://www.careers.govt.nz/jobs-database/hospitality-tourism-and-recreation/hospitality/chef/job-opportunities',
         pr: '中程度 — 賃金がボトルネック',
         prLv: 3,
-        prWhy: 'AEWV（経歴2年またはL4調理資格）は簡単に開くがSMCは時給35/h — スーシェフ以上職級設計が鍵。',
-        study: '不要 — 厨房補助→シェフ昇進トラックが現実的。希望ならローカルL4～5調理課程留学可能（学費機関・課程別異なる）。',
+        prWhy: 'AEWV（経歴2年以上またはL4調理資格）は比較的容易に取得できますがSMCは時給35以上が必須 — スーシェフ以上の職級設計が鍵。',
+        study: '不要 — キッチンハンド→シェフへの昇進トラックが現実的です。希望する場合はローカルのL4～5調理課程への留学も可能（学費は機関・課程により異なる）。',
         studyShort: '不要',
         period: '30～48ヶ月',
         periodShort: '30～48ヶ月',
@@ -1892,17 +1920,17 @@ const DB = {
       gl: '電気工・溶接・自動車整備T2',
       rating: 4,
       path: 'C(T2WTR)',
-      pitfall: '日本の資格はそのまま認定されない — NZ登録（EWRB等）手続き・費用確認',
+      pitfall: '日本の資格はそのままでは認定されない — NZ登録（EWRB等）手続き・費用を事前に確認が必要',
       tip: '配管工はGL未含 — AEWV→SMCルート（資格認定必要）',
       guide: {
         demand: '良好 — 2026年回復基調',
         demandLv: 4,
-        demandWhy: '2025年建設不況後の回復見通し内で人員不足継続。電気工年収66,000～107,000（公式データ）。',
+        demandWhy: '2025年の建設不況後の回復局面で人員不足が継続しています。電気工の年収は6万6千～10万7千（公式データ）。',
         demandSrc: 'https://www.careers.govt.nz/jobs-database/trades/construction-and-infrastructure/electrician/',
         pr: '有利 — 電気・溶接GLT2',
         prLv: 4,
-        prWhy: '24ヶ月勤務後WTRで永住権。配管工はGL未含+PGDB評価（経歴～4年要求）先行 — AEWV→SMCルート。自動車整備士（Automotive Electrician/Mechanic）もTier 2 — 新入55～70k、NZQF L4自動車工学証書要件。',
-        study: '留学不要 — 代わりに資格認定手続き：電気工はEWRB海外登録（登録・審査代約NZD 1,650[推定]）先行、溶接・大工は別途登録不要。',
+        prWhy: '24ヶ月勤務後WTRで永住権申請が可能。配管工はGLに含まれず、PGDB評価（経歴4年程度要求）が先行 — AEWV→SMCルートで対応。自動車整備士（Automotive Electrician/Mechanic）もTier 2 — 新入職で5万5千～7万、NZQF L4自動車工学証書が要件。',
+        study: '留学は不要 — その代わりに資格認定手続きが必要：電気工はEWRB海外登録（登録・審査代は約1,650ドル[推定]）を先行実施し、溶接・大工は別途登録が不要です。',
         studyShort: '不要（資格認定）',
         period: '36～42ヶ月',
         periodShort: '36～42ヶ月',
@@ -1918,17 +1946,17 @@ const DB = {
       gl: 'RNT1',
       rating: 4,
       path: 'C(T1)またはD(Care)',
-      pitfall: 'RNはNCNZ登録必須（海外看護師CAP/OCE手続き）。ケア賃金は60～70k — 中央値賃金(72.8k)境界線、時給35以上オファーか必ず確認',
+      pitfall: 'RNはNCNZ登録が必須（海外看護師CAP/OCE手続き）。ケア職の賃金は6万～7万 — 中央値賃金（7万2,800）の境界線のため、時給35以上のオファーか必ず確認',
       tip: 'ケアギバーは登録なくCare協定24ヶ月ルート',
       guide: {
         demand: 'RN非常に簡単・ケア簡単',
         demandLv: 5,
-        demandWhy: '看護人員4,800名以上不足 — 政府が海外看護師招致中（RN年収79,000～104,000、2025～26）。ケアセクターは協定でパス保護。',
+        demandWhy: '看護職員が4,800名以上不足している — 政府が海外看護師の招致を進めています（RN年収は7万9千～10万4千、2025～26年）。ケアセクターは協定でビザ取得が保護されています。',
         demandSrc: 'https://www.immigration.govt.nz/live/resident-visas-to-live-in-new-zealand/skilled-residence-pathways-in-new-zealand/care-workforce-and-transport-sector-pathway-to-residence/',
         pr: 'RN非常に有利 — 登録が関門',
         prLv: 5,
-        prWhy: 'RNはGLT1。ただしNCNZ登録先行：書類検証（CGFNS約USD 300）+審査+必要時適応課程（期間・費用別途確認[推定]）。ケアギバーは登録なく24ヶ月勤務ルート。',
-        study: 'RN：日本の看護師免許基盤登録 — 新規学位不要。ケアギバー：不要（L3～4ケア資格あると有利）。',
+        prWhy: 'RNはGL T1で有利。ただしNCNZ登録が先行条件：書類検証（CGFNS約300米ドル）+審査+必要に応じて適応課程（期間・費用は別途確認[推定]）。ケアギバーは登録なく24ヶ月勤務ルートで対応可能。',
+        study: 'RN：日本の看護師免許を基に登録 — 新規学位は不要。ケアギバー：不要（L3～4のケア資格があると有利）。',
         studyShort: '不要（RN登録）',
         period: 'RN 15～24ヶ月+登録準備/ケア36～39ヶ月',
         periodShort: '15～39ヶ月',
@@ -1944,17 +1972,17 @@ const DB = {
       gl: 'Primary/SecondaryT1',
       rating: 4,
       path: 'C(T1直行)',
-      pitfall: '教育委員会登録が先決 — 学位認定・書類補完で数ヶ月遅延が一般的。初等は供給過剰（2026年530名黒字）なので中等・理工系科目が現実的',
-      tip: '登録手続き（NZQA学位認定+Teaching Council）は日本から遠隔で開始可能 — 合計約NZD 1,400。教室運営レベルの実践英語が面接の実質関門',
+      pitfall: '教育委員会登録が先決条件 — 学位認定・書類補完で数ヶ月の遅延が一般的。初等は供給過剰（2026年530名の過剰）なので、中等・理工系科目が現実的',
+      tip: '登録手続き（NZQA学位認定+Teaching Council）は日本から遠隔で開始可能 — 合計約1,400ドル。教室運営レベルの実践英語が面接の実質的な関門',
       guide: {
         demand: '中等不足 — 初等過剰',
         demandLv: 4,
-        demandWhy: '2026年中等教師710名不足（数学・理科優先）、初等は530名供給過剰 — 科目と地域（地方加算）選択が就職率を左右。',
+        demandWhy: '2026年の中等教師は710名不足（数学・理科を優先）、初等は530名の過剰供給 — 科目と地域（地方加算あり）の選択が就職率を大きく左右します。',
         demandSrc: 'https://www.education.govt.nz/',
         pr: '有利 — GLT1即時永住権',
         prLv: 5,
-        prWhy: '初・中等教師はGreen List Tier 1 — 登録+ジョブオファーなら勤務年数なく直ぐ永住権申請。鍵は永住権ではなく登録・就職。',
-        study: '日本の教員免許保有時は不要（学位認定手続きのみ）。未保有ならNZ教育学課程（L7+）履修が事実上必須。',
+        prWhy: '初等・中等教師はGreen List Tier 1 — 登録+ジョブオファーがあれば勤務年数は不要で直ぐ永住権申請が可能。鍵は永住権ではなく登録と就職の実現。',
+        study: '日本の教員免許を持っている場合は不要（学位認定手続きのみ）。未保有の場合はNZ教育学課程（L7以上）の履修が事実上必須。',
         studyShort: '資格あると不要',
         period: '12～24ヶ月（登録スピード）',
         periodShort: '12～24ヶ月',
@@ -1970,17 +1998,17 @@ const DB = {
       gl: '土木・構造等T1',
       rating: 5,
       path: 'C(T1直行)',
-      pitfall: '日本での経歴認定は審査裁量 — プロジェクト技術書等証拠準備が鍵。CPEng（認定技術士）登録は通常経歴4～6年後',
-      tip: '日本はWashington Accord署名国(JABEE・2005年加盟) — JABEE認定課程の工学士は学位同等性認定に有利。インフラブーム（全国パイプライン$65.4B）で土木需要継続',
+      pitfall: '日本での経歴認定は審査者の判断に委ねられる — プロジェクト技術書などの証拠準備が鍵。CPEng（認定技術士）登録は通常は経歴4～6年後',
+      tip: '日本はWashington Accord署名国（JABEE・2005年加盟）— JABEE認定課程の工学士は学位同等性認定で有利。インフラブーム（全国パイプライン65.4億ドル）で土木需要が継続',
       guide: {
         demand: '需要大 — インフラブーム',
         demandLv: 4,
-        demandWhy: '年2,300名規模不足推算・土木求人常時（オークランドインフラ・クライストチャーチ再建） — シニアほど有利。',
+        demandWhy: '年2,300名規模の不足が推算され、土木求人は常時発生（オークランドインフラ・クライストチャーチ再建） — シニアほど有利。',
         demandSrc: 'https://www.engineeringnz.org/',
         pr: '有利 — GLT1即時永住権',
         prLv: 5,
-        prWhy: '土木・構造・電気等多数エンジニア職種がGreen List Tier 1 — ジョブオファーで直ぐ永住権申請。CPEngは永住権必須要件ではなくキャリア用。',
-        study: 'JABEE認定工学士保有時は不要。未保有なら工学学士（3～4年）留学。',
+        prWhy: '土木・構造・電気など多くのエンジニア職種がGreen List Tier 1 — ジョブオファーで直ぐ永住権申請が可能。CPEngは永住権の必須要件ではなくキャリア向上用。',
+        study: 'JABEE認定の工学士を持っている場合は不要。未保有の場合は工学学士（3～4年）への留学。',
         studyShort: '学位あると不要',
         period: '12～24ヶ月',
         periodShort: '12～24ヶ月',
@@ -1996,17 +2024,17 @@ const DB = {
       gl: '一部マネジャー級',
       rating: 3,
       path: 'A変形（季節→マネジャー）',
-      pitfall: '季節職自体は永住権に繋がらない — マネジャートラック転換が鍵',
-      tip: '季節ジョブ（園芸・ぶどう）はWHV延長+3ヶ月カード・食宿提供が標準',
+      pitfall: '季節職自体は永住権には繋がらない — マネジャートラックへの転換が鍵',
+      tip: '季節ジョブ（園芸・葡萄）はWHV延長3ヶ月、食宿提供が標準',
       guide: {
         demand: '簡単 — 季節常時需要',
         demandLv: 5,
-        demandWhy: 'キウイ収穫だけで1.9万ジョブ（2026） — チェリー12～2月・りんご2～5月・ぶどう2～4月・キウイ3～6月で季節が繋がる。未経験即進入。',
+        demandWhy: 'キウイ収穫だけで1万9千ジョブ（2026年） — チェリー12～2月・りんご2～5月・葡萄2～4月・キウイ3～6月で季節が繋がります。未経験での即進入が可能。',
         demandSrc: 'https://www.picknz.co.nz/',
         pr: '中程度 — マネジャー昇進が鍵',
         prLv: 3,
-        prWhy: 'Orchardマネジャー級昇進後AEWV→SMCトラック — 季節反復だけではパスなし。パックハウススーパーバイザーも階段になる。',
-        study: '不要 — 現場園芸資格（L3～4）並行取得可能。',
+        prWhy: 'Orchardマネジャー級に昇進した後、AEWV→SMCトラックで対応 — 季節反復だけではビザ進展なし。パックハウススーパーバイザーも昇進ステップになります。',
+        study: '不要 — 現場園芸資格（L3～4）を並行取得することは可能。',
         studyShort: '不要',
         period: '36～60ヶ月（昇進スピード次第）',
         periodShort: '36～60ヶ月',
@@ -2022,17 +2050,17 @@ const DB = {
       gl: 'Dairy Farmer/ManagerT2',
       rating: 4,
       path: 'C(T2WTR — 昇進トラック)',
-      pitfall: '農場宿舎控除は法定比率ではなく市場価格書面合意 — 契約書に金額明記を確認。早朝搾乳等体力消費大',
-      tip: '食宿が総報酬（TPV）として認定され移民賃金計算に含む — 地方生活で貯蓄最大化。季節進入はPSV（最大7ヶ月、2025-12~）',
+      pitfall: '農場宿舎控除は法定比率ではなく市場価格に基づく書面合意 — 契約書に金額が明記されていることを確認。早朝搾乳など体力消費が大きい',
+      tip: '食宿が総報酬（TPV）として認定され移民賃金計算に含まれる — 地方生活で貯蓄を最大化できます。季節進入はPSV（最大7ヶ月、2025年12月以降）',
       guide: {
         demand: '簡単 — 常時人員難',
         demandLv: 5,
-        demandWhy: 'ダイリーは年4,000名が去る構造的不足 — 未経験補助進入可能（現場教育）。ワイカト・カンタベリー・サウスランド集中。',
+        demandWhy: 'ダイリーセクターは年4,000名が離職する構造的不足 — 未経験補助での進入が可能（現場研修）。ワイカト・カンタベリー・サウスランドに集中。',
         demandSrc: 'https://skillshortages.immigration.govt.nz/dairy-cattle-farm-worker/',
         pr: '有利 — マネジャー=GLT2',
         prLv: 4,
-        prWhy: 'Dairy Cattle Farmer/Manager（ANZSCO 121313）はGreen List Tier 2 — マネジャーで24ヶ月勤務すれば永住権申請。マネジャー要件は経歴2年（2025-03短縮）またはNZQF L4。',
-        study: '不要 — Primary ITOダイリーL4（約20ヶ月）を働きながら取得。',
+        prWhy: 'Dairy Cattle Farmer/Manager（ANZSCO 121313）はGreen List Tier 2 — マネジャーとして24ヶ月勤務すれば永住権申請が可能。マネジャー要件は経歴2年（2025年3月に短縮）またはNZQF L4。',
+        study: '不要 — Primary ITOダイリーL4（約20ヶ月）を働きながら取得することが可能。',
         studyShort: '不要',
         period: '36～60ヶ月（昇進スピード次第）',
         periodShort: '36～60ヶ月',
@@ -2048,17 +2076,17 @@ const DB = {
       gl: 'なし',
       rating: 2,
       path: 'A（昇格前提）またはB',
-      pitfall: 'ほとんどANZSCOレベル4～5 — AEWV3年制限+SMCは1.5倍（52.50/h）壁。現場職そのままは永住権が遮断',
-      tip: '進入最速（未経験1～2週以内開始）。フォークリフト資格→スーパーバイザー→トレード見習い（L4）が次段階',
+      pitfall: 'ほとんどANZSCOレベル4～5の職種 — AEWV3年制限とSMC時給52.50以上の壁。現場職のままでは永住権に繋がらない',
+      tip: '進入が最速（未経験で1～2週以内に開始可能）。フォークリフト資格→スーパーバイザー→トレード見習い（L4）が昇進ステップ',
       guide: {
         demand: '非常に簡単 — 求人最多',
         demandLv: 5,
-        demandWhy: 'SEEK基準倉庫4,000件+・工場1,400件+常時求人（2026-03）。オークランド東部・クライストチャーチ集中、未経験即進入。',
+        demandWhy: 'SEEK基準で倉庫4,000件以上・工場1,400件以上の常時求人（2026年3月）。オークランド東部・クライストチャーチに集中、未経験での即進入が可能。',
         demandSrc: 'https://www.seek.co.nz/warehouse-jobs',
         pr: '難しい — 昇格が唯一の道',
         prLv: 1,
-        prWhy: 'レベル4～5職務なのでAEWV3年制限・永住権直結なし。スーパーバイザー・トレード見習い（L4）・マネジャーでレベル1～3に上がらないとSMC・GLの扉が開かない。',
-        study: '不要 — 代わりに現場資格（フォークリフト・流通/建設L2～4）が昇格の鍵。',
+        prWhy: 'レベル4～5の職務のためAEWV3年制限が適用され、永住権に直結しません。スーパーバイザー・トレード見習い（L4）・マネジャーでレベル1～3に昇進しないとSMC・GLの道が開きません。',
+        study: '不要 — その代わりに現場資格（フォークリフト・流通/建設L2～4）が昇進の鍵。',
         studyShort: '不要（資格昇格）',
         period: '48ヶ月+（昇格経由）',
         periodShort: '48ヶ月+',
@@ -2072,19 +2100,19 @@ const DB = {
             <strong>🥩 肉加工工場（ミートワークス）</strong> <span class="badge estimated">推定・26-07調査</span>
             <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;">Silver Fern Farms（全国14工場）・Alliance・AFFCO・ANZCO — ほとんど地方小都市（サウスランド・ホークスベイ等）。シーズンは<strong>11月～6月</strong>、オフシーズン（8～9月）レイオフが慣行なのでその期間のジョブは別途設計が必要です。</p>
             <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>賃金：</strong> 訓練期間$23.95/h → 生産ライン$28～30.5/h（2026-07公告基準）。ピークシーズンは残業含む週$1,400～1,600（税前）まで。<strong>進入：</strong> 未経験採用が標準（訓練提供） — 薬物検査・身体評価通過必須、応募→開始約1週。シーズン開幕前の9～10月大量採用に合わせて応募。</p>
-            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><span class="badge official">[公式]</span> <strong>ビザ：</strong> WHVで勤務可能だが<strong>ワーホリ+3ヶ月延長は園芸・ぶどうのみ認定 — 肉加工は対象外</strong>。再訪問はPSV（最大7ヶ月・過去3年内1シーズン経験必要・再申請前4ヶ月国外）またはGWSV（3年有効・年9ヶ月・3シーズン経歴） — Meat Process Worker・Meat Boner and Slicerが公式リストに含む（Slaughtererは未含）。<a class="source-link" href="https://www.immigration.govt.nz/work/requirements-for-work-visas/green-list-occupations-qualifications-and-skills/peak-seasonal-visa-jobs-list/" target="_blank">PSVリスト↗</a></p>
-            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><span class="badge official">[公式]</span> <strong>永住権：</strong> 一般工程職はANZSCOレベル4なので直結パスはありません。唯一の例外 — <strong>ハラル屠殺者（831212）はGreen List Tier 2</strong>：MPI承認ハラル施設で24ヶ月勤務+中央値賃金+IELTS 6.5で永住権申請可能。ただしイスラム教徒限定（FIANZ承認・NZQA資格）なので一般応募者に事実上閉ざされた門です。</p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><span class="badge official">[公式]</span> <strong>ビザ：</strong> WHVで勤務は可能ですが、<strong>ワーホリの3ヶ月延長は園芸・葡萄のみ認定 — 肉加工は対象外</strong>です。再訪問はPSV（最大7ヶ月・過去3年以内の1シーズン経験必要・再申請前4ヶ月の国外滞在）またはGWSV（3年有効・年9ヶ月・3シーズンの経歴） — Meat Process Worker・Meat Boner and Slicerが公式リストに含まれます（Slaughtererは未含）。<a class="source-link" href="https://www.immigration.govt.nz/work/requirements-for-work-visas/green-list-occupations-qualifications-and-skills/peak-seasonal-visa-jobs-list/" target="_blank">PSVリスト↗</a></p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><span class="badge official">[公式]</span> <strong>永住権：</strong> 一般工程職はANZSCOレベル4のため直結パスはありません。唯一の例外 — <strong>ハラル屠殺者（831212）はGreen List Tier 2</strong>：MPI承認ハラル施設で24ヶ月勤務＋中央値賃金＋IELTS 6.5で永住権申請が可能です。ただしイスラム教徒限定（FIANZ承認・NZQA資格）のため、一般応募者には事実上閉ざされた道です。</p>
           </div>
           <div id="fw-chain" style="margin-top: 0.8rem; border-left: 4px solid var(--accent); background: #fdf9f0; padding: 0.8rem 1rem; border-radius: 6px;">
             <strong>🏭 工場季節チェーン — 通年ローテーション</strong> <span class="badge estimated">推定・26-07調査</span>
-            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>2～4月</strong> ワイナリービンテージ（cellar hand $25～32/h・12時間シフト・Marlborough・Hawke's Bay — 応募は前年8～10月） → <strong>3～6月</strong> キウイパックハウス（Bay of Plenty、$23.95～28.5/h） → <strong>5～9月</strong> 水産加工ホキ（Sealord Nelson、基本$23.96/h+交替・残業、シーズン300名+採用） → <strong>10月～5月</strong> 貝・水産（Talley's Motueka・Blenheim、成果給中心） → <strong>11月～</strong> 肉加工開幕。乳製品工場（Fonterra等）はシーズンfixed-term生産職公告が随時 — 条件は公告別確認。</p>
-            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;">💡 シーズンを繋げば通年需要が続きます。ただしPSV・GWSVはシーズン間の国外スタンドダウン（4ヶ月/3ヶ月）があってチェーンが断ち切れます — <strong>WHV 12ヶ月間はWHV一つで回すのが最も柔軟</strong>です。時期別詳細は定住タブの月別カレンダー参考。</p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>2～4月</strong> ワイナリービンテージ（cellar hand時給25～32ドル・12時間シフト・Marlborough・Hawke's Bay — 応募は前年8～10月） → <strong>3～6月</strong> キウイパックハウス（Bay of Plenty、時給23.95～28.50ドル） → <strong>5～9月</strong> 水産加工ホキ（Sealord Nelson、基本時給23.96ドル+交替手当・残業、シーズン300名以上採用） → <strong>10月～5月</strong> 貝・水産加工（Talley's Motueka・Blenheim、成果給中心） → <strong>11月以降</strong> 肉加工がスタート。乳製品工場（Fonterra等）はシーズン限定の生産職公告が随時 — 条件は各公告で確認。</p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;">💡 シーズンを繋げば通年需要が続きます。ただしPSV・GWSVはシーズン間の国外スタンドダウン（4ヶ月/3ヶ月）があるためチェーンが断たれます — <strong>WHV12ヶ月間のうちにWHV一つで全てを回すのが最も柔軟</strong です。時期別詳細は定住タブの月別カレンダーを参考。</p>
           </div>
           <div id="fw-build" style="margin-top: 0.8rem; border-left: 4px solid var(--info); background: var(--bg); padding: 0.8rem 1rem; border-radius: 6px;">
             <strong>🏗️ 建設労務（labourer・hammerhand）</strong>
-            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>賃金：</strong> 公告基準$24～30/h <span class="badge estimated">推定</span> — 最低賃金($23.95)周辺のみ提示する公告は除外。<strong>進入：</strong> Site Safeパスポート（半日課程・カード2年有効・費用～$200推定）が大規模現場事実上必須。PPE（安全靴・ハイビズ）は雇用主負担が原則<span class="badge official">[公式]</span>。最速進入はlabour hireエージェンシー（AWF・Tradestaff）登録。</p>
-            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>落とし穴：</strong> casual契約の雨天無給（rain-day stand-down）は契約書に条項があってこそ有効 — 署名前に確認。見習い契約時の訓練最低賃金$19.16/hが適用される可能性も知った上で契約<span class="badge official">[公式]</span>。</p>
-            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><span class="badge official">[公式]</span> <strong>昇格がすなわち永住権戦略：</strong> hammerhand → BCITO大工見習3～4年（NZ Certificate in Carpentry L4・学費初年度$1,984、以降年$964） → トレード職種転換。2026-08-24 SMC改編のTrades &amp; Technician新経路と直結。需要は堅調 — オークランド2026建設活動+13.5%（2024対比）、全国パイプライン2030年$65.4B（MBIE）。<button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('jobs', 'job-trade')">→ 建設トレードカード</button></p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>賃金：</strong> 公告基準で時給24～30ドル <span class="badge estimated">推定</span> — 最低賃金（時給23.95ドル）周辺のみを提示する公告は除外。<strong>進入：</strong> Site Safeパスポート（半日課程・カード2年有効・費用は約200ドル推定）が大規模現場で事実上必須です。PPE（安全靴・ハイビズベスト）は雇用主負担が原則<span class="badge official">[公式]</span>。最速進入はlabour hire エージェンシー（AWF・Tradestaff）への登録です。</p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>落とし穴：</strong> casual契約の雨天無給（rain-day stand-down）は契約書に条項があってこそ有効です — 署名前に確認が必須。見習い契約時は訓練最低賃金の時給19.16ドルが適用される可能性もあります。契約前に理解した上で署名してください<span class="badge official">[公式]</span>。</p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><span class="badge official">[公式]</span> <strong>昇進がすなわち永住権戦略：</strong> hammerhand → BCITO大工見習3～4年（NZ Certificate in Carpentry L4・初年度学費1,984ドル、以降年964ドル） → トレード職種への転換。2026年8月24日のSMC改編で新設されたTrades &amp; Technician経路と直結。需要は堅調 — オークランド2026年建設活動は+13.5%（2024年対比）、全国パイプラインは2030年で65.4億ドル（MBIE）。<button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('jobs', 'job-trade')">→ 建設トレードカード</button></p>
           </div>
           <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.6rem;">出典：immigration.govt.nz（PSV・Green List）・MBIE・BCITO・employment.govt.nz・企業採用公告調査 — 基準日2026-07-08</p>
         </div>`
@@ -2097,17 +2125,17 @@ const DB = {
       gl: 'なし',
       rating: 2,
       path: 'B（留学）またはA（難しい）',
-      pitfall: '事務職認定雇用主スポンサー率が低くローカル経歴要求 — 6職種中最難度。会計はCA/CPA資格時等級★3',
-      tip: '留学（L7+）で専門性転換するかマーケティングスペシャリスト級以上狙う必要',
+      pitfall: '事務職は認定雇用主スポンサー率が低くローカル経歴が要求される — 6職種中最難。会計はCA/CPA資格時に格付けが★3',
+      tip: '留学（L7以上）で専門性を転換するか、マーケティングスペシャリスト級以上を目指す必要がある',
       guide: {
         demand: '会計Good・マーケティングAverage',
         demandLv: 2,
-        demandWhy: '会計は不足職種リスト含・雇用年～3.3%成長（公式等級Good）。マーケティングは不足リスト未含+供給過剰 — スポンサー確保が6職種中最難度（公式Average）。',
+        demandWhy: '会計は不足職種リストに含まれ、雇用は年3.3%程度の成長（公式格付けGood）。マーケティングは不足リスト未含で供給過剰 — スポンサー確保が6職種中で最難（公式格付けAverage）。',
         demandSrc: 'https://www.careers.govt.nz/jobs-database/finance-and-property/finance/accountant/',
         pr: '会計改善中・マーケティング難しい',
         prLv: 2,
-        prWhy: '2026-08-24からCA/CPA資格会計士のSMC 6点認定が新設 — 資格だけあれば経路が大幅に短縮。マーケティングはSMC一般ルート（時給35/h+）のみ。',
-        study: '会計：GD（Chartered Accounting）1年+CA ANZメンターシップ3年トラック有効。マーケティング：留学しても採用競争は同じ — 慎重に。',
+        prWhy: '2026年8月24日からCA/CPA資格会計士のSMCで6点認定が新設される — 資格があるだけで経路が大幅に短縮。マーケティングはSMC一般ルート（時給35以上）のみ。',
+        study: '会計：GD（Chartered Accounting）1年＋CA ANZメンターシップ3年のトラックが有効。マーケティング：留学しても採用競争は変わらない — 慎重に判断。',
         studyShort: '会計推奨',
         period: '会計30～48ヶ月/マーケティング48ヶ月+',
         periodShort: '30～48ヶ月+',
@@ -2120,7 +2148,7 @@ const DB = {
     {
       id: 'A',
       name: 'A. 直行（WHV→AEWV→SMC）',
-      summary: '臨時職→認定雇用主スポンサー→永住権',
+      summary: 'ワーホリで就業→認定雇用主スポンサー→永住権',
       duration: '30～48ヶ月',
       cost: 'NZD 11,000～12,700',
       stages: [
@@ -2137,7 +2165,7 @@ const DB = {
     {
       id: 'B',
       name: 'B. 留学経由（WHV→学業→PSWV→AEWV→SMC）',
-      summary: 'ワーホリで経験+学位取得+職業連結',
+      summary: 'ワーホリで実績を積み、学位取得、職業に結びつける',
       duration: '48～96ヶ月+',
       cost: 'NZD 80,000～247,000',
       stages: [
@@ -2149,7 +2177,7 @@ const DB = {
       studyVariants: {
         gd: {
           label: '学士保有→GD 1年', short: '留学・GD 1年', duration: '48～60ヶ月', cost: 'NZD 80,000～110,000',
-          note: 'GD（L7）1年→PSWV 1年は2026-11-16改編施行後基準 — 今準備して2027年入学なら対象。学業中週25h勤務可能。職種別課程・学費比較は職種タブの「課程登録で開始」参考。',
+          note: 'GD（L7）1年→PSWV 1年は2026年11月16日の改編施行後の基準 — 今準備して2027年入学なら対象。学業中は週25時間の勤務が可能。職種別課程・学費比較は職種タブの「課程登録で開始」を参考。',
           stages: [
             { name: 'WHV', months: 12 },
             { name: '学業（GD 1年）', months: 12 },
@@ -2159,7 +2187,7 @@ const DB = {
         },
         bach: {
           label: '学士なし→学士 3年', short: '留学・学士 3年', duration: '72～96ヶ月+', cost: 'NZD 130,000～247,000',
-          note: '学士（L7、3年）は卒業後PSWV最大3年 — 学士未保有者の標準経路。学費年22,000～58,000。',
+          note: '学士（L7、3年）は卒業後PSWV最大3年が可能 — 学士未保有者の標準経路。学費は年22,000～58,000ドル。',
           stages: [
             { name: 'WHV', months: 12 },
             { name: '学業（学士 3年）', months: 36 },
@@ -2169,15 +2197,15 @@ const DB = {
         }
       },
       details: {
-        requirements: ['学校入学', '資金証明：20,000/年', 'L7+学位（PSWV資格）'],
-        costs: ['学費：22,000～58,000/年', '生活費：20,000/年', 'PSWV：1,670', 'AEWV：1,540', 'SMC：6,450'],
+        requirements: ['学校入学', '資金証明：年20,000ドル', 'L7以上の学位（PSWV資格）'],
+        costs: ['学費：年22,000～58,000ドル', '生活費：年20,000ドル', 'PSWV：1,670ドル', 'AEWV：1,540ドル', 'SMC：6,450ドル'],
         processing: ['学生ビザ：2～4週', 'PSWV：2～4週', 'AEWV：7週', 'SMC：4ヶ月']
       }
     },
     {
       id: 'C-T1',
       name: 'C. Green List T1（即時永住権）',
-      summary: 'グリーンリストT1職種+ジョブオファー→直ぐ永住権申請',
+      summary: 'Green List T1職種＋ジョブオファー→直ぐ永住権申請',
       duration: '15～24ヶ月',
       cost: 'NZD 10,500～12,000',
       stages: [
@@ -2194,7 +2222,7 @@ const DB = {
     {
       id: 'C-T2',
       name: 'C. グリーンリストT2（勤務形永住権）',
-      summary: 'トレードグリーンリスト職種で24ヶ月勤務→永住権',
+      summary: 'Trade Green List職種で24ヶ月勤務→永住権',
       duration: '36～42ヶ月',
       cost: 'NZD 10,500～12,000',
       stages: [
@@ -2234,7 +2262,7 @@ const DB = {
       choices: [
         {
           label: '現在の職場でスポンサー打診',
-          result: '<strong>雇用主負担：</strong>認証775 + Job Check 735（自分の金ではない）<br><strong>障害：</strong>AEWVは可能（市場賃金）でもSMC時給35/h壁 — バリスタ相場24–29<br><strong>結論：</strong>延長はできるが、永住権まで行くには職種変更を併行'
+          result: '<strong>雇用主負担：</strong>認証775 + Job Check 735（自分の金ではない）<br><strong>障害：</strong>AEWVは可能（市場賃金）でもSMC時給35/h壁 — バリスタ相場24～29/h<br><strong>結論：</strong>延長はできるが、永住権まで行くには職種変更を併行'
         },
         {
           label: 'スポンサー可能職種への転職準備',
@@ -2270,7 +2298,7 @@ const DB = {
     {
       id: 's3',
       title: '年収が基準に満たない',
-      description: 'シェフ、時給30のオファー。AEWVはOK（市場賃金）、SMCは35が必要。',
+      description: 'シェフ時給30/hのオファー。AEWVはOK（市場賃金）、SMCは35が必要。',
       choices: [
         {
           label: 'AEWVで入って経歴+昇給',
@@ -2290,15 +2318,15 @@ const DB = {
     {
       id: 's4',
       title: '英語スコアがない',
-      description: 'ビザ別要件表：WHV なし / AEWV レベル1–3 IELTS 4.0 / SMC 6.5。',
+      description: 'ビザ別要件表：WHV なし / AEWVレベル1～3はIELTS 4.0 / SMC 6.5。',
       choices: [
         {
-          label: '4.0 先（1–2ヶ月準備）',
-          result: '<strong>なぜ今：</strong>2026-06-01からスキルレベル3職種までIELTS 4.0拡大 — 事務・トレード相当数該当<br><strong>費用：</strong>約490/回（日本受験 約27,500円）<br><strong>難易度：</strong>4.0は基礎レベル — 1–2ヶ月集中なら充分な場合が多い'
+          label: '4.0 先（1～2ヶ月準備）',
+          result: '<strong>なぜ今：</strong>2026-06-01からスキルレベル3職種までIELTS 4.0拡大 — 事務・トレード相当数該当<br><strong>費用：</strong>約490 NZD/回（日本受験目安：約27,500円）<br><strong>難易度：</strong>4.0は基礎レベル — 1～2ヶ月集中なら充分な場合が多い'
         },
         {
-          label: '6.5 長期プラン（6–12ヶ月）',
-          result: '<strong>目標：</strong>SMC要件6.5 — ワーホリ中に予備校・スタディ併行<br><strong>好材料：</strong>2026-08-24から成績有効期限5年（職業登録保有者） — 前もって取るほど有利'
+          label: '6.5 長期プラン（6～12ヶ月）',
+          result: '<strong>目標：</strong>SMC要件6.5 — ワーホリ中に予備校・スタディ併行<br><strong>好材料：</strong>2026-08-24からスコア有効期限が5年（職業登録保有者） — 前もって取るほど有利'
         },
         {
           label: '免除確認',
@@ -2314,15 +2342,15 @@ const DB = {
       choices: [
         {
           label: '日本での経歴の遡及整理',
-          result: '<strong>コア規則：</strong>AEWV適格は4択1（GL / 時給70 / 経歴2年 / NZQCF L4+） — 1つ満たせばOK<br><strong>準備書類：</strong>雇用契約書 · 給与振込実績 · 経歴証明書 · 推薦人連絡先'
+          result: '<strong>コア規則：</strong>AEWV適格は4択中1つ（GL / 時給70 / 経歴2年 / NZQCF L4+） — 1つ満たせばOK<br><strong>準備書類：</strong>雇用契約書・給与振込実績・経歴証明書・推薦人連絡先'
         },
         {
           label: '海外学歴認定（NZQA IQA）',
-          result: '<strong>手続き：</strong>NZQA IQA — 海外学位をNZQCFレベルにマッピング認証<br><strong>備考：</strong>期間・費用は申請タイプ別異なる — 公式ページ確認'
+          result: '<strong>手続き：</strong>NZQA IQA — 海外学位をNZQCFレベルにマッピング認証<br><strong>備考：</strong>期間・費用は申請タイプ別に異なる — 公式ページで確認'
         },
         {
           label: 'NZで資格取得',
-          result: '<strong>トレード：</strong>NZ L4資格取得<br><strong>GD（L7）：</strong>現在は学士先行なしPSWV不可<br><strong>2026-11-16から：</strong>学士保有GD修了者は最大1年PSWV · 非学位（L5–7）は6ヶ月SGWV'
+          result: '<strong>トレード：</strong>NZ L4資格取得<br><strong>GD（L7）：</strong>現在は学位がないとPSWV不可<br><strong>2026-11-16から：</strong>学士保有GD修了者は最大1年PSWV・非学位課程（L5～7）は6ヶ月SGWV'
         }
       ],
       advice: '書類はニュージーランドを出る前に日本で集めるのが10倍安い。ワーホリ出国前の準備リストに入れろ。'
@@ -2374,7 +2402,7 @@ const DB = {
     {
       id: 's8',
       title: 'ニュージーランドでパートナーができた',
-      description: '恋愛が真摯になった — パートナーシップビザはワーホリラーに実際に開かれたトラック。',
+      description: '真摯なパートナーシップが成立 — ワーホリラーに実際に開かれたビザトラック。',
       choices: [
         {
           label: 'パートナーがNZ市民権・永住権者',
@@ -2389,12 +2417,12 @@ const DB = {
           result: '<strong>問題：</strong>両者とも仮ビザなら パートナーシップのアンカーがない<br><strong>戦略：</strong>GL職種・高給に近い一方がスポンサー確保に集中 → 他方がパートナービザで追従'
         }
       ],
-      advice: 'パートナーシップビザは書類でする関係証明戦。同居記録は遡及できない — 一緒に住み始めた日から共同名義書類を積み重ねろ。関係が終わればビザも終わる。'
+      advice: 'パートナーシップビザは書類による関係証明戦。同居記録は遡及できない — 一緒に住み始めた日から共同名義書類を積み重ねろ。関係が終わればビザも終わる。'
     },
     {
       id: 's9',
       title: 'ワーホリ抜きで進入（31歳以上含む）',
-      description: '日本WHVは18–30歳。だがワーホリ抜きでも進入路は3つある。',
+      description: '日本WHVは18～30歳。だがワーホリ抜きでも進入路は3つある。',
       choices: [
         {
           label: '日本からジョブオファー → オフショアAEWV',
@@ -2402,14 +2430,14 @@ const DB = {
         },
         {
           label: '留学で進入（オフショア学生ビザ）',
-          result: '<strong>手続き：</strong>日本から学生ビザ申請 — 開始3ヶ月前推奨（大学80% 8週 · ポリテク10週）<br><strong>効果：</strong>L7+課程ならPSWV（最大3年）で年齢無関係に直行・GLパス合流<br><strong>資金：</strong>証明2万/年 + 学費'
+          result: '<strong>手続き：</strong>日本から学生ビザ申請 — 開始3ヶ月前推奨（大学80% 8週・ポリテク10週）<br><strong>効果：</strong>L7以上課程ならPSWV（最大3年）で年齢無関係にスムーズ進学・GLパスへ<br><strong>資金：</strong>資金証明2万/年 + 学費'
         },
         {
           label: '訪問ビザで調査後決定',
-          result: '<strong>可能：</strong>NZeTA（平均1日）·訪問ビザ（80% 2週）でネットワーキング・面接<br><strong>不可：</strong>現地労働違法（海外遠隔のみ） · 訪問ビザ状態AEWV申請時interim労働権なし（2025-04-08~）<br><strong>結論：</strong>調査は短く、申請は日本から'
+          result: '<strong>可能：</strong>NZeTA（平均1日）・訪問ビザ（80% 2週）でネットワーキング・面接<br><strong>不可：</strong>現地での就労は違法（海外からの遠隔勤務のみ可）・訪問ビザ状態AEWV申請時interim労働権なし（2025-04-08～）<br><strong>結論：</strong>調査は短く、申請は日本から'
         }
       ],
-      advice: '31歳+の武器は時間ではなく経歴。ワーホリラーが1年かけて築く現地信用を経歴証明・資格認定・ポートフォリオで圧縮してオフショアで勝負しろ。永住権トラック（StR等）は55歳以下まで開かれてる。'
+      advice: '31歳以上の武器は時間ではなく経歴。ワーホリラーが1年かけて築く現地信用を経歴証明・資格認定・ポートフォリオで実績として示してオフショアで勝負しろ。永住権トラック（StR等）は55歳以下まで開かれてる。'
     }
   ],
   changes: [
@@ -2420,30 +2448,30 @@ const DB = {
     { date: '2026-03-09', dir: 'flat', text: '中央値賃金35.00·NOL 47職種', planned: false, you: 'SMC·GL目標時給35 — 賃金交渉基準点' },
     { date: '2026-04-01', dir: 'flat', text: '最低賃金23.95', planned: false, you: 'ワーホリ初期時給下限 — フルタイム週 ~958（税前）' },
     { date: '2026-06-01', dir: 'down', text: 'AEWV レベル3英語IELTS 4.0', planned: false, you: '事務・トレード級AEWVも英語スコア必要' },
-    { date: '2026-08-24', dir: 'up', text: 'SMC改編（学士4点·新規パス2個·英語性績有効5年）', planned: true, you: '学士保有者必要NZ勤務3年 → 2年短縮' },
-    { date: '2026-11-16', dir: 'down', text: 'PSWV細分化（GD+学士最大1年 · 学位課程最大3年） · SGWV（L5–7、6ヶ月）新設', planned: true, you: '非学位留学労働権6ヶ月のみ — 留学はL7学位課程以上で設計' }
+    { date: '2026-08-24', dir: 'up', text: 'SMC改編（学士4点・新規パス2個・英語スコア有効5年）', planned: true, you: '学士保有者必要NZ勤務3年 → 2年短縮' },
+    { date: '2026-11-16', dir: 'down', text: 'PSWV細分化（GD+学士最大1年・学位課程最大3年）・SGWV（L5～7、6ヶ月）新設', planned: true, you: '非学位留学の労働権は6ヶ月のみ — 留学はL7学位課程以上で設計' }
   ]
 };
 
 // ===== v15ホームダッシュボード（為替レート·航空基準値は2026-07-08検証スナップショット） =====
 const FX_BASE = {
-  KRW: { v: 861.75, asOf: '2026-07-08', range: '最近3ヶ月859–904', src: 'https://www.xe.com/currencyconverter/convert/?Amount=1&From=NZD&To=KRW' },
-  JPY: { v: 92.52, asOf: '2026-07-08', range: '2026年90–95', src: 'https://nz.finance.yahoo.com/quote/NZDJPY=X/' }
+  KRW: { v: 861.75, asOf: '2026-07-08', range: '直近3ヶ月859～904', src: 'https://www.xe.com/currencyconverter/convert/?Amount=1&From=NZD&To=KRW' },
+  JPY: { v: 92.52, asOf: '2026-07-08', range: '2026年90～95', src: 'https://nz.finance.yahoo.com/quote/NZDJPY=X/' }
 };
 
 const SEASON_CAL = [
   { m: 1, lv: 3, tags: '🍒チェリー終盤 · 🍽️観光繁忙期 · 🏢都市採用急増（1月IT +80%）' },
   { m: 2, lv: 3, tags: '🍇ブドウ収穫開始 · 🍎リンゴ · 🍽️観光 — 到着最適' },
   { m: 3, lv: 3, tags: '🍎リンゴ · 🍇ブドウ · 🥝キウイ開始 — 収穫最多 + 航空最低' },
-  { m: 4, lv: 3, tags: '🍎🥝収穫ピーク · ⛷️スキー採用公告（2–4月）' },
+  { m: 4, lv: 3, tags: '🍎🥝収穫ピーク · ⛷️スキー採用公告（2～4月）' },
   { m: 5, lv: 2, tags: '🥝キウイ終盤 · ⛷️スキー開幕準備' },
   { m: 6, lv: 2, tags: '⛷️スキーシーズン開幕 · 🥝梱包継続' },
   { m: 7, lv: 1, tags: '⛷️スキーピーク（クイーンズタウン·ワナカ） — その他は閑散期' },
   { m: 8, lv: 1, tags: '⛷️スキー · 🥝梱包終盤（コールドストレージ8月まで）' },
-  { m: 9, lv: 1, tags: '全般的閑散期 · ✈️航空安い（9–11月）' },
+  { m: 9, lv: 1, tags: '全般的閑散期 · ✈️航空安い（9～11月）' },
   { m: 10, lv: 2, tags: '🌸春 — 夏シーズン採用開き始め' },
   { m: 11, lv: 2, tags: '🍽️夏繁忙期採用 · 🍒チェリー（12月中旬~）は今申請' },
-  { m: 12, lv: 1, tags: '🍽️観光超繁忙期だが — 都市採用凍結 · レント競争 · 航空 +30–50%' }
+  { m: 12, lv: 1, tags: '🍽️観光超繁忙期だが — 都市採用凍結 · レント競争 · 航空 +30～50%' }
 ];
 
 function fmtFx(n, digits) { return n.toLocaleString('en-NZ', { minimumFractionDigits: digits, maximumFractionDigits: digits }); }
@@ -2467,7 +2495,7 @@ function renderFxAll(rates, time) {
     ${row('🇯🇵', 'JPY', '円', 2)}
     ${row('🇰🇷', 'KRW', 'ウォン', 1)}
     <div class="dash-foot">
-      <div class="dash-sub">最近¥90–95 · ₩859–904</div>
+      <div class="dash-sub">直近¥90～95 · ₩859～904</div>
       <div class="dash-links">
         <button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="fetchFx()">↻更新</button>
         <a class="source-link" href="https://www.google.com/search?q=NZD+to+KRW" target="_blank">KRW↗</a>
@@ -2502,7 +2530,7 @@ function fetchFx() {
   } catch (e) {}
 }
 
-// 月別最低片道価格スナップショット（2026-07-08調査·相互検証補正 — 変動大、推定）
+// 月別最低片道価格スナップショット（2026-07-08調査・相互検証補正 — 変動大、推定）
 const FLIGHT_MONTHS = [
   { ym: '2026-08', label: '2026年8月', gm: 'August 2026', pusKrw: 740000, tyoJpy: 90000, note: 'LCCプロモ多い月' },
   { ym: '2026-09', label: '2026年9月', gm: 'September 2026', pusKrw: 700000, tyoJpy: 88000, note: '肩シーズン — 安い' },
@@ -2537,11 +2565,11 @@ function renderFlightTile() {
         <span class="dash-label">🇯🇵東京(成田)→オークランド（Air NZ直行）</span>
         <a class="source-link" href="${g('NRT to AKL')}" target="_blank">リアルタイム↗</a>
       </div>
-      <div class="flight-price"><span><span class="dash-big">¥${(m.tyoJpy / 10000).toFixed(1)}万</span><span style="font-weight: 600;">~</span></span><span class="dash-sub">片道·10h30m·毎日運航</span></div>
+      <div class="flight-price"><span><span class="dash-big">¥${(m.tyoJpy / 10000).toFixed(1)}万</span><span style="font-weight: 600;">~</span></span><span class="dash-sub">片道・10h30m・毎日運航</span></div>
     </div>
     <div class="dash-foot">
       <div class="dash-sub">💡${m.note}</div>
-      <div class="dash-sub"><span class="badge estimated" style="font-size: 0.66rem; padding: 0.12rem 0.4rem;">推定 · 26-07調査</span>実価格はリンクで</div>
+      <div class="dash-sub"><span class="badge estimated" style="font-size: 0.72rem; padding: 0.12rem 0.4rem;">推定・26-07調査</span>実価格はリンクで</div>
     </div>`;
 }
 
@@ -2555,14 +2583,14 @@ function renderDdayTile() {
       <span class="dday-name">SMC改編</span>
       <span class="dday-count" style="color: var(--warn);">D-${d('2026-08-24')}</span>
       <span class="dday-date">08-24</span>
-      <span class="dday-desc">学士4点 → 勤務2年 · 新パス2 · 英語5年 · CPA 6点</span>
+      <span class="dday-desc">学士4点 → 勤務2年・新パス2・英語5年・CPA 6点</span>
       <span class="dday-name">PSWV改編</span>
       <span class="dday-count" style="color: var(--info);">D-${d('2026-11-16')}</span>
       <span class="dday-date">11-16</span>
-      <span class="dday-desc">GD+学士1年 · SGWV 6ヶ月 — 留学はL7以上</span>
+      <span class="dday-desc">GD+学士1年・SGWV 6ヶ月 — 留学はL7以上</span>
     </div>
     <div class="dash-foot">
-      <div class="dash-sub">次：27-03中央値賃金 · 27-04最低賃金審査</div>
+      <div class="dash-sub">次：27-03中央値賃金・27-04最低賃金審査</div>
       <div class="dash-links"><button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('snapshot', 'changeline')">タイムライン →</button></div>
     </div>`;
   annotateVisaTerms(document.getElementById('ddayTile'));
@@ -2575,7 +2603,7 @@ function renderHomePlan() {
   const diag = loadState('nzv.diagnose');
   if (!ob && !diag) {
     el.innerHTML = `<div class="card" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; justify-content: space-between;">
-      <div><strong>まだ設計前ですね</strong><div class="dash-sub">ビザ × 目的2問項なら定制ロードマップが出ます。</div></div>
+      <div><strong>まだ設計前ですね</strong><div class="dash-sub">ビザ × 目的2項目を答えたら個別ロードマップが出ます。</div></div>
       <button class="cta-btn" onclick="jumpTo('diagnose', 'diagnoseForm')">2分設計開始 →</button></div>`;
     return;
   }
@@ -2897,48 +2925,48 @@ function recommend(input) {
 const CITIES = [
   {
     id: 'akl', name: 'オークランド', tag: '最大求人プール・日本人コミュニティ',
-    room: '200–315', unit: '1ベッド ~500/週 (公式ボンド統計中央値)',
+    room: '200–315', unit: '1ベッド 500程度/週 (公式ボンド統計中央値)',
     transport: 'AT HOP — 1ゾーン3.00・2ゾーン4.90・7日キャップ50',
-    jobs: 'ホスピタリティ・物流・オフィス求人数が全国最多。IT・事務正社員機会も最大。',
-    korean: '日本人コミュニティNZ最大 — 日本食スーパー(Japan Mart等)・日本語美容室・レストランが揃い初期定住の摩擦が最小。',
-    strategy: '借り手有利市場(供給+38%) — 家賃交渉可能。初上陸地として無難だが家賃は高め。郊外200–215は通勤費との天秤。',
+    jobs: 'ホスピタリティ・物流・オフィス求人が全国で最多。IT・事務職の正社員機会も最大。',
+    korean: '日本人コミュニティNZ最大 — 日本食スーパー(Japan Mart等)・日本語美容室・レストランが揃い、初期定住の摩擦が最小。',
+    strategy: '借り手有利市場(供給+38%) — 家賃交渉可能。初上陸地として無難だが家賃は高め。郊外は200–215で通勤費とのバランス次第。',
     src: 'https://www.tenancy.govt.nz/rent-bond-and-bills/market-rent/'
   },
   {
     id: 'wlg', name: 'ウェリントン', tag: '政府・IT首都・カフェ文化',
-    room: '215–280', unit: '1ベッド ~480–500/週',
+    room: '215–280', unit: '1ベッド 480–500程度/週',
     transport: 'Snapper — 1ゾーン2.12(ピーク)/ 1.70(オフピーク)',
-    jobs: '政府契約職(8–11月シーズン)・IT(競争激し)・カフェ/飲食。徒歩生活が可能なコンパクト都市。',
+    jobs: '政府契約職(8月–11月シーズン)・IT(競争激し)・カフェ/飲食。徒歩生活が可能なコンパクト都市。',
     korean: '日本人会・日本食レストランあり — 中規模。',
-    strategy: '事務・行政は政府契約職シーズンを狙う。強風・地震は覚悟。ITはオークランド並行推奨。',
+    strategy: '事務・行政職は政府契約職シーズンを狙う。強風・地震は覚悟。ITはオークランド並行推奨。',
     src: 'https://www.metlink.org.nz/getting-started/tickets-and-fares'
   },
   {
     id: 'chc', name: 'クライストチャーチ', tag: '最低生活費・建設需要',
-    room: '200–285', unit: 'スタジオ350–500/週',
+    room: '200–285', unit: 'スタジオ 350–500程度/週',
     transport: 'Metrocard — 1回3.00・週キャップ30',
-    jobs: '建設・トレード需要が安定した再建都市。ホスピタリティも堅実。',
+    jobs: '建設・トレード需要が安定している再建都市。ホスピタリティも堅実。',
     korean: '日本人コミュニティあり — オークランドより小規模だが確立。',
-    strategy: '家賃最低 + 交通週30キャップ。トレードなら貯蓄・経歴を同時掴みの最適地。',
+    strategy: '家賃が最低で交通費も週30のキャップ。トレード職なら貯蓄と経歴を同時に積める最適地。',
     src: 'https://www.metroinfo.co.nz/fares/'
   },
   {
     id: 'qtn', name: 'クイーンズタウン', tag: '観光ハブ・⚠️ 住居難',
-    room: '350–550 (全国最高価)', unit: 'スタジオ500+/週',
+    room: '350–550 (全国最高価)', unit: 'スタジオ 500以上/週',
     transport: 'Bee Card(Orbus) — 1回2.50 (現金4.00)',
-    jobs: 'ホスピタリティ・観光が雇用の~19% — 求人は常時。スキー(6–8月)・繁忙期(12–2月)シーズン集中。',
+    jobs: 'ホスピタリティ・観光が雇用の約19% — 求人は常時有り。スキー(6月–8月)・繁忙期(12月–2月)にシーズン集中。',
     korean: '小規模。',
-    strategy: '求人は容易でも部屋がない(離職率~30%が住居難が原因)。スタッフ宿舎含むオファー優先 + 契約書明記確認。貯蓄目的なら非推奨。',
+    strategy: '求人は容易でも部屋がない(離職率~30%の原因は住居難)。スタッフ宿舎含むオファー優先 + 契約書明記確認。貯蓄目的なら非推奨。',
     src: 'https://www.orc.govt.nz/orbus/fares/'
   },
   {
     id: 'reg', name: '地方拠点 — ハミルトン・タウランガ・ダニーデン', tag: '貯蓄極大化・シーズンジョブ',
-    room: 'ダニーデン~179・ハミルトン~255・タウランガ~369',
+    room: 'ダニーデン179程度・ハミルトン255程度・タウランガ369程度',
     unit: '都市別異なる(大都市比20–30%安い)',
     transport: 'Bee Card等 — ハミルトン市街1.00/一般1.70',
-    jobs: '農畜産・園芸シーズン(中部オタゴサクランボ12–2月、熟練日当180–200)・タウランガホスピタリティ(時給24.5–35)。ダニーデンは学生都市で部屋が最安。',
-    korean: '小規模 — ワーホリ日本人に人気。コミュニティより貯蓄・経路要件優先の際に選択。',
-    strategy: 'シーズンジョブ宿食提供が標準 — 家賃0で貯蓄2倍 + 園芸・ブドウ3ヶ月でWHV +3ヶ月延長。酪農マネージャートラックも地方が本場。',
+    jobs: '農畜産・園芸シーズン(中央オタゴのサクランボ12月–2月、熟練日当180–200)・タウランガのホスピタリティ(時給24.5–35)。ダニーデンは学生都市で住まいが最安。',
+    korean: '小規模 — ワーホリ日本人に人気。コミュニティより貯蓄・経歴要件優先の際に選択。',
+    strategy: 'シーズンジョブの宿食提供が標準 — 家賃0で貯蓄2倍 + 園芸・ブドウ3ヶ月でWHV +3ヶ月延長。酪農マネージャートラックも地方が本場。',
     src: 'https://www.picknz.co.nz/work-opportunities/work-planner/work-and-play-in-central-otago/'
   }
 ];
@@ -3070,12 +3098,12 @@ const LINKS_DB = [
     cat: '🧰 生活実務', items: [
       { n: 'Trade Me', u: 'https://www.trademe.co.nz/', d: '中古・レンタル・求人 国民プラットフォーム' },
       { n: 'SEEK', u: 'https://nz.seek.com/', d: '最大の就職サイト · 正社員求人' },
-      { n: 'Backpacker Job Board', u: 'https://www.backpackerjobboard.co.nz/', d: 'ワーホリヤー求人 · 農場シーズン職' },
+      { n: 'Backpacker Job Board', u: 'https://www.backpackerjobboard.co.nz/', d: 'ワーホリ求人・農場シーズン職' },
       { n: 'Student Job Search', u: 'https://www.sjs.co.nz/', d: '学生・卒業生求職 (留学生)' },
-      { n: 'Powerswitch', u: 'https://www.powerswitch.org.nz/', d: '電気・ガス料金比較 — 年~450削減' },
+      { n: 'Powerswitch', u: 'https://www.powerswitch.org.nz/', d: '電気・ガス料金比較 — 年間最大450削減' },
       { n: 'MetService', u: 'https://www.metservice.com/', d: '気象庁 · 天気・警報' },
       { n: 'NZTA 車両登録', u: 'https://www.nzta.govt.nz/vehicles/vehicle-registration', d: '中古車購入時の名義変更・登録' },
-      { n: 'ANZ 移民者バンキング', u: 'https://www.anz.co.nz/personal/accounts/everyday-banking/migrant-banking-package/', d: '入国前の口座開設可能パッケージ' }
+      { n: 'ANZ 移民者向けバンキング', u: 'https://www.anz.co.nz/personal/accounts/everyday-banking/migrant-banking-package/', d: '入国前の口座開設可能パッケージ' }
     ]
   }
 ];
@@ -3102,7 +3130,7 @@ const WORLD_STATS = {
     { rank: '22位', metric: '報道の自由指数', d: '表現・言論環境 上位12%', src: 'RSF 2026 · 180国', u: 'https://rsf.org/en/index' }
   ],
   cons: [
-    { rank: '80位/95', metric: '住宅購入負担 (オークランド)', d: "住宅価格負担 世界最上位圏 'severely unaffordable' — 初期段階ではレント戦略", src: 'Demographia 2025', u: 'https://demographia.com/' },
+    { rank: '80位/95', metric: '住宅購入負担 (オークランド)', d: "住宅購入価格が高い世界最悪圏 'severely unaffordable' — 初期段階ではレント戦略推奨", src: 'Demographia 2025', u: 'https://demographia.com/' },
     { rank: '4位', metric: 'メラノーマ(皮膚がん) 発症率', d: '紫外線 世界最強級 — 日焼け止めの常用化', src: 'WCRF 2024 · 29.8/10万', u: 'https://www.wcrf.org/preventing-cancer/cancer-statistics/skin-cancer-statistics/' },
     { rank: '−20%', metric: 'オーストラリア比 平均賃金', d: '同じ仕事をしてもオーストラリアが給与が高い — 人材流出の原因', src: 'Stats NZ·ABS 2024–25', u: 'https://www.stats.govt.nz/topics/income' },
     { rank: '3万/年', metric: '豪州への純流出', d: '市民権者の豪州行きラッシュ — 逆に移民者に空席がある', src: 'Stats NZ 2024', u: 'https://www.stats.govt.nz/topics/migration' },
@@ -3250,15 +3278,15 @@ function buildMoneyPlanTable(pathwayId, input) {
       </td>
     </tr>`;
   });
-  const survivalLink = `<button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('settle', 'survival')">生活費生存戦略</button>`;
+  const survivalLink = `<button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('settle', 'survival')">生活費戦略</button>`;
   const footer = shortfall
-    ? `<p style="color: var(--danger); font-size: 0.9rem; margin-top: 0.5rem;">⚠️ 残高がマイナスに落ちる区間があります — シーズン職の宿泊食事提供、支出削減、出国前の資金強化のいずれかが必要です。${survivalLink} 参照。</p>`
-    : `<p style="color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem;">現地で費用を負担する要領は ${survivalLink} 参照。</p>`;
+    ? `<p style="color: var(--danger); font-size: 0.9rem; margin-top: 0.5rem;">⚠️ 残高がマイナスになる時期があります — シーズン職の宿泊食事提供、支出削減、渡航前の資金増加のいずれかが必要です。${survivalLink} 参照。</p>`
+    : `<p style="color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem;">現地での資金管理方法は ${survivalLink} 参照。</p>`;
   const entryLabel = ENTRY_LABEL[entry] || 'ワーキングホリデー';
-  const partnerNote = entry === 'partner' ? '(オープンワーク想定)' : '';
+  const partnerNote = entry === 'partner' ? '(オープンワーク予定)' : '';
   return `
   <div style="min-width: 0; max-width: 100%;">
-    <p style="color: var(--muted); font-size: 0.85rem; margin: 0 0 0.6rem;">進入: ${entryLabel} ${partnerNote} · 開始資金 ${start.toLocaleString('en-NZ')} 想定。貯蓄は最低賃金フルタイム + ルームシェア200–320基準 — 消費・為替により変動。処理期間は80%基準。</p>
+    <p style="color: var(--muted); font-size: 0.85rem; margin: 0 0 0.6rem;">進入: ${entryLabel} ${partnerNote} · 開始資金 ${start.toLocaleString('en-NZ')} を想定。貯蓄は最低賃金フルタイム + ルームシェア200–320基準 — 消費・為替により変動。処理期間は80%基準。</p>
     <div style="overflow-x: auto;">
       <table class="snapshot-table">
         <thead><tr><th>時期</th><th>ビザ</th><th>すべきこと</th><th>金の流れ (NZD)</th><th>予想残高</th></tr></thead>
@@ -3315,19 +3343,19 @@ function renderDiagnoseResult(result) {
   const altPath = result.alt ? DB.pathways.find(p => p.id === result.alt) : null;
 
   let html = '<div class="result-card">';
-  html += `<div class="result-title">${isAdjusted ? `実験中: ${shownPath.name}` : `あなたの推奨経路: ${shownPath.name}`}</div>`;
+  html += `<div class="result-title">${isAdjusted ? `試験中: ${shownPath.name}` : `あなたの推奨経路: ${shownPath.name}`}</div>`;
   html += '<div class="result-content">';
 
   const chip = (k, v, label, isRec) => `<button class="pick-chip${adj[k] === v ? ' sel' : ''}${isRec ? ' rec' : ''}" onclick="setRoadmapOpt('${k}', '${v}')">${label}</button>`;
   html += `<div class="adjust-bar">
-    <div class="adjust-title">🎛️ ロードマップ調整<span class="dash-sub">★推奨 = 診断初期値 · チップで直接実験</span></div>
-    <div class="pick-row"><span class="pick-q">経路</span>${chip('path', 'A', '直行', rec.path === 'A')}${chip('path', 'B', '留学', rec.path === 'B')}${chip('path', 'C-T1', 'GL即座', rec.path === 'C-T1')}${chip('path', 'C-T2', 'GL勤務型', rec.path === 'C-T2')}${chip('path', 'D', 'ケア', rec.path === 'D')}</div>
+    <div class="adjust-title">🎛️ ロードマップ調整<span class="dash-sub">★推奨 = 診断初期値 · チップで直接変更</span></div>
+    <div class="pick-row"><span class="pick-q">経路</span>${chip('path', 'A', '直行', rec.path === 'A')}${chip('path', 'B', '留学', rec.path === 'B')}${chip('path', 'C-T1', 'GL即座型', rec.path === 'C-T1')}${chip('path', 'C-T2', 'GL勤務型', rec.path === 'C-T2')}${chip('path', 'D', 'ケア', rec.path === 'D')}</div>
     ${adj.path === 'B' ? `<div class="pick-row"><span class="pick-q">学業</span>${chip('bVar', 'gd', 'GD 1年', rec.bVar === 'gd')}${chip('bVar', 'bach', '学士 3年', rec.bVar === 'bach')}</div>` : ''}
-    <div class="pick-row"><span class="pick-q">資金</span>${chip('funding', 'low', '1万↓', rec.funding === 'low')}${chip('funding', 'mid', '1–3万', rec.funding === 'mid')}${chip('funding', 'high', '3万↑', rec.funding === 'high')}<span class="pick-q" style="margin-left: 0.6rem;">IELTS</span>${chip('ielts', 'yes', '受験含む', rec.ielts === 'yes')}${chip('ielts', 'no', '免除・保有', rec.ielts === 'no')}</div>
+    <div class="pick-row"><span class="pick-q">資金</span>${chip('funding', 'low', '10K以下', rec.funding === 'low')}${chip('funding', 'mid', '10–30K', rec.funding === 'mid')}${chip('funding', 'high', '30K以上', rec.funding === 'high')}<span class="pick-q" style="margin-left: 0.6rem;">IELTS</span>${chip('ielts', 'yes', '受験が必要', rec.ielts === 'yes')}${chip('ielts', 'no', '免除・保有', rec.ielts === 'no')}</div>
   </div>`;
 
   if (result.entryReco) {
-    html += `<div style="border-left: 4px solid var(--accent); background: #fdf9f0; padding: 0.8rem 1rem; border-radius: 4px; margin-bottom: 1rem;"><strong>🚪 進入ビザ推奨:</strong> ${result.entryReco}<div style="font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem;">以下のロードマップはワーホリ進入想定 — 進入ビザを決めたら上記フォームで変更して再診断。</div></div>`;
+    html += `<div style="border-left: 4px solid var(--accent); background: #fdf9f0; padding: 0.8rem 1rem; border-radius: 4px; margin-bottom: 1rem;"><strong>🚪 進入ビザ推奨:</strong> ${result.entryReco}<div style="font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem;">以下のロードマップはワーホリ進入を想定 — 進入ビザを変更したら上記フォームで選択し直して再診断してください。</div></div>`;
   }
 
   html += `<p style="color: var(--muted); margin-bottom: 0.8rem;">${shownPath.summary}</p>`;
@@ -3360,14 +3388,14 @@ function renderDiagnoseResult(result) {
   if (result.smc) {
     const s = result.smc;
     html += `<details class="fold" style="margin: 1rem 0;">
-      <summary><span class="fold-title">🎯 永住権得点診断 (6点制)</span><span class="fold-sub">${s.exemptReason ? '得点免除経路 — 参考用' : `学歴 ${s.eduLabel} ${s.eduPts}点基準 診断`}</span></summary>
+      <summary><span class="fold-title">🎯 永住権得点診断 (6点制)</span><span class="fold-sub">${s.exemptReason ? '得点免除経路 — 参考用' : `学歴${s.eduLabel} = ${s.eduPts}点基準で診断`}</span></summary>
       <div class="fold-body">`;
     if (s.exemptReason) {
       html += `<p style="margin-top: 0.5rem;"><span class="badge official">得点免除</span> ${s.exemptReason} — 以下の得点は参考用です。</p>`;
     }
     html += '<ul style="margin: 0.6rem 0 0 1.5rem;">';
-    html += `<li>学歴軸: <strong>${s.eduLabel} = ${s.eduPts}点</strong>${s.isBach ? ' <span class="badge planned">[2026-08-24から4点]</span>' : ''}</li>`;
-    if (s.incomeNote) html += `<li>所得軸: ${s.incomeNote} <span style="color: var(--muted);">(学歴と合算不可 — 大きい方のみ)</span></li>`;
+    html += `<li>学歴軸: <strong>${s.eduLabel} = ${s.eduPts}点</strong>${s.isBach ? ' <span class="badge planned">[2026年8月24日から4点に変更]</span>' : ''}</li>`;
+    if (s.incomeNote) html += `<li>所得軸: ${s.incomeNote} <span style="color: var(--muted);">(学歴と併用不可 — 高い方を採用)</span></li>`;
     html += '<li>NZ熟練勤務軸: +1点/年 (最大3点)</li>';
     html += '</ul>';
     html += `<p style="margin-top: 0.7rem; font-weight: 600; color: var(--brand-deep);">→ ${s.verdict}</p>`;
@@ -3381,10 +3409,10 @@ function renderDiagnoseResult(result) {
     for (let i = 0; i < workCells; i++) gauge += '<div class="smc-cell work"></div>';
     for (let i = 0; i < missing; i++) gauge += '<div class="smc-cell"></div>';
     gauge += '</div>';
-    gauge += `<div style="font-size: 0.8rem; color: var(--muted);">🟩 学歴 ${eduCells}点 · 🟨 NZ勤務 ${workCells}点(積立予定)${missing > 0 ? ` · ⬜ 不足 ${missing}点 — 学歴・所得軸の強化が必要` : ' → 合計6点到達'}</div>`;
+    gauge += `<div style="font-size: 0.8rem; color: var(--muted);">🟩 学歴${eduCells}点 · 🟨NZ勤務${workCells}点(積立予定)${missing > 0 ? ` · ⬜不足${missing}点 — 学歴・所得軸の強化が必要` : ' → 合計6点達成'}</div>`;
     html += gauge;
 
-    html += `<p style="margin-top: 0.4rem;"><button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('diagnose', 'smcCalc')">得点組合を直接変更してみる →</button></p>`;
+    html += `<p style="margin-top: 0.4rem;"><button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('diagnose', 'smcCalc')">得点の組合せを試験的に変更する →</button></p>`;
     html += '</div></details>';
   }
 
@@ -3403,7 +3431,7 @@ function renderDiagnoseResult(result) {
   }
 
   if (altPath) {
-    html += `<div style="background: #f9f9f9; padding: 1rem; border-radius: 8px; margin: 1rem 0;"><strong>代案:</strong> ${altPath.name} (${altPath.duration}) — <button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('diagnose', 'fullRoadmaps')">全経路比較 ↓</button></div>`;
+    html += `<div style="background: #f9f9f9; padding: 1rem; border-radius: 8px; margin: 1rem 0;"><strong>代替案:</strong> ${altPath.name} (${altPath.duration}) — <button class="source-link" style="background: none; border: none; padding: 0; text-decoration: underline;" onclick="jumpTo('diagnose', 'fullRoadmaps')">全経路を比較 ↓</button></div>`;
   }
 
   html += '<div style="margin-top: 1.2rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;">';
@@ -3454,7 +3482,7 @@ function renderPathwayCompare() {
         </div>
         <span class="cmp-label">${r.label}</span>
       </div>`).join('')}
-    <div style="font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem;">濃いバー = 最短、薄いバー = 最長シナリオ · 共通スケール 0–96ヶ月 · 行をクリックで詳細に移動します。比較基準: ワーホリ進入 — ワークビザ・留学進入時は診断結果に短縮分が反映されます。</div>
+    <div style="font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem;">濃いバー = 最短、薄いバー = 最長シナリオ · 共通スケール 0–96ヶ月 · 行をクリックで詳細表示。比較基準: ワーホリ進入 — ワークビザ・留学進入時は診断結果に短縮分が反映されます。</div>
   </div>`;
 }
 
@@ -3509,7 +3537,7 @@ function renderPathwayCard(rawPathway) {
     <div id="stage-${pathway.id}-${idx}" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--bg); border: 1px solid var(--line); border-radius: 8px;">
       <strong>${stage.name} — ${stage.months}ヶ月</strong>
       <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.6rem;">
-        ${detailListHtml('要件', pathway.details.requirements)}
+        ${detailListHtml('必須要件', pathway.details.requirements)}
         ${detailListHtml('費用 (NZD)', pathway.details.costs)}
         ${detailListHtml('処理期間', pathway.details.processing)}
       </div>
@@ -3622,30 +3650,30 @@ const JOB_PICK = [
   { id: 'dev', axes: { pr: 5, income: 5, speed: 2 },
     gate: (exp, fund) => exp !== 'none' ? { ok: 1, cost: 4, via: 'キャリアで AEWV 直行 — Green List T1(即時永住権トラック)' }
       : fund === 'high' ? { ok: 1, cost: 1, via: '留学(IT学位 L7) 経由 — PSWV で就職' }
-      : { ok: 0, why: 'キャリア 2年以上 または留学資金が必要 — IT は無キャリア·無留学進入経路がない' },
-    caution: 'ジュニア採用競争激化 — 現地学位·ポートフォリオなしでリモート応募成功率低い' },
+      : { ok: 0, why: 'キャリア 2年以上 または留学資金が必要 — IT は無キャリア・無留学進入経路がない' },
+    caution: 'ジュニア採用競争激化 — 現地学位・ポートフォリオなしでリモート応募成功率低い' },
   { id: 'health', axes: { pr: 5, income: 4, speed: 3 },
     gate: (exp, fund) => exp === 'qualified' ? { ok: 1, cost: 4, via: 'ライセンス認可(看護協会登録) 後 Green List T1' }
       : fund === 'high' ? { ok: 1, cost: 1, via: '看護学士(3年) 留学経由' }
       : { ok: 0, why: 'NZ 看護協会登録が必須 — ライセンス または留学なしで進入不可' },
-    caution: '海外ライセンスは登録手続き(CAP等)·費用·英語要件が別途付属' },
+    caution: '海外ライセンスは登録手続き(CAP等)・費用・英語要件が別途付属' },
   { id: 'teacher', axes: { pr: 5, income: 3, speed: 3 },
     gate: (exp, fund) => exp === 'qualified' ? { ok: 1, cost: 4, via: '教員資格認可(NZQA+教育委登録) 後 GL T1' }
       : fund === 'high' ? { ok: 1, cost: 1, via: 'NZ 教育学 課程(L7+) 留学経由' }
       : { ok: 0, why: '教員資格 または教育学留学が必須 — 無資格進入経路なし' },
-    caution: '登録遅延が一般的ボトルネック — 中等·理工系科目が現実的(初等は過剰)' },
+    caution: '登録遅延が一般的ボトルネック — 中等・理工系科目が現実的(初等は過剰)' },
   { id: 'engineer', axes: { pr: 5, income: 5, speed: 3 },
     gate: (exp, fund) => exp !== 'none' ? { ok: 1, cost: 4, via: 'JABEE 工学士+キャリアで GL T1 直行' }
       : fund === 'high' ? { ok: 1, cost: 1, via: '工学 学士(3–4年) 留学経由' }
-      : { ok: 0, why: '工学士(JABEE) または留学資金必要 — 無学位·無資金進入経路なし' },
+      : { ok: 0, why: '工学士(JABEE) または留学資金必要 — 無学位・無資金進入経路なし' },
     caution: '日本でのキャリア認可は審査裁量 — 証拠書類準備が肝心' },
   { id: 'health', axes: { pr: 5, income: 4, speed: 3 },
     gate: (exp, fund) => exp === 'qualified' ? { ok: 1, cost: 4, via: 'ライセンス認可(看護協会登録) 後 Green List T1' }
       : fund === 'high' ? { ok: 1, cost: 1, via: '看護学士(3年) 留学経由' }
       : { ok: 0, why: 'NZ 看護協会登録が必須 — ライセンス または留学なしで進入不可' },
-    caution: '海外ライセンスは登録手続き(CAP等)·費用·英語要件が別途付属' },
+    caution: '海外ライセンスは登録手続き(CAP等)・費用・英語要件が別途付属' },
   { id: 'trade', axes: { pr: 4, income: 4, speed: 3 },
-    gate: (exp, fund) => exp !== 'none' ? { ok: 1, cost: 4, via: '資格·キャリアで AEWV — 電気等は Green List T2(24ヶ月勤務型)' }
+    gate: (exp, fund) => exp !== 'none' ? { ok: 1, cost: 4, via: '資格・キャリアで AEWV — 電気等は Green List T2(24ヶ月勤務型)' }
       : { ok: 1, cost: 3, via: 'アプレンティス(L4)から — 働きながら資格取得' },
     caution: '無資格スタートなら資格まで 3–4年 — 総期間が長くなる' },
   { id: 'chef', axes: { pr: 3, income: 2, speed: 4 },
@@ -3656,11 +3684,11 @@ const JOB_PICK = [
     gate: () => ({ ok: 1, cost: 4, via: '無経験即時進入(シーズンジョブ) — WHV 延長 +3ヶ月カード' }),
     caution: 'シーズン反復だけでは永住権経路なし — マネージャー昇進前提' },
   { id: 'livestock', axes: { pr: 4, income: 2, speed: 5 },
-    gate: () => ({ ok: 1, cost: 4, via: '無経験補助進入(現場教育·食住提供一般的)' }),
+    gate: () => ({ ok: 1, cost: 4, via: '無経験補助進入(現場教育・食住提供一般的)' }),
     caution: '夜明け搾乳等体力消費大 — マネージャー(GL T2) 昇進まで最小 2年' },
   { id: 'fieldwork', axes: { pr: 1, income: 2, speed: 5 },
     gate: () => ({ ok: 1, cost: 5, via: '無経験 1–2週内スタート — 求人最多' }),
-    caution: '現場職そのままでは永住権ブロック — 昇進(スーパーバイザー·L4) なしでは 3年後出口なし' },
+    caution: '現場職そのままでは永住権ブロック — 昇進(スーパーバイザー・L4) なしでは 3年後出口なし' },
   { id: 'office', axes: { pr: 2, income: 3, speed: 2 },
     gate: (exp, fund) => fund === 'high' ? { ok: 1, cost: 2, via: '留学(GD) 経由が現実的' }
       : { ok: 1, cost: 3, via: 'WHV でローカル就職試行' },
@@ -3688,7 +3716,7 @@ function renderJobPicker() {
   if (!form || !out) return;
   const chip = (k, v, label) => `<button class="pick-chip${pickState[k] === v ? ' sel' : ''}" onclick="setPick('${k}', '${v}')">${label}</button>`;
   form.innerHTML = `
-    <div class="pick-row"><span class="pick-q">キャリア·資格</span>${chip('exp', 'none', 'なし')}${chip('exp', 'over2', 'キャリア 2年以上')}${chip('exp', 'qualified', '資格·ライセンス保有')}</div>
+    <div class="pick-row"><span class="pick-q">キャリア・資格</span>${chip('exp', 'none', 'なし')}${chip('exp', 'over2', 'キャリア 2年以上')}${chip('exp', 'qualified', '資格・ライセンス保有')}</div>
     <div class="pick-row"><span class="pick-q">留学資金 3万+</span>${chip('fund', 'low', 'なし')}${chip('fund', 'high', 'あり')}</div>
     <div class="pick-row"><span class="pick-q">最優先目標</span>${PICK_PRI.map(p => chip('pri', p.v, p.label)).join('')}</div>`;
 
@@ -3728,7 +3756,7 @@ function renderJobPicker() {
       </div>`).join('')}
       ${rest.length ? `<div class="pick-out" style="margin-top: 0.5rem;">その他: ${rest.map(e => `${e.job.name} ${lvDots(val(e))}`).join(' · ')}</div>` : ''}
       ${excluded.length ? `<div class="pick-out" style="margin-top: 0.4rem;">除外 — ${excluded.map(e => `<strong>${e.job.name}</strong>: ${e.g.why}`).join(' / ')}</div>` : ''}
-      <div class="pick-out" style="margin-top: 0.6rem; border-top: 1px solid var(--line); padding-top: 0.5rem;">ℹ️ どの職種でも永住権段階(SMC·Green List共通)は IELTS 6.5級英語が必要です。最終選択前に各職種カードの <strong>落とし穴</strong> 項目を必ず確認してください。</div>
+      <div class="pick-out" style="margin-top: 0.6rem; border-top: 1px solid var(--line); padding-top: 0.5rem;">ℹ️ どの職種でも永住権段階(SMC・Green List共通)は IELTS 6.5級英語が必要です。最終選択前に各職種カードの <strong>落とし穴</strong> 項目を必ず確認してください。</div>
     </div>`;
   annotateVisaTerms(document.getElementById('jobPickerResult'));
 }
@@ -3747,48 +3775,48 @@ const JOURNEYS = {
   dev: {
     note: 'ワーホリ進入基準 — キャリア 2年以上なら日本からオフショア AEWV 直行も可能(初期段階スキップ)',
     steps: [
-      { m: '出国前', t: 'ポートフォリオ·リモート応募', type: 'var', d: 'レジュメ現地化、GitHub整理、リクルーター接触。', why: 'NZ IT は現地面接選好 — リモートオファーはシニア主体なので入国前の成果はボーナスのみ。' },
-      { m: '0–9ヶ月', t: 'WHV 入国 → ローカル求職', type: 'var', d: 'ミートアップ·リクルーター·直接応募。オークランド·ウェリントン集中。', why: '求職 1–9ヶ月がこの経路総期間差の大部分 — ジュニアほど長い。', risk: '9ヶ月内オファー失敗時: 留学(B) 転換 または帰国後キャリア強化が現実的分岐。' },
+      { m: '出国前', t: 'ポートフォリオ・リモート応募', type: 'var', d: 'レジュメ現地化、GitHub整理、リクルーター接触。', why: 'NZ IT は現地面接選好 — リモートオファーはシニア主体なので入国前の成果はボーナスのみ。' },
+      { m: '0–9ヶ月', t: 'WHV 入国 → ローカル求職', type: 'var', d: 'ミートアップ・リクルーター・直接応募。オークランド・ウェリントン集中。', why: '求職 1–9ヶ月がこの経路総期間差の大部分 — ジュニアほど長い。', risk: '9ヶ月内オファー失敗時: 留学(B) 転換 または帰国後キャリア強化が現実的分岐。' },
       { m: '+2ヶ月', t: 'ジョブオファー → AEWV', type: 'proc', d: 'Job Check + AEWV 発行(GL 職種優遇 — 平均 3週)。', why: '公式処理期間 — 申請者が短縮できない区間。' },
       { m: '+4ヶ月', t: 'Straight to Residence 申請', type: 'rule', d: 'Software Engineer 等 GL Tier 1 — ジョブオファー状態で直接永住権申請。', why: 'T1は勤務年数要件なし(24ヶ月勤務必要な T2 との差) — だから最短経路。' }
     ],
-    sum: '変数(求職) 1–9ヶ月 + 処理 ~6ヶ月 <span class="f">→ 定着含め 15–24ヶ月。学位·キャリアなしなら留学 3年先行 → 30–48ヶ月</span>'
+    sum: '変数(求職) 1–9ヶ月 + 処理 ~6ヶ月 <span class="f">→ 定着含め 15–24ヶ月。学位・キャリアなしなら留学 3年先行 → 30–48ヶ月</span>'
   },
   health: {
     note: '日本の看護師免許保有基準 — ライセンスなしはケア(D) または看護学士留学(B)',
     steps: [
-      { m: '0–6ヶ月', t: 'NZ 看護協会(NCNZ) 登録', type: 'var', d: 'IELTS 6.5/OET + 書類審査 + CAP/OSCE 手続き。', why: '登録なし RN 就職自体が不可 — この手続きが初期期間の大部分。', risk: '登録遅延が最も一般的ボトルネック — 書類(キャリア証明·犯罪経歴)は日本で事前準備。' },
-      { m: '+1–3ヶ月', t: 'RN ジョブオファー → AEWV', type: 'var', d: '病院·介護施設(認証雇用主) — RN 需要常時。', why: '登録されたら求職は早い方 — 地方ほどさらに。' },
+      { m: '0–6ヶ月', t: 'NZ 看護協会(NCNZ) 登録', type: 'var', d: 'IELTS 6.5/OET + 書類審査 + CAP/OSCE 手続き。', why: '登録なし RN 就職自体が不可 — この手続きが初期期間の大部分。', risk: '登録遅延が最も一般的ボトルネック — 書類(キャリア証明・犯罪経歴)は日本で事前準備。' },
+      { m: '+1–3ヶ月', t: 'RN ジョブオファー → AEWV', type: 'var', d: '病院・介護施設(認証雇用主) — RN 需要常時。', why: '登録されたら求職は早い方 — 地方ほどさらに。' },
       { m: '+4ヶ月', t: 'GL T1 Straight to Residence', type: 'rule', d: 'Registered Nurse は Tier 1 — ジョブオファーで直接永住権申請。', why: 'T1なので勤務年数要件なし。' }
     ],
-    sum: '変数(登録·求職) 7–12ヶ月 + 処理 ~5ヶ月 <span class="f">→ RN 15–24ヶ月(登録準備含む)。無ライセンスケアトラック: AEWV 24ヶ月[規定] + 処理 3ヶ月 = 36–39ヶ月</span>'
+    sum: '変数(登録・求職) 7–12ヶ月 + 処理 ~5ヶ月 <span class="f">→ RN 15–24ヶ月(登録準備含む)。無ライセンスケアトラック: AEWV 24ヶ月[規定] + 処理 3ヶ月 = 36–39ヶ月</span>'
   },
   teacher: {
     note: '日本の教員免許保有基準 — 未保有なら NZ 教育学課程(L7+) 留学が先行',
     steps: [
-      { m: '0–4ヶ月', t: '学歴認可 + 教育委員会登録', type: 'var', d: 'NZQA 学歴認可 → NZ Teaching Council 登録 — 日本からリモート開始可(計約 NZD 1,400)。', why: '登録なしで教壇に立てず — 書類補完·遅延がこの経路最大変数。', risk: '日本の教育課程情報の説明不足で追加質問が一般的 — 成績表·教育課程英文証拠を厚く準備。' },
-      { m: '+2–6ヶ月', t: 'ジョブオファー確保', type: 'var', d: '中等(数学·科学·技術科目)·地方学校が確率高い。リモート面接一般的。', why: '中等 710名不足 vs 初等過剰 — 科目·地域選択が期間を決める。' },
+      { m: '0–4ヶ月', t: '学歴認可 + 教育委員会登録', type: 'var', d: 'NZQA 学歴認可 → NZ Teaching Council 登録 — 日本からリモート開始可(計約 NZD 1,400)。', why: '登録なしで教壇に立てず — 書類補完・遅延がこの経路最大変数。', risk: '日本の教育課程情報の説明不足で追加質問が一般的 — 成績表・教育課程英文証拠を厚く準備。' },
+      { m: '+2–6ヶ月', t: 'ジョブオファー確保', type: 'var', d: '中等(数学・科学・技術科目)・地方学校が確率高い。リモート面接一般的。', why: '中等 710名不足 vs 初等過剰 — 科目・地域選択が期間を決める。' },
       { m: '+2ヶ月', t: 'AEWV または直接永住権申請', type: 'proc', d: 'GL 職種優遇処理。', why: '公式処理期間。' },
       { m: '+4ヶ月', t: 'GL T1 即時永住権申請', type: 'rule', d: '登録 + ジョブオファー状態で直接申請 — 勤務年数要件なし。', why: 'T1 規定 — この職種の存在理由。' }
     ],
-    sum: '変数(登録·求職) 6–15ヶ月 + 処理 ~6ヶ月 = <strong>12–24ヶ月</strong>'
+    sum: '変数(登録・求職) 6–15ヶ月 + 処理 ~6ヶ月 = <strong>12–24ヶ月</strong>'
   },
   engineer: {
     note: 'JABEE 工学士 + キャリア保有基準 — 日本は Washington Accord 署名国(2005年加盟)なので学位認可に有利',
     steps: [
-      { m: '出国前', t: '学位·キャリア証拠準備', type: 'var', d: 'JABEE 認証確認 + プロジェクト技術書·キャリア証明英文化。', why: '日本でのキャリア認可は審査裁量 — 証拠書類の厚さが認可確率を決める。' },
-      { m: '0–9ヶ月', t: 'NZ ジョブオファー確保', type: 'var', d: '土木·構造求人常時(インフラブーム) — オフショア応募も有効、シニアほど早い。', why: '求職期間が総期間差の大部分 — ジュニアはローカル滞在(ワーホリ)が有利。', risk: 'ジュニア + リモート応募組合わせは成功率低い — ワーホリ入国後ローカル求職に転換検討。' },
+      { m: '出国前', t: '学位・キャリア証拠準備', type: 'var', d: 'JABEE 認証確認 + プロジェクト技術書・キャリア証明英文化。', why: '日本でのキャリア認可は審査裁量 — 証拠書類の厚さが認可確率を決める。' },
+      { m: '0–9ヶ月', t: 'NZ ジョブオファー確保', type: 'var', d: '土木・構造求人常時(インフラブーム) — オフショア応募も有効、シニアほど早い。', why: '求職期間が総期間差の大部分 — ジュニアはローカル滞在(ワーホリ)が有利。', risk: 'ジュニア + リモート応募組合わせは成功率低い — ワーホリ入国後ローカル求職に転換検討。' },
       { m: '+2ヶ月', t: 'AEWV (GL 優遇)', type: 'proc', d: 'Job Check + ビザ処理。', why: '公式処理期間。' },
       { m: '+4ヶ月', t: 'GL T1 即時永住権申請', type: 'rule', d: 'ジョブオファー状態で直接申請。CPEng 登録(キャリア 4–6年後)は別個のキャリアトラック。', why: 'T1 規定 — 勤務年数要件なし。' }
     ],
     sum: '変数(求職) 2–12ヶ月 + 処理 ~6ヶ月 = <strong>12–24ヶ月</strong>'
   },
   trade: {
-    note: '資格·キャリア保有基準 — 無資格なら BCITO アプレンティス 3–4年が先行(現場職カード参照)',
+    note: '資格・キャリア保有基準 — 無資格なら BCITO アプレンティス 3–4年が先行(現場職カード参照)',
     steps: [
-      { m: '0–12ヶ月', t: '入国 → 資格認可·登録', type: 'var', d: '電気等規制職種は NZ 登録(EWRB 等) + 研修期間必要。', why: '規制職種は登録なしで単独作業不可 — 認可手続き速度が個人差。', risk: '資格不認可時: ギャップ課程受講必要 — 期間 +6–12ヶ月。' },
+      { m: '0–12ヶ月', t: '入国 → 資格認可・登録', type: 'var', d: '電気等規制職種は NZ 登録(EWRB 等) + 研修期間必要。', why: '規制職種は登録なしで単独作業不可 — 認可手続き速度が個人差。', risk: '資格不認可時: ギャップ課程受講必要 — 期間 +6–12ヶ月。' },
       { m: '+1ヶ月', t: 'AEWV (GL 優遇)', type: 'proc', d: '認証雇用主ジョブオファー — トレード求人常時。', why: 'GL 職種は処理平均 3週。' },
-      { m: '+24ヶ月', t: 'GL T2 指定職務で 24ヶ月勤務', type: 'rule', d: '電気工·溶接等 Tier 2 — 中央値賃金以上維持。', why: 'Work to Residence 規定が定めた最小勤務期間 — 短縮不可。' },
+      { m: '+24ヶ月', t: 'GL T2 指定職務で 24ヶ月勤務', type: 'rule', d: '電気工・溶接等 Tier 2 — 中央値賃金以上維持。', why: 'Work to Residence 規定が定めた最小勤務期間 — 短縮不可。' },
       { m: '+4ヶ月', t: 'WTR 永住権申請', type: 'proc', d: '書類: 24ヶ月勤務証明 + 資格。', why: '審査待機。' }
     ],
     sum: '規定 24ヶ月 + 変数(登録) 6–12ヶ月 + 処理 ~5ヶ月 = <strong>36–42ヶ月</strong>'
@@ -3796,8 +3824,8 @@ const JOURNEYS = {
   chef: {
     note: 'ワーホリ進入基準 — 日本での厨房キャリア 2年以上なら AEWV 要件がすでに充足',
     steps: [
-      { m: '0–2ヶ月', t: 'WHV 入国 → 厨房就職', type: 'var', d: '需要常時 — クイーンズタウン·オークランド飲食業。', why: '進入は早い。目的は給与ではなくキャリア·雇用主信頼構築。' },
-      { m: '+0–18ヶ月', t: 'AEWV 要件充足', type: 'var', d: '適格 4択1: キャリア 2年(日本キャリア認可) または NZQCF L4 資格。', why: '日本キャリア 2年あれば 0ヶ月、なければ NZ で充足必要 — この職種総期間差の最大原因。', risk: '雇用主がスポンサー(認証·Job Check) してくれないなら転職が答 — シナリオタブ S2 参照。' },
+      { m: '0–2ヶ月', t: 'WHV 入国 → 厨房就職', type: 'var', d: '需要常時 — クイーンズタウン・オークランド飲食業。', why: '進入は早い。目的は給与ではなくキャリア・雇用主信頼構築。' },
+      { m: '+0–18ヶ月', t: 'AEWV 要件充足', type: 'var', d: '適格 4択1: キャリア 2年(日本キャリア認可) または NZQCF L4 資格。', why: '日本キャリア 2年あれば 0ヶ月、なければ NZ で充足必要 — この職種総期間差の最大原因。', risk: '雇用主がスポンサー(認証・Job Check) してくれないなら転職が答 — シナリオタブ S2 参照。' },
       { m: '+2ヶ月', t: 'AEWV 転換', type: 'proc', d: 'Job Check + ビザ処理(80% 7週)。', why: '公式処理期間。' },
       { m: '+24ヶ月', t: 'SMC スコア用熟練勤務 24ヶ月', type: 'rule', d: '2026-08-24 改編基準: 学士(4点) + NZ 熟練勤務 2年(2点) = 6点達成。', why: 'シェフ賃金帯(~$28–35/h)では所得軸(時給 $52.50) スコアが非現実的 — 勤務軸が唯一の 6点組合わせ。', risk: 'IELTS 6.5 はこの期間中並行確保。' },
       { m: '+4ヶ月', t: 'SMC 永住権申請', type: 'proc', d: '', why: '審査待機。' }
@@ -3807,31 +3835,31 @@ const JOURNEYS = {
   agri: {
     note: 'ワーホリ進入基準 — シーズンジョブは踏み台で経路ではない(昇進が経路)',
     steps: [
-      { m: '0–12ヶ月', t: 'シーズンジョブ循環 + 顔認識', type: 'var', d: '収穫カレンダーに従い移動(キウイ·リンゴ·ブドウ) — 園芸·ブドウ 3ヶ月なら WHV +3ヶ月延長。', why: 'シーズン職自体は ANZSCO レベル 5 — 永住権と無関。この段階の価値はスーパーバイザーの目に入ること。' },
-      { m: '+12–24ヶ月', t: 'パックハウス スーパーバイザー·オーチャード マネージャー昇進', type: 'var', d: '園芸資格(L3–4) 並行取得、1 雇用主に定住。', why: '永住権ドアはレベル 1–3 職務から開く — 昇進速度が総期間(36–60ヶ月) 幅の原因。', risk: '昇進なくシーズン反復だけなら数年経ってもそのまま — この経路最大の落とし穴。' },
+      { m: '0–12ヶ月', t: 'シーズンジョブ循環 + 顔認識', type: 'var', d: '収穫カレンダーに従い移動(キウイ・リンゴ・ブドウ) — 園芸・ブドウ 3ヶ月なら WHV +3ヶ月延長。', why: 'シーズン職自体は ANZSCO レベル 5 — 永住権と無関。この段階の価値はスーパーバイザーの目に入ること。' },
+      { m: '+12–24ヶ月', t: 'パックハウス スーパーバイザー・オーチャード マネージャー昇進', type: 'var', d: '園芸資格(L3–4) 並行取得、1 雇用主に定住。', why: '永住権ドアはレベル 1–3 職務から開く — 昇進速度が総期間(36–60ヶ月) 幅の原因。', risk: '昇進なくシーズン反復だけなら数年経ってもそのまま — この経路最大の落とし穴。' },
       { m: '+2ヶ月', t: 'AEWV 転換', type: 'proc', d: 'マネージャー級ジョブオファー + Job Check。', why: '公式処理期間。' },
-      { m: '+24ヶ月', t: 'SMC 熟練勤務 24ヶ月', type: 'rule', d: '学士(4点)+勤務 2年(2点) または資格·所得組合わせ。', why: 'SMC スコア規定 — マネージャー年収(60–80k)では所得軸不足、勤務軸必須。' },
+      { m: '+24ヶ月', t: 'SMC 熟練勤務 24ヶ月', type: 'rule', d: '学士(4点)+勤務 2年(2点) または資格・所得組合わせ。', why: 'SMC スコア規定 — マネージャー年収(60–80k)では所得軸不足、勤務軸必須。' },
       { m: '+4ヶ月', t: 'SMC 申請', type: 'proc', d: '', why: '審査待機。' }
     ],
     sum: '規定 24ヶ月 + 変数(昇進) 12–24ヶ月 + 処理 ~6ヶ月 = <strong>36–60ヶ月</strong>'
   },
   livestock: {
-    note: 'ワーホリ·PSV 進入可 — 日本での畜産キャリア 2年以上なら 2段階をスキップ(36ヶ月台)',
+    note: 'ワーホリ・PSV 進入可 — 日本での畜産キャリア 2年以上なら 2段階をスキップ(36ヶ月台)',
     steps: [
-      { m: '0–1ヶ月', t: 'ダイリー補助就職', type: 'var', d: '無経験採用(現場教育) — ワイカト·カンタベリー·サウスランド、食住提供一般的。', why: '年 4,000名が去る構造的人手不足 — 進入自体は数週。' },
+      { m: '0–1ヶ月', t: 'ダイリー補助就職', type: 'var', d: '無経験採用(現場教育) — ワイカト・カンタベリー・サウスランド、食住提供一般的。', why: '年 4,000名が去る構造的人手不足 — 進入自体は数週。' },
       { m: '+20–24ヶ月', t: 'マネージャー要件充足', type: 'rule', d: 'キャリア 2年 または NZQF L4(Primary ITO ダイリー、働きながら ~20ヶ月)。', why: 'Dairy Farm Manager 職名要件が規定(2025-03から 3年→2年短縮) — 日本キャリア 2年以上なら本段階スキップ。', risk: '宿舎控除は市場価格書面合意 — 契約書に金額明示確認。' },
       { m: '+0–6ヶ月', t: 'マネージャー昇進 + AEWV', type: 'var', d: 'Dairy Cattle Farmer/Manager(121313) 職名確保。', why: 'GL T2 カウントはマネージャー職名から開始 — 昇進タイミングが変数。' },
       { m: '+24ヶ月', t: 'マネージャーで 24ヶ月勤務', type: 'rule', d: 'GL Tier 2 Work to Residence — 中央値賃金以上。', why: 'T2 規定が定めた最小勤務期間。' },
       { m: '+4ヶ月', t: 'WTR 永住権申請', type: 'proc', d: '', why: '審査待機。' }
     ],
-    sum: '規定 24ヶ月(マネージャー勤務) + 要件 0–24ヶ月(日本キャリアで代替可) + 変数·処理 ~10ヶ月 = <strong>36–60ヶ月</strong>'
+    sum: '規定 24ヶ月(マネージャー勤務) + 要件 0–24ヶ月(日本キャリアで代替可) + 変数・処理 ~10ヶ月 = <strong>36–60ヶ月</strong>'
   },
   fieldwork: {
-    note: '進入最速·永住権最難 — 3年(AEWV レベル 4–5 制限) 内に昇進するのが経路のすべて',
+    note: '進入最速・永住権最難 — 3年(AEWV レベル 4–5 制限) 内に昇進するのが経路のすべて',
     steps: [
-      { m: '0–0.5ヶ月', t: '倉庫·工場·肉体労働即時就職', type: 'var', d: '無経験 1–2週内スタート(エージェント登録) — 求人最多。', why: '進入速度がこの職種の存在理由。ただこの職務そのままでは永住権ドアなし。' },
-      { m: '+3–12ヶ月', t: '資格構築', type: 'var', d: 'フォークリフト·現場資格(L2–4)、Site Safe — 時給と昇進材料。', why: '資格がスーパーバイザー候補の最小条件。' },
-      { m: '+12–24ヶ月', t: 'スーパーバイザー·マネージャー昇進 (最大分岐点)', type: 'var', d: 'レベル 1–3 職務確保。代替案: BCITO アプレンティスに乗り換え(→ 建設トレード ジャーニー)。', why: 'レベル 1–3であれば AEWV 5年·SMC 応募が開く — ここで止められたら経路自体なし。', risk: 'AEWV レベル 4–5 は 3年制限 — 3年内に昇進できないと滞在延長がブロック。' },
+      { m: '0–0.5ヶ月', t: '倉庫・工場・肉体労働即時就職', type: 'var', d: '無経験 1–2週内スタート(エージェント登録) — 求人最多。', why: '進入速度がこの職種の存在理由。ただこの職務そのままでは永住権ドアなし。' },
+      { m: '+3–12ヶ月', t: '資格構築', type: 'var', d: 'フォークリフト・現場資格(L2–4)、Site Safe — 時給と昇進材料。', why: '資格がスーパーバイザー候補の最小条件。' },
+      { m: '+12–24ヶ月', t: 'スーパーバイザー・マネージャー昇進 (最大分岐点)', type: 'var', d: 'レベル 1–3 職務確保。代替案: BCITO アプレンティスに乗り換え(→ 建設トレード ジャーニー)。', why: 'レベル 1–3であれば AEWV 5年・SMC 応募が開く — ここで止められたら経路自体なし。', risk: 'AEWV レベル 4–5 は 3年制限 — 3年内に昇進できないと滞在延長がブロック。' },
       { m: '+24ヶ月', t: '昇進職務で SMC 勤務 24ヶ月', type: 'rule', d: '学士(4点)+勤務 2年(2点) 組合わせ。', why: 'SMC スコア規定。' },
       { m: '+4ヶ月', t: 'SMC 申請', type: 'proc', d: '', why: '審査待機。' }
     ],
@@ -3916,7 +3944,7 @@ function renderJobs() {
           <div style="border-top: 1px solid var(--line); margin-top: 1.2rem; padding-top: 1.2rem;">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.8rem; margin-bottom: 0.8rem;">
               <div>
-                <div style="font-size: 0.8rem; color: var(--muted);">就職難易度 (2026 需要·供給)</div>
+                <div style="font-size: 0.8rem; color: var(--muted);">就職難易度 (2026 需要・供給)</div>
                 <div style="font-weight: 700; color: var(--brand-deep);">${job.guide.demand}</div>
               </div>
               <div>
@@ -4005,14 +4033,14 @@ function renderCostBar(items) {
   const cats = [
     { key: 'fee', label: 'ビザ・手数料', color: 'var(--brand)', sum: 0 },
     { key: 'tuition', label: '学費', color: 'var(--accent)', sum: 0 },
-    { key: 'living', label: '生活・定住', color: 'var(--info)', sum: 0 },
-    { key: 'prep', label: '試験・検診・航空', color: 'var(--warn)', sum: 0 }
+    { key: 'living', label: '生活費・定住費', color: 'var(--info)', sum: 0 },
+    { key: 'prep', label: '試験・検診・渡航', color: 'var(--warn)', sum: 0 }
   ];
   const add = (k, v) => { cats.find(x => x.key === k).sum += Array.isArray(v) ? v[1] : v; };
   items.forEach(it => {
     if (it.type === 'fee') add('fee', it.value);
     else if (it.name.indexOf('学費') === 0) add('tuition', it.value);
-    else if (it.name.indexOf('生活費') > -1 || it.name.indexOf('定住費') > -1 || it.name.indexOf('医療保険') > -1) add('living', it.value);
+    else if (it.name.indexOf('生活') > -1 || it.name.indexOf('定住') > -1 || it.name.indexOf('医療保険') > -1) add('living', it.value);
     else add('prep', it.value);
   });
   const box = document.getElementById('costBar');
@@ -4126,7 +4154,7 @@ function buildCalcItems(pathway, options) {
 
   if (options.includes('flight')) {
     items.push({
-      name: '片道航空券',
+      name: '片道渡航費',
       value: DB.estimates.flight.v,
       type: 'estimate',
       est: true
@@ -4138,7 +4166,7 @@ function buildCalcItems(pathway, options) {
     const settleKey = `settle${city === 'akl' ? 'Akl' : city === 'chc' ? 'Chc' : 'Qtn'}`;
     const settleData = DB.estimates[settleKey];
     items.push({
-      name: `初期定住費 (${city === 'akl' ? 'オークランド' : city === 'chc' ? 'クライストチャーチ' : 'クイーンズタウン'})`,
+      name: `定住初期費 (${city === 'akl' ? 'オークランド' : city === 'chc' ? 'クライストチャーチ' : 'クイーンズタウン'})`,
       value: settleData.v,
       type: 'estimate',
       est: true
@@ -4216,8 +4244,8 @@ function renderSnapshotTable() {
     </tr>`;
   });
 
-  // 年俸換算 (週 40h × 52週 — INZ基準 労働時間)
-  html += `<tr><td colspan="5" style="background: var(--bg); font-weight: 700; padding: 0.8rem;">📅 年俸換算 <span style="font-weight: 400; font-size: 0.8rem; color: var(--muted);">週 40h × 52週 · 税引前</span></td></tr>`;
+  // 年俸換算 (週 40時間 × 52週 — INZ基準労働時間)
+  html += `<tr><td colspan="5" style="background: var(--bg); font-weight: 700; padding: 0.8rem;">📅 年俸換算 <span style="font-weight: 400; font-size: 0.8rem; color: var(--muted);">週 40時間 × 52週 · 税引前</span></td></tr>`;
   [['最低賃金年俸', DB.wages.minWage], ['中央値賃金年俸', DB.wages.medianWage], ['中央値 1.5倍年俸', DB.wages.median15]].forEach(([label, w]) => {
     const yr = w.v * 40 * 52;
     html += `<tr>
@@ -4230,7 +4258,7 @@ function renderSnapshotTable() {
   });
 
   // Fees
-  html += `<tr><td colspan="5" style="background: var(--bg); font-weight: 700; padding: 0.8rem;">💳 ビザ手数料 (From)</td></tr>`;
+  html += `<tr><td colspan="5" style="background: var(--bg); font-weight: 700; padding: 0.8rem;">💳 ビザ・手数料</td></tr>`;
   Object.entries(DB.fees).forEach(([key, val]) => {
     const names = {
       whv: 'WHV ビザ',
@@ -4265,79 +4293,79 @@ function renderChangeline() {
   let nowShown = false;
   DB.changes.forEach(change => {
     const dir = change.dir || 'flat';
-    if (!nowShown && change.date > NOW) { html += `<div class="trail-now">現在 · 2026-07</div>`; nowShown = true; }
+    if (!nowShown && change.date > NOW) { html += `<div class="trail-now">今月 · 2026-07</div>`; nowShown = true; }
     html += `<div class="trail-node ${dir}${change.planned ? ' future' : ''}">
       <div class="trail-date">${change.date}${change.planned ? ' · 予定' : ''}</div>
       <div><span class="dir-ic ${dir}">${ARROW[dir]}</span>${change.text}</div>
       ${change.you ? `<div class="trail-you">→ 自分へ: ${change.you}</div>` : ''}
     </div>`;
   });
-  if (!nowShown) html += `<div class="trail-now">現在 · 2026-07</div>`;
+  if (!nowShown) html += `<div class="trail-now">今月 · 2026-07</div>`;
   html += '</div>';
-  html += `<div style="font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem;"><span class="dir-ic up">▲</span>緩和 <span class="dir-ic down">▼</span>引き締め <span class="dir-ic flat">▶</span>基準調整 · 点滅 = 実施予定</div>`;
+  html += `<div style="font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem;"><span class="dir-ic up">▲</span>緩和 <span class="dir-ic down">▼</span>引き締め <span class="dir-ic flat">▶</span>変更 · 点滅 = 予定</div>`;
   document.getElementById('changelineContainer').innerHTML = html;
 }
 
 // ============ キーワードナビゲーション ============
 const SEARCH_INDEX = [
-  { q: '診断 推奨 開始 自分の経路 カスタマイズ スコア', label: '1分経路診断', desc: '状況入力 → カスタマイズ経路·SMCスコア·アクションプラン', go: 'diagnose', target: 'diagnoseForm' },
-  { q: 'ワーホリ ワーキングホリデー whv クォータ 申請 条件 年齢', label: 'WHV 条件・手数料', desc: '18–30歳 · クォータ無制限 · NZD 770+100', go: 'snapshot', target: 'keyfigures' },
+  { q: '診断 推奨 開始 自分の経路 カスタマイズ スコア', label: '1分経路診断', desc: '状況入力 → カスタマイズ経路·SMCスコア·実行プラン', go: 'diagnose', target: 'diagnoseForm' },
+  { q: 'ワーホリ ワーキングホリデー whv クォータ 申請 条件 年齢', label: 'WHV 条件・手数料', desc: '18–30歳 · 定員制限なし · NZD 770+100', go: 'snapshot', target: 'keyfigures' },
   { q: 'aewv 就労ビザ スポンサー 就職ビザ 求人 直行', label: '直行経路 (WHV→AEWV→SMC)', desc: '30–48か月 · ~NZD 12,700', go: 'diagnose', target: 'path-A' },
-  { q: 'smc 永住権 スコア 6点 技能移民 計算', label: 'SMCスコア計算機', desc: '学歴・収入・NZ勤務 組み合わせ → 6点', go: 'diagnose', target: 'smcCalc' },
-  { q: '留学 学生ビザ 学費 pswv 卒業 学位 大学', label: '留学経由経路', desc: '学費含む総額 ~NZD 80k–247k', go: 'diagnose', target: 'path-B' },
-  { q: 'グリーンリスト green list t1 即時 最短 速い', label: 'Green List T1 直行', desc: '開発者·看護師など — 15–24か月', go: 'diagnose', target: 'path-C-T1' },
-  { q: 'wtr work to residence t2 電気工 溶接 24か月', label: 'Green List T2 (WTR)', desc: 'トレード 24か月勤務 → 永住権', go: 'diagnose', target: 'path-C-T2' },
-  { q: 'ケア 介護 看護助手 care 低コスト 協約', label: 'Care協約経路', desc: '最低ビザ費用 ~NZD 9,000', go: 'diagnose', target: 'path-D' },
+  { q: 'smc 永住権 スコア 6点 技能移民 計算', label: 'SMC6点計算機', desc: '学歴·収入·NZ勤務の組み合わせで6点判定', go: 'diagnose', target: 'smcCalc' },
+  { q: '留学 学生ビザ 学費 pswv 卒業 学位 大学', label: '留学経由経路', desc: '学費込み総額 ~NZD 80k–247k', go: 'diagnose', target: 'path-B' },
+  { q: 'グリーンリスト green list t1 即時 最短 速い', label: 'Green List T1 直行永住権', desc: '開発者·看護師など — 15–24か月', go: 'diagnose', target: 'path-C-T1' },
+  { q: 'wtr work to residence t2 電気工 溶接 24か月', label: 'Green List T2 勤務型永住権', desc: 'トレード 24か月勤務 → 永住権', go: 'diagnose', target: 'path-C-T2' },
+  { q: 'ケア 介護 看護助手 care 低コスト 協約', label: 'ケア協約経路', desc: 'ビザ費用最小 ~NZD 9,000', go: 'diagnose', target: 'path-D' },
   { q: 'アイエルツ ielts 英語 スコア 試験 免除', label: '英語が弱い', desc: 'AEWV 4.0 / SMC 6.5 · 試験 NZD 490', go: 'scenarios', target: 'sc-3' },
-  { q: 'スポンサー 却下 雇用主認証 ジョブチェック job check 説得', label: 'スポンサー却下時', desc: '雇用主実負担 775+735 説得資料', go: 'scenarios', target: 'sc-1' },
-  { q: '年俸 賃金 基準 未達 時給 35 不足', label: '年俸が基準に満たない時', desc: 'AEWV vs SMC 賃金基準 差違', go: 'scenarios', target: 'sc-2' },
-  { q: 'キャリア証明 学歴 認定 nzqa 書類', label: 'キャリア・学歴証明不足', desc: 'AEWV適格 4択1 · NZQA認証', go: 'scenarios', target: 'sc-4' },
+  { q: 'スポンサー 却下 雇用主認証 ジョブチェック job check 説得', label: 'スポンサー却下対応', desc: '雇用主負担 775+735 説得資料', go: 'scenarios', target: 'sc-1' },
+  { q: '年俸 賃金 基準 未達 時給 35 不足', label: '年俸が基準未達の時', desc: 'AEWV vs SMC 賃金基準の違い', go: 'scenarios', target: 'sc-2' },
+  { q: 'キャリア証明 学歴 認定 nzqa 書類', label: 'キャリア·学歴証明不足対応', desc: 'AEWV適格要件(4択1)·NZQA認証', go: 'scenarios', target: 'sc-4' },
   { q: 'お金 資金 不足 貯蓄 安い 低価格', label: '資金が不足する時', desc: 'Care・トレード・貯蓄プラン比較', go: 'scenarios', target: 'sc-5' },
-  { q: '満期 延長 シーズンジョブ オーバーステイ 求人なし 切迫', label: '満期が迫った時', desc: 'シーズン延長 +3か月 / 学生ビザ / 帰国', go: 'scenarios', target: 'sc-6' },
+  { q: '満期 延長 シーズンジョブ オーバーステイ 求人なし 切迫', label: 'ビザ満期が迫った時', desc: 'シーズン延長(+3か月)·学生ビザ·帰国の選択肢', go: 'scenarios', target: 'sc-6' },
   { q: '6か月 ゴールデンタイム 準備 いつ タイミング', label: 'ワーホリ6か月目チェックリスト', desc: '満期3か月前が求人ラストチャンス', go: 'scenarios', target: 'sc-0' },
-  { q: '手数料 費用 計算機 総費用 いくら 予算', label: '総費用計算機', desc: '経路・オプション別総額算出 — ロードマップタブ', go: 'diagnose', target: 'calcFold' },
+  { q: '手数料 費用 計算機 総費用 いくら 予算', label: '総費用計算機', desc: '経路·オプション別に総額を算出 — ロードマップタブ', go: 'diagnose', target: 'calcFold' },
   { q: '中央値賃金 最低賃金 時給 賃金 wage 23.95 35', label: '賃金基準 (2026)', desc: '最低 23.95 · 中央値 35.00/h', go: 'snapshot', target: 'keyfigures' },
-  { q: '改編 変更 2026 タイムライン 8月 11月 新制度', label: '2025–26 変更タイムライン', desc: 'SMC改編(8/24) · PSWV改編(11/16)', go: 'snapshot', target: 'changeline' },
-  { q: '職種 推奨 未定 探索 何 何しよう 何をする 選択 選ぶ 比較 決定', label: '職種選択機 — 条件で選ぶ', desc: 'キャリア・資金・目標だけで8職種をフィルター', go: 'jobs', target: 'jobPicker' },
-  { q: '留学 課程 学費 登録 コース 学校 ポリテック 学ぶ 開始 未経験 研修', label: '課程登録で開始 — 留学・研修比較', desc: '職種別課程レベル・学費・卒業後就労権一目で', go: 'jobs', target: 'courseEntry' },
+  { q: '改編 変更 2026 タイムライン 8月 11月 新制度', label: '2025–26 制度改編タイムライン', desc: 'SMC改編(8/24)·PSWV改編(11/16)', go: 'snapshot', target: 'changeline' },
+  { q: '職種 推奨 未定 探索 何 何しよう 何をする 選択 選ぶ 比較 決定', label: '職種選択ツール', desc: 'キャリア·資金·目標だけで8職種をフィルター', go: 'jobs', target: 'jobPicker' },
+  { q: '留学 課程 学費 登録 コース 学校 ポリテック 学ぶ 開始 未経験 研修', label: '課程選びで出発 — 留学·研修比較', desc: '職種別課程レベル·学費·卒業後就労権を一覧', go: 'jobs', target: 'courseEntry' },
   { q: '開発者 it プログラマー ソフトウェア', label: '職種: IT・開発', desc: '80k–120k+ · GL T1 · ★5', go: 'jobs', target: 'job-dev' },
-  { q: 'シェフ 料理人 厨房 ホスピタリティ コック', label: '職種: シェフ・ホスピタリティ', desc: '55k–85k · SMC時給 35 肝心', go: 'jobs', target: 'job-chef' },
+  { q: 'シェフ 料理人 厨房 ホスピタリティ コック', label: '職種: シェフ·ホスピタリティ', desc: '55k–85k·SMC時給35/h必須', go: 'jobs', target: 'job-chef' },
   { q: 'トレード 電気工 配管工 大工 溶接 建設', label: '職種: 建設トレード', desc: '75k–110k · 電気工 GL T2', go: 'jobs', target: 'job-trade' },
-  { q: '看護師 ケアギバー 介護 ヘルスケア 病院', label: '職種: 看護・ヘルスケア', desc: 'RN 85k–95k GL T1 / ケア協約', go: 'jobs', target: 'job-health' },
+  { q: '看護師 ケアギバー 介護 ヘルスケア 病院', label: '職種: 看護·ヘルスケア', desc: 'RN 85k–95k GL T1/ケア協約', go: 'jobs', target: 'job-health' },
   { q: '教師 先生 教育 ティーチャー teacher 中等 小学', label: '職種: 教師', desc: 'GL T1 即時永住権 — 登録がカギ', go: 'jobs', target: 'job-teacher' },
-  { q: 'エンジニア 土木 構造 機械 工学 設計 engineer', label: '職種: エンジニア', desc: 'GL T1 — JABEE学位認定有利', go: 'jobs', target: 'job-engineer' },
+  { q: 'エンジニア 土木 構造 機械 工学 設計 engineer', label: '職種: エンジニア', desc: 'GL T1·JABEE学位が有利', go: 'jobs', target: 'job-engineer' },
   { q: '投資 事業 移民 親 招待 退職 その他 経路 運送 バス トラック', label: 'その他永住権経路集', desc: '投資・事業・親・特殊 — 条件と理由', go: 'diagnose', target: 'otherPathways' },
-  { q: 'バリスタ リテール 美容 ネイル 清掃 ウーバー 配達 できない ない経路', label: '経路なし職業 — 正直リスト', desc: 'なぜ塞がるのか + それでも迂回路', go: 'jobs', target: 'noPathJobs' },
-  { q: '農場 園芸 シーズン 果樹園 ピッキング パックハウス 果物', label: '職種: 園芸・シーズンジョブ', desc: 'シーズン常時需要 + WHV延長カード', go: 'jobs', target: 'job-agri' },
-  { q: '畜産 デーリー 牧場 酪農 乳牛 牛 家畜 牛乳', label: '職種: 畜産・デーリー', desc: '補助 63k · マネージャー GL T2 = 永住権トラック', go: 'jobs', target: 'job-livestock' },
-  { q: '現場職 工場 倉庫 物流 労務 フォークリフト 生産職', label: '職種: 現場職・物流', desc: '求人最多・進入最速 — 昇進がカギ', go: 'jobs', target: 'job-fieldwork' },
-  { q: '畜肉加工 ミートワークス 屠殺 肉 工場 シルバーフェン ハラル silver fern', label: '現場職深掘: 畜肉加工工場', desc: '生産 $28–30/h·シーズン 11~6月·PSV対象', go: 'jobs', target: 'fw-meat' },
-  { q: '工場 シーズン ビンテージ ワイナリー セラーハンド パックハウス 水産 ホキ ポンテラ ローテーション チェーン', label: '現場職深掘: 工場シーズンチェーン', desc: 'ビンテージ→キウイ→ホキ→貝 — 通年ローテーション', go: 'jobs', target: 'fw-chain' },
-  { q: '建設 労務 レイバラー ハマーハンド サイトセーフ site safe 見習い BCITO ビルダー', label: '現場職深掘: 建設労務', desc: '$24–30/h·Site Safe·見習い→トレード昇進', go: 'jobs', target: 'fw-build' },
-  { q: '事務 会計 マーケティング オフィス ホワイトカラー', label: '職種: 一般事務', desc: '最難度 — 留学転換推奨', go: 'jobs', target: 'job-office' },
+  { q: 'バリスタ リテール 美容 ネイル 清掃 ウーバー 配達 できない ない経路', label: '経路なし職業·正直リスト', desc: 'なぜ道が閉じるのか+迂回路の可能性', go: 'jobs', target: 'noPathJobs' },
+  { q: '農場 園芸 シーズン 果樹園 ピッキング パックハウス 果物', label: '職種: 園芸·季節作業', desc: 'シーズン常時需要+WHV延長の強力カード', go: 'jobs', target: 'job-agri' },
+  { q: '畜産 デーリー 牧場 酪農 乳牛 牛 家畜 牛乳', label: '職種: 畜産·デーリー', desc: '補助63k·マネージャーGL T2=永住権トラック', go: 'jobs', target: 'job-livestock' },
+  { q: '現場職 工場 倉庫 物流 労務 フォークリフト 生産職', label: '職種: 現場職·物流', desc: '求人最多·進入最速 — キャリアアップがカギ', go: 'jobs', target: 'job-fieldwork' },
+  { q: '畜肉加工 ミートワークス 屠殺 肉 工場 シルバーフェン ハラル silver fern', label: '現場職深掘: 畜肉加工', desc: '生産$28–30/h·季節11~6月·PSV対象', go: 'jobs', target: 'fw-meat' },
+  { q: '工場 シーズン ビンテージ ワイナリー セラーハンド パックハウス 水産 ホキ ポンテラ ローテーション チェーン', label: '現場職深掘: 工場季節ローテ', desc: 'ブドウ→キウイ→タラ→貝の通年循環', go: 'jobs', target: 'fw-chain' },
+  { q: '建設 労務 レイバラー ハマーハンド サイトセーフ site safe 見習い BCITO ビルダー', label: '現場職深掘: 建設労務', desc: '$24–30/h·Site Safe認証·見習い→トレード昇進路', go: 'jobs', target: 'fw-build' },
+  { q: '事務 会計 マーケティング オフィス ホワイトカラー', label: '職種: 一般事務', desc: '最難度 — 留学転換推奨ルート', go: 'jobs', target: 'job-office' },
   { q: '用語 意味 略語 辞書 インテリム interim ivl nzqcf', label: '用語辞書', desc: 'AEWV·SMC·PSWV·GL など一行説明', go: 'snapshot', target: 'glossary' },
-  { q: '生活費 家賃 ルームシェア 貯蓄 税金 ird 物価 お金 生存 持ちこたえ 負担 現金フロー', label: '生活費生存戦略', desc: '住居・初給·税金・ビザ費用積立 6原則', go: 'settle', target: 'survival' },
+  { q: '生活費 家賃 ルームシェア 貯蓄 税金 ird 物価 お金 生存 持ちこたえ 負担 現金フロー', label: '生活費·貯蓄の6原則', desc: '住居·初給·税金·ビザ費用積立の戦略', go: 'settle', target: 'survival' },
   { q: '都市 どこに住もう 定住 地域 選択 比較', label: '都市別定住ガイド', desc: '家賃・交通・仕事性質 5都市圏比較', go: 'settle', target: 'cities' },
   { q: '日本人会 コミュニティ リンク 大使館 NZdaisuki アジア 相談 通訳 緊急 111', label: 'コミュニティ・生活リンク集', desc: '日本・アジアコミュニティ + 公式支援 29箇所', go: 'settle', target: 'links' },
   { q: '利点 欠点 順位 統計 指標 平和 腐敗 幸福 家価 皮膚がん 生産性 住めそうな国 比較', label: '世界指標で見たニュージーランド', desc: '有利 7 vs 不利 7 — 検証済み国際順位', go: 'settle', target: 'worldstats' },
-  { q: 'オークランド auckland 日本食スーパー', label: 'オークランド定住情報', desc: 'ルームシェア 200–315 · AT HOP · 日本人コミュニティ最大', go: 'settle', target: 'city-akl' },
-  { q: 'ウェリントン wellington 首都', label: 'ウェリントン定住情報', desc: 'ルームシェア 215–280 · Snapper · 政府・IT', go: 'settle', target: 'city-wlg' },
-  { q: 'クライストチャーチ christchurch クライスト チャーチ', label: 'クライストチャーチ定住情報', desc: 'ルームシェア 200–285 · 最低生活費 · 建設需要', go: 'settle', target: 'city-chc' },
-  { q: 'クイーンズタウン queenstown スキー 観光', label: 'クイーンズタウン定住情報', desc: 'ルームシェア 350–550 · 住居難警告 · 観光ハブ', go: 'settle', target: 'city-qtn' },
-  { q: '地方 ハミルトン タウランガ ダニーデン 田舎 小都市', label: '地方拠点定住情報', desc: 'ダニーデン 179~ · シーズンジョブ食住提供 · 貯蓄最大化', go: 'settle', target: 'city-reg' },
-  { q: 'パートナー 恋愛 結婚 配偶者 カップル 同居 彼女 彼氏 partnership', label: 'パートナーできた時', desc: 'パートナーシップ就労 1,630 · 永住権 5,360 · 同居 12か月', go: 'scenarios', target: 'sc-7' },
-  { q: '31歳 32歳 33歳 34歳 35歳 年齢 以上 ワーホリ不可 オフショア offshore 遅い 超えた', label: '31歳+ ワーホリなし進入', desc: 'オフショアAEWV · 留学 · 視察 3ルート', go: 'scenarios', target: 'sc-8' },
-  { q: 'ロードマップ 経路 比較 全体 一目で', label: '全経路比較', desc: '4経路タイムライン比較', go: 'diagnose', target: 'fullRoadmaps' },
-  { q: 'ホーム ダッシュボード 為替レート 円ウォン 航空券 飛行機 時差 Dデイ', label: 'ホームダッシュボード', desc: '為替・航空月別最安値・制度Dデイ一目で', go: 'home', target: null },
-  { q: 'いつ 出国 時期 タイミング 何月 到着 シーズン スキー 収穫 カレンダー', label: '何月に行くのが良いか', desc: '月別仕事カレンダー — 最適 2–4月', go: 'settle', target: 'timing' },
-  { q: '行程 ルート 段階 順序 何年 なぜ 期間 算定 どうやって行くか ロードマップ 過程', label: '職種別開始→永住権行程', desc: '段階ごと期間根拠(規定·変数·処理)をタグで表示', go: 'jobs', target: 'jny-dev' }
+  { q: 'オークランド auckland 日本食スーパー', label: 'オークランド定住情報', desc: 'ルームシェア200–315·AT HOP·日本人最大', go: 'settle', target: 'city-akl' },
+  { q: 'ウェリントン wellington 首都', label: 'ウェリントン定住情報', desc: 'ルームシェア215–280·Snapper·政府·IT', go: 'settle', target: 'city-wlg' },
+  { q: 'クライストチャーチ christchurch クライスト チャーチ', label: 'クライストチャーチ定住情報', desc: 'ルームシェア200–285·最低生活費·建設需要', go: 'settle', target: 'city-chc' },
+  { q: 'クイーンズタウン queenstown スキー 観光', label: 'クイーンズタウン定住情報', desc: 'ルームシェア350–550·住居難警告·観光ハブ', go: 'settle', target: 'city-qtn' },
+  { q: '地方 ハミルトン タウランガ ダニーデン 田舎 小都市', label: '地方拠点定住情報', desc: 'ダニーデン179~·季節ジョブ食住付·貯蓄最大化', go: 'settle', target: 'city-reg' },
+  { q: 'パートナー 恋愛 結婚 配偶者 カップル 同居 彼女 彼氏 partnership', label: 'パートナーができた時', desc: 'パートナーシップ就労1,630·永住権5,360·同居12か月', go: 'scenarios', target: 'sc-7' },
+  { q: '31歳 32歳 33歳 34歳 35歳 年齢 以上 ワーホリ不可 オフショア offshore 遅い 超えた', label: '31歳以上·WHV不可ルート', desc: 'オフショアAEWV·留学·視察の3選択肢', go: 'scenarios', target: 'sc-8' },
+  { q: 'ロードマップ 経路 比較 全体 一目で', label: '4経路タイムライン比較', desc: 'A·B·C·D経路の期間·費用·条件並べ', go: 'diagnose', target: 'fullRoadmaps' },
+  { q: 'ホーム ダッシュボード 為替レート 円ウォン 航空券 飛行機 時差 Dデイ', label: 'ホームダッシュボード', desc: '為替·航空月別最安·制度Dデイ一括表示', go: 'home', target: null },
+  { q: 'いつ 出国 時期 タイミング 何月 到着 シーズン スキー 収穫 カレンダー', label: '最適出国月の選び方', desc: '月別求人カレンダー — ゴールデン2–4月', go: 'settle', target: 'timing' },
+  { q: '行程 ルート 段階 順序 何年 なぜ 期間 算定 どうやって行くか ロードマップ 過程', label: '職種別ロードマップ·期間根拠', desc: '各段階の期間計算根拠(規定·変数·処理)を注釈表示', go: 'jobs', target: 'jny-dev' }
 ];
 
 // ===== v23 ビザ略語展開 =====
 const VISA_TERMS = {
   'WHV': { ko: 'ワーホリ', tip: 'WHV · Working Holiday Visa — 18–30歳 · 1年' },
-  'PSWV': { ko: '卒業ビザ', tip: 'PSWV · Post Study Work Visa — 学位により1–3年 (GDは1年、2026-11-16~)' },
-  'SGWV': { ko: '短期卒業ビザ', tip: 'SGWV · Short-term Graduate Work Visa — 非学位課程用 6か月 (2026-11-16新設)' },
+  'PSWV': { ko: '卒業後就労ビザ', tip: 'PSWV · Post Study Work Visa — 学位により1–3年 (GD は1年、2026-11-16~)' },
+  'SGWV': { ko: '短期卒業就労ビザ', tip: 'SGWV · Short-term Graduate Work Visa — 非学位課程 6か月 (2026-11-16新設)' },
   'AEWV': { ko: '雇用主就労ビザ', tip: 'AEWV · Accredited Employer Work Visa — 認証雇用主スポンサー就労ビザ' },
   'SMC': { ko: '6点制永住権', tip: 'SMC · Skilled Migrant Category — 6点制技能移民永住権 (学歴・収入・NZ勤務 組み合わせ)' },
   'StR': { ko: '即時永住権', tip: 'StR · Straight to Residence — グリーンリスト T1 専用即時永住権ビザ' },
@@ -4346,17 +4374,17 @@ const VISA_TERMS = {
   'GWSV': { ko: 'シーズン循環ビザ', tip: 'GWSV · Global Workforce Seasonal Visa — 3年有効 · 年 9か月' },
   'GD': { ko: 'GD', tip: 'GD · Graduate Diploma — 学士後に積む1年物 L7課程' },
   'IVL': { ko: '観光・環境負担金', tip: 'IVL · International Visitor Levy — NZD 100' },
-  'ANZSCO': { ko: 'ANZSCO', tip: 'ANZSCO · 職業分類体系 — レベル 1(高度熟練)~5(非熟練)' },
-  'NZQF': { ko: 'NZ学力体系', tip: 'NZQF — NZ 学歴・資格 体系 (L1–10、学士=L7)' },
-  'NZQCF': { ko: 'NZ学力体系', tip: 'NZQCF — NZ 学歴・資格 体系 (L1–10、学士=L7)' },
-  'IELTS': { ko: 'IELTS', tip: 'IELTS · 公認英語試験 — 永住権は通常 6.5' },
-  'IRD': { ko: 'IRD', tip: 'IRD · 国税局 — IRD 番号 = 税番号' },
-  'BCITO': { ko: 'BCITO', tip: 'BCITO · 建設業見習い訓練機関 — 大工など L4 資格' },
-  'MPI': { ko: 'MPI', tip: 'MPI · 第1次産業省 (政府部処)' },
-  'MSD': { ko: 'MSD', tip: 'MSD · 社会開発省 (政府) — 無料求職つなぎ' },
-  'TPV': { ko: '総報酬', tip: 'TPV · Total Package Value — 食住含む賃金算定' },
-  'Green List': { ko: 'グリーンリスト', tip: 'Green List — 人手不足職種リスト (T1 即時永住権 · T2 24か月勤務)' },
-  'GL': { ko: 'グリーンリスト', tip: 'GL · Green List — 人手不足職種リスト (T1 即時永住権 · T2 24か月勤務)' }
+  'ANZSCO': { ko: 'ANZSCO', tip: 'ANZSCO · 職業分類基準 — L1(高度熟練)~L5(非熟練)' },
+  'NZQF': { ko: 'NZ資格体系', tip: 'NZQF — ニュージーランド資格枠組み (L1–10、学士=L7)' },
+  'NZQCF': { ko: 'NZ資格体系', tip: 'NZQCF — ニュージーランド資格枠組み (L1–10、学士=L7)' },
+  'IELTS': { ko: 'IELTS', tip: 'IELTS · 英語試験 — 永住権通常 6.5 必要' },
+  'IRD': { ko: 'IRD', tip: 'IRD · ニュージーランド税務局 — IRD番号 = 税ID' },
+  'BCITO': { ko: 'BCITO', tip: 'BCITO · 建設業見習訓練機関 — 大工等L4資格認定' },
+  'MPI': { ko: 'MPI', tip: 'MPI · 第1次産業省 (政府機関)' },
+  'MSD': { ko: 'MSD', tip: 'MSD · 社会開発省 (政府) — 就職支援サービス' },
+  'TPV': { ko: '総報酬', tip: 'TPV · Total Package Value — 食宿込み賃金評価' },
+  'Green List': { ko: 'グリーンリスト', tip: 'Green List — 急募職種リスト (T1 即永住·T2 24ヶ月勤務)' },
+  'GL': { ko: 'グリーンリスト', tip: 'GL · Green List — 急募職種リスト (T1 即永住·T2 24ヶ月勤務)' }
 };
 const VT_KEYS = Object.keys(VISA_TERMS).sort((a, b) => b.length - a.length).join('|');
 const VT_TEST = new RegExp('(^|[^A-Za-z])(' + VT_KEYS + ')(?![A-Za-z])');
@@ -4412,8 +4440,8 @@ function visaLegendHtml() {
 
 
 const GLOSSARY = [
-  ['WHV', 'ワーキングホリデービザ — 18–30歳、12ヶ月、臨時職のみ可能 (パーマネント雇用不可)'],
-  ['AEWV', '認証雇用主ワークビザ — スポンサー職業内定ベース就業ビザ、スキルレベルに応じて最大5年'],
+  ['WHV', 'ワーキングホリデービザ — 18–30歳、12ヶ月、臨時勤務のみ可能 (パーマネント雇用不可)'],
+  ['AEWV', '認証雇用主ワークビザ — スポンサー職業に基づくワークビザ、スキルレベルに応じて最大5年'],
   ['Job Check', 'その職業を移民に提供できるかを確認する雇用主側事前審査 (NZD 735、雇用主負担)'],
   ['SMC', 'Skilled Migrant Category — 6点システム技能移民永住権 (学位・所得・NZ勤務の組み合わせ)'],
   ['Green List', '人手不足職種リスト — Tier1 即座に永住権申請 / Tier2 24ヶ月勤務後'],
@@ -4421,7 +4449,7 @@ const GLOSSARY = [
   ['PSWV', 'Post Study Work Visa — 学士(L7)・修士・博士取得時最大3年オープンワーク。2026-11-16改編(公式確定)からGraduate Diploma(L7)は最大1年、L5–7正規課程は6ヶ月Short-term Graduate Work Visa(SGWV)新設'],
   ['SGWV', 'Short-term Graduate Work Visa — 2026-11-16新設(公式確定)。NZQCF L5–7課程をNZで24週以上フルタイム受講時6ヶ月オープンワーク。資金5,000·初回1回限定'],
   ['IVL', '国際来訪者観光・環境負担金 (NZD 100、ビザ申請時に併せて納付)'],
-  ['Interim visa', 'ビザ転換審査待機中の臨時ビザ — 訪問ビザ出身者は就労不可 (2025-04~)'],
+  ['Interim visa', 'ビザ転換審査待機中の臨時ビザ — 訪問ビザからの転換者は就労不可 (2025-04~)'],
   ['NZQCF', 'ニュージーランド学位・資格体系 (Level 1–10、学士 = Level 7)'],
   ['Genuine & Stable', 'パートナーシップビザの関係真正性基準 — 共同口座・同居証明・相互認識証拠で立証'],
   ['IAA', 'ニュージーランド公認移民アドバイザー資格制度 — 有償移民相談はIAA登録者のみ合法'],
@@ -4543,7 +4571,7 @@ function attachSearch(input, box) {
     const hits = SEARCH_INDEX.filter(e => (e.q + ' ' + e.label).toLowerCase().includes(v)).slice(0, 6);
     box.innerHTML = hits.length
       ? hits.map(h => `<button class="search-item" onclick="jumpTo('${h.go}', ${h.target ? `'${h.target}'` : 'null'})">${h.label}<small>${h.desc}</small></button>`).join('')
-      : '<div class="search-item" style="cursor: default;">検索結果なし — <strong>⚡ 1分診断</strong>で始めてみてください</div>';
+      : '<div class="search-item" style="cursor: default;">検索結果がありません — <strong>⚡ 1分診断</strong>で始めてみてください</div>';
     box.classList.add('open');
     annotateVisaTerms(box);
   };
@@ -4594,7 +4622,7 @@ const ALLOWED = {
 };
 
 function saveState(key, obj) {
-  try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) { /* プライベートモード等で保存不可時は無視 */ }
+  try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) { /* プライベートモード等での保存失敗時は無視 */ }
 }
 
 function loadState(key) {
@@ -4608,7 +4636,7 @@ function setRadio(name, value) {
 
 function setDiagnoseForm(s) {
   if (!s) return false;
-  // v4以前の保存分・共有リンク(5フィールド)と互換: 学位・家族はデフォルト値で埋める、entryはWHVデフォルト値
+  // v4以前の保存分・共有リンク(5フィールド)と互換性維持: 学位・家族はデフォルト値で補完、entryはWHVデフォルト
   const entry = ALLOWED.entry.includes(s.entry) ? s.entry : 'whv';
   const education = ALLOWED.education.includes(s.education) ? s.education : 'bach';
   const family = ALLOWED.family.includes(s.family) ? s.family : 'solo';
@@ -4737,12 +4765,12 @@ function downloadChecklist(btn) {
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 2000);
   } catch (e) {
-    copyChecklist(btn); // ダウンロードが制限されている環境(一部サンドボックス) → コピーフォールバック
+    copyChecklist(btn); // ダウンロード制限環境(一部サンドボックス)ではコピーにフォールバック
   }
 }
 
 function printResult() {
-  try { window.print(); } catch (e) { /* 印刷不可環境は無視 */ }
+  try { window.print(); } catch (e) { /* 印刷不可環境では無視 */ }
 }
 
 function injectDiagnoseShareBar() {
@@ -4801,7 +4829,7 @@ function restoreState(savedDiagnose, savedCalc) {
 
 // ============ INIT ============
 window.addEventListener('DOMContentLoaded', () => {
-  // renderCalc()の最初のupdateCalc()がデフォルト値でストレージを上書きする前に事前に読む
+  // renderCalc()の最初のupdateCalc()でデフォルト値によりストレージが上書きされる前に事前読み込み
   const savedDiagnose = loadState('nzv.diagnose');
   const savedCalc = loadState('nzv.calc');
 
