@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NZ永住権ナビゲーター</title>
+<title>NZ NAVI</title>
 <meta name="description" content="ニュージーランド滞在設計図 — ビザ・永住権ロードマップ、シナリオ、職種・都市ガイド、費用計算機。2026-07公式検証データ。">
-<meta property="og:title" content="NZ永住権ナビゲーター">
+<meta property="og:title" content="NZ NAVI — NZ永住権ナビ">
 <meta property="og:description" content="どのビザで来ても — 永住権までの条件・費用・タイムラインを設計。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/ja/">
@@ -599,7 +599,8 @@ select {
   }
 
   .job-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
   }
 
   .snapshot-table {
@@ -1167,6 +1168,26 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .vs-rank.good { background: #d9ecdf; color: var(--brand-deep); }
 .vs-rank.bad { background: #f6ddd4; color: var(--danger); }
 .vs-body { min-width: 0; }
+details.fold:not([open]) > .fold-body { display: none; }
+/* v33 job groups & mobile list */
+.job-group-h { font-weight: 800; font-size: 0.92rem; color: var(--brand-deep); margin: 1.4rem 0 0.6rem; padding-bottom: 0.35rem; border-bottom: 2px solid var(--line); }
+.job-group-h:first-child { margin-top: 0; }
+.job-sum { display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem; align-items: baseline; }
+.job-sum > span { white-space: nowrap; font-size: 0.82rem; }
+.job-sal { font-weight: 700; color: var(--brand-deep); }
+.jobs-list-m { display: none; margin-bottom: 1.2rem; }
+.jl-row { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 0.7rem 0.85rem; margin-bottom: 0.5rem; cursor: pointer; }
+.jl-row:active { background: var(--bg); }
+.jl-top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.jl-name { font-weight: 800; font-size: 0.95rem; color: var(--brand); }
+.jl-sal { font-weight: 700; font-size: 0.85rem; color: var(--brand-deep); white-space: nowrap; }
+.jl-dots { display: flex; gap: 1rem; font-size: 0.8rem; margin-top: 0.25rem; }
+.jl-dots > span { white-space: nowrap; }
+.jl-meta { color: var(--muted); font-size: 0.78rem; margin-top: 0.25rem; line-height: 1.4; }
+@media (max-width: 680px) {
+  .jobs-table-wrap { display: none; }
+  .jobs-list-m { display: block; }
+}
 .cost-bar { display: flex; height: 22px; border-radius: 6px; overflow: hidden; margin: 0.7rem 0 0.5rem; border: 1px solid var(--line); }
 .cost-seg { height: 100%; }
 .cost-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.82rem; }
@@ -1221,6 +1242,12 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .jny { border: 1.5px solid var(--line); border-radius: 8px; padding: 0.9rem 1rem; margin-bottom: 1.2rem; }
 .jny-head { font-weight: 800; margin-bottom: 0.2rem; }
 .jny-legend { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.6rem; }
+.jt-list { list-style: none; margin: 0.2rem 0 0; padding: 0; }
+.jt-list li { padding: 0.14rem 0; line-height: 1.5; }
+.jt-list li::before { content: '·'; font-weight: 900; margin-right: 0.4rem; color: var(--brand); }
+.jny-note { margin-top: 0.35rem; }
+.jny-total { margin-top: 0.3rem; }
+.jny-foot { margin-top: 0.3rem; font-weight: 400; }
 .jny-step { display: flex; gap: 0.7rem; padding: 0.5rem 0; border-top: 1px dashed var(--line); }
 .jny-m { flex: none; min-width: 4.6rem; font-weight: 800; color: var(--brand-deep); font-variant-numeric: tabular-nums; font-size: 0.9rem; }
 .jny-b { min-width: 0; font-size: 0.92rem; }
@@ -1274,7 +1301,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 <div id="app">
 <header>
   <div class="header-content">
-    <div class="logo">🥝 NZ 永住権 ナビゲーター</div>
+    <div class="logo">🥝 NZ NAVI</div>
     <div class="tabs" id="tabsContainer">
       <button class="tab active" data-tab="home">ホーム</button>
       <button class="tab" data-tab="diagnose">ロードマップ</button>
@@ -1560,7 +1587,6 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
         <div id="smcGaugeBox" style="margin-top: 0.6rem; text-align: left;"></div>
       </div>
       </div>
-      </div>
     </details>
   </section>
 
@@ -1575,7 +1601,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
   <!-- JOBS -->
   <section id="jobs">
     <h1>職種選択ガイド</h1>
-    <p style="color: var(--muted); margin-bottom: 1.5rem;">2026年需給基準の就職難易度、永住権難易度、留学必要性、永住権までの見積もりを職種別に整理しました。表の職種をクリックすると詳細に移動します。 <strong>●が多いほど就職が容易で、永住権が有利です</strong> (5点スケール)。</p>
+    <p style="color: var(--muted); margin-bottom: 1.2rem;">2026年需給基準の職種別就職・永住権難易度と見積もり。<strong>●が多いほど有利</strong>（5点）・職種クリック → 詳細。</p>
 
     <details class="fold" id="jobPicker" style="margin-bottom: 2rem;">
       <summary><span class="fold-title">🧭 職種選択器 — 条件で選ぶ</span><span class="fold-sub">経歴・資格・資金・目標のみでフィルタ (テストではない)</span></summary>
@@ -1585,7 +1611,7 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
       </div>
     </details>
 
-    <div style="overflow-x: auto; margin-bottom: 2rem;">
+    <div class="jobs-table-wrap" style="overflow-x: auto; margin-bottom: 1.2rem;">
       <table class="snapshot-table">
         <thead>
           <tr>
@@ -1599,7 +1625,10 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
         </thead>
         <tbody id="jobsGuideTable"></tbody>
       </table>
-        <details class="fold" id="courseEntry">
+    </div>
+    <div class="jobs-list-m" id="jobsListM"></div>
+
+    <details class="fold" id="courseEntry">
       <summary>
         <span class="fold-title">🎓 過程登録で開始 — 無経歴者用留学・訓練比較</span>
         <span class="fold-sub">過程レベルが卒業後の労働権を決定します</span>
@@ -1608,7 +1637,13 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
         <p style="color: var(--muted); font-size: 0.92rem; margin-bottom: 0.8rem;">技術・経歴なしでその職種を新たに開始するなら過程登録が出発点です。ただし、<strong>どのレベルの過程かが卒業後の就労権を決定</strong>します — 今登録すれば卒業時点で2026-11-16改編規則が適用されます。</p>
         <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 1rem;">
           <strong>📜 卒業後労働権 (2026-11-16改編基準)</strong> <span class="badge official">[公式]</span>
-          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;">学士(L7)・修士(L9) = <strong>卒業ビザ最大3年</strong> ・ GD(L7, 学士先行必須) = <strong>1年</strong> ・ L5–7 非学位正規過程(24週+) = <strong>短期卒業ビザ6ヶ月(生涯1回)</strong> ・ <strong>L4以下 = なし</strong>. 留学生は学業中週25h労働可能、学生ビザ $850 + 資金証明年 $20,000 別途。</p>
+          <ul class="jt-list" style="color: var(--muted); font-size: 0.92rem;">
+            <li>学士(L7)・修士(L9) → <strong>卒業ビザ最大3年</strong></li>
+            <li>GD(L7・学士先行必須) → <strong>1年</strong></li>
+            <li>L5–7 非学位正規課程(24週+) → <strong>短期6ヶ月 (生涯1回)</strong></li>
+            <li>L4以下 → <strong>なし</strong></li>
+            <li>学業中の労働は週25h ・ 学生ビザ $850 + 資金証明 年 $20,000 別途</li>
+          </ul>
         </div>
         <div style="overflow-x: auto;">
           <table class="snapshot-table">
@@ -1636,9 +1671,6 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
         <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.8rem;">学費は2026年international fee — 機関・年度別変動が大きく多くの機関が未公表状態のため登録前に該当機関公式ページで確認必須。生活費(年 ~20k)・ビザ費用別途 — 総額シミュレーションは <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('diagnose', 'calcFold')">ロードマップタブ費用計算機</button>から。基準日 2026-07-08 ・ 出典: 各機関公式ページ・immigration.govt.nz</p>
       </div>
     </details>
-
-
-    </div>
 
     <div id="jobsContainer"></div>
 
@@ -2906,7 +2938,12 @@ function recommend(input) {
   } else if (entry === 'work') {
     notes.push('ワークビザ進入 — WHV段階なしで開始、期間・費用が短縮反映されました。');
   } else if (entry === 'partner') {
-    notes.unshift('💚 パートナーシップトラック: パートナーワークビザ(1,630 · 80% 5週) → 同居12ヶ月 → パートナーシップ永住権(5,360 · 80% 7ヶ月)。以下は並行可能な就職トラック参考用です。');
+    notes.unshift(`<div style="font-weight: 700; margin-bottom: 0.25rem;">💚 パートナーシップトラック</div>
+      <ul class="jt-list" style="margin-bottom: 0.35rem;">
+        <li>パートナーワークビザ — $1,630 ・ 80% 5週</li>
+        <li>同居 12ヶ月</li>
+        <li>パートナーシップ永住権 — $5,360 ・ 80% 7ヶ月</li>
+      </ul>以下の就職トラックは並行の参考用。`);
   }
 
   return {
@@ -3878,6 +3915,21 @@ const JOURNEYS = {
   }
 };
 
+function jnySumHtml(sum) {
+  let foot = '', main = sum;
+  const fi = sum.indexOf('<span class="f">');
+  if (fi > -1) { foot = sum.slice(fi); main = sum.slice(0, fi).trim(); }
+  const eq = main.split(' = ');
+  const terms = eq[0].split(' + ');
+  if (terms.length < 2) return `<div class="jny-sum">🧮 総期間: ${sum}</div>`;
+  return `<div class="jny-sum">
+    <div>🧮 総期間</div>
+    <ul class="jt-list">${terms.map(p => `<li>${p}</li>`).join('')}</ul>
+    ${eq[1] ? `<div class="jny-total">= ${eq[1]}</div>` : ''}
+    ${foot ? `<div class="jny-foot">${foot}</div>` : ''}
+  </div>`;
+}
+
 function journeyHtml(job) {
   const j = JOURNEYS[job.id];
   if (!j) return '';
@@ -3885,7 +3937,15 @@ function journeyHtml(job) {
   return `
     <div class="jny" id="jny-${job.id}">
       <div class="jny-head">🗺️ スタート → 永住権段階別ジャーニー</div>
-      <div class="jny-legend">期間タグ: <span class="jt jt-rule">規定</span> 移民規則固定(短縮不可) · <span class="jt jt-var">変数</span> 個人実行速度(総期間差の原因) · <span class="jt jt-proc">処理</span> 審査待機 — ${j.note}</div>
+      <div class="jny-legend">
+        <div style="font-weight: 700; margin-bottom: 0.25rem;">期間タグ</div>
+        <ul class="jt-list">
+          <li><span class="jt jt-rule">規定</span> 移民規則で固定 — 短縮不可</li>
+          <li><span class="jt jt-var">変数</span> 自分の実行速度 — 総期間差の原因</li>
+          <li><span class="jt jt-proc">処理</span> 審査待機</li>
+        </ul>
+        ${j.note ? `<div class="jny-note">💡 ${j.note}</div>` : ''}
+      </div>
       ${j.steps.map(s => `
       <div class="jny-step">
         <span class="jny-m">${s.m}</span>
@@ -3896,18 +3956,38 @@ function journeyHtml(job) {
           ${s.risk ? `<div class="risk">⚠️ ${s.risk}</div>` : ''}
         </div>
       </div>`).join('')}
-      <div class="jny-sum">🧮 総期間計算式: ${j.sum}</div>
+      ${jnySumHtml(j.sum)}
     </div>`;
 }
 
+const JOB_GROUPS = [
+  { t: '🎯 GL専門職 — 永住権が最有利', ids: ['dev', 'engineer', 'health', 'teacher'] },
+  { t: '🔧 技術・経験職 — 経験が資格', ids: ['trade', 'chef'] },
+  { t: '🌾 一次産業 — 参入しやすい', ids: ['agri', 'livestock'] },
+  { t: '📦 その他 — 永住権は狭き門', ids: ['fieldwork', 'office'] }
+];
+const SALARY_SHORT = { dev: '80–120k+', engineer: '79–138k', health: '85–95k', teacher: '70–80k', trade: '75–110k', chef: '55–85k', agri: '時給 24–30', livestock: '63–87k', fieldwork: '55–70k', office: '75–116k' };
+
 function renderJobs() {
   let html = '';
-  DB.jobs.forEach(job => {
-    html += `
+  JOB_GROUPS.forEach(g => {
+    html += `<div class="job-group-h">${g.t}</div>`;
+    g.ids.map(id => DB.jobs.find(j => j.id === id)).filter(Boolean).forEach(job => {
+      html += jobFoldHtml(job);
+    });
+  });
+  DB.jobs.filter(j => !JOB_GROUPS.some(g => g.ids.includes(j.id))).forEach(job => { html += jobFoldHtml(job); });
+  document.getElementById('jobsContainer').innerHTML = html;
+  renderJobsGuideTable();
+  annotateVisaTerms(document.getElementById('jobsContainer'));
+}
+
+function jobFoldHtml(job) {
+  let html = `
       <details class="fold" id="job-${job.id}">
         <summary>
           <span class="fold-title">${job.name}</span>
-          <span class="fold-sub">${lvDots(job.guide ? job.guide.demandLv : 3)} · ${job.salary}</span>
+          <span class="fold-sub job-sum"><span>就職 ${lvDots(job.guide ? job.guide.demandLv : 3)}</span><span>永住権 ${lvDots(job.guide ? job.guide.prLv : 3)}</span><span class="job-sal">${SALARY_SHORT[job.id] || job.salary}</span></span>
         </summary>
         <div class="fold-body">
           <div class="job-stats">
@@ -3969,10 +4049,7 @@ function renderJobs() {
         </div>
       </details>
     `;
-  });
-  document.getElementById('jobsContainer').innerHTML = html;
-  renderJobsGuideTable();
-  annotateVisaTerms(document.getElementById('jobsContainer'));
+  return html;
 }
 
 function lvDots(n) {
@@ -3982,16 +4059,31 @@ function lvDots(n) {
 function renderJobsGuideTable() {
   const tbody = document.getElementById('jobsGuideTable');
   if (!tbody) return;
-  tbody.innerHTML = DB.jobs.filter(j => j.guide).map(j => `
-    <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-${j.id}')">
-      <td style="font-weight: 700; color: var(--brand);">${j.name}</td>
-      <td>${lvDots(j.guide.demandLv || 3)}<div style="font-size: 0.78rem; color: var(--muted);">${j.guide.demand}</div></td>
-      <td>${lvDots(j.guide.prLv || 3)}<div style="font-size: 0.78rem; color: var(--muted);">${j.guide.pr}</div></td>
-      <td>${j.guide.studyShort}</td>
-      <td>${j.guide.periodShort}</td>
-      <td>${j.guide.costShort}</td>
-    </tr>
-  `).join('');
+  const ordered = JOB_GROUPS.flatMap(g => [{ g }].concat(
+    g.ids.map(id => DB.jobs.find(j => j.id === id)).filter(j => j && j.guide).map(j => ({ j }))
+  ));
+  tbody.innerHTML = ordered.map(x => x.g
+    ? `<tr><td colspan="6" style="background: var(--bg); font-weight: 700; padding: 0.55rem 0.8rem; font-size: 0.85rem;">${x.g.t}</td></tr>`
+    : `
+    <tr style="cursor: pointer;" onclick="jumpTo('jobs', 'job-${x.j.id}')">
+      <td style="font-weight: 700; color: var(--brand);">${x.j.name}</td>
+      <td>${lvDots(x.j.guide.demandLv || 3)}<div style="font-size: 0.78rem; color: var(--muted);">${x.j.guide.demand}</div></td>
+      <td>${lvDots(x.j.guide.prLv || 3)}<div style="font-size: 0.78rem; color: var(--muted);">${x.j.guide.pr}</div></td>
+      <td>${x.j.guide.studyShort}</td>
+      <td>${x.j.guide.periodShort}</td>
+      <td>${x.j.guide.costShort}</td>
+    </tr>`).join('');
+  const listEl = document.getElementById('jobsListM');
+  if (listEl) {
+    listEl.innerHTML = JOB_GROUPS.map(g => `
+      <div class="job-group-h">${g.t}</div>
+      ${g.ids.map(id => DB.jobs.find(j => j.id === id)).filter(j => j && j.guide).map(j => `
+      <div class="jl-row" onclick="jumpTo('jobs', 'job-${j.id}')">
+        <div class="jl-top"><span class="jl-name">${j.name}</span><span class="jl-sal">${SALARY_SHORT[j.id] || ''}</span></div>
+        <div class="jl-dots"><span>就職 ${lvDots(j.guide.demandLv || 3)}</span><span>永住権 ${lvDots(j.guide.prLv || 3)}</span></div>
+        <div class="jl-meta">${j.guide.studyShort} ・ ${j.guide.periodShort} ・ ${j.guide.costShort}</div>
+      </div>`).join('')}`).join('');
+  }
   const savedPick = loadState('nzv.jobpick');
   if (savedPick && ['none', 'over2', 'qualified'].includes(savedPick.exp) && ['low', 'high'].includes(savedPick.fund) && PICK_PRI.some(p => p.v === savedPick.pri)) pickState = savedPick;
   renderJobPicker();
@@ -4714,7 +4806,7 @@ function buildChecklistText(result) {
   });
 
   const lines = [
-    '🥝 NZ 永住権ナビゲーター — 私の実行チェックリスト',
+    '🥝 NZ NAVI — 私の実行チェックリスト',
     `パス: ${p.name} · 予想 ${p.duration} · 合計 ${p.cost}`,
     `データ基準日 2026-07-06 (immigration.govt.nz検証) · 結果をもう一度見る: ${buildDiagnoseShareUrl()}`,
     '',

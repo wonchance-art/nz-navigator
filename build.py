@@ -10,9 +10,9 @@ PAGES = [
         'src': VAULT / 'index.html',
         'out': ROOT / 'index.html',
         'lang': 'ko',
-        'title': 'NZ 영주권 내비게이터',
+        'title': 'NZ NAVI',
         'meta': '''<meta name="description" content="뉴질랜드 체류 설계도 — 비자·영주권 로드맵, 시나리오, 직군·도시 가이드, 비용 계산기. 2026-07 공식 검증 데이터.">
-<meta property="og:title" content="NZ 영주권 내비게이터">
+<meta property="og:title" content="NZ NAVI — 뉴질랜드 영주권 내비게이터">
 <meta property="og:description" content="어떤 비자로 오든 — 영주권까지의 조건·비용·타임라인을 설계합니다.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/">
@@ -25,9 +25,9 @@ PAGES = [
         'src': VAULT / 'index.ja.html',
         'out': ROOT / 'ja' / 'index.html',
         'lang': 'ja',
-        'title': 'NZ永住権ナビゲーター',
+        'title': 'NZ NAVI',
         'meta': '''<meta name="description" content="ニュージーランド滞在設計図 — ビザ・永住権ロードマップ、シナリオ、職種・都市ガイド、費用計算機。2026-07公式検証データ。">
-<meta property="og:title" content="NZ永住権ナビゲーター">
+<meta property="og:title" content="NZ NAVI — NZ永住権ナビ">
 <meta property="og:description" content="どのビザで来ても — 永住権までの条件・費用・タイムラインを設計。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/ja/">
