@@ -1172,6 +1172,13 @@ details.fold:not([open]) > .fold-body { display: none; }
 /* v33 직군 그룹·모바일 리스트 */
 .job-group-h { font-weight: 800; font-size: 0.92rem; color: var(--brand-deep); margin: 1.4rem 0 0.6rem; padding-bottom: 0.35rem; border-bottom: 2px solid var(--line); }
 .job-group-h:first-child { margin-top: 0; }
+.job-links { font-size: 0.88rem; margin-bottom: 1rem; padding: 0.5rem 0.8rem; background: var(--bg); border-radius: 8px; }
+.np-inputs { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; align-items: center; margin-bottom: 0.8rem; }
+.np-inputs label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.88rem; font-weight: 700; }
+.np-inputs input { width: 7.5rem; padding: 0.45rem 0.6rem; border: 1.5px solid var(--line); border-radius: 8px; font-size: 0.95rem; font-weight: 700; }
+.np-inputs input:focus { border-color: var(--brand); outline: none; }
+#npHourly, #npHours { width: 5rem; }
+.job-links a { font-weight: 700; }
 .job-sum { display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem; align-items: baseline; }
 .job-sum > span { white-space: nowrap; font-size: 0.82rem; }
 .job-sal { font-weight: 700; color: var(--brand-deep); }
@@ -1326,9 +1333,9 @@ details.fold:not([open]) > .fold-body { display: none; }
     <div class="tabs" id="tabsContainer">
       <button class="tab active" data-tab="home">홈</button>
       <button class="tab" data-tab="diagnose">로드맵</button>
-      <button class="tab" data-tab="scenarios">시나리오</button>
       <button class="tab" data-tab="jobs">직군</button>
       <button class="tab" data-tab="settle">정착</button>
+      <button class="tab" data-tab="scenarios">시나리오</button>
       <button class="tab" data-tab="snapshot">정책 현황</button>
     </div>
     <a class="lang-link" href="./ja/" aria-label="日本語版">🇯🇵 <span class="lang-label">日本語</span></a>
@@ -1675,6 +1682,23 @@ details.fold:not([open]) > .fold-body { display: none; }
     </details>
 
     <div id="jobsContainer"></div>
+
+    <details class="fold" id="netPay" style="margin-top: 1.5rem;">
+      <summary>
+        <span class="fold-title">💵 세후 실수령 계산기</span>
+        <span class="fold-sub">연봉·시급 → 소득세·ACC 공제 후 주급 + ₩/¥ 환산</span>
+      </summary>
+      <div class="fold-body">
+        <div class="np-inputs">
+          <label>연봉 NZD <input type="number" id="npSalary" value="72800" min="0" step="1000" inputmode="numeric"></label>
+          <span style="color: var(--muted); font-size: 0.85rem;">또는</span>
+          <label>시급 <input type="number" id="npHourly" step="0.05" min="0" inputmode="decimal"></label>
+          <label>주 시간 <input type="number" id="npHours" value="40" min="1" max="80" inputmode="numeric"></label>
+        </div>
+        <div id="npResult"></div>
+        <p style="color: var(--muted); font-size: 0.78rem; margin-top: 0.7rem;">세율 2026-27 <a href="https://www.ird.govt.nz/income-tax/income-tax-for-individuals/tax-codes-and-tax-rates-for-individuals/tax-rates-for-individuals" target="_blank" class="source-link">IRD↗</a> <span class="badge official">[공식]</span> · ACC 부담금 1.75% (GST 포함 · 상한 156,641) · 세금코드 M·학자금 없음 기준 · 워홀 등 임시비자는 KiwiSaver 대상 아님</p>
+      </div>
+    </details>
 
     <details class="fold" id="noPathJobs">
       <summary>
@@ -4015,6 +4039,80 @@ function renderCourseEntry() {
     </div>`).join('');
 }
 
+// ===== v34 세후 실수령 계산기 (2026-27 IRD 세율 [공식]) =====
+const NP_BRACKETS = [[15600, 0.105], [53500, 0.175], [78100, 0.30], [180000, 0.33], [Infinity, 0.39]];
+const NP_ACC = { rate: 0.0175, cap: 156641 };
+
+function npTax(g) {
+  let tax = 0, prev = 0;
+  for (const [cap, r] of NP_BRACKETS) {
+    if (g > prev) tax += (Math.min(g, cap) - prev) * r;
+    prev = cap;
+  }
+  return tax;
+}
+
+function renderNetPay(src) {
+  const sal = document.getElementById('npSalary');
+  const hr = document.getElementById('npHourly');
+  const hrs = document.getElementById('npHours');
+  const out = document.getElementById('npResult');
+  if (!sal || !out) return;
+  const hours = Math.max(1, parseFloat(hrs.value) || 40);
+  if (src === 'hourly') {
+    const h = parseFloat(hr.value) || 0;
+    sal.value = Math.round(h * hours * 52);
+  } else {
+    const g0 = parseFloat(sal.value) || 0;
+    hr.value = (g0 / 52 / hours).toFixed(2);
+  }
+  const gross = parseFloat(sal.value) || 0;
+  const tax = npTax(gross);
+  const acc = Math.min(gross, NP_ACC.cap) * NP_ACC.rate;
+  const net = gross - tax - acc;
+  const wk = net / 52;
+  const fmt = n => Math.round(n).toLocaleString('en-NZ');
+  out.innerHTML = `
+    <ul class="jt-list" style="font-size: 0.92rem;">
+      <li>소득세(PAYE): 연 −${fmt(tax)} <span style="color: var(--muted);">(실효세율 ${gross ? (tax / gross * 100).toFixed(1) : 0}%)</span></li>
+      <li>ACC 부담금: 연 −${fmt(acc)}</li>
+      <li><strong>실수령: 연 ${fmt(net)} = 주 ${fmt(wk)} · 실효 시급 ${(wk / hours).toFixed(2)}</strong></li>
+      <li>주급 환산: ${fmtKrw(wk)} · ${fmtJpy(wk)}</li>
+    </ul>`;
+}
+
+function initNetPay() {
+  const sal = document.getElementById('npSalary');
+  if (!sal) return;
+  sal.addEventListener('input', () => renderNetPay('salary'));
+  document.getElementById('npHourly').addEventListener('input', () => renderNetPay('hourly'));
+  document.getElementById('npHours').addEventListener('input', () => renderNetPay('salary'));
+  renderNetPay('salary');
+}
+
+const JOB_SEARCH = {
+  dev: { seek: 'software-developer', tm: 'software developer' },
+  engineer: { seek: 'civil-engineer', tm: 'civil engineer' },
+  health: { seek: 'registered-nurse', tm: 'nurse' },
+  teacher: { seek: 'teacher', tm: 'teacher' },
+  trade: { seek: 'construction', tm: 'builder' },
+  chef: { seek: 'chef', tm: 'chef', bp: 1 },
+  agri: { seek: 'horticulture', tm: 'orchard', bp: 1 },
+  livestock: { seek: 'dairy-farm', tm: 'dairy farm', bp: 1 },
+  fieldwork: { seek: 'warehouse', tm: 'warehouse', bp: 1 },
+  office: { seek: 'accountant', tm: 'accountant' }
+};
+
+function jobLinksHtml(id, labels) {
+  const s = JOB_SEARCH[id];
+  if (!s) return '';
+  return `<div class="job-links">🔎 ${labels.t}
+    <a href="https://nz.seek.com/${s.seek}-jobs" target="_blank" rel="noopener">SEEK ↗</a> ·
+    <a href="https://www.trademe.co.nz/a/jobs/search?search_string=${encodeURIComponent(s.tm)}" target="_blank" rel="noopener">Trade Me ↗</a>${s.bp ? ` ·
+    <a href="https://www.backpackerboard.co.nz/work_jobs/" target="_blank" rel="noopener">${labels.bp} ↗</a>` : ''}
+  </div>`;
+}
+
 const JOB_GROUPS = [
   { t: '🎯 GL 전문직 — 영주권 최상', ids: ['dev', 'engineer', 'health', 'teacher'] },
   { t: '🔧 기술·경력직 — 경력이 자격', ids: ['trade', 'chef'] },
@@ -4036,6 +4134,7 @@ function renderJobs() {
   document.getElementById('jobsContainer').innerHTML = html;
   renderJobsGuideTable();
   renderCourseEntry();
+  initNetPay();
   annotateVisaTerms(document.getElementById('jobsContainer'));
 }
 
@@ -4069,6 +4168,7 @@ function jobFoldHtml(job) {
               <span class="stat-value">${'★'.repeat(job.rating)}</span>
             </div>
           </div>
+          ${jobLinksHtml(job.id, { t: '실시간 공고:', bp: '백패커보드' })}
           <div style="margin-bottom: 1rem;">
             <strong>추천 경로:</strong> ${job.path}
           </div>
@@ -4472,6 +4572,7 @@ const SEARCH_INDEX = [
   { q: '용어 뜻 약어 사전 인터림 interim ivl nzqcf', label: '용어 사전', desc: 'AEWV·SMC·PSWV·GL 등 한 줄 설명', go: 'snapshot', target: 'glossary' },
   { q: '생활비 렌트 방셰어 저축 세금 ird 물가 돈 생존 버티기 감당 현금 흐름', label: '생활비 생존 전략', desc: '주거·첫 수입·세금·비자비 적립 6원칙', go: 'settle', target: 'survival' },
   { q: '도시 어디 살까 정착 지역 선택 비교', label: '도시별 정착 가이드', desc: '렌트·교통·일자리 성격 5개 도시권 비교', go: 'settle', target: 'cities' },
+  { q: '실수령 세후 세금 PAYE ACC 월급 주급 급여 계산', label: '세후 실수령 계산기', desc: '연봉·시급 → 세금 뗀 주급 + ₩/¥', go: 'jobs', target: 'netPay' },
   { q: '한인회 커뮤니티 링크 대사관 교민 일본인 아시안 코리아포스트 상담 통역 긴급 111', label: '커뮤니티·생활 링크 모음', desc: '한인·일본·아시안 커뮤니티 + 공식 지원 38곳', go: 'settle', target: 'links' },
   { q: '장점 단점 순위 통계 지표 평화 부패 행복 집값 피부암 생산성 살만한 나라 비교', label: '세계 지표로 본 뉴질랜드', desc: '유리 7 vs 불리 7 — 검증된 국제 순위', go: 'settle', target: 'worldstats' },
   { q: '오클랜드 auckland 한인마트', label: '오클랜드 정착 정보', desc: '방셰어 200–315 · AT HOP · 한인 인프라 최대', go: 'settle', target: 'city-akl' },
