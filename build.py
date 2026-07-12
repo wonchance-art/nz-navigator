@@ -36,9 +36,7 @@ PAGES = [
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">''',
     },
-    # AU NAVI — 통합 완료 시 활성화 (2026-07-13 스캐폴드 단계)
     {
-        'skip': True,
         'src': VAULT / 'index.au.html',
         'out': ROOT / 'au' / 'index.html',
         'lang': 'ko',

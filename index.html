@@ -1352,6 +1352,7 @@ details.fold:not([open]) > .fold-body { display: none; }
       <button class="tab" data-tab="scenarios">시나리오</button>
       <button class="tab" data-tab="snapshot">정책 현황</button>
     </div>
+    <a class="lang-link" href="./au/" aria-label="호주판">🦘 <span class="lang-label">AU판</span></a>
     <a class="lang-link" href="./ca/" aria-label="캐나다판">🍁 <span class="lang-label">CA판</span></a>
     <a class="lang-link" href="./ja/" aria-label="日本語版">🇯🇵 <span class="lang-label">日本語</span></a>
     <button class="search-toggle" onclick="toggleHeaderSearch()" aria-label="키워드 검색 열기">🔍</button>
@@ -2805,12 +2806,14 @@ function initTabs() {
 
 function showSection(section) {
   if (section === 'roadmap' || section === 'calc') section = 'diagnose'; // 구버전 공유 링크 호환 (로드맵·계산기는 진단에 통합됨)
-  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('section').forEach(s => { s.classList.remove('active'); s.setAttribute('hidden', ''); s.setAttribute('aria-hidden', 'true'); });
   document.querySelectorAll('.tab').forEach(t => { t.classList.remove('active'); t.removeAttribute('aria-current'); });
 
   const sectionEl = document.getElementById(section);
   if (sectionEl) {
     sectionEl.classList.add('active');
+    sectionEl.removeAttribute('hidden');
+    sectionEl.removeAttribute('aria-hidden');
     const tab = document.querySelector(`[data-tab="${section}"]`);
     if (tab) { tab.classList.add('active'); tab.setAttribute('aria-current', 'page'); }
   }

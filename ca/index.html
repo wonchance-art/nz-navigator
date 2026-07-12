@@ -1351,6 +1351,7 @@ details.fold:not([open]) > .fold-body { display: none; }
       <button class="tab" data-tab="snapshot">정책 현황</button>
     </div>
     <a class="lang-link" href="../" aria-label="뉴질랜드판">🥝 <span class="lang-label">NZ판</span></a>
+    <a class="lang-link" href="../au/" aria-label="호주판">🦘 <span class="lang-label">AU판</span></a>
     <button class="search-toggle" onclick="toggleHeaderSearch()" aria-label="키워드 검색 열기">🔍</button>
   </div>
   <div class="header-search-row" id="headerSearchRow">
@@ -1516,20 +1517,31 @@ details.fold:not([open]) > .fold-body { display: none; }
   <div class="fold-body">
     <p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.9rem;">
       간이 계산 — 실제는 배우자, Transferability 등을 포함하여 공식 도구에서 확인하세요.
-      <span class="badge estimated">[근사치]</span> <span style="font-size: 0.78rem; color: var(--muted);">무배우자·4영역 동일 가정의 core 점수 — transferability·가산점 제외. 공식: IRCC CRS 도구</span>
+      <span class="badge estimated">[근사치]</span> <span style="font-size: 0.78rem; color: var(--muted);">이 계산기는 **무배우자 기준 전용** (동반 배우자 시 본인 항목 상한이 낮아지고 배우자 요인이 별도 가산 — 공식 도구 사용). 4영역 동일 가정 core — 최대 500(제2언어 포함), transferability(최대 +100)·가산점 제외</span>
     </p>
 
     <div class="form-group">
       <label>나이</label>
       <select id="crsAge" onchange="renderCrsCalc()">
         <option value="0">선택 안함</option>
+        <option value="a18">18세 (99점)</option>
+        <option value="a19">19세 (105점)</option>
         <option value="a2029">20–29세 (110점)</option>
         <option value="a30">30세 (105점)</option>
+        <option value="a31">31세 (99점)</option>
         <option value="a32">32세 (94점)</option>
+        <option value="a33">33세 (88점)</option>
+        <option value="a34">34세 (83점)</option>
         <option value="a35">35세 (77점)</option>
+        <option value="a36">36세 (72점)</option>
+        <option value="a37">37세 (66점)</option>
         <option value="a38">38세 (61점)</option>
+        <option value="a39">39세 (55점)</option>
         <option value="a40">40세 (50점)</option>
+        <option value="a41">41세 (39점)</option>
+        <option value="a42">42세 (28점)</option>
         <option value="a43">43세 (17점)</option>
+        <option value="a44">44세 (6점)</option>
         <option value="a45">45세 이상 (0점)</option>
       </select>
     </div>
@@ -1574,7 +1586,7 @@ details.fold:not([open]) > .fold-body { display: none; }
 
     <div style="background: var(--bg); padding: 1rem; border-radius: 8px; text-align: center; margin-top: 1rem;">
       <div style="font-size: 0.9rem; color: var(--muted);">코어 CRS 점수</div>
-      <div style="font-size: 2rem; font-weight: 700; color: var(--brand);" id="crsCore">0점/600점</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--brand);" id="crsCore">core 0점</div>
       <div id="crsGaugeBox" style="margin-top: 0.6rem; text-align: left;"></div>
       <div id="crsDrawInfo" style="margin-top: 1rem; font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.8rem;">
         <div style="margin-bottom: 0.4rem;"><strong>최근 드로우 컷오프</strong> (2026년 6월 기준 추정)</div>
@@ -2777,12 +2789,14 @@ function initTabs() {
 
 function showSection(section) {
   if (section === 'roadmap' || section === 'calc') section = 'diagnose'; // 구버전 공유 링크 호환 (로드맵·계산기는 진단에 통합됨)
-  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('section').forEach(s => { s.classList.remove('active'); s.setAttribute('hidden', ''); s.setAttribute('aria-hidden', 'true'); });
   document.querySelectorAll('.tab').forEach(t => { t.classList.remove('active'); t.removeAttribute('aria-current'); });
 
   const sectionEl = document.getElementById(section);
   if (sectionEl) {
     sectionEl.classList.add('active');
+    sectionEl.removeAttribute('hidden');
+    sectionEl.removeAttribute('aria-hidden');
     const tab = document.querySelector(`[data-tab="${section}"]`);
     if (tab) { tab.classList.add('active'); tab.setAttribute('aria-current', 'page'); }
   }
@@ -3590,7 +3604,7 @@ function showStageDetail(pathwayId, stageIdx) {
   }
 }
 
-const CRS_AGE_SCORES = { a2029: 110, a30: 105, a32: 94, a35: 77, a38: 61, a40: 50, a43: 17, a45: 0 }; // IRCC 공식 (무배우자)
+const CRS_AGE_SCORES = { a18: 99, a19: 105, a2029: 110, a30: 105, a31: 99, a32: 94, a33: 88, a34: 83, a35: 77, a36: 72, a37: 66, a38: 61, a39: 55, a40: 50, a41: 39, a42: 28, a43: 17, a44: 6, a45: 0 }; // IRCC 공식 (무배우자)
 
 const CRS_EDUCATION_SCORES = { e30: 30, e90: 90, e98: 98, e120: 120, e135: 135, e150: 150 }; // IRCC 공식 (무배우자)
 
@@ -3612,7 +3626,7 @@ function renderCrsCalc() {
   const total = ageScore + eduScore + langScore + expScore;
 
   // 총점 표시
-  document.getElementById('crsCore').textContent = `${total}점/600점`;
+  document.getElementById('crsCore').textContent = `core ${total}점`;
 
   // 게이지 박스 렌더
   const box = document.getElementById('crsGaugeBox');

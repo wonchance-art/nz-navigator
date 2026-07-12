@@ -2793,12 +2793,14 @@ function initTabs() {
 
 function showSection(section) {
   if (section === 'roadmap' || section === 'calc') section = 'diagnose'; // 旧バージョン共有リンク互換 (ロードマップ・計算機は診断に統合)
-  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('section').forEach(s => { s.classList.remove('active'); s.setAttribute('hidden', ''); s.setAttribute('aria-hidden', 'true'); });
   document.querySelectorAll('.tab').forEach(t => { t.classList.remove('active'); t.removeAttribute('aria-current'); });
 
   const sectionEl = document.getElementById(section);
   if (sectionEl) {
     sectionEl.classList.add('active');
+    sectionEl.removeAttribute('hidden');
+    sectionEl.removeAttribute('aria-hidden');
     const tab = document.querySelector(`[data-tab="${section}"]`);
     if (tab) { tab.classList.add('active'); tab.setAttribute('aria-current', 'page'); }
   }
