@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NZ NAVI</title>
-<meta name="description" content="뉴질랜드 체류 설계도 — 비자·영주권 로드맵, 시나리오, 직군·도시 가이드, 비용 계산기. 2026-07 공식 검증 데이터.">
-<meta property="og:title" content="NZ NAVI — 뉴질랜드 영주권 내비게이터">
-<meta property="og:description" content="어떤 비자로 오든 — 영주권까지의 조건·비용·타임라인을 설계합니다.">
+<title>AU NAVI</title>
+<meta name="description" content="호주 체류 설계도 — 워홀(417)·영주권(포인트 테스트·고용주 스폰서) 로드맵, 직군·도시 가이드, 실수령 계산기.">
+<meta property="og:title" content="AU NAVI — 호주 영주권 내비게이터">
+<meta property="og:description" content="어떤 비자로 가든 — 영주권까지의 조건·비용·타임라인을 설계합니다.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/">
-<meta property="og:image" content="https://wonchance-art.github.io/nz-navigator/og-image.png">
+<meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/au/">
+<meta property="og:image" content="https://wonchance-art.github.io/nz-navigator/au/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -994,13 +994,12 @@ select {
     padding: 0.22rem 0.5rem;
   }
 
-  .lang-link { right: 4rem; }
-  .lang-link:nth-of-type(2) { right: 6.6rem; }
-  .lang-link:first-of-type { right: 9.2rem; }
+  .lang-link + .lang-link { right: 4rem; }
+  .lang-link:first-of-type { right: 6.6rem; }
 
   .lang-link .lang-label { display: none; }
 
-  .logo { align-self: flex-start; max-width: calc(100% - 13.5rem); font-size: 1.05rem; }
+  .logo { align-self: flex-start; max-width: calc(100% - 11rem); font-size: 1.12rem; }
 
   /* 모바일 가독: 여백 축소·표 밀도·타이포 */
   .card { padding: 1rem; }
@@ -1343,7 +1342,7 @@ details.fold:not([open]) > .fold-body { display: none; }
 <div id="app">
 <header>
   <div class="header-content">
-    <div class="logo">🥝 NZ NAVI</div>
+    <div class="logo">🦘 AU NAVI</div>
     <div class="tabs" id="tabsContainer">
       <button class="tab active" data-tab="home">홈</button>
       <button class="tab" data-tab="diagnose">로드맵</button>
@@ -1352,8 +1351,8 @@ details.fold:not([open]) > .fold-body { display: none; }
       <button class="tab" data-tab="scenarios">시나리오</button>
       <button class="tab" data-tab="snapshot">정책 현황</button>
     </div>
-    <a class="lang-link" href="./ca/" aria-label="캐나다판">🍁 <span class="lang-label">CA판</span></a>
-    <a class="lang-link" href="./ja/" aria-label="日本語版">🇯🇵 <span class="lang-label">日本語</span></a>
+    <a class="lang-link" href="../" aria-label="뉴질랜드판">🥝 <span class="lang-label">NZ판</span></a>
+    <a class="lang-link" href="../ca/" aria-label="캐나다판">🍁 <span class="lang-label">CA판</span></a>
     <button class="search-toggle" onclick="toggleHeaderSearch()" aria-label="키워드 검색 열기">🔍</button>
   </div>
   <div class="header-search-row" id="headerSearchRow">
@@ -2231,7 +2230,7 @@ const DB = {
       ],
       details: {
         requirements: ['잡오퍼 (인증 고용주, 주 30h+)', '시급 35/h 이상', 'IELTS 6.5 (또는 영어권 학사+)'],
-        costs: ['WHV 비자: 770 (IVL 포함)', '의료보험: ~700/년', 'AEWV: 1,540', '정착비: 2,500–3,500', 'SMC: 6,450'],
+        costs: ['WHV 비자: 770', 'IVL: 100', '의료보험: ~700/년', 'AEWV: 1,540', '정착비: 2,500–3,500', 'SMC: 6,450'],
         processing: ['WHV: 3주', 'AEWV: 7주', 'SMC: 4개월']
       }
     },
@@ -2272,7 +2271,7 @@ const DB = {
       details: {
         requirements: ['학교 입학', '자금증명: 20,000/년', 'L7+ 학위(PSWV 자격)'],
         costs: ['학비: 22,000–58,000/년', '생활비: 20,000/년', 'PSWV: 1,670', 'AEWV: 1,540', 'SMC: 6,450'],
-        processing: ['학생비자: 9.5주(80%)', 'PSWV: 2–4주', 'AEWV: 7주', 'SMC: 4개월']
+        processing: ['학생비자: 2–4주', 'PSWV: 2–4주', 'AEWV: 7주', 'SMC: 4개월']
       }
     },
     {
@@ -2288,7 +2287,7 @@ const DB = {
       ],
       details: {
         requirements: ['GL T1 직종(Software Engineer 등)', '잡오퍼 (인증 고용주)', '55세 이하'],
-        costs: ['WHV: 770 (IVL 포함)', 'AEWV: 1,540', 'Straight to Residence: 6,450'],
+        costs: ['WHV: 770', 'IVL: 100', 'AEWV: 1,540', 'Straight to Residence: 6,450'],
         processing: ['AEWV: 3주(GL 우대)', 'StR: 4개월']
       }
     },
@@ -2305,7 +2304,7 @@ const DB = {
       ],
       details: {
         requirements: ['GL T2 직종(전기공, 용접 등)', '24개월 근무 (지정 고용주)', '자격 인정'],
-        costs: ['WHV: 770 (IVL 포함)', 'AEWV: 1,540', 'Work to Residence: 6,450'],
+        costs: ['WHV: 770', 'IVL: 100', 'AEWV: 1,540', 'Work to Residence: 6,450'],
         processing: ['AEWV: 3주(GL 우대)', 'WTR: 4개월']
       }
     },
@@ -2322,7 +2321,7 @@ const DB = {
       ],
       details: {
         requirements: ['승인 직종 (요양, 간호보조, 장애지원)', '중위임금 이상 유지', '24개월 근무 (첫 12개월 직종 변경 불가)'],
-        costs: ['WHV: 770 (IVL 포함)', 'AEWV: 1,540', 'Care Residence: 6,450'],
+        costs: ['WHV: 770', 'IVL: 100', 'AEWV: 1,540', 'Care Residence: 6,450'],
         processing: ['AEWV: 7주', 'Care Residence: 3개월']
       }
     }
@@ -2391,11 +2390,11 @@ const DB = {
     {
       id: 's4',
       title: '영어 점수가 없어요',
-      description: '비자별 요구표: WHV 없음 / AEWV는 ANZSCO 스킬레벨 4–5 직무만 IELTS 4.0급 (1–3은 원칙적 미적용) / SMC 6.5.',
+      description: '비자별 요구표: WHV 없음 / AEWV 레벨1–3 IELTS 4.0 / SMC 6.5.',
       choices: [
         {
           label: '4.0 먼저(1–2개월 준비)',
-          result: '<strong>왜 지금:</strong> ANZSCO 4–5 직무(현장·서빙 등)로 AEWV를 탈 계획이면 IELTS 4.0급 증명이 필수<br><strong>비용:</strong> 약 490/회 (한국 응시 약 30만원)<br><strong>난이도:</strong> 4.0은 기초 수준 — 1–2개월 집중이면 충분한 경우가 많다'
+          result: '<strong>왜 지금:</strong> 2026-06-01부터 스킬레벨 3 직종까지 IELTS 4.0 확대 — 사무·트레이드 상당수 해당<br><strong>비용:</strong> 약 490/회 (한국 응시 약 30만원)<br><strong>난이도:</strong> 4.0은 기초 수준 — 1–2개월 집중이면 충분한 경우가 많다'
         },
         {
           label: '6.5 장기 플랜(6–12개월)',
@@ -2499,11 +2498,11 @@ const DB = {
       choices: [
         {
           label: '한국에서 잡오퍼 → 오프쇼어 AEWV',
-          result: '<strong>가능:</strong> AEWV는 해외 신청 OK — 절차 동일(인증 → Job Check → AEWV · 80% 7주)<br><strong>채널:</strong> 공개 Accredited Employer List + INZ SkillFinder + Seek·Trade Me<br><strong>현실 조건:</strong> GL 직종 · 경력 2년+ · 영어(ANZSCO 4–5 직무는 IELTS 4.0) — 원격 면접만으로 뽑힐 경쟁력'
+          result: '<strong>가능:</strong> AEWV는 해외 신청 OK — 절차 동일(인증 → Job Check → AEWV · 80% 7주)<br><strong>채널:</strong> 공개 Accredited Employer List + INZ SkillFinder + Seek·Trade Me<br><strong>현실 조건:</strong> GL 직종 · 경력 2년+ · 영어(레벨 3 이하 IELTS 4.0) — 원격 면접만으로 뽑힐 경쟁력'
         },
         {
           label: '유학으로 진입 (오프쇼어 학생비자)',
-          result: '<strong>절차:</strong> 한국에서 학생비자 신청 — 개강 4개월 전 권장 (80% 9.5주)<br><strong>효과:</strong> L7+ 과정이면 PSWV(최대 3년)로 나이 무관하게 직행·GL 경로 합류<br><strong>자금:</strong> 증명 2만/년 + 학비'
+          result: '<strong>절차:</strong> 한국에서 학생비자 신청 — 개강 3개월 전 권장 (대학 80% 8주 · 폴리텍 10주)<br><strong>효과:</strong> L7+ 과정이면 PSWV(최대 3년)로 나이 무관하게 직행·GL 경로 합류<br><strong>자금:</strong> 증명 2만/년 + 학비'
         },
         {
           label: '방문비자로 답사 후 결정',
@@ -4304,11 +4303,13 @@ function buildCalcItems(pathway, options) {
   const pathwayFees = {
     A: [
       { name: 'WHV 비자', key: 'whv' },
+      { name: '국제방문자세(IVL)', key: 'ivl' },
       { name: 'AEWV 비자', key: 'aewv' },
       { name: 'SMC/StR 영주권', key: 'residence' }
     ],
     B: [
       { name: 'WHV 비자', key: 'whv' },
+      { name: '국제방문자세(IVL)', key: 'ivl' },
       { name: '학생비자', key: 'student' },
       { name: 'PSWV 비자', key: 'pswv' },
       { name: 'AEWV 비자', key: 'aewv' },
@@ -4316,16 +4317,19 @@ function buildCalcItems(pathway, options) {
     ],
     'C-T1': [
       { name: 'WHV 비자', key: 'whv' },
+      { name: '국제방문자세(IVL)', key: 'ivl' },
       { name: 'AEWV 비자', key: 'aewv' },
       { name: 'Straight to Residence', key: 'residence' }
     ],
     'C-T2': [
       { name: 'WHV 비자', key: 'whv' },
+      { name: '국제방문자세(IVL)', key: 'ivl' },
       { name: 'AEWV 비자', key: 'aewv' },
       { name: 'Work to Residence', key: 'residence' }
     ],
     D: [
       { name: 'WHV 비자', key: 'whv' },
+      { name: '국제방문자세(IVL)', key: 'ivl' },
       { name: 'AEWV 비자', key: 'aewv' },
       { name: 'Care Residence', key: 'residence' }
     ]
@@ -4502,7 +4506,7 @@ function renderSnapshotTable() {
   Object.entries(DB.fees).forEach(([key, val]) => {
     const names = {
       whv: 'WHV 비자',
-      ivl: '국제방문자세 IVL (워홀·학생 비자비에 포함 — 별도 지불 없음)',
+      ivl: '국제방문자세',
       student: '학생비자',
       pswv: 'PSWV',
       aewv: 'AEWV',
@@ -4956,7 +4960,7 @@ function buildChecklistText(result) {
   });
 
   const lines = [
-    '🥝 NZ NAVI — 나의 실행 체크리스트',
+    '🦘 AU NAVI — 나의 실행 체크리스트',
     `경로: ${p.name} · 예상 ${p.duration} · 총 ${p.cost}`,
     `데이터 기준일 2026-07-06 (immigration.govt.nz 검증) · 결과 다시 보기: ${buildDiagnoseShareUrl()}`,
     '',

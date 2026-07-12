@@ -994,6 +994,8 @@ select {
     padding: 0.22rem 0.5rem;
   }
 
+  .lang-link:first-of-type { right: 6.6rem; }
+
   .lang-link .lang-label { display: none; }
 
   .logo { align-self: flex-start; max-width: calc(100% - 8rem); font-size: 1.12rem; }
@@ -1300,6 +1302,10 @@ details.fold:not([open]) > .fold-body { display: none; }
 .vt:hover::after, .vt.on::after { opacity: 1; }
 .visa-legend { font-size: 0.78rem; color: var(--muted); word-break: keep-all; line-height: 1.7; margin: 0.6rem 0 0.8rem; }
 .visa-legend strong { color: var(--brand-deep); }
+@media (max-width: 680px) {
+  .tabs { -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent 99%); mask-image: linear-gradient(90deg, #000 88%, transparent 99%); }
+}
+
 
 
 @media print {
@@ -1510,20 +1516,21 @@ details.fold:not([open]) > .fold-body { display: none; }
   <div class="fold-body">
     <p style="color: var(--muted); margin-bottom: 1rem; font-size: 0.9rem;">
       간이 계산 — 실제는 배우자, Transferability 등을 포함하여 공식 도구에서 확인하세요.
-      <span class="badge estimated">[근사치]</span>
+      <span class="badge estimated">[근사치]</span> <span style="font-size: 0.78rem; color: var(--muted);">무배우자·4영역 동일 가정의 core 점수 — transferability·가산점 제외. 공식: IRCC CRS 도구</span>
     </p>
 
     <div class="form-group">
       <label>나이</label>
       <select id="crsAge" onchange="renderCrsCalc()">
         <option value="0">선택 안함</option>
-        <option value="20">20세 (110점)</option>
-        <option value="25">25세 (110점)</option>
-        <option value="29">29세 (110점)</option>
-        <option value="30">30세 (105점)</option>
-        <option value="31">31세 (99점)</option>
-        <option value="35">35세 (88점)</option>
-        <option value="40">40세 이상 (82점)</option>
+        <option value="a2029">20–29세 (110점)</option>
+        <option value="a30">30세 (105점)</option>
+        <option value="a32">32세 (94점)</option>
+        <option value="a35">35세 (77점)</option>
+        <option value="a38">38세 (61점)</option>
+        <option value="a40">40세 (50점)</option>
+        <option value="a43">43세 (17점)</option>
+        <option value="a45">45세 이상 (0점)</option>
       </select>
     </div>
 
@@ -1531,11 +1538,12 @@ details.fold:not([open]) > .fold-body { display: none; }
       <label>학력</label>
       <select id="crsEducation" onchange="renderCrsCalc()">
         <option value="0">선택 안함</option>
-        <option value="30">고등학교 이상 (30점)</option>
-        <option value="90">전문대 또는 자격증 (90점)</option>
-        <option value="120">학사학위 (120점)</option>
-        <option value="135">석사학위 (135점)</option>
-        <option value="150">박사학위 (150점)</option>
+        <option value="e30">고졸 (30점)</option>
+        <option value="e90">1년제 수료 (90점)</option>
+        <option value="e98">2년제 디플로마 (98점)</option>
+        <option value="e120">학사 (120점)</option>
+        <option value="e135">석사 (135점)</option>
+        <option value="e150">박사 (150점)</option>
       </select>
     </div>
 
@@ -1543,10 +1551,12 @@ details.fold:not([open]) > .fold-body { display: none; }
       <label>영어 능력 (CLB 첫 언어 기준)</label>
       <select id="crsLanguage" onchange="renderCrsCalc()">
         <option value="0">선택 안함</option>
-        <option value="60">CLB 5 (60점)</option>
-        <option value="70">CLB 6 (70점)</option>
-        <option value="80">CLB 7 (80점)</option>
-        <option value="130">CLB 8+ (130점)</option>
+        <option value="l5">CLB 5 — 4영역 동일 (24점)</option>
+        <option value="l6">CLB 6 (36점)</option>
+        <option value="l7">CLB 7 (68점)</option>
+        <option value="l8">CLB 8 (92점)</option>
+        <option value="l9">CLB 9 (124점)</option>
+        <option value="l10">CLB 10+ (136점)</option>
       </select>
     </div>
 
@@ -1554,9 +1564,11 @@ details.fold:not([open]) > .fold-body { display: none; }
       <label>캐나다 유급 근무 경력</label>
       <select id="crsCanExperience" onchange="renderCrsCalc()">
         <option value="0">0년 (0점)</option>
-        <option value="35">1년 (35점)</option>
-        <option value="70">2년 (70점)</option>
-        <option value="105">3년 이상 (105점)</option>
+        <option value="x1">1년 (40점)</option>
+        <option value="x2">2년 (53점)</option>
+        <option value="x3">3년 (64점)</option>
+        <option value="x4">4년 (72점)</option>
+        <option value="x5">5년 이상 (80점)</option>
       </select>
     </div>
 
@@ -2219,7 +2231,7 @@ const DB = {
         { name: 'EE 신청', months: 6 }
       ],
       details: {
-        requirements: ['주정부 직무·경력 매치', '특정 직군 (기술·무역·의료·농업 주별 상이)', 'CLB 5–7 (직군별 상이)'],
+        requirements: ['주정부 직무·경력 매치', '특정 직군 (기술·무역·의료·농업 주별 상이)', '영주권(CEC) 기준: TEER 0–1 CLB 7 · TEER 2–3 CLB 5'],
         costs: ['PNP 신청 1,500–2,000 [추정]', 'EE 1,590', 'RPRF 600'],
         processing: ['PNP: 2–6개월', 'EE: 6개월 이내']
       }
@@ -2329,7 +2341,7 @@ const DB = {
     {
       id: 's4',
       title: '영어 점수가 없어요',
-      description: '비자별 요구표: IEC 없음 / Work Permit TEER별 상이 (CLB 5–7) / Express Entry CLB 5 권장, CLB 7 경쟁력',
+      description: '비자별 요구표: IEC 없음 / 일반 Work Permit 일률 요건 없음 / 영주권 CEC: TEER 0–1 CLB 7 · TEER 2–3 CLB 5',
       choices: [
         {
           label: 'CLB 5 먼저 따기 (IELTS 5.0, 1–2개월)',
@@ -3578,22 +3590,13 @@ function showStageDetail(pathwayId, stageIdx) {
   }
 }
 
-const CRS_AGE_SCORES = {
-  '20': 110, '25': 110, '29': 110,
-  '30': 105, '31': 99, '35': 88, '40': 82
-};
+const CRS_AGE_SCORES = { a2029: 110, a30: 105, a32: 94, a35: 77, a38: 61, a40: 50, a43: 17, a45: 0 }; // IRCC 공식 (무배우자)
 
-const CRS_EDUCATION_SCORES = {
-  '0': 0, '30': 30, '90': 90, '120': 120, '135': 135, '150': 150
-};
+const CRS_EDUCATION_SCORES = { e30: 30, e90: 90, e98: 98, e120: 120, e135: 135, e150: 150 }; // IRCC 공식 (무배우자)
 
-const CRS_LANGUAGE_SCORES = {
-  '0': 0, '60': 60, '70': 70, '80': 80, '130': 130
-};
+const CRS_LANGUAGE_SCORES = { l5: 24, l6: 36, l7: 68, l8: 92, l9: 124, l10: 136 }; // 영역당 6/9/17/23/31/34 ×4 (무배우자)
 
-const CRS_EXPERIENCE_SCORES = {
-  '0': 0, '35': 35, '70': 70, '105': 105
-};
+const CRS_EXPERIENCE_SCORES = { x1: 40, x2: 53, x3: 64, x4: 72, x5: 80 }; // IRCC 공식 (무배우자)
 
 function renderCrsCalc() {
   const age = document.getElementById('crsAge').value;
@@ -3630,9 +3633,9 @@ function renderCrsCalc() {
     // 판정 텍스트
     let verdict = '';
     if (total >= 512) {
-      verdict = `✅ 컷오프(512) 초과 — 최근 드로우 범위 내`;
+      verdict = `✅ 컷오프(512) 초과 가능권 — transferability(최대 +100) 합산 전 core 기준`;
     } else if (total >= 450) {
-      verdict = `⚠️ 512점 미달 — PNP 추천 또는 점수 개선 필요`;
+      verdict = `⚠️ 512점(일반 드로우 추정) 미달 — 단 이 값은 core만이며 transferability(경력×언어 조합, 최대 +100)·카테고리 드로우(헬스케어·트레이드는 컷 낮음)·PNP(+600)로 역전 여지`;
     } else {
       verdict = `❌ CRS 점수 부족 — 경력 증가 또는 영어점수 개선 필요`;
     }
@@ -4167,7 +4170,7 @@ function renderNetPay(src) {
       <li>EI(고용보험): 연 −${fmt(eiTax)} <span style="color: var(--muted);">(${(eiTax / gross * 100).toFixed(1)}%)</span></li>
       <li><strong>실수령: 연 ${fmt(net)} = 주 ${fmt(wk)} · 실효 시급 ${effHourly.toFixed(2)}</strong></li>
       <li>주급 환산: ${fmtKrw(wk)} · ${fmtJpy(wk)}</li>
-      <li style="font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem;">세율 2026 CRA [공식] · CPP/EI 포함 · 워홀 비거주자 세금 체계 기준</li>
+      <li style="font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem;">세율 2026 CRA [공식] · CPP/EI 포함 · 거주자 과세 기준(BPA 반영) — 통상 1년살이 워홀은 거주자 판정이 일반적이나, 비거주자 판정 시 BPA 미적용 주의</li>
     </ul>`;
 }
 
@@ -4759,6 +4762,7 @@ function annotateVisaTerms(root) {
       s.className = 'vt';
       s.dataset.plain = VISA_TERMS[m[2]].tip;
       s.textContent = VISA_TERMS[m[2]].ko;
+      s.setAttribute('aria-label', VISA_TERMS[m[2]].ko);
       s.addEventListener('click', e => {
         e.stopPropagation();
         document.querySelectorAll('.vt.on').forEach(x => { if (x !== s) x.classList.remove('on'); });

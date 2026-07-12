@@ -1300,6 +1300,10 @@ details.fold:not([open]) > .fold-body { display: none; }
 .vt:hover::after, .vt.on::after { opacity: 1; }
 .visa-legend { font-size: 0.78rem; color: var(--muted); word-break: keep-all; line-height: 1.7; margin: 0.6rem 0 0.8rem; }
 .visa-legend strong { color: var(--brand-deep); }
+@media (max-width: 680px) {
+  .tabs { -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent 99%); mask-image: linear-gradient(90deg, #000 88%, transparent 99%); }
+}
+
 
 
 @media print {
@@ -2222,7 +2226,7 @@ const DB = {
       ],
       details: {
         requirements: ['ジョブオファー（認定雇用主、週30h+）', '時給35/h以上', 'IELTS 6.5（または英語圏学士+）'],
-        costs: ['WHVビザ：770', 'IVL：100', '医療保険：～700/年', 'AEWV：1,540', '定住費：2,500～3,500', 'SMC：6,450'],
+        costs: ['WHVビザ：770（IVL込み）', '医療保険：～700/年', 'AEWV：1,540', '定住費：2,500～3,500', 'SMC：6,450'],
         processing: ['WHV：3週', 'AEWV：7週', 'SMC：4ヶ月']
       }
     },
@@ -2279,7 +2283,7 @@ const DB = {
       ],
       details: {
         requirements: ['GLT1職種（Software Engineer等）', 'ジョブオファー（認定雇用主）', '55歳以下'],
-        costs: ['WHV：770', 'IVL：100', 'AEWV：1,540', 'Straight to Residence：6,450'],
+        costs: ['WHV：770（IVL込み）', 'AEWV：1,540', 'Straight to Residence：6,450'],
         processing: ['AEWV：3週（GL優遇）', 'StR：4ヶ月']
       }
     },
@@ -2296,7 +2300,7 @@ const DB = {
       ],
       details: {
         requirements: ['GLT2職種（電気工、溶接等）', '24ヶ月勤務（指定雇用主）', '資格認定'],
-        costs: ['WHV：770', 'IVL：100', 'AEWV：1,540', 'Work to Residence：6,450'],
+        costs: ['WHV：770（IVL込み）', 'AEWV：1,540', 'Work to Residence：6,450'],
         processing: ['AEWV：3週（GL優遇）', 'WTR：4ヶ月']
       }
     },
@@ -2313,7 +2317,7 @@ const DB = {
       ],
       details: {
         requirements: ['承認職種（介護、看護補助、障害支援）', '中央値賃金以上を維持', '24ヶ月勤務（最初の12ヶ月は職種変更不可）'],
-        costs: ['WHV: 770', 'IVL: 100', 'AEWV: 1,540', 'Care Residence: 6,450'],
+        costs: ['WHV: 770（IVL込み）', 'AEWV: 1,540', 'Care Residence: 6,450'],
         processing: ['AEWV: 7週', 'Care Residence: 3ヶ月']
       }
     }
@@ -2382,11 +2386,11 @@ const DB = {
     {
       id: 's4',
       title: '英語スコアがない',
-      description: 'ビザ別要件表：WHV なし / AEWVレベル1～3はIELTS 4.0 / SMC 6.5。',
+      description: 'ビザ別要件表：WHV なし / AEWVはANZSCOスキルレベル4–5の職務のみIELTS 4.0級（1–3は原則不要） / SMC 6.5。',
       choices: [
         {
           label: '4.0 先（1～2ヶ月準備）',
-          result: '<strong>なぜ今：</strong>2026-06-01からスキルレベル3職種までIELTS 4.0拡大 — 事務・トレード相当数該当<br><strong>費用：</strong>約490 NZD/回（日本受験目安：約27,500円）<br><strong>難易度：</strong>4.0は基礎レベル — 1～2ヶ月集中なら充分な場合が多い'
+          result: '<strong>なぜ今：</strong>ANZSCOスキルレベル4–5の職務でAEWVを取るならIELTS 4.0級の証明が必須<br><strong>費用：</strong>約490 NZD/回（日本受験目安：約27,500円）<br><strong>難易度：</strong>4.0は基礎レベル — 1～2ヶ月集中なら充分な場合が多い'
         },
         {
           label: '6.5 長期プラン（6～12ヶ月）',
@@ -2490,11 +2494,11 @@ const DB = {
       choices: [
         {
           label: '日本からジョブオファー → オフショアAEWV',
-          result: '<strong>可能：</strong>AEWVは海外申請OK — 手続き同一（認証 → Job Check → AEWV · 80% 7週）<br><strong>チャネル：</strong>公開Accredited Employer List + INZ SkillFinder + Seek·Trade Me<br><strong>実条件：</strong>GL職種 · 経歴2年+ · 英語（レベル3以下IELTS 4.0） — 遠隔面接だけで拾われる競争力'
+          result: '<strong>可能：</strong>AEWVは海外申請OK — 手続き同一（認証 → Job Check → AEWV · 80% 7週）<br><strong>チャネル：</strong>公開Accredited Employer List + INZ SkillFinder + Seek·Trade Me<br><strong>実条件：</strong>GL職種 · 経歴2年+ · 英語（ANZSCO 4–5の職務はIELTS 4.0） — 遠隔面接だけで拾われる競争力'
         },
         {
           label: '留学で進入（オフショア学生ビザ）',
-          result: '<strong>手続き：</strong>日本から学生ビザ申請 — 開始3ヶ月前推奨（大学80% 8週・ポリテク10週）<br><strong>効果：</strong>L7以上課程ならPSWV（最大3年）で年齢無関係にスムーズ進学・GLパスへ<br><strong>資金：</strong>資金証明2万/年 + 学費'
+          result: '<strong>手続き：</strong>日本から学生ビザ申請 — 開始4ヶ月前推奨（80% 9.5週）<br><strong>効果：</strong>L7以上課程ならPSWV（最大3年）で年齢無関係にスムーズ進学・GLパスへ<br><strong>資金：</strong>資金証明2万/年 + 学費'
         },
         {
           label: '訪問ビザで調査後決定',
@@ -4274,13 +4278,11 @@ function buildCalcItems(pathway, options) {
   const pathwayFees = {
     A: [
       { name: 'WHV ビザ', key: 'whv' },
-      { name: '国際訪問者税(IVL)', key: 'ivl' },
       { name: 'AEWV ビザ', key: 'aewv' },
       { name: 'SMC/StR 永住権', key: 'residence' }
     ],
     B: [
       { name: 'WHV ビザ', key: 'whv' },
-      { name: '国際訪問者税(IVL)', key: 'ivl' },
       { name: '学生ビザ', key: 'student' },
       { name: 'PSWV ビザ', key: 'pswv' },
       { name: 'AEWV ビザ', key: 'aewv' },
@@ -4288,19 +4290,16 @@ function buildCalcItems(pathway, options) {
     ],
     'C-T1': [
       { name: 'WHV ビザ', key: 'whv' },
-      { name: '国際訪問者税(IVL)', key: 'ivl' },
       { name: 'AEWV ビザ', key: 'aewv' },
       { name: 'Straight to Residence', key: 'residence' }
     ],
     'C-T2': [
       { name: 'WHV ビザ', key: 'whv' },
-      { name: '国際訪問者税(IVL)', key: 'ivl' },
       { name: 'AEWV ビザ', key: 'aewv' },
       { name: 'Work to Residence', key: 'residence' }
     ],
     D: [
       { name: 'WHV ビザ', key: 'whv' },
-      { name: '国際訪問者税(IVL)', key: 'ivl' },
       { name: 'AEWV ビザ', key: 'aewv' },
       { name: 'Care Residence', key: 'residence' }
     ]
@@ -4477,7 +4476,7 @@ function renderSnapshotTable() {
   Object.entries(DB.fees).forEach(([key, val]) => {
     const names = {
       whv: 'WHV ビザ',
-      ivl: '国際訪問者税',
+      ivl: '国際訪問者税 IVL（ワーホリ・学生ビザ費に込み — 別途支払い不要）',
       student: '学生ビザ',
       pswv: 'PSWV',
       aewv: 'AEWV',
@@ -4635,6 +4634,7 @@ function annotateVisaTerms(root) {
       s.className = 'vt';
       s.dataset.plain = VISA_TERMS[m[2]].tip;
       s.textContent = VISA_TERMS[m[2]].ko;
+      s.setAttribute('aria-label', VISA_TERMS[m[2]].ko);
       s.addEventListener('click', e => {
         e.stopPropagation();
         document.querySelectorAll('.vt.on').forEach(x => { if (x !== s) x.classList.remove('on'); });

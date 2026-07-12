@@ -36,6 +36,23 @@ PAGES = [
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">''',
     },
+    # AU NAVI — 통합 완료 시 활성화 (2026-07-13 스캐폴드 단계)
+    {
+        'skip': True,
+        'src': VAULT / 'index.au.html',
+        'out': ROOT / 'au' / 'index.html',
+        'lang': 'ko',
+        'title': 'AU NAVI',
+        'meta': '''<meta name="description" content="호주 체류 설계도 — 워홀(417)·영주권(포인트 테스트·고용주 스폰서) 로드맵, 직군·도시 가이드, 실수령 계산기.">
+<meta property="og:title" content="AU NAVI — 호주 영주권 내비게이터">
+<meta property="og:description" content="어떤 비자로 가든 — 영주권까지의 조건·비용·타임라인을 설계합니다.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/au/">
+<meta property="og:image" content="https://wonchance-art.github.io/nz-navigator/au/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">''',
+    },
     {
         'src': VAULT / 'index.ja.html',
         'out': ROOT / 'ja' / 'index.html',
@@ -54,6 +71,9 @@ PAGES = [
 ]
 
 for p in PAGES:
+    if p.get('skip'):
+        print(f"skip — {p['title']} (비활성)")
+        continue
     if not p['src'].exists():
         print(f"skip — {p['src']} 없음")
         continue
