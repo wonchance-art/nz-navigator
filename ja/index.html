@@ -1139,6 +1139,12 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .city-g.sel .city-ring { opacity: 1; animation: ringPulse 1.6s ease-in-out infinite; }
 .city-g.sel .city-dot { fill: var(--accent); stroke: var(--brand-deep); }
 @keyframes ringPulse { 0%, 100% { r: 8; opacity: 1; } 50% { r: 11; opacity: 0.45; } }
+.city-g { outline: none; cursor: pointer; }
+.city-g:focus-visible .city-dot { stroke: var(--accent); stroke-width: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .city-g.sel .city-ring { animation: none; }
+  .trail-node.future::before { animation: none; }
+}
 .city-lbl { font-size: 10.5px; font-weight: 700; fill: var(--ink); paint-order: stroke; stroke: #fff; stroke-width: 2.5px; }
 .city-lbl.minor { font-size: 8.5px; font-weight: 600; fill: var(--muted); }
 .city-g.sel .city-lbl { fill: var(--brand-deep); }
@@ -2784,13 +2790,13 @@ function initTabs() {
 function showSection(section) {
   if (section === 'roadmap' || section === 'calc') section = 'diagnose'; // 旧バージョン共有リンク互換 (ロードマップ・計算機は診断に統合)
   document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => { t.classList.remove('active'); t.removeAttribute('aria-current'); });
 
   const sectionEl = document.getElementById(section);
   if (sectionEl) {
     sectionEl.classList.add('active');
     const tab = document.querySelector(`[data-tab="${section}"]`);
-    if (tab) tab.classList.add('active');
+    if (tab) { tab.classList.add('active'); tab.setAttribute('aria-current', 'page'); }
   }
 }
 
@@ -3054,13 +3060,13 @@ function cityMapSvg() {
   const main = ['akl', 'wlg', 'chc', 'qtn'].map(id => {
     const p = CITY_POS[id];
     const sel = selCity === id;
-    return `<g class="city-g${sel ? ' sel' : ''}" onclick="selectCity('${id}')">
+    return `<g class="city-g${sel ? ' sel' : ''}" onclick="selectCity('${id}')" tabindex="0" role="button" aria-label="${p.name} を選択" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectCity('${id}');}">
       <circle class="city-ring" cx="${p.x}" cy="${p.y}" r="9"></circle>
       <circle class="city-dot" cx="${p.x}" cy="${p.y}" r="5.5"></circle>
       <text class="city-lbl" x="${p.x + (p.anchor === 'end' ? -9 : 9)}" y="${p.y + 4}"${p.anchor ? ` text-anchor="${p.anchor}"` : ''}>${p.name}</text>
     </g>`;
   }).join('');
-  const regs = CITY_POS.reg.map(r => `<g class="city-g minor${selCity === 'reg' ? ' sel' : ''}" onclick="selectCity('reg')">
+  const regs = CITY_POS.reg.map(r => `<g class="city-g minor${selCity === 'reg' ? ' sel' : ''}" onclick="selectCity('reg')" tabindex="0" role="button" aria-label="地方拠点(ハミルトン・タウランガ・ダニーデン)を選択" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectCity('reg');}">
       <circle class="city-dot" cx="${r.x}" cy="${r.y}" r="3.6"></circle>
       <text class="city-lbl minor" x="${r.x + (r.anchor === 'end' ? -6 : 6)}" y="${r.y + 3.5}"${r.anchor ? ` text-anchor="${r.anchor}"` : ''}>${r.n}</text>
     </g>`).join('');
@@ -4008,13 +4014,13 @@ function renderCourseEntry() {
   const list = document.getElementById('courseListM');
   if (list) list.innerHTML = COURSE_DB.map(r => `
     <div class="jl-row" onclick="jumpTo('jobs', 'job-${r.id}')">
-      <div class="jl-top"><span class="jl-name" ${r.warn ? 'style="color: var(--warn);"' : ''}>${r.n}</span><span class="jl-sal">${r.pr}</span></div>
+      <div class="jl-top"><span class="jl-name" ${r.warn ? 'style="color: var(--warn);"' : ''}>${r.n}</span><span class="jl-sal">${dotsAria(r.pr)}</span></div>
       <div class="jl-meta">${r.hook}</div>
       <ul class="jt-list" style="font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem;">
         <li>課程: ${courseBadge(r.c.join(' / '))}</li>
         <li>学費: ${courseBadge(r.fee.join(' / '))}</li>
         <li>労働権: ${r.w.join(' / ')}</li>
-        <li>就職・年収: ${r.sal}</li>
+        <li>就職・年収: ${dotsAria(r.sal)}</li>
       </ul>
     </div>`).join('');
 }
@@ -4193,7 +4199,11 @@ function jobFoldHtml(job) {
 }
 
 function lvDots(n) {
-  return `<span style="color: var(--brand); letter-spacing: 1.5px;">${'●'.repeat(n)}</span><span style="color: var(--line); letter-spacing: 1.5px;">${'●'.repeat(5 - n)}</span>`;
+  return `<span role="img" aria-label="5点満点中 ${n}点"><span aria-hidden="true" style="color: var(--brand); letter-spacing: 1.5px;">${'●'.repeat(n)}</span><span aria-hidden="true" style="color: var(--line); letter-spacing: 1.5px;">${'●'.repeat(5 - n)}</span></span>`;
+}
+
+function dotsAria(s) {
+  return s.replace(/[●○]{3,}/g, m => `<span role="img" aria-label="5点満点中 ${(m.match(/●/g) || []).length}点"><span aria-hidden="true">${m}</span></span>`);
 }
 
 function renderJobsGuideTable() {

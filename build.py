@@ -22,6 +22,21 @@ PAGES = [
 <meta name="twitter:card" content="summary_large_image">''',
     },
     {
+        'src': VAULT / 'index.ca.html',
+        'out': ROOT / 'ca' / 'index.html',
+        'lang': 'ko',
+        'title': 'CA NAVI',
+        'meta': '''<meta name="description" content="캐나다 체류 설계도 — 워홀(IEC)·영주권(Express Entry·PNP) 로드맵, 직군·도시 가이드, CRS·실수령 계산기.">
+<meta property="og:title" content="CA NAVI — 캐나다 영주권 내비게이터">
+<meta property="og:description" content="어떤 비자로 가든 — 영주권까지의 조건·비용·타임라인을 설계합니다.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/ca/">
+<meta property="og:image" content="https://wonchance-art.github.io/nz-navigator/ca/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">''',
+    },
+    {
         'src': VAULT / 'index.ja.html',
         'out': ROOT / 'ja' / 'index.html',
         'lang': 'ja',
