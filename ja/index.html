@@ -1296,8 +1296,8 @@ details.fold:not([open]) > .fold-body { display: none; }
 
 /* ===== v23 visa term tooltip ===== */
 .vt { position: relative; border-bottom: 1.5px dotted var(--brand); cursor: help; }
-.vt::after { content: attr(data-plain); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; font-size: 0.78rem; font-weight: 500; line-height: 1.45; padding: 0.4rem 0.6rem; border-radius: 6px; white-space: normal; width: max-content; max-width: min(260px, 72vw); text-align: left; z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.12s; word-break: keep-all; }
-.vt:hover::after, .vt.on::after { opacity: 1; }
+.vt::after { content: attr(data-plain); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; font-size: 0.78rem; font-weight: 500; line-height: 1.45; padding: 0.4rem 0.6rem; border-radius: 6px; white-space: normal; width: max-content; max-width: min(260px, 72vw); text-align: left; z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.12s; display: none; word-break: keep-all; }
+.vt:hover::after, .vt.on::after { opacity: 1; display: block; }
 .visa-legend { font-size: 0.78rem; color: var(--muted); word-break: keep-all; line-height: 1.7; margin: 0.6rem 0 0.8rem; }
 .visa-legend strong { color: var(--brand-deep); }
 @media (max-width: 680px) {
