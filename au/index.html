@@ -1397,7 +1397,7 @@ details.fold:not([open]) > .fold-body { display: none; }
         <div class="radio-group">
           <label class="radio-option"><input type="radio" name="entry" value="whv" checked> 🇦🇺 417 워킹홀리데이</label>
           <label class="radio-option"><input type="radio" name="entry" value="student"> 🎓 500 학생비자</label>
-          <label class="radio-option"><input type="radio" name="entry" value="work"> 💼 186 SID 스폰서</label>
+          <label class="radio-option"><input type="radio" name="entry" value="work"> 💼 고용주 스폰서 (482→186)</label>
           <label class="radio-option"><input type="radio" name="entry" value="partner"> 💚 820 파트너 비자</label>
           <label class="radio-option"><input type="radio" name="entry" value="none"> 🤷 미정</label>
         </div>
@@ -1499,7 +1499,7 @@ details.fold:not([open]) > .fold-body { display: none; }
       <div class="fold-body">
         <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 1rem;">
           <strong>📌 2026 호주 3대 포커스</strong> <span class="badge official">[공식]</span>
-          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>① 유학 후 485:</strong> 학사 이상 + IELTS 6.5 → 학사·코스웍 석사 2년, 연구 석사·박사 3년 근로권(35세 이하). <strong>② 포인트 비자(189/190/491):</strong> 포인트 65+ + 지정 직업(CSOL) → 영주권. <strong>③ SID(186):</strong> 고용주 스폰서 + 중위임금 이상 → 영주권. 투자·사업 경로는 자본 규모 때문에 극소수 — 위 3가지 압도적 주류입니다.</p>
+          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>① 유학 후 485:</strong> 학사 이상 + IELTS 6.5 → 학사·코스웍 석사 2년, 연구 석사·박사 3년 근로권(35세 이하). <strong>② 포인트 비자(189/190/491):</strong> 포인트 65+ + 지정 직업(CSOL) → 영주권. <strong>③ 고용주 스폰서(482→186):</strong> 482 임시 → 2년 근무 → 186 영주. CSIT(79,423) 이상. 투자·사업 경로는 자본 규모 때문에 극소수 — 위 3가지 압도적 주류입니다.</p>
         </div>
         <div style="overflow-x: auto;"><table class="snapshot-table"><thead><tr><th>경로</th><th>핵심 조건</th><th>비용(AUD)</th><th>왜 구석인가</th></tr></thead><tbody>
           <tr><td style="font-weight:700;">투자비자 (188 GTI)</td><td>Global Talent Visa $5M+ 투자 + 영향력 있는 경력 인증</td><td>6,140</td><td>초고액 자산가·기업 리더용 — 일반 워홀/유학 진입로 아님</td></tr>
@@ -1846,7 +1846,7 @@ details.fold:not([open]) > .fold-body { display: none; }
         <h3>전체 출처</h3>
         <ul style="margin-left: 1.5rem; line-height: 1.8; color: var(--muted); font-size: 0.9rem;">
           <li><a href="https://immi.homeaffairs.gov.au/visas/working-holiday-visa" target="_blank" class="source-link">417 워킹홀리데이</a></li>
-          <li><a href="https://immi.homeaffairs.gov.au/visas/temporary-residence/skilled-independent-visa" target="_blank" class="source-link">186 SID</a></li>
+          <li><a href="https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skills-in-demand-visa-subclass-482" target="_blank" class="source-link">482 SID → 186 ENS</a></li>
           <li><a href="https://immi.homeaffairs.gov.au/visas/permanent-residence/skilled-independent" target="_blank" class="source-link">189/190/491 포인트 비자</a></li>
           <li><a href="https://immi.homeaffairs.gov.au/visas/temporary-residence/graduate-visa" target="_blank" class="source-link">485 졸업비자</a></li>
           <li><a href="https://immi.homeaffairs.gov.au/visas/temporary-residence/student-visa" target="_blank" class="source-link">500 학생비자</a></li>
@@ -2298,7 +2298,7 @@ const DB = {
         { name: '186 승인 = 영주권 (승인일에 PR)', months: 6 }
       ],
       details: {
-        requirements: ['<strong>482 = 임시비자 / 186 = 영주비자</strong> — 482로 2년 적격 근무 후 같은 고용주가 186 TRT로 지명', '연봉: Core Skills Income Threshold 이상 (2026-07-01 기준 AUD 79,499) + 직종별 시장임금(AMSR) 충족', '고용주 요건: 호주 등록·성실 운영 · 승인 스폰서 · 노동시장 테스트'],
+        requirements: ['<strong>482 = 임시비자 / 186 = 영주비자</strong> — 482로 2년 적격 근무 후 같은 고용주가 186 TRT로 지명', '연봉: Core Skills Income Threshold 이상 (2026-07-01 기준 AUD 79,423 · Specialist Skills 스트림은 146,576) + 직종별 시장임금(AMSR) 충족', '고용주 요건: 호주 등록·성실 운영 · 승인 스폰서 · 노동시장 테스트'],
         costs: ['482 비자: 신청자 부담분 (고용주 지명비 별도)', '186 비자: 신청비'],
         processing: ['482 승인: 수개월 · 186 TRT: 처리 후 승인일에 PR']
       }
@@ -2356,7 +2356,7 @@ const DB = {
         },
         {
           label: 'SID 스폰서로 경로 변경',
-          result: '<strong>무기:</strong> 포인트 필요 없음 — 고용주 스폰서만 있으면 됨<br><strong>조건:</strong> 승인 스폰서 고용주 · 연봉 CSIT 이상(2026-07 AUD 79,499)+시장임금<br><strong>경로:</strong> 482(임시) 승인 후 2년 근무 → 186(영주) 지명. 포인트 없이 가능하나 영주권은 2년 근무 뒤'
+          result: '<strong>무기:</strong> 포인트 필요 없음 — 고용주 스폰서만 있으면 됨<br><strong>조건:</strong> 승인 스폰서 고용주 · 연봉 CSIT 이상(2026-07 AUD 79,423)+시장임금<br><strong>경로:</strong> 482(임시) 승인 후 2년 근무 → 186(영주) 지명. 포인트 없이 가능하나 영주권은 2년 근무 뒤'
         }
       ],
       advice: '포인트 기준(65)과 실제컷(95+)의 괴리는 CSOL 폐지로 생긴 문제. 포인트 경로로는 불가능 — 주 노미네이션 또는 SID 스폰서 중 택일. GitHub/로컬 네트워크가 SID 스폰서 찾는 열쇠.'
@@ -2961,7 +2961,7 @@ function recommend(input) {
   } else if (entry === 'work') {
     primary = 'D';
     alt = 'C-189';
-    notes.unshift('워크비자(SID 482) 보유 진입 — 기본 경로는 <strong>482 → 186(2년 근무 후 전환)</strong>입니다. 189 독립기술은 포인트 계산기 실측 65+ · 직업 skills assessment가 확인된 경우의 대안입니다.');
+    notes.unshift('워크비자(SID · 482) 보유 진입 — 기본 경로는 <strong>2년 근무 후 186 영주비자로 전환</strong>입니다. 189 독립기술은 포인트 계산기 실측 65+ · 직업 skills assessment가 확인된 경우의 대안입니다.');
   } else if (entry === 'partner') {
     notes.unshift(`<div style="font-weight: 700; margin-bottom: 0.25rem;">💚 파트너십 트랙</div>
       <ul class="jt-list" style="margin-bottom: 0.35rem;">
@@ -3340,7 +3340,7 @@ function buildMoneyPlanTable(pathwayId, input) {
 }
 
 // ===== v13 entry-adjusted pathway =====
-const ENTRY_LABEL = { whv: '417 워홀', student: '500 학생비자', work: '186 SID', partner: '820 파트너비자', none: '미정(417 가정)' };
+const ENTRY_LABEL = { whv: '417 워홀', student: '500 학생비자', work: '고용주 스폰서(482)', partner: '820 파트너비자', none: '미정(417 가정)' };
 const ENTRY_ADJUST = {
   'A': ['30–60개월', 'AUD 2,840–9,890'],
   'C-189': ['18–48개월', 'AUD 6,135'],
@@ -4735,7 +4735,7 @@ function renderSnapshotTable() {
       points190: '주정부 190',
       points491: '지방 491',
       sid186: '482 (임시·스폰서)',
-      ens186: 'ENS 186 (영주)',
+      ens186: '186 영주비자',
       partner820: '파트너 820/801',
       partner801: '파트너 801'
     };
@@ -4783,8 +4783,8 @@ const SEARCH_INDEX = [
   { q: '시즌 수확 농장 픽킹 workaway', label: '시즌 워크 경로 — 농장·저축', desc: '6–12개월 · 최저 진입비용', go: 'diagnose', target: 'path-C' },
   { q: '파트너 배우자 820 801 영주권 비자', label: '파트너 비자 경로', desc: '820 임시 2년 → 801 영주권 · 9,365', go: 'diagnose', target: 'path-D' },
   { q: '영어 약한 IELTS 점수 시험 면제 5.0', label: '영어가 약해요', desc: '482는 5.0 · 189는 6.5 · AUD 490' , go: 'scenarios', target: 'sc-3' },
-  { q: '고용주 거절 인증 Job Check 설득 TSMIT', label: '고용주 거절당했을 때', desc: 'TSMIT 79,499 검증 자료 · 비용' , go: 'scenarios', target: 'sc-1' },
-  { q: '연봉 기준 미달 TSMIT 79,499 임금 시급', label: '연봉이 기준에 못 미칠 때', desc: '482 vs 189 임금 차이 · 협상 전략' , go: 'scenarios', target: 'sc-2' },
+  { q: '고용주 거절 인증 Job Check 설득 TSMIT', label: '고용주 거절당했을 때', desc: 'TSMIT 79,423 검증 자료 · 비용' , go: 'scenarios', target: 'sc-1' },
+  { q: '연봉 기준 미달 TSMIT 79,423 임금 시급', label: '연봉이 기준에 못 미칠 때', desc: '482 vs 189 임금 차이 · 협상 전략' , go: 'scenarios', target: 'sc-2' },
   { q: '경력 증명 학력 인정 자격 평가 ACS TRA EA', label: '경력·학력 증명 부족', desc: '자격 평가사 선택 · CSOL 매칭' , go: 'scenarios', target: 'sc-4' },
   { q: '자금 부족 저축 저렴 싸게 시즌', label: '자금이 부족할 때', desc: '시즌·트레이드·저축 플랜 비교' , go: 'scenarios', target: 'sc-5' },
   { q: '비자 만료 연장 옵션 재신청 귀국 시간', label: '만료가 코앞일 때', desc: '학생비자 / 다른 경로 / 귀국 선택' , go: 'scenarios', target: 'sc-6' },
@@ -4898,14 +4898,15 @@ function annotateVisaTerms(root) {
 document.addEventListener('click', () => document.querySelectorAll('.vt.on').forEach(x => x.classList.remove('on')));
 
 function visaLegendHtml() {
-  return `<div class="visa-legend">📖 공식 명칭: 워홀 <strong>WHV(417)</strong> · 학생 <strong>500</strong> · 졸업비자 <strong>485</strong> · 고용주 워크비자 <strong>SID(186)</strong> · 포인트비자 <strong>189/190/491</strong> · 파트너 <strong>820</strong> — 점선 용어를 탭하면 공식 명칭·설명이 뜹니다 · <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('snapshot', 'glossary')">전체 용어사전 →</button></div>`;
+  return `<div class="visa-legend">📖 공식 명칭: 워홀 <strong>WHV(417)</strong> · 학생 <strong>500</strong> · 졸업비자 <strong>485</strong> · 고용주 스폰서 <strong>SID(482)→ENS(186)</strong> · 포인트비자 <strong>189/190/491</strong> · 파트너 <strong>820</strong> — 점선 용어를 탭하면 공식 명칭·설명이 뜹니다 · <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo('snapshot', 'glossary')">전체 용어사전 →</button></div>`;
 }
 
 
 
 const GLOSSARY = [
   ['WHV(417)', '호주 워킹홀리데이 비자 — 18–35세, 12개월, 지정 지역 노동(88일) 시 12개월씩 2회 연장 가능'],
-  ['SID(186)', 'Skilled Independent — 고용주 스폰서 기반 워크비자 · 중위임금 이상 · 최대 4년 · 영주권 신청 가능'],
+  ['SID(482)', 'Skills in Demand — 고용주 스폰서 임시 워크비자 · CSIT(2026-07 AUD 79,423) 이상 · 최대 4년'],
+    ['ENS(186)', 'Employer Nomination Scheme — 영주비자 · 482로 2년 적격 근무 후 고용주 지명(TRT)'],
   ['485', '졸업비자(Graduate Visa) — 학위(학사 이상) 취득 후 최대 3년 오픈워크 · 35세 이하'],
   ['500', '학생비자 — 12–20개월 과정 기준, 학기 중 48시간/주, 방학 중 무제한 근로 가능'],
   ['CSOL', 'Critical Skills Occupation List — 호주 인력난 직업 목록 · 포인트 비자(189/190/491) 신청 필수'],
