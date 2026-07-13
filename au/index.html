@@ -1499,7 +1499,7 @@ details.fold:not([open]) > .fold-body { display: none; }
       <div class="fold-body">
         <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 1rem;">
           <strong>📌 2026 호주 3대 포커스</strong> <span class="badge official">[공식]</span>
-          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>① 유학 후 485:</strong> 학사 2년 이상 + IELTS 6.5 → 3년 근로권(35세 이하). <strong>② 포인트 비자(189/190/491):</strong> 포인트 65+ + 지정 직업(CSOL) → 영주권. <strong>③ SID(186):</strong> 고용주 스폰서 + 중위임금 이상 → 영주권. 투자·사업 경로는 자본 규모 때문에 극소수 — 위 3가지 압도적 주류입니다.</p>
+          <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>① 유학 후 485:</strong> 학사 이상 + IELTS 6.5 → 학사·코스웍 석사 2년, 연구 석사·박사 3년 근로권(35세 이하). <strong>② 포인트 비자(189/190/491):</strong> 포인트 65+ + 지정 직업(CSOL) → 영주권. <strong>③ SID(186):</strong> 고용주 스폰서 + 중위임금 이상 → 영주권. 투자·사업 경로는 자본 규모 때문에 극소수 — 위 3가지 압도적 주류입니다.</p>
         </div>
         <div style="overflow-x: auto;"><table class="snapshot-table"><thead><tr><th>경로</th><th>핵심 조건</th><th>비용(AUD)</th><th>왜 구석인가</th></tr></thead><tbody>
           <tr><td style="font-weight:700;">투자비자 (188 GTI)</td><td>Global Talent Visa $5M+ 투자 + 영향력 있는 경력 인증</td><td>6,140</td><td>초고액 자산가·기업 리더용 — 일반 워홀/유학 진입로 아님</td></tr>
@@ -1569,20 +1569,39 @@ details.fold:not([open]) > .fold-body { display: none; }
       <label>학력</label>
       <select id="auQualification" onchange="renderPointsCalc()">
         <option value="0">선택 안함</option>
+        <option value="10">디플로마·트레이드 자격 (10점)</option>
         <option value="15">학사학위 (15점)</option>
-        <option value="20">석사학위 (20점)</option>
+        <option value="15">석사학위 (15점)</option>
         <option value="20">박사학위 (20점)</option>
-        <option value="25">호주 학위 (학사 15 + 5점 보너스)</option>
       </select>
     </div>
 
     <div class="form-group">
-      <label>추가 가산점</label>
-      <select id="auBonus" onchange="renderPointsCalc()">
-        <option value="0">없음</option>
-        <option value="10">NAATI 커뮤니티 통역 (10점)</option>
-        <option value="10">배우자/파트너 조건 충족 (10점)</option>
+      <label>배우자·파트너</label>
+      <select id="auPartner" onchange="renderPointsCalc()">
         <option value="10">싱글 (10점)</option>
+        <option value="10">파트너 — 기술·영어 요건 충족 (10점)</option>
+        <option value="5">파트너 — 영어(Competent)만 충족 (5점)</option>
+        <option value="0">파트너 — 해당 없음 (0점)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>추가 가산 (해당 항목 모두 선택)</label>
+      <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.9rem;">
+        <label style="font-weight: 400;"><input type="checkbox" id="auStudy" value="5" onchange="renderPointsCalc()"> 호주 학업 요건 충족 — 2년+ (5점)</label>
+        <label style="font-weight: 400;"><input type="checkbox" id="auNaati" value="5" onchange="renderPointsCalc()"> NAATI 커뮤니티 언어 자격 (5점)</label>
+        <label style="font-weight: 400;"><input type="checkbox" id="auPy" value="5" onchange="renderPointsCalc()"> Professional Year 수료 (5점)</label>
+        <label style="font-weight: 400;"><input type="checkbox" id="auRegionalStudy" value="5" onchange="renderPointsCalc()"> 지방 지역 학업 (5점)</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>비자 종류</label>
+      <select id="auVisaType" onchange="renderPointsCalc()">
+        <option value="0">189 독립기술 (가산 없음)</option>
+        <option value="5">190 주정부 지명 (+5점)</option>
+        <option value="15">491 지방 지명·스폰서 (+15점)</option>
       </select>
     </div>
 
@@ -1623,28 +1642,28 @@ details.fold:not([open]) > .fold-body { display: none; }
         <span class="fold-sub">과정 레벨이 졸업 후 근로권을 결정합니다</span>
       </summary>
       <div class="fold-body">
-        <p style="color: var(--muted); font-size: 0.92rem; margin-bottom: 0.8rem;">무경력 출발 = 과정 등록부터. 단 <strong>485 졸업비자 조건은 고정</strong> — 학사/Diploma 2년 또는 연구석사/박사 3년 + 학위증명 + 나이 35 이하(신청시) + 영어 IELTS 6.5(밴드 5.5).</p>
+        <p style="color: var(--muted); font-size: 0.92rem; margin-bottom: 0.8rem;">무경력 출발 = 과정 등록부터. 단 <strong>485 졸업비자 조건은 고정</strong> — 근로권: 학사·코스웍 석사 2년 / 연구 석사·박사 3년 + 나이 35 이하(신청시) + IELTS 6.5(밴드 5.5). Diploma·VET는 별도 스트림(Post-Vocational — 부족직종·skills assessment 요건).</p>
         <div style="border-left: 4px solid var(--info); background: #f2f7fd; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 1rem;">
           <strong>📜 485 근로 규칙</strong> <span class="badge official">[공식]</span>
           <ul class="jt-list" style="color: var(--muted); font-size: 0.92rem;">
-            <li>학사(L7) · Diploma(L6) → <strong>최대 3년</strong> (소정과정 2년 이상 수료 시)</li>
+            <li>학사 · 코스웍 석사 → <strong>2년</strong></li>
             <li>Graduate Diploma(L7) → <strong>1년</strong> (학사 후 추가 과정)</li>
-            <li>연구석사·박사(L9+) → <strong>4년</strong></li>
-            <li>학업 중 근로 <strong>48시간/주 무제한</strong> · 시급 26.44+ 최저임금 적용 · 학생비자 2,500 + 생활비증명 29,710/년</li>
+            <li>연구 석사 · 박사 → <strong>3년</strong></li>
+            <li>학업 중 근로 <strong>2주당 48시간</strong>(방학 중 무제한) · 시급 26.44+ · 학생비자 2,500 + 생활비증명 29,710/년</li>
             <li>중요: CLB 영어 요건 없음 (IELTS 6.5은 신청 시만)</li>
           </ul>
         </div>
         <div class="course-grid" id="courseListM"></div>
         <div style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.8rem;">
           <div style="border-left: 4px solid var(--brand); background: var(--bg); padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>💰 가성비 순위</strong><ul class="jt-list" style="color: var(--muted); font-size: 0.88rem;">
-            <li>① 간호(RN) ~45k + 등록료(2k) — 3년 → 485 3년 + CSOL</li>
+            <li>① 간호(RN) ~45k + 등록료(2k) — 3년 → 485 2년 + CSOL</li>
             <li>② 회계(GD) 30k — 1년 → 485 1년 + 직업규정 시험 추가</li>
-            <li>③ 요리·원예 ~25k — 2년 → 근로권 없음 (주의)</li>
-            <li>④ 엔지니어 학사 ~100k+ — 2년 → 485 3년 + 포인트 비자</li>
+            <li>③ 요리·원예 ~25k — 2년 → Post-Vocational 요건 확인 필수 (주의)</li>
+            <li>④ 엔지니어 학사 ~100k+ — 4년 → 485 2년 + 포인트 비자</li>
             <li>최악: 무관련 유학 후 직업과정 조합 (쓸모 없음)</li>
           </ul></div>
           <div style="border-left: 4px solid var(--warn); background: #fdf9f0; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>⚠️ 유학이 함정인 경우</strong><ul class="jt-list" style="color: var(--muted); font-size: 0.88rem;">
-            <li>요리·원예·뷰티는 485 근로권 없음 (VET 과정 · 지정 직업 제외)</li>
+            <li>요리·원예·뷰티 등 VET 과정은 Post-Vocational 스트림 — 부족직종 해당 + skills assessment 요건 충족 여부를 과정별로 확인 (일괄 가능/불가 아님)</li>
             <li>포인트 65 미만 직업(바리스타·소매·청소) — 영주권 경로 막힘</li>
             <li>이들은 워홀 현장 진입 + 직업 전환이 현실적 대안</li>
           </ul></div>
@@ -1726,7 +1745,7 @@ details.fold:not([open]) > .fold-body { display: none; }
       <div class="tip-card"><div class="tip-ic">🏠</div><strong>주거 = 저축 속도</strong><p>방셰어 200–320 vs 스튜디오 400+. 시즌잡 숙식 제공이면 저축 2배 + 원예 3개월 = WHV 연장.</p></div>
       <div class="tip-card"><div class="tip-ic">🧾</div><strong>도착 주에 TFN 발급</strong><p>무료 발급 — 없으면 원천징수율 47.5% 적용. 세제 정산은 7월 세무년도 마감 후.</p></div>
       <div class="tip-card"><div class="tip-ic">🏦</div><strong>비자비·보증금 분리 적립</strong><p>485 5,750 · 영주권 6,135–6,140 + Rent Bond 대비 — 신청 2–3개월 전 별도 계좌에.</p></div>
-      <div class="tip-card"><div class="tip-ic">🎓</div><strong>유학 현금 흐름</strong><p>학기 중 48h/주 근로 가능(시급 26.44+ 최저임금 적용) — 생활비 상쇄 가능. 학비는 사전 확보 필수.</p></div>
+      <div class="tip-card"><div class="tip-ic">🎓</div><strong>유학 현금 흐름</strong><p>학기 중 2주당 48h 근로(방학 무제한 · 시급 26.44+) — 생활비 일부 상쇄. 학비는 사전 확보 필수.</p></div>
     </div>
 
     <h2 id="cities" style="margin-top: 2.5rem;">도시별 정착 가이드</h2>
@@ -1834,7 +1853,7 @@ details.fold:not([open]) > .fold-body { display: none; }
           <li><a href="https://immi.homeaffairs.gov.au/visas/temporary-residence/partner-visa" target="_blank" class="source-link">820 파트너 비자</a></li>
           <li><a href="https://immi.homeaffairs.gov.au/help-and-support/dama" target="_blank" class="source-link">DAMA(지정 지역)</a></li>
           <li><a href="https://www.ato.gov.au/tax-rates-and-codes/tax-rates-working-holiday-makers" target="_blank" class="source-link">워홀러 세율</a></li>
-          <li><a href="https://www.fa.gov.au/" target="_blank" class="source-link">최저임금(Fair Work)</a></li>
+          <li><a href="https://www.fairwork.gov.au/pay-and-wages/minimum-wages" target="_blank" class="source-link">최저임금(Fair Work)</a></li>
           <li><a href="https://immi.homeaffairs.gov.au/help-and-support/skill-occupation-list" target="_blank" class="source-link">CSOL 직업 목록</a></li>
         </ul>
       </div>
@@ -2201,7 +2220,7 @@ const DB = {
           short: '유학·학사 3년',
           duration: '60–96개월+',
           cost: 'AUD 24,000–79,890',
-          note: '학사(L7) 3년 → 485(최대 3년) → 포인트 또는 SID. 학비 연 28k–70k 변동 · 가장 안정적 경로',
+          note: '학사 3년 → 485(2년 — 연구 석박은 3년) → 포인트 또는 SID. 학비 연 28k–70k 변동 · 가장 안정적 경로',
           stages: [
             { name: '417 워홀', months: 12 },
             { name: '학사 3년', months: 36 },
@@ -2211,7 +2230,7 @@ const DB = {
         }
       },
       details: {
-        requirements: ['500 학생비자 조건(자금증명 AUD 2,9710/년) · L5+ 과정 입학', '485 조건: 학사/Diploma 2년 또는 연구석사/박사 3년 · 35세 이하(신청시) · 영어 IELTS 6.5(밴드 5.5)'],
+        requirements: ['500 학생비자 조건(자금증명 AUD 2,9710/년) · L5+ 과정 입학', '485 근로권: 학사·코스웍 석사 2년 / 연구 석사·박사 3년 · 35세 이하(신청시) · 영어 IELTS 6.5(밴드 5.5)'],
         costs: ['417: 840', '500: 2,500', 'Diploma 학비: 28k–40k / 학사 학비: 28k–70k', '485: 5,750'],
         processing: ['500: 2–4주', '485: 2–4주', '포인트/SID 신청: 3–8개월']
       }
@@ -2317,7 +2336,7 @@ const DB = {
         },
         {
           label: '학생비자 전환(유학)',
-          result: '<strong>조건:</strong> 500 학생비자 · 자금증명 AUD 29,710/년(생활비) + 학비 모금<br><strong>장점:</strong> 최대 3년 Diploma/학사 + 485(최대 3년) = 6년 카드. 경력·학력 동시 축적<br><strong>지금 할 일:</strong> 대학 입학 신청(2월·7월 학기 역산 지원)'
+          result: '<strong>조건:</strong> 500 학생비자 · 자금증명 AUD 29,710/년(생활비) + 학비 모금<br><strong>장점:</strong> Diploma/학사 + 485(2–3년) = 장기 체류 카드. 경력·학력 동시 축적<br><strong>지금 할 일:</strong> 대학 입학 신청(2월·7월 학기 역산 지원)'
         }
       ],
       advice: '세컨드는 확정(88일 + 비용 1,000)이지만 경로가 SID/포인트로 어딨는지 동시에 준비해야 한다. 지역 코드 확인 → SID 회사 리스트 업 → 유학 입시 평행하게.'
@@ -2473,7 +2492,7 @@ const DB = {
         },
         {
           label: '한국에서 유학 진입(오프쇼어 학생비자 500)',
-          result: '<strong>절차:</strong> 호주 대학/폴리텍 입학 → 500 학생비자 한국에서 신청 · 약 2–4주 승인<br><strong>효과:</strong> Diploma(1년) 또는 학사(3년) + 485(최대 3년) = 최대 6년 카드 · 이후 포인트·SID로 PR 경로<br><strong>자금:</strong> 자금증명 AUD 29,710/년(생활비) + 학비 준비<br><strong>장점:</strong> 나이 무관 · 경력+학력 동시 축적'
+          result: '<strong>절차:</strong> 호주 대학/폴리텍 입학 → 500 학생비자 한국에서 신청 · 약 2–4주 승인<br><strong>효과:</strong> Diploma(1년) 또는 학사(3년) + 485(2–3년) 장기 카드 · 이후 포인트·SID로 PR 경로<br><strong>자금:</strong> 자금증명 AUD 29,710/년(생활비) + 학비 준비<br><strong>장점:</strong> 나이 무관 · 경력+학력 동시 축적'
         },
         {
           label: '방문비자로 답사 후 SID 회사 네트워킹',
@@ -2488,7 +2507,7 @@ const DB = {
     { date: '2025-07-01', dir: 'down', text: 'CSOL 축소(호스피탈리티·ECE 등 제거)', planned: false, you: 'IT·건설·간호·회계 등 주요 직종만 유지 · 포인트 경로 대폭 축소' },
     { date: '2026-07-01', dir: 'flat', text: '국민 최저임금 AUD 26.44 · 캐주얼 33.05', planned: false, you: '워홀 초기 시급 기준 · 풀타임 주 약 AUD 958(세전)' },
     { date: '2026-07-01', dir: 'up', text: '485 졸업생 나이 35세 이하(연구석박 50세)', planned: false, you: '학사/Diploma 졸업자는 35세 까지 485 신청 가능' },
-    { date: '2026-07-01', dir: 'flat', text: '학생 생활비 증명 AUD 29,710/년', planned: false, you: '500 학생비자 자금 기준 · 주당 48h 근로 가능(학기 중 절반)' },
+    { date: '2026-07-01', dir: 'flat', text: '학생 생활비 증명 AUD 29,710/년', planned: false, you: '500 학생비자 자금 기준 · 학기 중 2주당 48h 근로(방학 무제한)' },
     { date: '2026-08-24', dir: 'down', text: 'SID 186 심사 강화 · labour market test 추가', planned: true, you: '호주인 우선채용 검증 필수 · 스폰서 승인 기간 3–6개월→6–8개월' },
     { date: '2026-11-15', dir: 'up', text: '포인트 간호(RN) 컷 인하(80→75 추정)', planned: true, you: '간호 인력 부족 심화 · 지방 간호사 유입 증가' },
     { date: '2026-12-01', dir: 'down', text: '491 지역 정의 변경(시드니·멜버른 일부 제외)', planned: true, you: '지방 효력 강화 · 시드니·멜버른 노미네이션 제한 일부 지역' }
@@ -2825,6 +2844,9 @@ function recommend(input) {
   let entryReco = null;
 
   // 나이 경계선: 417 워홀은 18–35세
+  if (entry === 'whv') {
+    warnings.push('같은 고용주 근무는 원칙 최대 6개월(비자 조건 8547) — 지정 업종·다른 근무지 등 예외와 사전 허가 절차 있음. 88일도 달력일이 아닌 풀타임 근무일 산정 규칙 적용 — 장기 근속·세컨드 계획 전 공식 확인.');
+  }
   if (input.age !== 'under30' && entry === 'whv') {
     warnings.push('호주 417 워홀은 18–35세까지 — 36세 이상은 워홀 없이 설계 가능합니다: 한국에서 SID 스폰서(186) 또는 학생비자(500) 진입. <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo(\'scenarios\', \'sc-9\')">→ 36세+ 진입 전략 보기</button>');
   }
@@ -3603,78 +3625,35 @@ function showStageDetail(pathwayId, stageIdx) {
  * Render the Points Test Calculator (189/190/491)
  */
 function renderPointsCalc() {
-  const pointsCalcBox = document.getElementById('pointsCalc');
-  if (!pointsCalcBox) return; // Skip if section not present
+  const box = document.getElementById('pointsCalc');
+  if (!box) return;
+  const v = id => parseInt(document.getElementById(id)?.value || 0);
+  const chk = id => (document.getElementById(id)?.checked ? parseInt(document.getElementById(id).value) : 0);
+  const age = v('auAge');
+  const english = v('auEnglish');
+  // 경력: 호주+해외 합산 최대 20점 (공식 cap)
+  const expRaw = v('auExperience') + v('auOverseasExp');
+  const exp = Math.min(20, expRaw);
+  const qual = v('auQualification');
+  const partner = v('auPartner');
+  const extras = chk('auStudy') + chk('auNaati') + chk('auPy') + chk('auRegionalStudy');
+  const visaBonus = v('auVisaType');
+  const core = age + english + exp + qual + partner + extras;
+  const total = core + visaBonus;
 
-  const age = parseInt(document.getElementById('auAge')?.value || 0);
-  const english = parseInt(document.getElementById('auEnglish')?.value || 0);
-  const auExperience = parseInt(document.getElementById('auExperience')?.value || 0);
-  const overseasExperience = parseInt(document.getElementById('auOverseasExp')?.value || 0);
-  const qualification = parseInt(document.getElementById('auQualification')?.value || 0);
-  const bonus = parseInt(document.getElementById('auBonus')?.value || 0);
-
-  const total = age + english + auExperience + overseasExperience + qualification + bonus;
-
-  // Update score display
   const scoreDisplay = document.getElementById('auPoints');
   if (scoreDisplay) {
-    scoreDisplay.innerHTML = `<strong>${total}점</strong> / <span style="color: var(--muted);">100점 만점</span>`;
+    scoreDisplay.innerHTML = `<strong>${total}점</strong> <span style="color: var(--muted); font-size: 0.8rem;">(선택 항목 부분점수${visaBonus ? ` · 지명 가산 +${visaBonus} 포함` : ''}${expRaw > 20 ? ' · 경력 상한 20점 적용' : ''})</span>`;
   }
-
-  // Update gauge
   const gaugeBox = document.getElementById('auPointsGaugeBox');
   if (gaugeBox) {
-    const percentage = Math.min(total / 100 * 100, 100);
-    const verdict = total >= 65 ? 'pass' : 'fail';
-    const verdictText = total >= 65 ? '✅ 기본 자격 충족' : '❌ 점수 부족';
-
+    const pct = Math.min(total / 130 * 100, 100);
+    const pass = total >= 65;
     gaugeBox.innerHTML = `
       <div style="background: var(--line); height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 0.4rem;">
-        <div style="height: 100%; width: ${percentage}%; background: ${verdict === 'pass' ? 'var(--success)' : 'var(--warn)'}; transition: width 0.3s ease;"></div>
+        <div style="height: 100%; width: ${pct}%; background: ${pass ? 'var(--brand)' : 'var(--warn)'}; transition: width 0.3s ease;"></div>
       </div>
-      <div style="font-size: 0.85rem; color: ${verdict === 'pass' ? 'var(--success)' : 'var(--warn)'};">${verdictText}</div>
-    `;
-  }
-
-  // Update verdict panel
-  const verdictBox = document.getElementById('auPointsInfo');
-  if (verdictBox) {
-    let verdictHTML = `
-      <div style="border-top: 1px solid var(--border); padding-top: 0.8rem; margin-top: 1rem; font-size: 0.85rem; color: var(--muted);">
-        <div style="margin-bottom: 0.6rem;"><strong>포인트 기준 & 직군 난이도</strong> <span class="badge official">[공식]</span></div>
-        <div style="line-height: 1.6;">
-          <div>● 기본 임계값: <strong>65점</strong></div>
-          <div style="margin-top: 0.4rem; font-size: 0.8rem; color: var(--muted);">
-            실제 초청 컷(초청선): <br>
-            · <strong>Trade / Healthcare</strong> 65–75점<br>
-            · <strong>Engineer / Teacher</strong> 80–90점<br>
-            · <strong>ICT / Accounting</strong> 95–110점 (경쟁 심함)
-          </div>
-        </div>
-        <div style="margin-top: 0.8rem; padding: 0.6rem; background: var(--bg); border-radius: 6px; font-size: 0.85rem;">
-          <strong>189 (독립이민)</strong><br>
-          <span style="font-size: 0.8rem; color: var(--muted);">자격만으로 승리. 직군 무관 포인트 기준만 적용.</span>
-        </div>
-        <div style="margin-top: 0.5rem; padding: 0.6rem; background: var(--bg); border-radius: 6px; font-size: 0.85rem;">
-          <strong>190 (주 지명이민, Subclass 190)</strong><br>
-          <span style="font-size: 0.8rem; color: var(--muted);">필요 점수 +5점 (총 70점 목표 · 가능하면 75점+). 주 후보 풀에서 우선순위 결정.</span>
-        </div>
-        <div style="margin-top: 0.5rem; padding: 0.6rem; background: var(--bg); border-radius: 6px; font-size: 0.85rem;">
-          <strong>491 (지역 스폰서, Regional Sponsored)</strong><br>
-          <span style="font-size: 0.8rem; color: var(--muted);">필요 점수 +15점 (총 80점 목표). 지역(Regional)에 2년 거주 후 PR 전환 + 영주권 경로.</span>
-        </div>
-      </div>
-      <div style="margin-top: 1rem; padding: 0.8rem; border-left: 4px solid var(--info); background: #f2f7fd; border-radius: 6px; font-size: 0.85rem;">
-        <strong>다음 단계</strong>
-        <ul style="margin: 0.5rem 0; padding-left: 1.2rem; color: var(--muted); font-size: 0.8rem;">
-          <li>점수 ≥65: 189 신청 가능 (SkillSelect 등록)</li>
-          <li>점수 60–64: 190/491 지명 추천 (주 구체적 요건 확인)</li>
-          <li>점수 <60: 영어 IELTS 8+ 또는 경력 추가 (6–12개월) 후 재평가</li>
-          <li>공식 포인트 테스트: <a href="https://www.immi.homeaffairs.gov.au/skilled/skilled-independent" target="_blank" class="source-link">ATO Points Test Tool↗</a> 에서 정확한 점수 확인</li>
-        </ul>
-      </div>
-    `;
-    verdictBox.innerHTML = verdictHTML;
+      <div style="font-size: 0.85rem; color: ${pass ? 'var(--brand-deep)' : 'var(--warn)'};">${pass ? '✅ 최소 문턱(65) 충족' : '❌ 65점 미달'} — 실제 초청은 직군별 컷(트레이드·헬스 65–75 / 엔지니어·교사 80–90 / ICT·회계 95–110) 기준. 미포함 요소(specialist education +10 등)는 공식 계산기에서 확인.</div>`;
   }
 }
 
@@ -4156,10 +4135,11 @@ const AU_TAX = {
     medicareLevyRate: 0.02,
     superRate: 0.12,
     lito: {
-      // 저소득 세금 오프셋 (Low Income Tax Offset) 2026-27
-      // $68,000 이상 퇴출, 최대 $705
-      threshold: 68000,
-      maxOffset: 705
+      // 2026-27 공식: 최대 $700 — 37,500까지 전액, 45,000까지 5% 테이퍼, 66,667까지 1.5% 테이퍼 (함수와 동일)
+      maxOffset: 700,
+      fullTo: 37500,
+      taper1To: 45000,
+      cutOut: 66667
     }
   }
 };
@@ -4280,7 +4260,7 @@ function renderNetPay(src) {
 
   // 메디케어 레바이: 워홀러는 대부분 면제 신청 가능
   const mediNote = taxMode === 'whm'
-    ? ' (대부분 외국인 신분 면제 가능)'
+    ? ' (자격 없음 — Medicare Entitlement Statement로 면제 신청)'
     : '';
 
   out.innerHTML = `
@@ -5212,6 +5192,7 @@ function buildChecklistText(result) {
     '☐ 2주 안에 첫 수입 — 호주식 이력서는 출국 전 완성',
     '☐ 방셰어/숙식 제공으로 렌트 최소화',
     '☐ 비자비(1,540 / 6,135)는 신청 2–3개월 전 분리 적립',
+    '☐ 같은 고용주 6개월 규정(조건 8547)·88일 산정 규칙 확인',
     '☐ 연말 세금 환급 확인',
     '',
     '※ 본 체크리스트는 정보 제공용 — 신청 전 immigration.govt.nz 최신 기준과 IAA 등록 어드바이저 확인 필수.'
