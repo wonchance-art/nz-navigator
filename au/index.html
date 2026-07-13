@@ -1504,8 +1504,8 @@ details.fold:not([open]) > .fold-body { display: none; }
         <div style="overflow-x: auto;"><table class="snapshot-table"><thead><tr><th>경로</th><th>핵심 조건</th><th>비용(AUD)</th><th>왜 구석인가</th></tr></thead><tbody>
           <tr><td style="font-weight:700;">투자비자 (188 GTI)</td><td>Global Talent Visa $5M+ 투자 + 영향력 있는 경력 인증</td><td>6,140</td><td>초고액 자산가·기업 리더용 — 일반 워홀/유학 진입로 아님</td></tr>
           <tr><td style="font-weight:700;">사업비자 (132 BIS)</td><td>기존 사업 인수 $1M+ 또는 신규사업 + 경영 경험 증명</td><td>3,775</td><td>자본·비즈니스 경험 전제 — 한국인도 가능하나 수입 1-2% 미만</td></tr>
-          <tr><td style="font-weight:700;">파트너 비자 (820·801)</td><td>호주 시민·PR·SID visa 파트너 + 12개월 동거(또는 증명) + Genuine &amp; Lasting 관계</td><td>9,365</td><td>워홀 중 만난 파트너가 호주 거주자일 경우만 — 이미 한국 배우자는 별도 경로(301/100)</td></tr>
-          <tr><td style="font-weight:700;">DAMA (Designated Area)</td><td>지정 지역(시골·외곽)에서 485 근무 + 추가 2년 + 포인트 65 → 영주권</td><td>6,140</td><td>시드니·멜 피하고 지역 정착하는 전략 — 점수가 낮으면 효과</td></tr>
+          <tr><td style="font-weight:700;">파트너 비자 (820·801)</td><td>스폰서는 호주 시민·PR·eligible NZ citizen + 12개월 동거(또는 증명) + Genuine &amp; Lasting 관계</td><td>11,710(결합)</td><td>워홀 중 만난 파트너가 호주 거주자일 경우만 — 이미 한국 배우자는 별도 경로(301/100)</td></tr>
+          <tr><td style="font-weight:700;">DAMA (Designated Area)</td><td>지정지역 고용주의 노동협약 경로 — 482/494/186 스폰서(개인 직접 신청 불가)</td><td>경로별</td><td>시드니·멜 밖 지역 정착 + 협약 고용주 필요</td></tr>
           <tr><td style="font-weight:700;">특수 (가정폭력·난민)</td><td>해당 상황 증빙 — 증명서류 + 심사</td><td>0~3,775</td><td>특수 상황 전용 — 존재를 알아둘 것</td></tr>
         </tbody></table></div>
         <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.6rem;">기준일 2026-07-13 · 출처: immi.homeaffairs.gov.au 각 비자 페이지 — 표의 조건은 요약이며 신청 전 공식 페이지 재확인 필수</p>
@@ -1892,8 +1892,8 @@ const DB = {
     points491: { v: 6140, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-491-skilled-regional-visa', asOf: '2026-07-01' },
     sid186: { v: 3775, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-186-employer-nomination-scheme', asOf: '2026-07-01' },
     ens186: { v: 3775, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-186-employer-nomination-scheme', asOf: '2026-07-01', label: '2년 근무 후 PR' },
-    partner820: { v: 9365, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-820-partner-visa', asOf: '2026-07-01' },
-    partner801: { v: 9365, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-801-partner-permanent-visa', asOf: '2026-07-01' }
+    partner820: { v: 11710, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-820-partner-visa', asOf: '2026-07-01' },
+    partner801: { v: 0, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-801-partner-permanent-visa', asOf: '2026-07-01' }
   },
   estimates: {
     insurance: { v: [500, 800], src: '', asOf: '2026-07-01', est: true },
@@ -2308,14 +2308,14 @@ const DB = {
       name: 'E. 파트너 비자 (820/801)',
       summary: '호주 시민권·PR 파트너 또는 스폰서십 노동비자 파트너 · 장기 관계 증명',
       duration: '36–60개월+',
-      cost: 'AUD 9,365(820) → 9,365(801) 또는 1회 801',
+      cost: 'AUD 11,710 (820·801 결합 신청)',
       stages: [
         { name: '820 임시 파트너비자 (18–24개월)', months: 18 },
         { name: '801 파트너 PR 신청·처리', months: 12 }
       ],
       details: {
         requirements: ['파트너가 호주 시민권·PR 또는 스폰서십 노동비자 소지 · 12개월 동거(또는 증명 문서) · genuine & lasting 관계 입증(공동 계좌·임대차·결혼·자녀 등) · 파트너가 지난 5년 내 타인 스폰서 이력 없어야 함'],
-        costs: ['820: 9,365 · 801: 9,365 또는 일괄 신청'],
+        costs: ['820·801 결합 신청: from AUD 11,710 (대부분 신청자)'],
         processing: ['820: 6–12개월 · 801: 12개월+ (2단계 시 총 18–24개월)']
       }
     }
@@ -2468,11 +2468,11 @@ const DB = {
       choices: [
         {
           label: '파트너가 PR/시민권자',
-          result: '<strong>1단계:</strong> 820 임시 파트너비자(최대 24개월, AUD 9,365) · 동거 증명(공동 임대차·계좌) · genuine & lasting 관계 입증<br><strong>2단계:</strong> 12–18개월 후 801 파트너 영구거주권 신청 (12개월+ 처리)<br><strong>조건:</strong> 서류(결혼/동거 기록·공동 계좌·친구 편지) · 면접(관계 증명) · 파트너가 지난 5년 내 타인 스폰서 이력 없어야 함'
+          result: '<strong>1단계:</strong> 820 임시 파트너비자(801과 결합 신청 · from AUD 11,710) · 동거 증명(공동 임대차·계좌) · genuine & lasting 관계 입증<br><strong>2단계:</strong> 12–24개월 후 801 영구거주권 심사(820과 함께 낸 것 — 추가 비자비 없음)<br><strong>조건:</strong> 서류(결혼/동거 기록·공동 계좌·친구 편지) · 면접(관계 증명) · 파트너가 지난 5년 내 타인 스폰서 이력 없어야 함'
         },
         {
           label: '파트너가 스폰서십 노동비자 소지자',
-          result: '<strong>일반:</strong> Partner of a Worker 비자(820 유사, AUD 9,365) · 조건은 동일(동거 12개월 증명 등)<br><strong>오픈워크:</strong> 파트너 노동비자가 L1–3 + 표준 시급 이상이면 근로권 있음 · 없으면 근로 불가<br><strong>주의:</strong> 파트너의 비자 유형·조건부 확인 필수(L4–5면 근로권 없을 가능성)'
+          result: '<strong>일반:</strong> 스폰서 워크비자 소지자의 가족은 subsequent entrant 규칙(820/801과 별개) · 조건은 동일(동거 12개월 증명 등)<br><strong>오픈워크:</strong> 파트너 노동비자가 L1–3 + 표준 시급 이상이면 근로권 있음 · 없으면 근로 불가<br><strong>주의:</strong> 파트너의 비자 유형·조건부 확인 필수(L4–5면 근로권 없을 가능성)'
         },
         {
           label: '둘 다 임시비자 또는 서로 배우자 아님',
@@ -2965,9 +2965,9 @@ function recommend(input) {
   } else if (entry === 'partner') {
     notes.unshift(`<div style="font-weight: 700; margin-bottom: 0.25rem;">💚 파트너십 트랙</div>
       <ul class="jt-list" style="margin-bottom: 0.35rem;">
-        <li>파트너 워크비자(820) — AUD 9,365 · 6–12개월</li>
+        <li>820·801 결합 신청 — from AUD 11,710 · 6–12개월</li>
         <li>동거 12개월 채우기</li>
-        <li>파트너 영구거주권(801) — AUD 9,365 · 12개월+</li>
+        <li>801 영구거주권 심사 — 820과 함께 신청(추가비 없음) · 12개월+</li>
       </ul>아래 취업 트랙은 병행 참고용.`);
   }
 
@@ -3347,7 +3347,7 @@ const ENTRY_ADJUST = {
   'C-190': ['18–48개월', 'AUD 6,140'],
   'C-491': ['60–96개월', 'AUD 6,140'],
   'D': ['30–60개월', 'AUD 3,775'],
-  'E': ['36–60개월', 'AUD 9,365+'],
+  'E': ['36–60개월', 'AUD 11,710'],
   'B': ['48–96개월', 'AUD 10,250–79,890']
 };
 function entryAdjustedPathway(p, entry) {
@@ -4725,6 +4725,7 @@ function renderSnapshotTable() {
   // Fees
   html += `<tr><td colspan="5" style="background: var(--bg); font-weight: 700; padding: 0.8rem;">💳 비자 수수료 (From)</td></tr>`;
   Object.entries(DB.fees).forEach(([key, val]) => {
+    if (!val || !val.v) return; // 결합신청 등 별도청구 없는 항목 스킵
     const names = {
       whv417: '워홀 417 (첫 비자)',
       whv2nd: '세컨드 417',
@@ -4736,7 +4737,7 @@ function renderSnapshotTable() {
       points491: '지방 491',
       sid186: '482 (임시·스폰서)',
       ens186: '186 영주비자',
-      partner820: '파트너 820/801',
+      partner820: '파트너 820·801 (결합)',
       partner801: '파트너 801'
     };
     html += `<tr>
@@ -4781,7 +4782,7 @@ const SEARCH_INDEX = [
   { q: '189 영주권 포인트 계산 기술 독립', label: '포인트 계산기 (189/190/491)', desc: '나이·경력·학력·시험 → 포인트', go: 'diagnose', target: 'pointsCalc' },
   { q: '유학 학생비자 500 학비 교육 485 졸업', label: '유학 경유 경로', desc: '학비 포함 총 ~AUD 80–250k', go: 'diagnose', target: 'path-B' },
   { q: '시즌 수확 농장 픽킹 workaway', label: '시즌 워크 경로 — 농장·저축', desc: '6–12개월 · 최저 진입비용', go: 'diagnose', target: 'path-C' },
-  { q: '파트너 배우자 820 801 영주권 비자', label: '파트너 비자 경로', desc: '820 임시 2년 → 801 영주권 · 9,365', go: 'diagnose', target: 'path-D' },
+  { q: '파트너 배우자 820 801 영주권 비자', label: '파트너 비자 경로', desc: '820 임시 → 801 영주권 · from 11,710', go: 'diagnose', target: 'path-D' },
   { q: '영어 약한 IELTS 점수 시험 면제 5.0', label: '영어가 약해요', desc: '482는 5.0 · 189는 6.5 · AUD 490' , go: 'scenarios', target: 'sc-3' },
   { q: '고용주 거절 인증 Job Check 설득 TSMIT', label: '고용주 거절당했을 때', desc: 'TSMIT 79,423 검증 자료 · 비용' , go: 'scenarios', target: 'sc-1' },
   { q: '연봉 기준 미달 TSMIT 79,423 임금 시급', label: '연봉이 기준에 못 미칠 때', desc: '482 vs 189 임금 차이 · 협상 전략' , go: 'scenarios', target: 'sc-2' },
@@ -4814,7 +4815,7 @@ const SEARCH_INDEX = [
   { q: '세후 세금 PAYG 월급 주급 급여 계산', label: '세후 실수령 계산기', desc: '연봉·시급 → 세금 뺀 주급' , go: 'jobs', target: 'netPay' },
   { q: '한인회 커뮤니티 링크 대사관 상담 긴급', label: '커뮤니티·생활 링크', desc: '한인·공식 지원 기관 35곳' , go: 'settle', target: 'links' },
   { q: '언제 출국 시기 타이밍 몇월 시즌 캘린더', label: '언제 가는 게 좋은가', desc: '월별 시즌·일자리 캘린더' , go: 'settle', target: 'timing' },
-  { q: '파트너 연애 결혼 동거 820 801', label: '파트너가 생겼을 때', desc: '820 임시 · 801 영주권 · 9,365' , go: 'scenarios', target: 'sc-7' },
+  { q: '파트너 연애 결혼 동거 820 801', label: '파트너가 생겼을 때', desc: '820·801 결합 · from 11,710' , go: 'scenarios', target: 'sc-7' },
   { q: '나이 36 37 38 35 넘음 워홀 없이 진입', label: '35세+ 워홀 없이 진입', desc: '482/189/학생비자 3루트' , go: 'scenarios', target: 'sc-8' },
   { q: '로드맵 경로 비교 전체 타임라인', label: '전체 경로 비교', desc: '4개 경로 기간·비용 비교' , go: 'diagnose', target: 'fullRoadmaps' },
   { q: '홈 대시보드 환율 항공권 시차', label: '홈 대시보드', desc: '환율·항공·비자 D-day 한눈에' , go: 'home', target: null }
@@ -4908,11 +4909,11 @@ const GLOSSARY = [
   ['SID(482)', 'Skills in Demand — 고용주 스폰서 임시 워크비자 · CSIT(2026-07 AUD 79,423) 이상 · 최대 4년'],
     ['ENS(186)', 'Employer Nomination Scheme — 영주비자 · 482로 2년 적격 근무 후 고용주 지명(TRT)'],
   ['485', '졸업비자(Graduate Visa) — 학위(학사 이상) 취득 후 최대 3년 오픈워크 · 35세 이하'],
-  ['500', '학생비자 — 12–20개월 과정 기준, 학기 중 48시간/주, 방학 중 무제한 근로 가능'],
-  ['CSOL', 'Critical Skills Occupation List — 호주 인력난 직업 목록 · 포인트 비자(189/190/491) 신청 필수'],
+  ['500', '학생비자 — 수업 기간 중 2주(fortnight)당 48시간, 방학 중 무제한(연구석사·박사 예외)'],
+  ['CSOL', 'Core Skills Occupation List — 482 Core Skills·186 Direct Entry 대상 목록. 포인트 비자(189/190/491)는 subclass별 eligible occupation 별도 확인'],
   ['189/190/491', '포인트비자 — 나이·영어·경력·학력으로 포인트 계산, 최소 65점 필요 · 직업별 컷 상향(일반 95+)'],
-  ['DAMA', 'Designated Area Migration Agreement — 지정 지역(시골·외곽) 근무 시 485에서 추가 2년 근로권 가능'],
-  ['820/801', '파트너 비자 — 호주 시민·PR·SID/186 소지자 파트너의 경우 12개월 동거 증명 후 신청'],
+  ['DAMA', 'Designated Area Migration Agreement — 정부·지역 간 노동협약. 개인은 지정지역 고용주 스폰서 통해 482/494/186로 접근(485 연장 제도 아님)'],
+  ['820/801', '파트너 비자 — 스폰서는 호주 시민·PR·eligible NZ citizen. 임시비자 소지자의 가족은 subsequent entrant/dependant 규칙(별도)'],
   ['Genuine & Lasting', '파트너십 비자의 관계 진정성 기준 — 공동 계좌·임대차·결혼·자녀 등 증거로 입증'],
   ['Fair Work', '호주 최저임금·판매조건 규제 기관 — 시급 26.44(2026-07 기준)'],
   ['AHPRA/NMBA', '호주 간호사·의료 전문가 등록 기관 — 해외 학위 인정, IELTS 7.0+ 필수'],
