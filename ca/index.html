@@ -1751,8 +1751,9 @@ details.fold:not([open]) > .fold-body { display: none; }
     <div id="citiesContainer"></div>
 
     <details class="fold" id="links">
-      <summary><span class="fold-title">🔗 커뮤니티·생활 링크</span><span class="fold-sub">38곳 — 한인·일본·아시안·공식·긴급·실용 (전부 접속 확인)</span></summary>
+      <summary><span class="fold-title">🔗 리소스 허브 — 흩어진 정보를 한곳에</span><span class="fold-sub">한인 커뮤니티·구직·공식·후기 등 검증 링크 (2026-07-13 접속 확인)</span></summary>
       <div class="fold-body">
+        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.6;">CA NAVI는 <strong>비자 경로를 진단하고 계산</strong>합니다. 실시간 구인·현지 Q&amp;A·생생한 후기는 각자 흩어진 아래 검증된 곳이 강합니다 — 상황별로 모았습니다. <span style="color: var(--brand-deep); font-weight: 600;">이민 에이전시와 제휴 없음 · 전 링크 접속 확인.</span></p>
         <div class="link-grid" id="linkGrid"></div>
       </div>
     </details>
@@ -3100,62 +3101,56 @@ function renderCities() {
 // ===== v29 커뮤니티·생활 링크 (2026-07-09 전 링크 실접속 검증) =====
 const LINKS_DB = [
   {
-    cat: '🇰🇷 한인 — 공식·단체', items: [
-      { n: '주캐나다 대사관', u: 'https://overseas.mofa.go.kr/ca-en/index.do', d: '오타와 · 여권·영사·재외국민 등록' },
-      { n: '토론토 총영사관', u: 'https://toronto.mofa.go.kr/ca-toronto-en/index.do', d: '토론토 · 온타리오·매니토바 영사 서비스' },
-      { n: '밴쿠버 총영사관', u: 'https://vancouver.mofa.go.kr/ca-vancouver-en/index.do', d: '밴쿠버 · BC·AB·SK·YT·NWT 영사 서비스' },
-      { n: '토론토 한인회', u: 'https://kccatoronto.ca/', d: '토론토 및 GTA 한인 커뮤니티 중심' },
-      { n: 'BC 밴쿠버 한인회', u: 'https://koreansocietybc.org/', d: '밴쿠버 지역 한인 네트워킹' },
-      { n: '캐나다 한인 상담 네트워크', u: 'https://cafe.daum.net/skc67', d: '캐스모 · 구인구직·주택·이민 상담' }
+    cat: '🏘️ 한인 커뮤니티 (실시간 구인·셰어·Q&A)', items: [
+      { n: '헤이코리안', u: 'https://www.heykorean.com/', d: '북미 최대 한인 — 구인·셰어·Q&A 앱' },
+      { n: 'Koreans in Canada (FB)', u: 'https://www.facebook.com/groups/KoreansinCanada', d: '캐나다 한인 대형 그룹 — 실시간 정보·구인' },
+      { n: '밴쿠버 K타운', u: 'https://vancouverktown.com/', d: '밴쿠버 한인 포털 — 구인·부동산·마켓' },
+      { n: '토론토 K타운', u: 'https://torontoktown.com/', d: '토론토 한인 포털 — 구인·셰어·업소록' }
     ]
   },
   {
-    cat: '🇰🇷 한인 — 커뮤니티·뉴스', items: [
-      { n: '우리는 벤쿠버 유학생', u: 'https://cafe.daum.net/ourvancouver', d: '밴쿠버 유학생 커뮤니티 · 주택·이민·비자' },
-      { n: '토론토 한인 일자리', u: 'https://cafe.daum.net/toronto-jobs', d: '토론토 한인 구인구직 정보' },
-      { n: '캐나다 이민 블로그', u: 'https://www.settlementcounsel.ca/', d: '정착 초기 안내 · 한국어 자료' },
-      { n: '한인 문화원 밴쿠버', u: 'https://www.koreanculturalcentre.ca/', d: '한국 문화·언어·전시' },
-      { n: '온타리오 한글학교 협회', u: 'https://www.kasa.ca/', d: '한글·한국문화 교육 (온타리오)' }
+    cat: '🇰🇷 한인 공식·단체', items: [
+      { n: '주캐나다 대사관 (오타와)', u: 'https://overseas.mofa.go.kr/ca-ko/index.do', d: '여권·영사·재외국민 등록' },
+      { n: '토론토 총영사관', u: 'https://overseas.mofa.go.kr/ca-toronto-ko/index.do', d: '온타리오·매니토바 관할' },
+      { n: '밴쿠버 총영사관', u: 'https://overseas.mofa.go.kr/ca-vancouver-ko/index.do', d: 'BC·유콘 관할' }
     ]
   },
   {
-    cat: '🏛️ 정착 행정 (공식)', items: [
-      { n: 'Canada.ca 이민자 안내', u: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/newcomers.html', d: '주거·은행·의료·교육 공식 안내' },
-      { n: 'SIN 신청 (신규 입국)', u: 'https://www.canada.ca/en/employment-social-development/services/sin.html', d: '사회보험번호 — 도착 후 필수' },
-      { n: 'CRA 개인 세무 계정', u: 'https://www.canada.ca/en/revenue-agency.html', d: '세금 계정 개설·RRSP·TFSAMyAccount' },
-      { n: '임차인 권리 (주별)', u: 'https://www.ontario.ca/page/renting-ontario', d: '온타리오 임대차법·보증금·분쟁 해결' },
-      { n: '정부 무료 통역', u: 'https://www.settlementcounsel.ca/interpretation/', d: '정부 기관 이용 시 한국어 통역' },
-      { n: 'Canada.ca 포털', u: 'https://www.canada.ca/', d: '정부 서비스 통합 포털' }
+    cat: '💼 구직 (잡보드)', items: [
+      { n: 'Indeed Canada', u: 'https://ca.indeed.com/', d: '캐나다 최대 — 급여·회사 리뷰' },
+      { n: 'Job Bank (정부)', u: 'https://www.jobbank.gc.ca/', d: '정부 공식 구인 · 노동시장 데이터' },
+      { n: 'Kijiji', u: 'https://www.kijiji.ca/', d: '로컬 구인·셰어·중고 최대' }
     ]
   },
   {
-    cat: '🆘 상담·긴급·의료', items: [
-      { n: '긴급 911 (모든 주)', u: 'https://www.rcmp-grc.gc.ca/', d: '경찰·소방·구급 — 캐나다 공통' },
-      { n: '건강 상담 (주별)', u: 'https://www.ontario.ca/page/healthline', d: '24시간 무료 건강상담 (주별 상이)' },
-      { n: '정착 지원 기관 찾기', u: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/new-immigrants/services-support.html', d: '자원봉사 기관·상담 센터 검색' },
-      { n: '이민 법률 상담', u: 'https://www.immigrationlawyerscanada.ca/', d: '공인 이민변호사 찾기' },
-      { n: '멘탈헬스 상담', u: 'https://www.camh.ca/', d: 'CAMH · 정신건강 비상 지원' },
-      { n: '법률 원조', u: 'https://www.lawhelponline.org/', d: '저소득층 무료 법률 서비스' }
+    cat: '🏛️ 공식 (정부·비자·세금)', items: [
+      { n: 'IRCC (이민청)', u: 'https://ircc.canada.ca/', d: '비자·Express Entry·워홀 공식' },
+      { n: '신규이민자 (Canada.ca)', u: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/new-immigrants.html', d: '정착 가이드 · 주거·은행·의료' },
+      { n: 'CRA (국세청)', u: 'https://www.canada.ca/en/revenue-agency.html', d: 'SIN·세금·환급' },
+      { n: '외교부 워홀인포', u: 'https://whic.mofa.go.kr/', d: '한국→캐나다 IEC 공식 안내' },
+      { n: 'BC PNP (주정부)', u: 'https://www.welcomebc.ca/immigrate-to-b-c/b-c-provincial-nominee-program', d: 'BC 주정부 지명 영주권' }
     ]
   },
   {
-    cat: '🧰 생활 실용', items: [
-      { n: 'Indeed 캐나다', u: 'https://ca.indeed.com/', d: '최대 취업 사이트 · 전국 공고' },
-      { n: 'Job Bank (정부)', u: 'https://www.jobbank.gc.ca/', d: '캐나다 정부 공식 일자리 정보' },
-      { n: 'Kijiji', u: 'https://www.kijiji.ca/', d: '중고·렌트·구인 국민 플랫폼' },
-      { n: 'Rentals.ca', u: 'https://www.rentals.ca/', d: '아파트·주택 렌트 전문 사이트' },
-      { n: '에너지 비교 도구', u: 'https://www.energyrates.ca/', d: '전기·가스 요금 비교 — 절감 팁' },
-      { n: 'Environment Canada', u: 'https://www.weathernetwork.com/', d: '기상청 · 날씨·경보' }
+    cat: '🆘 상담·긴급·정착', items: [
+      { n: '긴급 911', u: 'https://www.canada.ca/en/services/policing.html', d: '경찰·소방·구급 즉시' },
+      { n: '211 Canada', u: 'https://211.ca/', d: '24/7 정착·주거·고용·정신건강 안내' },
+      { n: 'Settlement.Org (온타리오)', u: 'https://settlement.org/', d: '정착 정보·상담·취업(OCASI)' },
+      { n: 'WES (학력 인증)', u: 'https://www.wes.org/ca/', d: 'IRCC 인정 국제 학력 평가(ECA)' }
     ]
   },
   {
-    cat: '🚗 이동·금융·통신', items: [
-      { n: 'ServiceOntario (ON)', u: 'https://www.ontario.ca/page/service-ontario', d: '운전면허·자동차 등록 (온타리오)' },
-      { n: 'ICBC (BC)', u: 'https://www.icbc.com/', d: '자동차보험 및 등록 (BC)' },
-      { n: '주 은행 (Big 5)', u: 'https://www.rbc.com/', d: 'RBC · TD · Scotiabank · BMO · CIBC' },
-      { n: 'TransferWise (Wise)', u: 'https://wise.com/', d: '국제 송금 · 한국 계좌 이체' },
-      { n: '통신사 비교', u: 'https://www.whistleout.ca/Cell-Phones', d: 'Rogers · Bell · Telus · 알뜰폰 비교' },
-      { n: '신용 보고서 조회', u: 'https://www.equifax.ca/', d: 'Equifax · 신용도 모니터링' }
+    cat: '📺 후기·도구 (유튜브·트래커)', items: [
+      { n: '유튜브 캐나다워홀 검색', u: 'https://www.youtube.com/results?search_query=%EC%BA%90%EB%82%98%EB%8B%A4%EC%9B%8C%ED%99%80', d: '현지 워홀러 일상·구직·정착 최신 영상' },
+      { n: '브런치 캐나다이민', u: 'https://brunch.co.kr/keyword/%EC%BA%90%EB%82%98%EB%8B%A4%EC%9D%B4%EB%AF%BC', d: '정착기·비자전략 장문 에세이' },
+      { n: 'CanadaVisa', u: 'https://www.canadavisa.com/', d: '드로우 뉴스·CRS 도구·PNP 파인더' }
+    ]
+  },
+  {
+    cat: '🧰 생활 실용 (셰어·부동산)', items: [
+      { n: 'Kijiji 렌트', u: 'https://www.kijiji.ca/b-apartments-condos/canada/', d: '방셰어·아파트 렌트 최대' },
+      { n: 'rentals.ca', u: 'https://rentals.ca/', d: '렌트 시세·매물 포털' },
+      { n: 'Newcomers Hub', u: 'https://newcomershub.com/', d: '신규이민자 정착 — 교육·보건·은행' }
     ]
   }
 ];

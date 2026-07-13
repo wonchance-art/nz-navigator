@@ -1758,8 +1758,9 @@ details.fold:not([open]) > .fold-body { display: none; }
     <div id="citiesContainer"></div>
 
     <details class="fold" id="links">
-      <summary><span class="fold-title">🔗 커뮤니티·생활 링크</span><span class="fold-sub">38곳 — 한인·일본·아시안·공식·긴급·실용 (전부 접속 확인)</span></summary>
+      <summary><span class="fold-title">🔗 리소스 허브 — 흩어진 정보를 한곳에</span><span class="fold-sub">한인 커뮤니티·구직·공식·후기 등 검증 링크 (2026-07-13 접속 확인)</span></summary>
       <div class="fold-body">
+        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.6;">AU NAVI는 <strong>비자 경로를 진단하고 계산</strong>합니다. 실시간 구인·현지 Q&amp;A·생생한 후기는 각자 흩어진 아래 검증된 곳이 강합니다 — 상황별로 모았습니다. <span style="color: var(--brand-deep); font-weight: 600;">이민 에이전시와 제휴 없음 · 전 링크 접속 확인.</span></p>
         <div class="link-grid" id="linkGrid"></div>
       </div>
     </details>
@@ -3120,51 +3121,60 @@ function renderCities() {
 // ===== v29 커뮤니티·생활 링크 (2026-07-09 전 링크 실접속 검증) =====
 const LINKS_DB = [
   {
-    cat: '🇰🇷 한인 — 공식·단체', items: [
-      { n: '주호주 대사관 (캔버라)', u: 'https://aus.mofa.go.kr/en/index.do', d: '대사관 · 여권·영사·재외국민 등록' },
-      { n: '시드니 총영사관', u: 'https://sydney.mofa.go.kr/', d: '시드니·뉴캐슬·멜버른(관할)' },
-      { n: '멜버른 총영사관', u: 'https://melbourne.mofa.go.kr/', d: '멜버른·태즈마니아·남호주' },
-      { n: '호주한인회 (KACA)', u: 'https://www.kaca.org.au/', d: '전국 한인회 연합 · 행사·상담' },
-      { n: '시드니 한인회', u: 'https://www.sydney-korean.org.au/', d: '최대 한인 커뮤니티' },
-      { n: '멜버른 한인회', u: 'https://www.melbourne-korean.org.au/', d: '멜버른 지역 한인 단체' }
+    cat: '🏘️ 한인 커뮤니티 (실시간 구인·셰어·Q&A)', items: [
+      { n: '마이호주', u: 'https://myhoju.com.au/', d: '호주 최대 한인 생활 포털 — 일자리·부동산·업체·거래' },
+      { n: '호주바다', u: 'https://hojubada.com/', d: '멜버른 최대 — 구인·셰어·중고·의뢰 실시간' },
+      { n: '우리멜번', u: 'https://woorimel.com/', d: '멜버른 통합 — 취업·부동산·자유게시판' },
+      { n: '아이러브호주 (네이버)', u: 'https://cafe.naver.com/airloveaus', d: '수십만 카페 — 선배 워홀러 경험담·팁' },
+      { n: '헤이코리안', u: 'https://www.heykorean.com/', d: '북미·세계 한인 — 구인·셰어·Q&A 앱' }
     ]
   },
   {
-    cat: '🇰🇷 한인 — 정보·뉴스', items: [
-      { n: '호주나라', u: 'https://www.ozkorea.com/', d: '호주 한인 포털 · 구인·뉴스·게시판' },
-      { n: '코리안 비즈 네트워크', u: 'https://www.kbnetwork.com.au/', d: '한인 비즈니스·채용·커뮤니티' },
-      { n: 'AUS 코리안 포럼', u: 'https://auskoreanforum.com/', d: '유학·이민 정보 포럼' },
-      { n: '호주 한국일보', u: 'https://www.koreadailys.com.au/', d: '호주 한인 뉴스' },
-      { n: '호주 한인 페이스북 그룹', u: 'https://www.facebook.com/groups/auskoreans/', d: '대형 한인 커뮤니티' }
+    cat: '🇰🇷 한인 공식·단체', items: [
+      { n: '주호주 대사관 (캔버라)', u: 'https://aus.mofa.go.kr/en/index.do', d: '여권·영사·재외국민 등록' },
+      { n: '시드니 총영사관', u: 'https://sydney.mofa.go.kr/', d: '시드니·뉴캐슬 관할' },
+      { n: '멜버른 총영사관', u: 'https://melbourne.mofa.go.kr/', d: '멜버른·남호주·태즈마니아' },
+      { n: '호주한인회 (KACA)', u: 'https://www.kaca.org.au/', d: '전국 한인회 연합 · 행사·상담' }
     ]
   },
   {
-    cat: '🏛️ 정착 행정 (공식)', items: [
-      { n: '이민청 (Home Affairs)', u: 'https://immi.homeaffairs.gov.au/', d: '비자·이민 공식 사이트 · TFN 신청' },
-      { n: 'Services Australia', u: 'https://www.servicesaustralia.gov.au/', d: '정부 지원금·Medicare·복지 포털' },
-      { n: 'Fair Work Ombudsman', u: 'https://www.fairwork.gov.au/', d: '최저임금·근로 기준·분쟁 해결' },
-      { n: '국세청 (ATO)', u: 'https://www.ato.gov.au/', d: 'TFN 신청·세금·조세 기준' },
-      { n: '호주통계청 (ABS)', u: 'https://www.abs.gov.au/', d: '임금·고용·주택 지표' },
-      { n: 'Centrelink', u: 'https://www.servicesaustralia.gov.au/centrelink', d: '실업 급여·재교육 지원' }
+    cat: '💼 구직 (잡보드)', items: [
+      { n: 'Seek', u: 'https://www.seek.com.au/', d: '호주 최대 — 정규직·사무직 압도적' },
+      { n: 'Indeed', u: 'https://au.indeed.com/', d: '통합 구인 · 급여·회사 리뷰' },
+      { n: 'Backpacker Job Board', u: 'https://www.backpackerjobboard.com.au/', d: '워홀 전담 · 농장·수확·88일 요건' },
+      { n: 'Gumtree', u: 'https://www.gumtree.com.au/', d: '로컬 구인·셰어·중고 통합' }
+    ]
+  },
+  {
+    cat: '🏛️ 공식 (정부·비자·세금·노동)', items: [
+      { n: '이민청 (Home Affairs)', u: 'https://immi.homeaffairs.gov.au/', d: '비자·처리상태·조건 공식' },
+      { n: '국세청 (ATO)', u: 'https://www.ato.gov.au/', d: 'TFN·워홀러 세금·환급' },
+      { n: 'Fair Work', u: 'https://www.fairwork.gov.au/', d: '최저임금·근로기준·분쟁' },
+      { n: '외교부 워홀인포', u: 'https://whic.mofa.go.kr/', d: '한국→호주 워홀 비자 공식 안내' },
+      { n: 'Services Australia', u: 'https://www.servicesaustralia.gov.au/', d: 'Medicare·복지 포털' }
     ]
   },
   {
     cat: '🆘 상담·긴급·의료', items: [
-      { n: '긴급 000 · 비긴급 131 444', u: 'https://www.000.gov.au/', d: '경찰·소방·구급 — 즉시' },
-      { n: 'Lifeline 13 11 14', u: 'https://www.lifeline.org.au/', d: '24시간 위기상담 — 한국어 통역 문의' },
-      { n: 'Australian Medical Services', u: 'https://www.ahpra.gov.au/', d: '의료진 자격 확인 (간호사·의사)' },
-      { n: 'Community Legal Centres', u: 'https://www.clcnsw.org.au/', d: '무료 법률 상담 · 고용·이민 분쟁' },
-      { n: '1800RESPECT (성폭력 대응)', u: 'https://www.1800respect.org.au/', d: '성폭력·가정폭력 24시간 지원' }
+      { n: '긴급 000 · 비긴급 131 444', u: 'https://www.triplezero.gov.au/', d: '경찰·소방·구급 즉시' },
+      { n: 'Lifeline 13 11 14', u: 'https://www.lifeline.org.au/', d: '24시간 위기상담 · 통역 문의' },
+      { n: 'Community Legal Centres', u: 'https://www.naclc.org.au/', d: '무료 법률 — 고용·임차 분쟁' },
+      { n: 'AHPRA', u: 'https://www.ahpra.gov.au/', d: '의료진 자격 확인' }
     ]
   },
   {
-    cat: '🧰 생활 실용', items: [
-      { n: 'Seek', u: 'https://www.seek.com.au/', d: '최대 취업 사이트 · 정규직 공고' },
-      { n: 'Indeed', u: 'https://au.indeed.com/', d: '구직·시간제 일자리 포털' },
-      { n: 'Gumtree', u: 'https://www.gumtree.com.au/', d: '중고·렌트·구인 국민 플랫폼' },
-      { n: 'Flatmates', u: 'https://flatmates.com.au/', d: '방셰어·단기 렌트 전문' },
-      { n: 'Domain / realestate.com.au', u: 'https://www.domain.com.au/', d: '부동산·렌트 포털' },
-      { n: 'Backpacker Job Board', u: 'https://www.backpackerjobboard.com.au/', d: '워홀러 시즌 일자리·수확' }
+    cat: '📺 후기·도구 (유튜브·블로그·트래커)', items: [
+      { n: '유튜브 호주워홀 검색', u: 'https://www.youtube.com/results?search_query=%ED%98%B8%EC%A3%BC%EC%9B%8C%ED%99%80', d: '현지 워홀러 일상·구직·월급 최신 영상' },
+      { n: '브런치 호주이민', u: 'https://brunch.co.kr/keyword/%ED%98%B8%EC%A3%BC%EC%9D%B4%EB%AF%BC', d: '정착기·비자전략 장문 에세이' },
+      { n: 'ImmiTracker', u: 'https://myimmitracker.com/', d: '비자 처리기간·심사단계 통계 추적' },
+      { n: 'ISCAH', u: 'https://www.iscah.com.au/', d: '이민상담사 · 포인트·드로우 자료' }
+    ]
+  },
+  {
+    cat: '🧰 생활 실용 (셰어·부동산)', items: [
+      { n: 'Flatmates', u: 'https://flatmates.com.au/', d: '방셰어·플랫셰어 전문 필터' },
+      { n: 'realestate.com.au', u: 'https://www.realestate.com.au/', d: '부동산·렌트 시세 최대 포털' },
+      { n: 'Domain', u: 'https://www.domain.com.au/', d: '렌트·부동산 대안 포털' }
     ]
   }
 ];

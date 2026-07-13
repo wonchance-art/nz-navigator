@@ -1777,8 +1777,9 @@ details.fold:not([open]) > .fold-body { display: none; }
     </details>
 
     <details class="fold" id="links">
-      <summary><span class="fold-title">🔗 コミュニティ・生活リンク</span><span class="fold-sub">29箇所 — 日本・アジア・公式・緊急・実用 (すべてアクセス確認)</span></summary>
+      <summary><span class="fold-title">🔗 リソースハブ — 散らばった情報を一箇所に</span><span class="fold-sub">日本・アジアのコミュニティ・求人・公式・体験談など検証済みリンク</span></summary>
       <div class="fold-body">
+        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.6;">NZ NAVIは<strong>ビザ経路の診断と計算</strong>を担います。リアルタイム求人・現地Q&amp;A・生の体験談は、それぞれ散らばった下記の検証済みサイトが強い — 状況別にまとめました。<span style="color: var(--brand-deep); font-weight: 600;">移民エージェントとの提携なし。</span></p>
         <div class="link-grid" id="linkGrid"></div>
       </div>
     </details>
@@ -3179,6 +3180,20 @@ const LINKS_DB = [
       { n: 'MetService', u: 'https://www.metservice.com/', d: '気象庁 · 天気・警報' },
       { n: 'NZTA 車両登録', u: 'https://www.nzta.govt.nz/vehicles/vehicle-registration', d: '中古車購入時の名義変更・登録' },
       { n: 'ANZ 移民者向けバンキング', u: 'https://www.anz.co.nz/personal/accounts/everyday-banking/migrant-banking-package/', d: '入国前の口座開設可能パッケージ' }
+    ]
+  },
+  {
+    cat: '💼 求人 (ジョブボード)', items: [
+      { n: 'Trade Me Jobs', u: 'https://www.trademe.co.nz/a/jobs', d: 'NZ最大の求人・シェア・売買' },
+      { n: 'Seek', u: 'https://www.seek.co.nz/', d: 'NZ最大級の求人サイト' },
+      { n: 'Backpacker Job Board', u: 'https://www.backpackerjobboard.co.nz/', d: 'ワーホリ専門・農場・シーズン' }
+    ]
+  },
+  {
+    cat: '📺 体験談・情報 (YouTube・ブログ)', items: [
+      { n: 'YouTube ニュージーランド ワーホリ', u: 'https://www.youtube.com/results?search_query=%E3%83%8B%E3%83%A5%E3%83%BC%E3%82%B8%E3%83%BC%E3%83%A9%E3%83%B3%E3%83%89+%E3%83%AF%E3%83%BC%E3%83%9B%E3%83%AA', d: '現地ワーホリの日常・仕事探し・生活費' },
+      { n: 'note ニュージーランド', u: 'https://note.com/search?q=%E3%83%8B%E3%83%A5%E3%83%BC%E3%82%B8%E3%83%BC%E3%83%A9%E3%83%B3%E3%83%89%E7%A7%BB%E4%BD%8F', d: '定住記・ビザ戦略の体験エッセイ' },
+      { n: 'JAWHM (ワーホリ協会)', u: 'https://www.jawhm.or.jp/', d: '公式協会・国別ビザ情報・セミナー' }
     ]
   }
 ];
