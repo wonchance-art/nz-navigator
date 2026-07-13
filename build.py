@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""볼트 원본(Artifact 규격: doctype/head/body 없음)을 정식 HTML 문서로 래핑 — 한국어판 + 일본어판."""
+"""볼트 원본(Artifact 규격: doctype/head/body 없음)을 정식 HTML 문서로 래핑.
+구조: / = 통합 홈(허브) · /nz/ = NZ ko · /ja/ = NZ ja · /ca/ = CA · /au/ = AU."""
 import pathlib
 
 VAULT = pathlib.Path.home() / 'Library/Mobile Documents/iCloud~md~obsidian/Documents/nz'
@@ -7,16 +8,31 @@ ROOT = pathlib.Path(__file__).parent
 
 PAGES = [
     {
-        'src': VAULT / 'index.html',
+        'src': VAULT / 'index.hub.html',
         'out': ROOT / 'index.html',
+        'lang': 'ko',
+        'title': 'NAVI — 어느 나라로 워홀·영주권?',
+        'meta': '''<meta name="description" content="뉴질랜드·캐나다·호주 중 내 영주권에 유리한 나라·경로를 3분 진단. 나이·워홀 사용 이력·경력·직군으로 국가별 유리도를 산출합니다.">
+<meta property="og:title" content="NAVI — 어느 나라로 워홀·영주권?">
+<meta property="og:description" content="뉴질랜드·캐나다·호주 — 내 영주권에 유리한 나라와 경로를 순서로.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/">
+<meta property="og:image" content="https://wonchance-art.github.io/nz-navigator/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">''',
+    },
+    {
+        'src': VAULT / 'index.html',
+        'out': ROOT / 'nz' / 'index.html',
         'lang': 'ko',
         'title': 'NZ NAVI',
         'meta': '''<meta name="description" content="뉴질랜드 체류 설계도 — 비자·영주권 로드맵, 시나리오, 직군·도시 가이드, 비용 계산기. 2026-07 공식 검증 데이터.">
 <meta property="og:title" content="NZ NAVI — 뉴질랜드 영주권 내비게이터">
 <meta property="og:description" content="어떤 비자로 오든 — 영주권까지의 조건·비용·타임라인을 설계합니다.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/">
-<meta property="og:image" content="https://wonchance-art.github.io/nz-navigator/og-image.png">
+<meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/nz/">
+<meta property="og:image" content="https://wonchance-art.github.io/nz-navigator/nz/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">''',
@@ -69,9 +85,6 @@ PAGES = [
 ]
 
 for p in PAGES:
-    if p.get('skip'):
-        print(f"skip — {p['title']} (비활성)")
-        continue
     if not p['src'].exists():
         print(f"skip — {p['src']} 없음")
         continue

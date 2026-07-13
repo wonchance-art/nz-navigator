@@ -994,7 +994,8 @@ select {
     padding: 0.22rem 0.5rem;
   }
 
-  .lang-link:first-of-type { right: 6.6rem; }
+  .lang-link:nth-of-type(2) { right: 6.6rem; }
+  .lang-link:first-of-type { right: 9.2rem; }
 
   .lang-link .lang-label { display: none; }
 
@@ -1350,8 +1351,9 @@ details.fold:not([open]) > .fold-body { display: none; }
       <button class="tab" data-tab="scenarios">시나리오</button>
       <button class="tab" data-tab="snapshot">정책 현황</button>
     </div>
-    <a class="lang-link" href="../" aria-label="뉴질랜드판">🥝 <span class="lang-label">NZ판</span></a>
-    <a class="lang-link" href="../au/" aria-label="호주판">🦘 <span class="lang-label">AU판</span></a>
+    <a class="lang-link" href="../" aria-label="통합 홈">🌏 <span class="lang-label">홈</span></a>
+    <a class="lang-link" href="../nz/" aria-label="뉴질랜드판">🥝 <span class="lang-label">NZ</span></a>
+    <a class="lang-link" href="../au/" aria-label="호주판">🦘 <span class="lang-label">AU</span></a>
     <button class="search-toggle" onclick="toggleHeaderSearch()" aria-label="키워드 검색 열기">🔍</button>
   </div>
   <div class="header-search-row" id="headerSearchRow">

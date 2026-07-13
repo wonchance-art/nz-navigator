@@ -994,9 +994,11 @@ select {
     padding: 0.22rem 0.5rem;
   }
 
+  .lang-link:first-of-type { right: 6.6rem; }
+
   .lang-link .lang-label { display: none; }
 
-  .logo { align-self: flex-start; max-width: calc(100% - 8rem); font-size: 1.12rem; }
+  .logo { align-self: flex-start; max-width: calc(100% - 11rem); font-size: 1.12rem; }
 
   /* mobile readability */
   .card { padding: 1rem; }
@@ -1348,7 +1350,8 @@ details.fold:not([open]) > .fold-body { display: none; }
       <button class="tab" data-tab="scenarios">シナリオ</button>
       <button class="tab" data-tab="snapshot">政策動向</button>
     </div>
-    <a class="lang-link" href="../" aria-label="韓国語版">🇰🇷 <span class="lang-label">한국어</span></a>
+    <a class="lang-link" href="../" aria-label="ホーム">🌏 <span class="lang-label">ホーム</span></a>
+    <a class="lang-link" href="../nz/" aria-label="韓国語版">🇰🇷 <span class="lang-label">한국어</span></a>
     <button class="search-toggle" onclick="toggleHeaderSearch()" aria-label="キーワード検索を開く">🔍</button>
   </div>
   <div class="header-search-row" id="headerSearchRow">
