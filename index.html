@@ -132,6 +132,13 @@ footer a { color: var(--brand); font-weight: 700; text-decoration: none; }
 .rank.nz .occ-list { background: var(--nz-bg); color: var(--nz); } .rank.ca .occ-list { background: var(--ca-bg); color: var(--ca); } .rank.au .occ-list { background: var(--au-bg); color: var(--au); }
 .occ-sal { font-size: 0.82rem; font-weight: 700; color: var(--ink); margin: 0.15rem 0; }
 .occ-why { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+.occ-prep { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--line); }
+.prep-path { font-size: 0.78rem; font-weight: 700; color: var(--ink); margin-bottom: 0.3rem; }
+.prep-nums { display: flex; flex-wrap: wrap; gap: 0.25rem 0.9rem; font-size: 0.78rem; color: var(--muted); }
+.prep-nums .pc b { color: var(--ink); }
+.prep-total { margin-top: 0.35rem; font-size: 0.82rem; font-weight: 600; }
+.rank.nz .prep-total b { color: var(--nz); } .rank.ca .prep-total b { color: var(--ca); } .rank.au .prep-total b { color: var(--au); }
+.pc-note { color: var(--muted); font-size: 0.72rem; font-weight: 400; }
 
 /* 3개국 비교표 */
 .cmp-wrap { margin-top: 1.7rem; }
@@ -330,12 +337,12 @@ const INTEL = {
       { key: 'D', label: 'D. Care 협약', steps: [{ label: '워홀', months: 12 }, { label: 'Care 근무', months: 24 }, { label: '영주권', months: 4 }], totalMonthsMin: 36, totalMonthsTypical: 40, note: '요양·간호보조 · 등록 불필요 · 최저비용 경로.' }
     ],
     topOccupations: [
-      { name: '소프트웨어 개발자', field: 'it', salary: 'NZD 80,000~120,000+', listStatus: 'Green List T1', whyPR: '학사+잡오퍼만으로 경력 없이 즉시 영주권 · 최단 15~24개월.' },
-      { name: '등록간호사(RN)', field: 'health', salary: 'NZD 85,000~95,000', listStatus: 'Green List T1', whyPR: '4,800명+ 부족 · NCNZ 등록 후 즉시 영주권 신청.' },
-      { name: '전기공·용접공', field: 'trade', salary: 'NZD 75,000~110,000', listStatus: 'Green List T2', whyPR: '24개월 숙련 근무 후 신청 · 인프라 붐으로 수요 지속.' },
-      { name: '중등교사', field: 'primary', salary: 'NZD 70,000~80,000', listStatus: 'Green List T1', whyPR: '710명 부족 · 교원자격 인정+잡오퍼면 즉시 신청.' },
-      { name: '엔지니어(토목·전기)', field: 'engineer', salary: 'NZD 78,700~138,000', listStatus: 'Green List T1', whyPR: '다수 직종 GL T1 · ABEEK 인증 학위 동등성 유리.' },
-      { name: '낙농·축산 매니저', field: 'trade', salary: 'NZD 71,500~87,000', listStatus: 'Green List T2', whyPR: '매니저 승진 시 GL T2 · 연 4,000명 구조적 부족.' }
+      { name: '소프트웨어 개발자', field: 'it', salary: 'NZD 80,000~120,000+', listStatus: 'Green List T1', whyPR: '학사+잡오퍼만으로 경력 없이 즉시 영주권 · 최단 15~24개월.', prep: { path: '라이선스 불필요 (학위검증 선택)', hold: { m: 1, cost: 'NZD 0.5~1천' }, no: { m: 48, cost: 'NZD 8.8만~23만 (학사)' }, note: '학위·경력이면 바로 취업.' } },
+      { name: '등록간호사(RN)', field: 'health', salary: 'NZD 85,000~95,000', listStatus: 'Green List T1', whyPR: '4,800명+ 부족 · NCNZ 등록 후 즉시 영주권 신청.', prep: { path: 'NCNZ 등록 + CAP 이수', hold: { m: 6, cost: 'NZD 1~1.5천 (+OET)' }, no: { m: 36, cost: 'NZD 7.8만~17만 (간호학사 3년)' }, note: '한국 RN면허+OET/IELTS 6.5 필수 · 워홀 중 준비 가능.' } },
+      { name: '전기공·용접공', field: 'trade', salary: 'NZD 75,000~110,000', listStatus: 'Green List T2', whyPR: '24개월 숙련 근무 후 신청 · 인프라 붐으로 수요 지속.', prep: { path: 'VETASSESS 기술평가 → EWRB 등록', hold: { m: 6, cost: 'NZD 2천~4.5천' }, no: { m: 48, cost: 'NZD 1만~2만 (도제 4년·유급)' }, note: '국외 자격은 2년 경력+VETASSESS 필수.' } },
+      { name: '중등교사', field: 'primary', salary: 'NZD 70,000~80,000', listStatus: 'Green List T1', whyPR: '710명 부족 · 교원자격 인정+잡오퍼면 즉시 신청.', prep: { path: '학위검증 → Teaching Council NZ 등록', hold: { m: 4, cost: 'NZD 0.8~1.5천 (+IELTS)' }, no: { m: 24, cost: 'NZD 2.2만~5.8만 (교사자격 1~2년)' }, note: 'IELTS 6.5 또는 영어권 교직 3년+면제.' } },
+      { name: '엔지니어(토목·전기)', field: 'engineer', salary: 'NZD 78,700~138,000', listStatus: 'Green List T1', whyPR: '다수 직종 GL T1 · ABEEK 인증 학위 동등성 유리.', prep: { path: '학위 인정 (CPEng 등록은 선택)', hold: { m: 2, cost: 'NZD 1.5천~3천' }, no: { m: 48, cost: 'NZD 8.8만~23만 (공학 학위)' }, note: 'CPEng 면허는 취업/PR에 불필요 · 잡오퍼면 AEWV.' } },
+      { name: '낙농·축산 매니저', field: 'trade', salary: 'NZD 71,500~87,000', listStatus: 'Green List T2', whyPR: '매니저 승진 시 GL T2 · 연 4,000명 구조적 부족.', prep: { path: '규제기관 없음 (NZQA 학위검증 선택)', hold: { m: 2, cost: 'NZD 0.2~0.5천' }, no: { m: 24, cost: 'NZD 0.6만~1.5만 (농업과정/도제)' }, note: '현장 경험 우선 · DairyNZ 프로그램 활용.' } }
     ]
   },
   ca: {
@@ -348,12 +355,12 @@ const INTEL = {
       { key: 'D', label: '헬스케어 우대 (2026)', steps: [{ label: '면허평가', months: 2 }, { label: '경력 1년', months: 12 }, { label: 'Healthcare 드로우', months: 3 }], totalMonthsMin: 12, totalMonthsTypical: 17, note: 'RN 최우선 · NNAS 평가 6주·~CAD 750.' }
     ],
     topOccupations: [
-      { name: '등록간호사(RN)', field: 'health', salary: 'CAD 85,000~100,000', listStatus: 'Healthcare 2026', whyPR: 'TEER 1+연 4,800명 부족 · NNAS 후 1년 경력 CEC.' },
-      { name: '건설 트레이드(전기·용접)', field: 'trade', salary: 'CAD 67,000~110,000', listStatus: 'Trades 2026', whyPR: '10년 25.6만 부족 · 2026 Trades 카테고리 상향.' },
-      { name: '소프트웨어 개발자', field: 'it', salary: 'CAD 95,000~120,000+', listStatus: 'CEC/FSW', whyPR: '1년 경력 CEC 가능 · 2026 우선순위↓ — PNP 병행 권장.' },
-      { name: '유아교육자(ECE)', field: 'ece', salary: 'CAD 42,000~56,000', listStatus: 'PNP(ON·AB·NS)', whyPR: '구조적 부족 · Rural PNP면 진입 용이 · PGWP 3년.' },
-      { name: '전문 엔지니어(P.Eng)', field: 'engineer', salary: 'CAD 95,000~135,000', listStatus: 'FSW+PNP', whyPR: '연 $65.4B 인프라 · 한국 학위 ECA로 인정.' },
-      { name: '트럭 운전사', field: 'trade', salary: 'CAD 52,000~72,000', listStatus: 'Transport 2026', whyPR: 'Transport 카테고리 신규 상향 · CDL 6~12개월.' }
+      { name: '등록간호사(RN)', field: 'health', salary: 'CAD 85,000~100,000', listStatus: 'Healthcare 2026', whyPR: 'TEER 1+연 4,800명 부족 · NNAS 후 1년 경력 CEC.', prep: { path: 'NNAS 평가 → NCLEX-RN → 주 간호협회 등록', hold: { m: 2, cost: 'CAD 750~1,200' }, no: { m: 24, cost: 'CAD 4만~6만 (간호 2년)' }, note: '한국 RN면허 시 NNAS+NCLEX · 2026 헬스케어 우대.' } },
+      { name: '건설 트레이드(전기·용접)', field: 'trade', salary: 'CAD 67,000~110,000', listStatus: 'Trades 2026', whyPR: '10년 25.6만 부족 · 2026 Trades 카테고리 상향.', prep: { path: 'ECA 평가 → 주 트레이드 인정 (Red Seal)', hold: { m: 6, cost: 'CAD 0.5~1.2천' }, no: { m: 36, cost: 'CAD 2.5만~4.5만 (견습 3~4년·유급)' }, note: '워홀 중 apprenticeship 병행 가능.' } },
+      { name: '소프트웨어 개발자', field: 'it', salary: 'CAD 95,000~120,000+', listStatus: 'CEC/FSW', whyPR: '1년 경력 CEC 가능 · 2026 우선순위↓ — PNP 병행 권장.', prep: { path: '자격 불필요 · WES 학위평가(선택)', hold: { m: 1, cost: 'CAD 200~500' }, no: { m: 24, cost: 'CAD 3.5만~6만 (디플로마 2년)' }, note: '면허 불필요 · 학사/부트캠프면 취업.' } },
+      { name: '유아교육자(ECE)', field: 'ece', salary: 'CAD 42,000~56,000', listStatus: 'PNP(ON·AB·NS)', whyPR: '구조적 부족 · Rural PNP면 진입 용이 · PGWP 3년.', prep: { path: '주 ECE 인증 (College of ECE 등록)', hold: { m: 4, cost: 'CAD 400~800' }, no: { m: 36, cost: 'CAD 2만~3.5만 (ECE 2~3년)' }, note: '한국 유아교육 학사면 인정+보충교육.' } },
+      { name: '전문 엔지니어(P.Eng)', field: 'engineer', salary: 'CAD 95,000~135,000', listStatus: 'FSW+PNP', whyPR: '연 $65.4B 인프라 · 한국 학위 ECA로 인정.', prep: { path: 'ECA 학위평가 (P.Eng 면허는 별도)', hold: { m: 1, cost: 'CAD 200~300' }, no: { m: 48, cost: 'CAD 5만~8.5만 (공학 4년)' }, note: 'P.Eng 면허는 PR에 불필요 — ECA만으로 신청.' } },
+      { name: '트럭 운전사', field: 'trade', salary: 'CAD 52,000~72,000', listStatus: 'Transport 2026', whyPR: 'Transport 카테고리 신규 상향 · CDL 6~12개월.', prep: { path: 'Class 1 상용면허 + MELT 교육', hold: { m: 2, cost: 'CAD 0.5~1천' }, no: { m: 6, cost: 'CAD 3천~5천 (6주 교육)' }, note: '국제면허자는 시험 통과 · 워홀 병행 가능.' } }
     ]
   },
   au: {
@@ -365,12 +372,12 @@ const INTEL = {
       { key: 'D', label: '고용주 스폰서 (482→186)', steps: [{ label: '482 스폰서', months: 6 }, { label: '482 근무 2년', months: 24 }, { label: '186 영주권', months: 6 }], totalMonthsMin: 36, totalMonthsTypical: 42, note: '포인트 불필요 · 고용주 안정성·시장임금 이상 필수.' }
     ],
     topOccupations: [
-      { name: '등록간호사(RN)', field: 'health', salary: 'AUD 75,000~95,000', listStatus: 'CSOL·컷 75~85', whyPR: '인력 극부족 · AHPRA 등록 후 지방 노미네이션 강함.' },
-      { name: '건설 트레이드(전기·배관)', field: 'trade', salary: 'AUD 70,000~120,000', listStatus: 'CSOL·컷 65~75', whyPR: '숙련공 지속 구인 · VETASSESS+포인트/주 노미네이션.' },
-      { name: '엔지니어(토목·기계)', field: 'engineer', salary: 'AUD 85,000~140,000', listStatus: 'CSOL·컷 85~95', whyPR: '인프라 수요 · EA 인정+석사 1년 보너스 +15점.' },
-      { name: '소프트웨어 개발자', field: 'it', salary: 'AUD 85,000~150,000+', listStatus: 'CSOL·컷 95~110', whyPR: '포인트 높음 — SID 스폰서/주 노미네이션이 실경로.' },
-      { name: '유아교육(ECE)', field: 'ece', salary: 'AUD 60,000~75,000', listStatus: 'CSOL·컷 65~75', whyPR: 'Diploma 1년+485 · 지방 ACT/NT/TAS 낮은 컷.' },
-      { name: '회계사(CPA/CA)', field: 'office', salary: 'AUD 100,000~120,000', listStatus: 'CSOL·컷 95+', whyPR: '포인트 거의 불가 — CA 취득/SID 스폰서 필수.' }
+      { name: '등록간호사(RN)', field: 'health', salary: 'AUD 75,000~95,000', listStatus: 'CSOL·컷 75~85', whyPR: '인력 극부족 · AHPRA 등록 후 지방 노미네이션 강함.', prep: { path: 'ANMAC 학위평가 → AHPRA 등록', hold: { m: 3, cost: 'AUD 0.85~1.2천' }, no: { m: 24, cost: 'AUD 1.5만~2.5만 (간호 학위/브리징)' }, note: 'IELTS 7.0 / OET C 필수.' } },
+      { name: '건설 트레이드(전기·배관)', field: 'trade', salary: 'AUD 70,000~120,000', listStatus: 'CSOL·컷 65~75', whyPR: '숙련공 지속 구인 · VETASSESS+포인트/주 노미네이션.', prep: { path: 'VETASSESS/TRA 평가 → 주 면허', hold: { m: 8, cost: 'AUD 2천~5.3천' }, no: { m: 36, cost: 'AUD 2만~3.5만 (Cert III/IV+OJT)' }, note: '국외 자격은 VETASSESS 필수 · 워홀 병행 가능.' } },
+      { name: '엔지니어(토목·기계)', field: 'engineer', salary: 'AUD 85,000~140,000', listStatus: 'CSOL·컷 85~95', whyPR: '인프라 수요 · EA 인정+석사 1년 보너스 +15점.', prep: { path: 'Engineers Australia MSA 평가', hold: { m: 4, cost: 'AUD 0.5~1.2천' }, no: { m: 48, cost: 'AUD 4만~6.5만 (공학 학위)' }, note: 'MSA 후 즉시 189/190 신청 가능.' } },
+      { name: '소프트웨어 개발자', field: 'it', salary: 'AUD 85,000~150,000+', listStatus: 'CSOL·컷 95~110', whyPR: '포인트 높음 — SID 스폰서/주 노미네이션이 실경로.', prep: { path: 'ACS IT 기술평가', hold: { m: 1, cost: 'AUD 1,498' }, no: { m: 36, cost: 'AUD 3만~5만 (컴퓨터 학위)' }, note: '면허 불필요 · ACS 4~6주 후 신청.' } },
+      { name: '유아교육(ECE)', field: 'ece', salary: 'AUD 60,000~75,000', listStatus: 'CSOL·컷 65~75', whyPR: 'Diploma 1년+485 · 지방 ACT/NT/TAS 낮은 컷.', prep: { path: 'ACECQA 자격평가 → 주 등록', hold: { m: 2, cost: 'AUD 400~700' }, no: { m: 24, cost: 'AUD 1.8만~3만 (Diploma 2~3년)' }, note: 'CSOL 미등록 → 주 스폰서(190)/186 경로.' } },
+      { name: '회계사(CPA/CA)', field: 'office', salary: 'AUD 100,000~120,000', listStatus: 'CSOL·컷 95+', whyPR: '포인트 거의 불가 — CA 취득/SID 스폰서 필수.', prep: { path: 'CAANZ 국제평가 또는 CPA 프로그램', hold: { m: 4, cost: 'AUD 2천~3.5천' }, no: { m: 24, cost: 'AUD 1.5만~2.5만 (CPA 과정)' }, note: 'CSOL 미등록 → 스폰서 필수 · 경쟁 매우 높음.' } }
     ]
   }
 };
@@ -381,10 +388,13 @@ const BEST_PATH = {
   ca: { health: 'D', trade: 'C-PNP', it: 'A', engineer: 'C-EE', ece: 'C-PNP', office: 'C-EE', primary: 'A', undecided: 'A' },
   au: { it: 'D', office: 'D', primary: 'A', health: 'C', trade: 'C', engineer: 'C', ece: 'C', undecided: 'A' }
 };
-function bestPath(cid) {
-  const key = (BEST_PATH[cid] || {})[S.field] || 'A';
+function bestPathFor(cid, field) {
+  const key = (BEST_PATH[cid] || {})[field] || 'A';
   return INTEL[cid].pathways.find(p => p.key === key) || INTEL[cid].pathways[0];
 }
+function bestPath(cid) { return bestPathFor(cid, S.field); }
+// 개월 → 사람이 읽는 문자열 (준비기간 표기용)
+function moTxt(m) { return m < 12 ? `${m}개월` : `${(m / 12).toFixed(m % 12 ? 1 : 0)}년`; }
 
 function entryRoute(cid, age, used) {
   const c = COUNTRIES[cid];
@@ -452,7 +462,22 @@ document.getElementById('goBtn').addEventListener('click', () => {
     if (S.field === 'undecided') jobHead = '💼 이 나라 추천 직업 (미정일 때 유리한 부족직종)';
     else if (jobs.length) jobHead = '💼 내 직군 대표 직업 · 연봉';
     else { jobs = intel.topOccupations.slice(0, 3); jobHead = '💼 이 나라 대표 부족직종 (내 직군은 경쟁 심함 — 전환 참고)'; }
-    const jobHtml = jobs.map(o => `<div class="occ"><div class="occ-h"><b>${o.name}</b><span class="occ-list">${o.listStatus}</span></div><div class="occ-sal">${o.salary}</div><div class="occ-why">${o.whyPR}</div></div>`).join('');
+    const jobHtml = jobs.map(o => {
+      const op = bestPathFor(r.cid, o.field);
+      const overlap = Math.min(o.prep.hold.m, 12);   // 준비 일부는 워홀 12개월과 병행
+      const totM = op.totalMonthsMin + (o.prep.hold.m - overlap);
+      const extra = o.prep.no.m - o.prep.hold.m;
+      return `<div class="occ">
+        <div class="occ-h"><b>${o.name}</b><span class="occ-list">${o.listStatus}</span></div>
+        <div class="occ-sal">${o.salary}</div>
+        <div class="occ-why">${o.whyPR}</div>
+        <div class="occ-prep">
+          <div class="prep-path">🎓 자격·과정 · ${o.prep.path}</div>
+          <div class="prep-nums"><span class="pc">✅ 자격 보유 <b>${moTxt(o.prep.hold.m)}</b> · ${o.prep.hold.cost}</span><span class="pc alt">🆕 신규 취득 <b>${moTxt(o.prep.no.m)}</b> · ${o.prep.no.cost}</span></div>
+          <div class="prep-total">🎯 이 직업으로 영주권 최단 <b>${(totM / 12).toFixed(1)}년</b> <span class="pc-note">자격 보유·준비 포함${extra > 0 ? ` · 신규 취득 시 +${moTxt(extra)}` : ''}</span></div>
+        </div>
+      </div>`;
+    }).join('');
 
     html += `
     <div class="rank ${r.cid}${top}">
