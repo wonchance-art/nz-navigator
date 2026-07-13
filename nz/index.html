@@ -1678,7 +1678,7 @@ details.fold:not([open]) > .fold-body { display: none; }
             <li>① 축산 ~0 — 일하며 배움</li>
             <li>② 회계 MPA 30.4k — 1.5년 → 졸업비자 3년</li>
             <li>③ IT GD 26.4k — 1년 → 1년 (학사 보유자)</li>
-            <li>④ 교사 GradDip 28.7k~ — 1년 → GL T1</li>
+            <li>④ 교사 GradDip 28.7k~ — 1년 (+등록·Step5 관문)</li>
             <li>반대편 끝: 엔지니어 학사 ~200k+</li>
           </ul></div>
           <div style="border-left: 4px solid var(--warn); background: #fdf9f0; padding: 0.7rem 1rem; border-radius: 6px; font-size: 0.9rem;"><strong>⚠️ 유학이 함정인 직군</strong><ul class="jt-list" style="color: var(--muted); font-size: 0.88rem;">
@@ -2042,28 +2042,104 @@ const DB = {
     {
       id: 'teacher',
       name: '교사',
-      salary: '70,000–80,000 (봉급표 스텝)',
+      salary: '64,119(Step1)–107,886(Step10) · 통일 봉급표',
       hourly: '—',
-      gl: 'Primary/Secondary T1',
+      gl: '초·중등 T1 / ECE·특수 T2',
       rating: 4,
-      path: 'C(T1 직행)',
-      pitfall: '교육위원회 등록이 선결 — 학력 인정·서류 보완으로 수개월 지연이 흔함. 초등은 공급 과잉(2026년 530명 흑자)이라 중등·이공계 과목이 현실적',
-      tip: '등록 절차(NZQA 학력 인정 + Teaching Council)는 한국에서 원격으로 시작 가능 — 합계 약 NZD 1,400. 교실 운영 수준의 실전 영어가 면접의 실질 관문',
+      path: 'C(T1 직행, 단 Step5 급여 관문)',
+      pitfall: '교육위원회 등록 + NZQA 자격 재평가(IQA)가 선결 — 수개월 지연 흔함. 초등은 공급 과잉(2026년 530명 흑자)이라 중등·이공계 과목이 현실. Tier 1 "직행"도 Step 5 급여(약 NZD 78k) 전엔 사실상 24개월 근무형(Tier 2)·SMC 경유',
+      tip: '자격 재평가(NZQA IQA, NZD 746)+교육위원회 등록(NZD 851, 2025–28 정부 펀딩)은 한국에서 원격 시작 가능. IELTS Academic 7.0 전 영역이 최대 장벽 — 통상 Writing/Speaking 재응시. 해외 교사 이주 보조금(ORG) 최대 NZD 10,000 활용',
       guide: {
         demand: '중등은 부족 — 초등은 과잉',
         demandLv: 4,
-        demandWhy: '2026년 중등교사 710명 부족(수학·과학 우선), 초등은 530명 공급 과잉 — 과목과 지역(지방 가산) 선택이 취업률을 가름.',
-        demandSrc: 'https://www.education.govt.nz/',
-        pr: '유리 — GL T1 즉시 영주권',
-        prLv: 5,
-        prWhy: '초·중등 교사는 Green List Tier 1 — 등록 + 잡오퍼면 근무 연수 없이 바로 영주권 신청. 관건은 영주권이 아니라 등록·취업.',
-        study: '한국 교원자격 보유 시 불필요(학력 인정 절차만). 미보유면 NZ 교육학 과정(L7+) 이수가 사실상 필수.',
-        studyShort: '자격 있으면 불필요',
-        period: '12–24개월 (등록 속도)',
-        periodShort: '12–24개월',
-        cost: 'NZD 10,500–12,000 + 등록 ~1,400 [추정]',
-        costShort: '~12k–13.5k'
-      }
+        demandWhy: '2026년 중등교사 710명 부족(수학·과학·물리·기술·테레오마오리·영어 우선, South Auckland·Otago 최악), 초등은 530명 공급 과잉, ECE는 심각 부족 — 과목·레벨·지역 선택이 취업률을 가름.',
+        demandSrc: 'https://www.education.govt.nz/news/teacher-demand-and-supply-2025-report-released',
+        pr: '유리하나 Step5 급여 관문',
+        prLv: 4,
+        prWhy: '초·중등·마오리매체 교사는 Green List Tier 1(직행). 단 "즉시"는 Step 5 급여(약 NZD 78k·통상 2년+ 경력) 충족 시 — 신입은 Step 1~3에서 시작해 24개월 근무형(Tier 2) 또는 SMC 경유가 현실. ECE·특수교육은 Tier 2. 진짜 관건은 IELTS 7.0(전 영역)·자격 재평가·급여 도달.',
+        study: '한국 교원자격 보유 시 신규 학위 불필요(단 NZQA IQA 재평가 필수). 미보유면 NZ 교육학 대학원(GradDip/Master, 1년) 이수가 사실상 필수.',
+        studyShort: 'IQA 재평가 (전환자는 대학원 1년)',
+        period: '경험 교사 ~30개월 / 무경력 전환 ~5.5년',
+        periodShort: '~30개월+',
+        cost: 'NZD 10,500–12,000 + 등록·IELTS ~5,100 (전환자는 학비 포함 ~49,000)',
+        costShort: '~13k / 전환 49k'
+      },
+      deep: `<div style="border-top:2px solid var(--accent);margin-top:1.4rem;padding-top:1rem;">
+  <div style="font-weight:800;font-size:1.06rem;color:var(--brand-deep);">🎓 교사 심화 — 한국 교사의 NZ 영주권 완전 가이드</div>
+  <p style="color:var(--muted);font-size:0.88rem;margin:0.3rem 0 0.9rem;line-height:1.6;">2026 기준 · 공식 출처 교차검증(8에이전트). <strong>한 줄 결론: 경로는 열려 있으나 IELTS 7.0(전 영역)·자격 재평가(IQA)·Step 5 급여가 3대 관문.</strong></p>
+
+  <div style="margin:1.1rem 0 0.5rem;font-weight:800;color:var(--brand-deep);font-size:1.0rem;">📌 Green List — 초·중등은 T1, ECE·특수는 T2 (그리고 'Step 5' 함정)</div>
+  <div style="border-left:4px solid var(--warn);background:#fdf9f0;padding:0.8rem 1rem;border-radius:6px;margin-bottom:0.6rem;font-size:0.9rem;line-height:1.65;">
+    <div><strong>Tier 1 (즉시 영주권 트랙)</strong> — 초등(241213)·중등/중학(241311)·고등(241411)·마오리매체(241211/241212)</div>
+    <div><strong>Tier 2 (24개월 근무형)</strong> — ECE 유아교사(241111)·특수교육(241511~241599)</div>
+    <div style="margin-top:0.4rem;color:var(--warn);"><strong>⚠️ 함정:</strong> Tier 1 '즉시'는 <strong>Step 5 급여(약 NZD 78,000·통상 2년+ 경력)</strong> 충족 시에만. 신입 교사는 Step 1~3에서 시작 → 실제로는 5~7년 걸리거나, 그 사이 Tier 2(24개월 근무형)·SMC 경유가 현실. "등록만 하면 바로 영주권"이 아님.</div>
+  </div>
+
+  <div style="margin:1.2rem 0 0.5rem;font-weight:800;color:var(--brand-deep);font-size:1.0rem;">🚧 3대 관문</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.6rem;margin-bottom:0.6rem;">
+    <div style="border:1px solid var(--line);border-radius:6px;padding:0.7rem 0.85rem;font-size:0.86rem;line-height:1.55;"><strong>🗣️ IELTS Academic 7.0</strong><br>Listening·Reading·Writing·Speaking <strong>각 7.0</strong>. 한 영역만 미달해도 비자 신청 불가. 한국 교사는 통상 Writing/Speaking에서 재응시. (대체: TOEFL iBT·PTE·영어권 3년 수학)</div>
+    <div style="border:1px solid var(--line);border-radius:6px;padding:0.7rem 0.85rem;font-size:0.86rem;line-height:1.55;"><strong>📋 자격 재평가 (IQA)</strong><br>한국 교원자격증+B.Ed는 <strong>직접 인정 안 됨</strong>. NZQA Teaching IQA(NZD 746, ~10주)로 개별 심사. 사전승인 목록은 2025-01 폐지.</div>
+    <div style="border:1px solid var(--line);border-radius:6px;padding:0.7rem 0.85rem;font-size:0.86rem;line-height:1.55;"><strong>💰 Step 5 급여</strong><br>Tier 1 직행은 Step 5 이상(약 NZD 78k)+2년 경력 필요[2026-03-09~]. 미달 시 Tier 2(24개월)·SMC 경유.</div>
+  </div>
+
+  <div style="margin:1.2rem 0 0.5rem;font-weight:800;color:var(--brand-deep);font-size:1.0rem;">🧭 해외 교사 등록 절차</div>
+  <div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:0.85rem;min-width:420px;">
+    <thead><tr style="border-bottom:2px solid var(--line);text-align:left;"><th style="padding:0.4rem 0.5rem;">단계</th><th style="padding:0.4rem 0.5rem;">기간</th><th style="padding:0.4rem 0.5rem;">비용</th></tr></thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--line);"><td style="padding:0.4rem 0.5rem;">① NZQA 교사 자격평가(Teaching IQA)</td><td style="padding:0.4rem 0.5rem;">~10주</td><td style="padding:0.4rem 0.5rem;">NZD 746</td></tr>
+      <tr style="border-bottom:1px solid var(--line);"><td style="padding:0.4rem 0.5rem;">② 교육위원회 등록(Provisional·Tōmua)</td><td style="padding:0.4rem 0.5rem;">6–12주</td><td style="padding:0.4rem 0.5rem;">NZD 851 <span style="color:var(--muted);">(2025–28 정부 펀딩)</span></td></tr>
+      <tr style="border-bottom:1px solid var(--line);"><td style="padding:0.4rem 0.5rem;">③ IELTS Academic 7.0(전 영역)</td><td style="padding:0.4rem 0.5rem;">3.5–5개월</td><td style="padding:0.4rem 0.5rem;">NZD 500–550</td></tr>
+      <tr style="border-bottom:1px solid var(--line);"><td style="padding:0.4rem 0.5rem;">④ 업무 비자(AEWV/SPWV, 잡오퍼 후)</td><td style="padding:0.4rem 0.5rem;">6–15주</td><td style="padding:0.4rem 0.5rem;">NZD 3,000–4,000</td></tr>
+      <tr style="font-weight:700;"><td style="padding:0.4rem 0.5rem;">합계</td><td style="padding:0.4rem 0.5rem;">6–9개월</td><td style="padding:0.4rem 0.5rem;">NZD 5,097–5,597 <span style="color:var(--muted);font-weight:400;">(펀딩 시 4,246–4,746)</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div style="margin:1.2rem 0 0.5rem;font-weight:800;color:var(--brand-deep);font-size:1.0rem;">🛤️ 두 갈래 — 경험 교사 vs 무경력 전환자</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0.7rem;">
+    <div style="border:1.5px solid var(--brand);border-radius:8px;padding:0.85rem;">
+      <div style="font-weight:800;">사례 A · 경험 있는 한국 교사</div>
+      <div style="color:var(--brand);font-weight:800;font-size:1.05rem;margin:0.2rem 0;">~30개월 · NZD ~10,801</div>
+      <div style="color:var(--muted);font-size:0.85rem;line-height:1.6;">IQA 2.5개월 → 등록 3 → IELTS 4 → 잡오퍼 확보 6 → 워크비자 2.5 → 1년 Induction·정규 등록 12 → SMC 거주 신청 2.5</div>
+      <div style="font-size:0.82rem;margin-top:0.4rem;">교원자격증+2년 경력 보유자. Step 5 급여 도달 시 Tier 1 직행, 미달 시 Tier 2/SMC.</div>
+    </div>
+    <div style="border:1.5px solid var(--line);border-radius:8px;padding:0.85rem;">
+      <div style="font-weight:800;">사례 B · 무경력 경력 전환자</div>
+      <div style="color:var(--warn);font-weight:800;font-size:1.05rem;margin:0.2rem 0;">~5.5년 · NZD ~49,450</div>
+      <div style="color:var(--muted);font-size:0.85rem;line-height:1.6;">NZ 교사양성 대학원(GradDip/Master, 1년) 18개월 → 등록 1.5 → IELTS 4 → 잡오퍼 4 → 워크비자 2.5 → 2년 Induction 24 → SMC 거주 2.5</div>
+      <div style="font-size:0.82rem;margin-top:0.4rem;">전공 학위만 보유. GradDip 오클랜드 NZD 9,577 / Master 캔터베리 13,794·AUT 17,775(국제학생 학비 별도). NZ 졸업자는 2년 Induction.</div>
+    </div>
+  </div>
+
+  <div style="margin:1.2rem 0 0.5rem;font-weight:800;color:var(--brand-deep);font-size:1.0rem;">💵 급여 스케일 · 📊 수요 · 🎁 인센티브</div>
+  <ul style="color:var(--muted);font-size:0.9rem;line-height:1.7;padding-left:1.1rem;margin-bottom:0.5rem;">
+    <li><strong>급여(초·중등 통일):</strong> Step 1 NZD 64,119 → Step 10 107,886. Tier 1 요건 = Step 5(약 78,000)[2026-03-09~]. 중위임금 NZD 35/시간.</li>
+    <li><strong>수요:</strong> 중등 710명 부족(South Auckland·Otago 최악), 초등 530명 잉여, ECE 심각 부족. 부족 과목 — 수학·과학·물리·기술·테레오마오리·영어. 기술은 국내 양성 거의 없어 해외 의존.</li>
+    <li><strong>인센티브:</strong> 해외 교사 이주 보조금(ORG) 최대 NZD 10,000 · 학교 모집 보조금(Finder's Fee) 3,450 · 교육위원회 등록료 정부 펀딩(2025–2028) · Go Rural(지방 실습 지원).</li>
+  </ul>
+
+  <div style="margin:1.2rem 0 0.5rem;font-weight:800;color:var(--brand-deep);font-size:1.0rem;">⚠️ 핵심 리스크</div>
+  <ul style="color:var(--muted);font-size:0.88rem;line-height:1.65;padding-left:1.1rem;">
+    <li>IELTS 7.0 <strong>전 영역</strong> — 한 영역만 미달해도 비자 신청 전체 불가. 반복 응시가 흔함.</li>
+    <li>Step 5 급여 관문 — 신입은 Step 1~3, Tier 1 "즉시"까지 5~7년. 그 전엔 Tier 2(24개월)/SMC.</li>
+    <li>자격 재평가 결과에 따라 재교육 경로 강제 가능(한국 교원자격 직접 인정 안 됨).</li>
+    <li>Provisional→Full 최소 1년(전환자 2년) Induction — 그 전엔 거주 신청 불가.</li>
+    <li>비자 신청 단계에서 <strong>잡오퍼(고용 계약) 선확보</strong> 필수 — 경력자도 미리 확보해야 함.</li>
+    <li>전환자 총비용 NZD 5만+ (대학원 학비+생활비+비자료).</li>
+  </ul>
+
+  <details style="margin-top:0.9rem;font-size:0.84rem;"><summary style="cursor:pointer;font-weight:700;color:var(--brand);">📚 공식 출처 (9)</summary>
+  <ul style="color:var(--muted);line-height:1.7;padding-left:1.1rem;margin-top:0.4rem;">
+    <li><a href="https://www.immigration.govt.nz/opsmanual/86898.htm" target="_blank" class="source-link">immigration.govt.nz — Green List(Appendix 13, 2025-03-26)↗</a></li>
+    <li><a href="https://www.immigration.govt.nz/about-us/news-centre/government-announces-primary-and-intermediate-teachers-to-be-added-to-the-straight-to-residence-pathway/" target="_blank" class="source-link">초등·중학 교사 Straight to Residence 추가↗</a></li>
+    <li><a href="https://www.immigration.govt.nz/work/requirements-for-work-visas/wage-rates-for-work-visas/sector-agreements-and-wage-exemptions-for-aewv-workers/" target="_blank" class="source-link">AEWV 임금(교사 예외 없음, NZD 35/h)↗</a></li>
+    <li><a href="https://teachingcouncil.nz/en/become-a-teacher/overseas-trained-teacher-coming-to-Aotearoa/requirements-to-teach-in-nz" target="_blank" class="source-link">Teaching Council — 해외 교사 요건↗</a></li>
+    <li><a href="https://teachingcouncil.nz/en/become-a-teacher/overseas-trained-teacher-coming-to-Aotearoa/language-competency-requirements" target="_blank" class="source-link">Teaching Council — 영어 요건(IELTS 7.0 전 영역)↗</a></li>
+    <li><a href="https://www2.nzqa.govt.nz/international/recognise-overseas-qual/iqa/for-teachers/" target="_blank" class="source-link">NZQA — 교사 IQA↗</a></li>
+    <li><a href="https://www.education.govt.nz/news/teacher-demand-and-supply-2025-report-released" target="_blank" class="source-link">education.govt.nz — 교사 수요·공급 2025↗</a></li>
+    <li><a href="https://workforce.education.govt.nz/becoming-teacher-new-zealand/overseas-trained-teachers/overseas-relocation-grant" target="_blank" class="source-link">해외 교사 이주 보조금(ORG)↗</a></li>
+    <li><a href="https://www.auckland.ac.nz/en/study/study-options/find-a-study-option/graduate-diploma-in-teaching-secondary-graddiptchgsec.html" target="_blank" class="source-link">오클랜드대 — GradDip Teaching↗</a></li>
+  </ul></details>
+</div>`
     },
     {
       id: 'engineer',
@@ -2900,7 +2976,7 @@ function recommend(input) {
     notes.push('데어리는 매니저(Dairy Cattle Farmer/Manager)가 <strong>Green List Tier 2</strong> — 보조로 시작해도 경력 2년 또는 NZQF L4로 매니저에 오르면 24개월 근무 → 영주권 트랙이 열립니다.');
   }
   if (input.job === 'teacher') {
-    notes.push('교사는 <strong>Green List Tier 1(즉시 영주권)</strong> — 단 NZ 교육위원회 등록이 선결 관문입니다. NZQA 학력 인정 + 등록(합계 약 NZD 1,400)을 한국에서 미리 시작하세요. 수요는 중등이 크고(2026년 710명 부족), 초등은 공급 과잉이라 자리가 귀합니다.');
+    notes.push('초·중등 교사는 <strong>Green List Tier 1</strong>이나 "즉시"는 <strong>Step 5 급여(약 NZD 78k·2년+ 경력)</strong> 충족 시 — 신입은 Tier 2(24개월)·SMC 경유가 현실입니다(ECE·특수는 Tier 2). 진짜 관문은 <strong>IELTS 7.0 전 영역</strong>과 NZQA 자격 재평가(IQA). 등록(IQA+Teaching Council)은 한국에서 원격 시작 가능. 수요는 중등이 크고(2026년 710명 부족·수학/과학/기술), 초등은 공급 과잉입니다. <span style="font-size:0.9em;">→ 직군 탭 \'교사 심화\'에서 절차·비용·타임라인 전체 확인</span>');
   }
   if (input.job === 'engineer' && input.experience === 'none') {
     warnings.push('엔지니어 GL 트랙은 학위+경력이 축 — 무경력이면 NZ 유학(공학 L7) 또는 한국에서 경력을 쌓은 뒤가 현실적입니다.');
@@ -4037,7 +4113,7 @@ const COURSE_DB = [
   { id: 'engineer', n: '엔지니어', hook: '매력: 소득·영주권 최상 — 단 가장 비싼 과정', c: ['BE(Hons) (L8·4년)'], fee: ['연 45,700–58,000 · 4년 총 ~196k–232k [공식]'], w: ['3년'], sal: '●●●○○ · 78.7–138k', pr: 'GL T1 ●●●●●' },
   { id: 'office', n: '회계 (사무)', hook: '매력: 비전공 학사가 1.5년에 전문직 전환 — 폴리텍 MPA가 가성비 최고', c: ['MPA 회계석사 (L9·15–18개월, 학사 선행)'], fee: ['총 30,415 (Unitec) ~ 76,723 (오클랜드대) [공식]'], w: ['3년'], sal: '●●○○○ · 75–116k', pr: 'SMC+CA 가산 ●●○○○' },
   { id: 'health', n: '간호', hook: '매력: 졸업 = 등록 직결 + 수요 상시 — 등록 영어(IELTS 7.0급)는 별도 관문', c: ['간호학사 (L7·3년)'], fee: ['연 30,185 (Unitec) [공식] · 3년 총 ~91k+'], w: ['3년 + 간호 등록'], sal: '●●●○○ · 85–95k', pr: 'GL T1 ●●●●●' },
-  { id: 'teacher', n: '교사', hook: '매력: 1년 과정으로 GL T1 — 단 IELTS 7.0 전 영역, 영어 장벽 최고', c: ['GradDip Teaching (L7·1년, 학사 선행)', 'Master of Teaching (L9·1년)'], fee: ['28,706 (중등)–35,890 (초등) [공식]', '석사 51,000 (UC)'], w: ['GD → 1년', '석사 → 3년'], sal: '●●○○○(중등)~●(초등) · 70–80k', pr: 'GL T1 ●●●●●' },
+  { id: 'teacher', n: '교사', hook: '매력: 1년 과정으로 교사 자격 — 단 IELTS 7.0 전 영역이 최고 장벽, Tier 1도 Step5 급여 관문', c: ['GradDip Teaching (L7·1년, 학사 선행)', 'Master of Teaching (L9·1년)'], fee: ['28,706 (중등)–35,890 (초등) [공식]', '석사 51,000 (UC)'], w: ['GD → 1년', '석사 → 3년'], sal: '●●○○○(중등)~●(초등) · 64–108k', pr: 'GL T1(Step5 조건) ●●●●○' },
   { id: 'chef', n: '셰프 ⚠️', warn: 1, hook: '정직: 요리는 졸업비자 지정 직업에서 빠짐 — 유학 가치 급락, 워홀 주방 경력이 낫다', c: ['Cookery L4 (1년) / L5 (2년)'], fee: ['L4 26,572 (Ara) [공식] / L5 2년 ~50k [추정]'], w: ['<strong>L4 → 없음 · L5 → 6개월 1회</strong>'], sal: '●●●●○ · 55–85k', pr: '경력 축 ●●●○○' },
   { id: 'trade', n: '트레이드 ⚠️', warn: 1, hook: '정직: 견습은 고용 전제 — 유학생 직행 불가. 워홀→현장→견습이 현실 경로', c: ['Pre-trade L3 (1년) / 전기 디플로마 L6 (2년)'], fee: ['L3 26,415 (Unitec) / L6 2년 29,615 [공식]'], w: ['L3 → 없음 · L6 → 6개월 1회'], sal: '●●●○○ · 85–110k (자격 후)', pr: 'GL T2 자격 후 ●●●●○' },
   { id: 'trade', n: '자동차 정비', hook: '주의: 과정만으론 근로권 부족 — 고용주 스폰서 확보가 관건', c: ['Automotive L4 (1년)'], fee: ['26,600 (Otago) [공식]'], w: ['없음 (L4) — 고용주 워크비자 전환 필요'], sal: '●●●○○ · 55–90k', pr: 'GL T2 ●●●●○' },
