@@ -36,7 +36,9 @@ PAGES = [
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">''',
     },
+    # AU NAVI — 감수 후 재공개 예정 (2026-07-13)
     {
+        'skip': True,
         'src': VAULT / 'index.au.html',
         'out': ROOT / 'au' / 'index.html',
         'lang': 'ko',
