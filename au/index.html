@@ -1155,6 +1155,11 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .city-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.6rem; }
 .cs-l { font-size: 0.75rem; color: var(--muted); }
 .cs-v { font-weight: 700; font-size: 0.92rem; }
+.map-launch-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: center; margin: 1.25rem 0 0; padding: 1rem 1.1rem; background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; }
+.map-launch-card h3 { margin: 0 0 0.25rem; font-size: 1rem; }
+.map-launch-card p { margin: 0; color: var(--muted); font-size: 0.86rem; line-height: 1.55; }
+.map-launch-link { white-space: nowrap; text-decoration: none; }
+@media (max-width: 620px) { .map-launch-card { grid-template-columns: minmax(0, 1fr); } .map-launch-link { width: 100%; text-align: center; } }
 /* v29 커뮤니티·생활 링크 */
 .link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
 .link-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 0.9rem 1rem; box-shadow: 0 1px 3px rgba(23, 37, 29, 0.05); }
@@ -1739,13 +1744,18 @@ details.fold:not([open]) > .fold-body { display: none; }
       </div>
     </div>
 
+    <div class="map-launch-card" id="whv-map">
+      <div><h3>🗺️ 417 세컨·서드 지정작업 판정 지도</h3><p>주·postcode·작업 종류를 함께 대조합니다. 일반 regional 작업과 관광·재해복구·COVID 헬스케어의 서로 다른 지역 규칙을 분리했습니다.</p></div>
+      <a class="pill-btn map-launch-link" href="./whv-map.html">지도·판정기 열기 →</a>
+    </div>
+
     <h2 id="survival" style="margin-top: 2.5rem;">생활비 생존 전략</h2>
     <p class="dash-sub" style="margin-bottom: 1rem;">6원칙 — 비자비·임금 [공식] · 시세·버퍼 [추정 2026-07]</p>
     <div class="tip-grid">
-      <div class="tip-card"><div class="tip-ic">💵</div><strong>도착 버퍼 6,000+</strong><p>자금증명 4,200은 심사용. 첫 4–6주 무수입 + 정착비 2,000–3,500 + 다음 렌트 대비.</p></div>
-      <div class="tip-card"><div class="tip-ic">⚡</div><strong>첫 수입 2주 안에</strong><p>호스피탈리티·시즌잡이 최속. 최저임금 풀타임 주 ~958(세전). 이력서는 출국 전 준비.</p></div>
-      <div class="tip-card"><div class="tip-ic">🏠</div><strong>주거 = 저축 속도</strong><p>방셰어 200–320 vs 스튜디오 400+. 시즌잡 숙식 제공이면 저축 2배 + 원예 3개월 = WHV 연장.</p></div>
-      <div class="tip-card"><div class="tip-ic">🧾</div><strong>도착 주에 TFN 발급</strong><p>무료 발급 — 없으면 원천징수율 47.5% 적용. 세제 정산은 7월 세무년도 마감 후.</p></div>
+      <div class="tip-card"><div class="tip-ic">💵</div><strong>도착 버퍼 6,000+</strong><p>통상 요구되는 자금증명 약 5,000 + 귀국·이동 항공비는 심사용 최저선. 첫 4–6주 무수입과 정착비를 별도 대비.</p></div>
+      <div class="tip-card"><div class="tip-ic">⚡</div><strong>첫 수입 2주 안에</strong><p>호스피탈리티·시즌잡이 비교적 빠름. 최저임금 40시간 기준 주 약 1,058(세전). 이력서는 출국 전 준비.</p></div>
+      <div class="tip-card"><div class="tip-ic">🏠</div><strong>주거 = 저축 속도</strong><p>방셰어 200–320 vs 스튜디오 400+. 일부 시즌잡의 숙소 조건을 비교하고, 적격 지정작업 3개월 상당(통상 88일)은 세컨드 417 요건으로 기록을 보관.</p></div>
+      <div class="tip-card"><div class="tip-ic">🧾</div><strong>도착 주에 TFN 발급</strong><p>무료 발급 — 워홀러가 TFN을 제시하지 않으면 총 지급액의 45% 원천징수. 세제 정산은 7월 세무년도 마감 후.</p></div>
       <div class="tip-card"><div class="tip-ic">🏦</div><strong>비자비·보증금 분리 적립</strong><p>485 5,750 · 영주권 6,135–6,140 + Rent Bond 대비 — 신청 2–3개월 전 별도 계좌에.</p></div>
       <div class="tip-card"><div class="tip-ic">🎓</div><strong>유학 현금 흐름</strong><p>학기 중 2주당 48h 근로(방학 무제한 · 시급 26.44+) — 생활비 일부 상쇄. 학비는 사전 확보 필수.</p></div>
     </div>
@@ -1886,8 +1896,8 @@ const DB = {
   },
   fees: {
     whv417: { v: 840, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-417-working-holiday-visa-korea', asOf: '2026-07-01' },
-    whv2nd: { v: 1000, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-417-working-holiday-visa-korea', asOf: '2026-07-01', label: '88일 지정지역 노동 후' },
-    whv3rd: { v: 1000, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-417-working-holiday-visa-korea', asOf: '2026-07-01', label: '2년차 6개월 노동 후' },
+    whv2nd: { v: 1000, src: 'https://immi.homeaffairs.gov.au/what-we-do/whm-program/specified-work-conditions/specified-work-417', asOf: '2026-07-01', label: '적격 지정작업 3개월 상당 후' },
+    whv3rd: { v: 1000, src: 'https://immi.homeaffairs.gov.au/what-we-do/whm-program/specified-work-conditions/specified-work-417', asOf: '2026-07-01', label: '세컨드 비자 중 적격 지정작업 6개월 상당 후' },
     student500: { v: 2500, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-500-student-visa', asOf: '2026-07' },
     graduate485: { v: 5750, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-485-temporary-graduate-visa', asOf: '2026-07-01' },
     points189: { v: 6135, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-189-skilled-independent-visa', asOf: '2026-07-01' },
@@ -2330,8 +2340,8 @@ const DB = {
       description: '2026년 초 입국, 농장/카페 일 6개월째. 비자 만료까지 6개월.',
       choices: [
         {
-          label: '88일 지역 노동으로 세컨드 연장 준비',
-          result: '<strong>조건:</strong> 호주 지정 지역(비시드니·비멜버른)에서 88일 농업·건설·광업 노동 → 세컨드 417(+12개월)<br><strong>현실:</strong> 4월~9월이 수확·호텔 성수기 — 지금(1월~) 구직해야 6월까지 88일을 마칠 수 있음<br><strong>주의:</strong> 농장 사기 이력 많음 — "공식 지정 지역" 확인 필수'
+          label: '적격 지정작업으로 세컨드 준비',
+          result: '<strong>조건:</strong> 공식 지역에서 적격 농축산·어업·조림·광업·건설 등 3개월 상당(통상 88일) → 세컨드 417(+12개월). 관광·호스피탈리티는 별도 Northern/Remote postcode만 인정<br><strong>현실:</strong> 업종별 성수기와 지역표를 먼저 대조하고 급여명세·근무기록을 보관<br><strong>주의:</strong> "지방"이라는 말만 믿지 말고 고용주 postcode와 실제 직무를 공식 표로 확인'
         },
         {
           label: '경력 인정 + SID 스폰서 타진',
@@ -2506,9 +2516,9 @@ const DB = {
     }
   ],
   changes: [
-    { date: '2024-07-01', dir: 'up', text: '417 워홀 나이상한 18–35로 상향', planned: false, you: '기존 18–30 → 35 확대 · 한국 우대' },
+    { date: '2026-07-01', dir: 'up', text: '한국 국적 417 워홀 나이상한 18–35로 상향', planned: false, you: '기존 18–30 → 35 확대 · 2026-07-01 발효' },
     { date: '2025-07-01', dir: 'down', text: 'CSOL 축소(호스피탈리티·ECE 등 제거)', planned: false, you: 'IT·건설·간호·회계 등 주요 직종만 유지 · 포인트 경로 대폭 축소' },
-    { date: '2026-07-01', dir: 'flat', text: '국민 최저임금 AUD 26.44 · 캐주얼 33.05', planned: false, you: '워홀 초기 시급 기준 · 풀타임 주 약 AUD 958(세전)' },
+    { date: '2026-07-01', dir: 'flat', text: '국민 최저임금 AUD 26.44 · 캐주얼 33.05', planned: false, you: '워홀 초기 시급 기준 · 40시간 주 약 AUD 1,058(세전)' },
     { date: '2026-07-01', dir: 'up', text: '485 졸업생 나이 35세 이하(연구석박 50세)', planned: false, you: '학사/Diploma 졸업자는 35세 까지 485 신청 가능' },
     { date: '2026-07-01', dir: 'flat', text: '학생 생활비 증명 AUD 29,710/년', planned: false, you: '500 학생비자 자금 기준 · 학기 중 2주당 48h 근로(방학 무제한)' },
     { date: '2026-08-24', dir: 'down', text: '482 심사 강화 · labour market test 추가', planned: true, you: '호주인 우선채용 검증 필수 · 스폰서 승인 기간 3–6개월→6–8개월' },
@@ -2848,7 +2858,7 @@ function recommend(input) {
 
   // 나이 경계선: 417 워홀은 18–35세
   if (entry === 'whv') {
-    warnings.push('같은 고용주 근무는 원칙 최대 6개월(비자 조건 8547) — 지정 업종·다른 근무지 등 예외와 사전 허가 절차 있음. 88일도 달력일이 아닌 풀타임 근무일 산정 규칙 적용 — 장기 근속·세컨드 계획 전 공식 확인.');
+    warnings.push('같은 고용주 근무는 원칙 최대 6개월(비자 조건 8547)이며 예외·사전 허가를 별도 확인해야 합니다. 세컨드의 3개월은 통상 88 calendar days에 해당하지만 정상 풀타임 근무표·파트타임·성과급 계산 방식이 다르므로 근무기록을 공식 산정 예시와 대조하세요.');
   }
   if (input.age !== 'under30' && entry === 'whv') {
     warnings.push('호주 417 워홀은 18–35세까지 — 36세 이상은 워홀 없이 설계 가능합니다: 한국에서 SID 스폰서(186) 또는 학생비자(500) 진입. <button class="source-link" style="background: none; border: none; padding: 0; font-size: inherit; text-decoration: underline;" onclick="jumpTo(\'scenarios\', \'sc-9\')">→ 36세+ 진입 전략 보기</button>');
@@ -2910,7 +2920,7 @@ function recommend(input) {
 
   // 건설/광업 지방: 세컨드·서드 비자 + 영주권 전략
   if (['trade', 'mining', 'fieldwork'].includes(input.job)) {
-    notes.push('건설·광업·현장직은 지방 근무 기회 많음 — 417(12개월) → 417 세컨드(88일 지정지역 노동 후 12개월 추가) → 417 서드(2년차 6개월 노동 후 12개월) 전략으로 경력 3년 축적 후 SID 또는 포인트 신청 가능. 지방은 491 노미네이션 기회도 있습니다.');
+    notes.push('건설·광업·현장직은 지정작업 기회가 있습니다. 417(12개월) → 적격 지정작업 3개월 상당 후 세컨드 → 세컨드 비자 중 적격 지정작업 6개월 상당 후 서드 순서이며, 직종·지역·기간 증빙을 각각 확인해야 합니다. 이 경력만으로 SID나 491 자격이 자동 발생하지는 않습니다.');
   }
 
   // 농업: 세컨드·서드 비자 연장, 영주권 좁음 경고
@@ -3029,9 +3039,9 @@ const CITIES = [
     room: '애들레이드 ~600–1200/월(환산 ~139–277/주) · 케언즈 시드니보다 25–35% 저렴',
     unit: '지역별 상이 (대도시 대비 40–60% 저렴)',
     transport: '애들레이드 Metrocard · 케언즈 Sunbus — 요금 저렴',
-    jobs: '포도·과수 시즌(연중 워홀 가능: 1월 Bundaberg, 2월 Stanthorpe 등) · 관광·hospitality(케언즈). 지정 지역 노동(88일) 2차 비자 연장에 필수.',
+    jobs: '포도·과수 시즌(연중 워홀 가능: 1월 Bundaberg, 2월 Stanthorpe 등) · 관광·hospitality(케언즈). 세컨드 지정작업은 업종별 공식 지역·postcode와 실제 직무를 모두 충족해야 함.',
     korean: '한인 인프라 소규모 — 경로·저축이 우선할 때 선택.',
-    strategy: '시즌 일자리 숙식 제공이 표준 → 렌트 0으로 저축 2배. 워홀 2차(지정 지역 88일) → 3차 경로의 중심지. 광업·건설 지정 지역 근무로 491 직통 가능.',
+    strategy: '일부 시즌 일자리는 숙소를 제공하지만 비용·공제·교통 조건을 계약서로 확인. 워홀 2차(3개월 상당) → 3차 경로의 중심지. 광업·건설 경력도 491을 자동 보장하지 않으며 직종목록·skills assessment·주정부 지명 요건을 별도 충족해야 함.',
     src: 'https://immi.homeaffairs.gov.au/visas/working-in-australia/regional-migration, https://backpackerjobboard.com.au/harvest-guide-2026'
   }
 ];
