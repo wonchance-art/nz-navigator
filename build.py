@@ -2,6 +2,7 @@
 """볼트 원본(Artifact 규격: doctype/head/body 없음)을 정식 HTML 문서로 래핑.
 구조: / = 통합 홈(허브) · /nz/ = NZ ko · /ja/ = NZ ja · /ca/ = CA · /au/ = AU."""
 import pathlib
+import shutil
 
 VAULT = pathlib.Path.home() / 'Library/Mobile Documents/iCloud~md~obsidian/Documents/nz'
 ROOT = pathlib.Path(__file__).parent
@@ -110,3 +111,16 @@ for p in PAGES:
     p['out'].parent.mkdir(exist_ok=True)
     p['out'].write_text(doc, encoding='utf-8')
     print(f"OK — wrapped {len(doc):,} bytes -> {p['out']}")
+
+STATIC_PAGES = [
+    (VAULT / 'au-whv-map.html', ROOT / 'au' / 'whv-map.html'),
+    (VAULT / 'nz-whv-map.html', ROOT / 'nz' / 'seasonal-map.html'),
+]
+
+for src, out in STATIC_PAGES:
+    if not src.exists():
+        print(f"skip — {src} 없음")
+        continue
+    out.parent.mkdir(exist_ok=True)
+    shutil.copy2(src, out)
+    print(f"OK — copied {src.name} -> {out}")

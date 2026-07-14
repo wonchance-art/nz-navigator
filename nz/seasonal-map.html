@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>뉴질랜드 워홀 +3개월 연장 적격작업·시즌 지도</title>
+<meta name="description" content="뉴질랜드 Working Holiday Extension Work Visa의 적격 원예·포도 작업 규정과 12개 시즌 일자리 거점 지도.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{--bg:#f5f7f5;--card:#fff;--ink:#17251d;--muted:#5e6d64;--line:#dce5df;--brand:#185c3a;--deep:#10452b;--soft:#e5f1e9;--accent:#d59b2d;--warn:#a84c2c;--warnbg:#f8e9e3;--info:#1c5f91;--infobg:#e8f1f8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--brand);font-weight:700}.wrap{max-width:1040px;margin:0 auto;padding:1.2rem 1rem 4rem}
+.back{display:inline-block;margin-bottom:.8rem;text-decoration:none}.back:hover{text-decoration:underline}
+h1{font-size:clamp(1.4rem,4vw,1.9rem);line-height:1.3;letter-spacing:-.03em}.sub{color:var(--muted);font-size:.92rem;margin:.45rem 0 1rem}
+.rulegrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;margin-bottom:1rem}.rule{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem .95rem}.rule b{display:block;color:var(--deep);margin-bottom:.2rem}.rule p{color:var(--muted);font-size:.84rem}
+.notice{background:var(--soft);border-left:4px solid var(--brand);border-radius:10px;padding:.85rem 1rem;font-size:.9rem;margin-bottom:1rem}.notice.warn{background:var(--warnbg);border-left-color:var(--warn)}
+.filter{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem;margin-bottom:.8rem}.filter strong{display:block;margin-bottom:.45rem}.months{display:flex;gap:.35rem;flex-wrap:wrap}.month{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:.38rem .58rem;font-weight:700;cursor:pointer}.month[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.mapgrid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(260px,.8fr);gap:.9rem;align-items:stretch}#map{height:560px;border:1px solid var(--line);border-radius:14px;z-index:0}.side{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:.9rem;max-height:560px;overflow:auto}.side h2{font-size:1rem;margin-bottom:.15rem}.count{color:var(--muted);font-size:.8rem;margin-bottom:.55rem}.region{border-top:1px solid var(--line);padding:.65rem 0}.region:first-of-type{border-top:0}.region button{all:unset;display:block;width:100%;cursor:pointer}.region h3{font-size:.92rem}.region p{font-size:.8rem;color:var(--muted)}.tag{display:inline-block;background:var(--soft);color:var(--deep);border-radius:999px;padding:.08rem .45rem;margin:.15rem .15rem 0 0;font-size:.72rem;font-weight:700}
+.section{margin-top:1.4rem}.section h2{font-size:1.15rem;margin-bottom:.55rem}.compare{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem}.box h3{font-size:.98rem;margin-bottom:.35rem}.box ul{padding-left:1.15rem;color:var(--muted);font-size:.86rem}.box li+li{margin-top:.25rem}.yes{border-top:4px solid var(--brand)}.no{border-top:4px solid var(--warn)}
+.tasktable{width:100%;border-collapse:collapse;background:var(--card);font-size:.84rem;border-radius:12px;overflow:hidden}.tasktable th,.tasktable td{text-align:left;vertical-align:top;padding:.55rem .65rem;border-bottom:1px solid var(--line)}.tasktable th{background:var(--soft)}.status{font-weight:800;white-space:nowrap}.status.ok{color:var(--brand)}.status.no{color:var(--warn)}
+.sources{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;color:var(--muted);font-size:.8rem}.sources a{overflow-wrap:anywhere}.leaflet-popup-content{font-family:inherit;font-size:.85rem;line-height:1.5}.popname{font-size:1rem;font-weight:800;color:var(--deep)}
+@media(max-width:760px){.rulegrid,.mapgrid,.compare{grid-template-columns:minmax(0,1fr)}#map{height:430px}.side{max-height:none}.wrap{padding:.9rem .75rem 3rem}}
+@media(max-width:380px){.month{padding:.34rem .48rem}.tasktable{font-size:.78rem}.tasktable th,.tasktable td{padding:.48rem}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <a class="back" href="./">← NZ NAVI 정착 탭으로</a>
+  <h1>🌿 워홀 +3개월 연장 적격작업·시즌 지도</h1>
+  <p class="sub">한국 국적 12개월 워홀 기준 · Working Holiday Extension Work Visa(WHE)와 시즌 일자리 위치를 한 화면에서 확인합니다.</p>
+
+  <div class="rulegrid">
+    <div class="rule"><b>3개월은 고정 88·90일이 아님</b><p>현재 워홀 중 적격 원예·포도 재배 업종에서 합계 최소 3개월. 여러 고용주·여러 지역·비연속 근무도 가능합니다.</p></div>
+    <div class="rule"><b>현재 뉴질랜드 안에서 신청</b><p>현재 Working Holiday Visa를 보유하고 있어야 하며, WHE를 전에 받은 적이 없어야 합니다. 잡오퍼는 필요하지 않습니다.</p></div>
+    <div class="rule"><b>증거를 보관</b><p>고용주 확인서·급여명세·세금 기록으로 3개월과 실제 작업을 입증합니다. 고용 상태의 기상 중단 기간은 포함될 수 있습니다.</p></div>
+  </div>
+  <div class="notice"><b>현재 공식 안내:</b> 체류·근로 3개월 추가 · 비용 <b>NZD 800부터</b> · 신청의 80%가 <b>3주 이내</b>. 성인 최저임금은 2026-04-01부터 <b>NZD 23.95/h</b>이며 성과급도 실제 근로시간 기준 최저임금 이상이어야 합니다.</div>
+
+  <div class="filter">
+    <strong>🗓️ 일할 달 선택 <span id="activeCount" class="count"></span></strong>
+    <div class="months" id="months" aria-label="월별 필터"></div>
+  </div>
+  <div class="mapgrid">
+    <div id="map" aria-label="뉴질랜드 원예 포도 시즌 일자리 지도"></div>
+    <aside class="side"><h2>12개 주요 거점</h2><p class="count">월 선택 시 해당 달의 공식 캘린더 기반 기회가 강조됩니다. 실제 채용·날씨는 매년 변동.</p><div id="regionList"></div></aside>
+  </div>
+
+  <section class="section">
+    <h2>어떤 일이 연장 실적으로 인정되나</h2>
+    <div style="overflow-x:auto"><table class="tasktable"><thead><tr><th>판정</th><th>작업</th><th>설명</th></tr></thead><tbody>
+      <tr><td class="status ok">인정</td><td>작물 심기·유지관리·수확·포장</td><td>horticulture 또는 viticulture의 작물 자체를 대상으로 한 업무. 과수원·포도밭·팩하우스라도 실제 직무를 증명해야 합니다.</td></tr>
+      <tr><td class="status no">불인정</td><td>종묘장(nursery)</td><td>공식 운영지침에서 원예·포도 재배 연장 실적의 정의에서 제외합니다.</td></tr>
+      <tr><td class="status no">불인정</td><td>식품 가공·제조</td><td>주스·통조림·와인 제조·병입 등 가공·제조는 작물 포장과 다릅니다. 와이너리 근무라는 이유만으로 자동 인정되지 않습니다.</td></tr>
+      <tr><td class="status no">불인정</td><td>낙농·축산·관광·일반 창고</td><td>워홀 중 근무는 가능할 수 있어도 WHE의 horticulture/viticulture 3개월 실적에는 포함되지 않습니다.</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section class="section">
+    <h2>WHE 연장과 SSE는 다른 비자</h2>
+    <div class="compare">
+      <div class="box yes"><h3>Working Holiday Extension Work Visa</h3><ul><li>현재 워홀 보유자 + 이미 적격 작업 3개월</li><li>최대 3개월 체류·근로 추가, 잡오퍼 불필요</li><li>뉴질랜드 안에서 1회만 신청</li></ul></div>
+      <div class="box no"><h3>Supplementary Seasonal Employment Work Visa</h3><ul><li>워홀 자동 연장이 아닌 별도 시즌 고용 비자</li><li>보통 visitor/student visa 보유자 대상</li><li>승인된 SSE 고용주의 잡오퍼가 필요하며 최대 6개월</li></ul></div>
+    </div>
+  </section>
+
+  <section class="section sources">
+    <b>공식 출처 · 2026-07-14 확인</b><br>
+    <a href="https://www.immigration.govt.nz/visas/working-holiday-extension-work-visa/" target="_blank" rel="noopener">Immigration New Zealand — Working Holiday Extension Work Visa</a> ·
+    <a href="https://www.immigration.govt.nz/opsmanual/41986.htm" target="_blank" rel="noopener">운영지침 WH1.20</a> ·
+    <a href="https://www.immigration.govt.nz/visas/supplementary-seasonal-employment-work-visa/" target="_blank" rel="noopener">SSE Work Visa</a> ·
+    <a href="https://www.immigration.govt.nz/work/working-holiday-visas/finding-short-term-work-when-on-a-working-holiday/" target="_blank" rel="noopener">공식 월별 단기 일자리 캘린더</a> ·
+    <a href="https://www.employment.govt.nz/pay-and-hours/pay-and-wages/minimum-wage/minimum-wage-rates-and-types" target="_blank" rel="noopener">Employment New Zealand — 최저임금</a>.<br>
+    지도 좌표는 채용지 주소가 아니라 지역 탐색용 대표 도시 중심점입니다. 월·작물은 INZ 캘린더를 지역 단위로 요약했으며, 정확한 시작일·근무시간·숙소·성과급은 고용계약에서 확인하세요. 지도 © OpenStreetMap.
+  </section>
+</main>
+<script>
+const REGIONS=[
+ {n:'Northland · Kerikeri',is:'북섬',lat:-35.2284,lng:173.9470,crops:'감귤·아보카도·블루베리',jobs:'수확·전정·팩하우스',months:[1,2,3,4,5,6,9,10,11,12]},
+ {n:'Auckland · Pukekohe',is:'북섬',lat:-37.2012,lng:174.9010,crops:'채소·딸기',jobs:'심기·유지관리·수확·포장',months:[1,2,3,4,5,6,7,8,9,11,12]},
+ {n:'Waikato · Cambridge',is:'북섬',lat:-37.8911,lng:175.4690,crops:'블루베리·아스파라거스·채소',jobs:'수확·선별·포장',months:[1,2,3,4,7,8,9,10,11,12]},
+ {n:'Bay of Plenty · Te Puke',is:'북섬',lat:-37.7833,lng:176.3250,crops:'키위·아보카도',jobs:'키위 수확·전정·팩하우스',months:[1,2,3,4,5,6,9,10,11,12]},
+ {n:'Gisborne',is:'북섬',lat:-38.6623,lng:178.0176,crops:'감귤·포도·사과·채소',jobs:'수확·전정·포장',months:[1,2,3,4,5,6,7,8,9,12]},
+ {n:'Hawke\'s Bay · Hastings',is:'북섬',lat:-39.6381,lng:176.8492,crops:'사과·핵과·포도',jobs:'솎기·수확·전정·포장',months:[1,2,3,4,5,9,10,11,12]},
+ {n:'Horowhenua · Levin',is:'북섬',lat:-40.6223,lng:175.2865,crops:'채소·베리',jobs:'심기·수확·팩하우스',months:[1,2,3,4,5,6,7,8,9,10,11,12]},
+ {n:'Wairarapa · Martinborough',is:'북섬',lat:-41.2189,lng:175.4597,crops:'와인용 포도·올리브',jobs:'포도 수확·전정·포장',months:[3,4,5,6,7,8,9]},
+ {n:'Marlborough · Blenheim',is:'남섬',lat:-41.5134,lng:173.9612,crops:'와인용 포도',jobs:'포도 수확·전정·캐노피 관리',months:[3,4,5,6,7,8,9]},
+ {n:'Nelson / Tasman · Motueka',is:'남섬',lat:-41.1080,lng:173.0110,crops:'사과·키위·홉·베리',jobs:'수확·전정·포장',months:[2,3,4,5,6]},
+ {n:'Canterbury · Ashburton',is:'남섬',lat:-43.9036,lng:171.7480,crops:'채소·베리·포도',jobs:'심기·유지관리·수확·포장',months:[1,2,3,4,7,8,9,10,11,12]},
+ {n:'Central Otago · Cromwell',is:'남섬',lat:-45.0384,lng:169.2007,crops:'체리·핵과·포도',jobs:'솎기·수확·전정·포장',months:[1,2,3,4,5,6,7,8,9,12]}
+];
+const map=L.map('map',{scrollWheelZoom:true}).setView([-41.1,172.7],5);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(map);
+const markers=REGIONS.map((r,i)=>{const m=L.circleMarker([r.lat,r.lng],{radius:7,color:'#fff',weight:2,fillColor:'#185c3a',fillOpacity:1}).addTo(map);m._region=r;m._index=i;m.bindPopup(`<div class="popname">${r.n}</div><b>${r.crops}</b><br>${r.jobs}<br><span style="color:#5e6d64">공식 최저임금 NZD 23.95/h 이상 · 실제 계약 확인</span>`);return m;});
+let selected=0;
+function renderMonths(){const names=['전체','1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];const box=document.getElementById('months');box.innerHTML=names.map((n,i)=>`<button class="month" type="button" data-month="${i}" aria-pressed="${i===selected}">${n}</button>`).join('');box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{selected=+b.dataset.month;renderMonths();applyFilter();}));}
+function applyFilter(){let count=0;markers.forEach(m=>{const active=!selected||m._region.months.includes(selected);if(active)count++;m.setStyle({fillColor:active?'#185c3a':'#8ea198',fillOpacity:active?1:.22,radius:active?7:5});});document.getElementById('activeCount').textContent=`· ${count}곳 표시`;renderList();}
+function renderList(){const rows=REGIONS.map((r,i)=>({r,i,active:!selected||r.months.includes(selected)})).filter(x=>x.active);document.getElementById('regionList').innerHTML=rows.map(({r,i})=>`<article class="region"><button type="button" data-index="${i}"><h3>${r.n} <span class="tag">${r.is}</span></h3><p>${r.crops}</p><p>${r.jobs}</p></button></article>`).join('');document.querySelectorAll('.region button').forEach(b=>b.addEventListener('click',()=>{const m=markers[+b.dataset.index];map.setView(m.getLatLng(),8);m.openPopup();}));}
+renderMonths();applyFilter();
+</script>
+</body>
+</html>

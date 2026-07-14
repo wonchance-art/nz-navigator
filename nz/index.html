@@ -1155,6 +1155,11 @@ details.fold > summary:focus-visible { outline: 2px solid var(--accent); outline
 .city-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.6rem; }
 .cs-l { font-size: 0.75rem; color: var(--muted); }
 .cs-v { font-weight: 700; font-size: 0.92rem; }
+.map-launch-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: center; margin: 1.25rem 0 0; padding: 1rem 1.1rem; background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; }
+.map-launch-card h3 { margin: 0 0 0.25rem; font-size: 1rem; }
+.map-launch-card p { margin: 0; color: var(--muted); font-size: 0.86rem; line-height: 1.55; }
+.map-launch-link { white-space: nowrap; text-decoration: none; }
+@media (max-width: 620px) { .map-launch-card { grid-template-columns: minmax(0, 1fr); } .map-launch-link { width: 100%; text-align: center; } }
 /* v29 커뮤니티·생활 링크 */
 .link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
 .link-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 0.9rem 1rem; box-shadow: 0 1px 3px rgba(23, 37, 29, 0.05); }
@@ -1750,8 +1755,13 @@ details.fold:not([open]) > .fold-body { display: none; }
         <div class="mini-card ok"><strong>🌤️ 차선 — 10~11월</strong><div>여름 채용 오픈 · 체리는 11월 지원 · 항공 저렴.</div></div>
         <div class="mini-card ski"><strong>⛷️ 스키 목표</strong><div>채용 공고 2–4월 — 원격 지원 후 6월 개막 맞춰 입국. 5–6월 도착은 늦음.</div></div>
         <div class="mini-card avoid"><strong>❌ 피할 — 12월 · 7~9월</strong><div>12월 채용 동결·렌트 경쟁·항공 +30~50%. 7~9월 전반 비수기.</div></div>
-        <div class="dash-sub">출처: <a class="source-link" href="https://www.picknz.co.nz/" target="_blank">PickNZ↗</a> <a class="source-link" href="https://www.backpackerjobboard.co.nz/blog/fruit-picking-seasons-in-new-zealand/" target="_blank">수확 캘린더↗</a> · 2026-07 교차검증</div>
+        <div class="dash-sub">출처: <a class="source-link" href="https://www.immigration.govt.nz/work/working-holiday-visas/finding-short-term-work-when-on-a-working-holiday/" target="_blank">Immigration NZ 시즌 캘린더↗</a> · 2026-07-14 확인</div>
       </div>
+    </div>
+
+    <div class="map-launch-card" id="seasonal-map">
+      <div><h3>🌿 워홀 +3개월 연장 적격작업·시즌 지도</h3><p>12개 원예·포도 거점의 월별 성수기와 인정·불인정 작업을 함께 봅니다. WHE와 별도 SSE 비자의 차이도 정리했습니다.</p></div>
+      <a class="pill-btn map-launch-link" href="./seasonal-map.html">시즌 지도 열기 →</a>
     </div>
 
     <h2 id="survival" style="margin-top: 2.5rem;">생활비 생존 전략</h2>
@@ -1759,7 +1769,7 @@ details.fold:not([open]) > .fold-body { display: none; }
     <div class="tip-grid">
       <div class="tip-card"><div class="tip-ic">💵</div><strong>도착 버퍼 6,000+</strong><p>자금증명 4,200은 심사용. 첫 4–6주 무수입 + 정착비 2,000–3,500 + 다음 렌트 대비.</p></div>
       <div class="tip-card"><div class="tip-ic">⚡</div><strong>첫 수입 2주 안에</strong><p>호스피탈리티·시즌잡이 최속. 최저임금 풀타임 주 ~958(세전). 이력서는 출국 전 준비.</p></div>
-      <div class="tip-card"><div class="tip-ic">🏠</div><strong>주거 = 저축 속도</strong><p>방셰어 200–320 vs 스튜디오 400+. 시즌잡 숙식 제공이면 저축 2배 + 원예 3개월 = WHV 연장.</p></div>
+      <div class="tip-card"><div class="tip-ic">🏠</div><strong>주거 = 저축 속도</strong><p>방셰어 200–320 vs 스튜디오 400+. 일부 시즌잡은 숙소를 제공하지만 조건·공제액을 확인. 적격 원예·포도 작업 3개월은 WHE 신청 근거를 보관.</p></div>
       <div class="tip-card"><div class="tip-ic">🧾</div><strong>도착 주에 IRD</strong><p>무료 발급 — 없으면 45% 원천징수. 3월 말 이후 환급 확인.</p></div>
       <div class="tip-card"><div class="tip-ic">🏦</div><strong>비자비 분리 적립</strong><p>AEWV 1,540 · 영주권 6,450 — 신청 2–3개월 전 별도 계좌에.</p></div>
       <div class="tip-card"><div class="tip-ic">🎓</div><strong>유학 현금 흐름</strong><p>학기 중 25h(주 ~599)는 생활비만 상쇄 — 학비는 사전 확보.</p></div>
@@ -2176,7 +2186,7 @@ const DB = {
       rating: 3,
       path: 'A 변형(시즌→매니저)',
       pitfall: '시즌직 자체는 영주권으로 연결 안 됨 — 매니저 트랙 전환이 관건',
-      tip: '시즌잡(원예·포도)은 WHV 연장 +3개월 카드 · 숙식 제공이 표준',
+      tip: '적격 원예·포도 작업 3개월은 WHE +3개월 신청 카드 · 숙소 제공 여부와 비용은 공고별 확인',
       guide: {
         demand: '쉬움 — 시즌 상시 수요',
         demandLv: 5,
@@ -2257,7 +2267,7 @@ const DB = {
           <div id="fw-chain" style="margin-top: 0.8rem; border-left: 4px solid var(--accent); background: #fdf9f0; padding: 0.8rem 1rem; border-radius: 6px;">
             <strong>🏭 공장 시즌 체인 — 연중 로테이션</strong> <span class="badge estimated">추정 · 26-07 조사</span>
             <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;"><strong>2–4월</strong> 와이너리 빈티지(cellar hand $25–32/h · 12시간 시프트 · Marlborough·Hawke's Bay — 지원은 전년 8–10월) → <strong>3–6월</strong> 키위 팩하우스(Bay of Plenty, $23.95–28.5/h) → <strong>5–9월</strong> 수산 가공 hoki(Sealord Nelson, 기본 $23.96/h + 교대·초과, 시즌 300명+ 채용) → <strong>10월~5월</strong> 조개·수산(Talley's Motueka·Blenheim, 성과급 중심) → <strong>11월~</strong> 육가공 개막. 유제품 공장(Fonterra 등)은 시즌 fixed-term 생산직 공고가 수시 — 조건은 공고별 확인.</p>
-            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;">💡 시즌을 이으면 연중 수요가 이어집니다. 단 PSV·GWSV는 시즌 사이 국외 스탠드다운(4개월/3개월)이 있어 체인이 끊깁니다 — <strong>WHV 12개월 동안은 WHV 하나로 도는 게 가장 유연</strong>합니다. 시기별 상세는 정착 탭의 월별 캘린더 참고.</p>
+            <p style="color: var(--muted); font-size: 0.92rem; margin-top: 0.4rem;">💡 시즌을 이으면 연중 수요가 이어집니다. 다만 cellar hand·와인 제조·병입·수산·육가공은 WHV 근무가 가능해도 WHE +3개월의 원예·포도 작물 작업으로 자동 인정되지 않습니다. WHE 실적은 심기·유지관리·수확·작물 포장 직무와 증거를 따로 관리하세요. PSV·GWSV는 시즌 사이 국외 스탠드다운(4개월/3개월)이 있어 체인이 끊깁니다.</p>
           </div>
           <div id="fw-build" style="margin-top: 0.8rem; border-left: 4px solid var(--info); background: var(--bg); padding: 0.8rem 1rem; border-radius: 6px;">
             <strong>🏗️ 건설 노무 (labourer·hammerhand)</strong>
@@ -2533,7 +2543,7 @@ const DB = {
       choices: [
         {
           label: '시즌잡 연장',
-          result: '<strong>조건:</strong> 원예·포도재배 3개월 근무 완료 → +3개월 연장 비자<br><strong>효과:</strong> 숙식 제공 시즌잡으로 저축하며 구직 시간 확보'
+          result: '<strong>조건:</strong> 현재 워홀 중 적격 원예·포도 작물의 심기·유지관리·수확·포장 업무를 합계 3개월 완료하고 고용주 확인서·급여명세 등으로 입증 → WHE +3개월<br><strong>효과:</strong> 체류·근로 시간을 3개월 확보. 숙소 제공 여부와 비용은 고용계약별 확인'
         },
         {
           label: '학생비자 전환',
@@ -3131,7 +3141,7 @@ const CITIES = [
     transport: 'Bee Card 등 — 해밀턴 도심 1.00 / 일반 1.70',
     jobs: '농축산·원예 시즌(중부 오타고 체리 12–2월, 숙련 일당 180–200)·타우랑가 호스피탈리티(시급 24.5–35). 더니든은 학생도시라 방이 가장 싸다.',
     korean: '소규모 — 한인 인프라보다 저축·경로 요건이 우선일 때 선택.',
-    strategy: '시즌잡 숙식 제공이 표준 — 렌트 0으로 저축 2배 + 원예·포도 3개월로 WHV +3개월 연장. 데어리 매니저 트랙도 지방이 본진.',
+    strategy: '일부 시즌잡은 숙소를 제공하지만 비용·조건 확인 필수. 적격 원예·포도 작업 3개월로 WHE +3개월을 신청할 수 있고, 데어리 매니저 트랙도 지방이 본진.',
     src: 'https://www.picknz.co.nz/work-opportunities/work-planner/work-and-play-in-central-otago/'
   }
 ];
@@ -3869,7 +3879,7 @@ const JOB_PICK = [
     gate: () => ({ ok: 1, cost: 4, via: '무경험 즉시 진입(시즌잡) — WHV 연장 +3개월 카드' }),
     caution: '시즌 반복만으로는 영주권 경로 없음 — 매니저 승진 전제' },
   { id: 'livestock', axes: { pr: 4, income: 2, speed: 5 },
-    gate: () => ({ ok: 1, cost: 4, via: '무경험 보조 진입(현장 교육·숙식 제공 일반적)' }),
+    gate: () => ({ ok: 1, cost: 4, via: '무경험 보조 진입(현장 교육, 숙소 제공 여부·공제는 공고별 확인)' }),
     caution: '새벽 착유 등 체력 소모 큼 — 매니저(GL T2) 승진까지 최소 2년' },
   { id: 'fieldwork', axes: { pr: 1, income: 2, speed: 5 },
     gate: () => ({ ok: 1, cost: 5, via: '무경력 1–2주 내 시작 — 구인 최다' }),
@@ -4031,7 +4041,7 @@ const JOURNEYS = {
   livestock: {
     note: '워홀·PSV 진입 가능 — 한국 축산 경력 2년+면 2단계를 건너뜀(36개월대)',
     steps: [
-      { m: '0–1개월', t: '데어리 보조 취업', type: 'var', d: '무경험 채용(현장 교육) — 와이카토·캔터베리·사우스랜드, 숙식 제공 일반적.', why: '연 4,000명이 떠나는 구조적 인력난 — 진입 자체는 몇 주.' },
+      { m: '0–1개월', t: '데어리 보조 취업', type: 'var', d: '무경험 채용(현장 교육) — 와이카토·캔터베리·사우스랜드, 일부 농장은 숙소 제공(비용·조건 확인).', why: '연 4,000명이 떠나는 구조적 인력난 — 진입 자체는 몇 주.' },
       { m: '+20–24개월', t: '매니저 요건 채우기', type: 'rule', d: '경력 2년 또는 NZQF L4(Primary ITO 데어리, 일하면서 ~20개월).', why: 'Dairy Farm Manager 직함 요건이 규정(2025-03부터 3년→2년 단축) — 한국 경력 2년+면 이 단계 생략.', risk: '숙소 공제는 시장가 서면 합의 — 계약서에 금액 명시 확인.' },
       { m: '+0–6개월', t: '매니저 승진 + AEWV', type: 'var', d: 'Dairy Cattle Farmer/Manager(121313) 직함 확보.', why: 'GL T2 카운트는 매니저 직함부터 시작 — 승진 타이밍이 변수.' },
       { m: '+24개월', t: '매니저로 24개월 근무', type: 'rule', d: 'GL Tier 2 Work to Residence — 중위임금 이상.', why: 'T2 규정이 정한 최소 근무 기간.' },
@@ -4680,7 +4690,7 @@ const SEARCH_INDEX = [
   { q: '웰링턴 wellington 수도', label: '웰링턴 정착 정보', desc: '방셰어 215–280 · Snapper · 정부·IT', go: 'settle', target: 'city-wlg' },
   { q: '크라이스트처치 christchurch 크라이스트 처치', label: '크라이스트처치 정착 정보', desc: '방셰어 200–285 · 최저 생활비 · 건설 수요', go: 'settle', target: 'city-chc' },
   { q: '퀸스타운 queenstown 스키 관광', label: '퀸스타운 정착 정보', desc: '방셰어 350–550 · 주거난 경고 · 관광 허브', go: 'settle', target: 'city-qtn' },
-  { q: '지방 해밀턴 타우랑가 더니든 시골 소도시', label: '지방 거점 정착 정보', desc: '더니든 179~ · 시즌잡 숙식 제공 · 저축 극대화', go: 'settle', target: 'city-reg' },
+  { q: '지방 해밀턴 타우랑가 더니든 시골 소도시', label: '지방 거점 정착 정보', desc: '더니든 179~ · 시즌잡 숙소 조건 비교 · 저축 전략', go: 'settle', target: 'city-reg' },
   { q: '파트너 연애 결혼 배우자 커플 동거 여자친구 남자친구 partnership', label: '파트너가 생겼을 때', desc: '파트너십 워크 1,630 · 영주권 5,360 · 동거 12개월', go: 'scenarios', target: 'sc-7' },
   { q: '31세 32세 33세 34세 35세 나이 이상 워홀 불가 오프쇼어 offshore 늦은 넘은', label: '31세+ 워홀 없이 진입', desc: '오프쇼어 AEWV · 유학 · 답사 3루트', go: 'scenarios', target: 'sc-8' },
   { q: '로드맵 경로 비교 전체 한눈에', label: '전체 경로 비교', desc: '4개 경로 타임라인 비교', go: 'diagnose', target: 'fullRoadmaps' },
