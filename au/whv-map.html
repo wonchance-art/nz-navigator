@@ -2,7 +2,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>호주 417 세컨·서드 지정작업 지도</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="./employers.js"></script>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--ink:#1a2230;--muted:#5d6b7a;--line:#dde3ea;--au:#1e3a70;--au-bg:#e4e9f2;--accent:#e0a63a;--ok:#177245;--ok-bg:#e7f0ea;--warn:#b4552d;--warn-bg:#f6e9e4}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -48,6 +52,8 @@ table.ind thead th{font-size:.9rem;background:var(--au-bg)}
 .no417{background:var(--warn-bg);border-radius:8px;padding:.6rem .8rem;font-size:.84rem;margin-top:.5rem}
 .disc{color:var(--muted);font-size:.8rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.9rem 1.1rem;margin-top:1.2rem;line-height:1.6}
 .disc a{color:var(--au);font-weight:700}
+.emp-tools{display:grid;grid-template-columns:minmax(180px,1.25fr) minmax(110px,.55fr) minmax(150px,.65fr) auto;gap:.5rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.8rem;margin:.65rem 0}.emp-tools input,.emp-tools select{min-width:0;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);padding:.58rem .65rem;font:inherit}.emp-check{display:flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:700;white-space:nowrap}.emp-summary{font-size:.82rem;color:var(--muted);margin:.25rem 0 .6rem}.emp-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;max-height:570px;overflow:auto;padding-right:.2rem}.emp-card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.68rem .75rem}.emp-card button{all:unset;display:block;width:100%;cursor:pointer}.emp-card h3{font-size:.88rem;line-height:1.35}.emp-card p{font-size:.76rem;color:var(--muted);margin-top:.12rem}.emp-badge{display:inline-block;border-radius:999px;padding:.05rem .38rem;font-size:.68rem;font-weight:800;margin:.25rem .18rem 0 0;background:var(--au-bg);color:var(--au)}.emp-badge.regional{background:var(--ok-bg);color:var(--ok)}.emp-badge.metro{background:var(--warn-bg);color:var(--warn)}.emp-links{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.35rem}.emp-links a{font-size:.72rem;color:var(--au);font-weight:700}.emp-pin{width:13px;height:13px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.35)}.emp-pop-links{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.4rem}.emp-pop-links a{font-size:.77rem}.marker-cluster-small,.marker-cluster-medium,.marker-cluster-large{background:rgba(224,166,58,.3)}.marker-cluster-small div,.marker-cluster-medium div,.marker-cluster-large div{background:#e0a63a;color:#1a2230;font-weight:800}
+@media(max-width:720px){.emp-tools,.emp-list{grid-template-columns:minmax(0,1fr)}.emp-check{white-space:normal}}
 </style>
 
 <div class="wrap">
@@ -74,8 +80,19 @@ table.ind thead th{font-size:.9rem;background:var(--au-bg)}
   <div class="months" id="months"></div>
 
   <div id="map"></div>
-  <div class="legend" id="regionLegend"><span><i style="background:rgba(23,163,90,.55)"></i><b style="color:var(--ok)">regional 방향</b></span><span><i style="background:rgba(232,64,42,.7);border-color:#a31d12"></i><b style="color:var(--warn)">regional 제외 방향</b></span><span><i class="dot" style="background:var(--au)"></i>주요 시즌 일자리 거점</span><span><i class="dot" style="background:#0f8a4d"></i>선택 월 성수기</span></div>
+  <div class="legend" id="regionLegend"><span><i style="background:rgba(23,163,90,.55)"></i><b style="color:var(--ok)">regional 방향</b></span><span><i style="background:rgba(232,64,42,.7);border-color:#a31d12"></i><b style="color:var(--warn)">regional 제외 방향</b></span><span><i class="dot" style="background:var(--au)"></i>주요 시즌 일자리 거점</span><span><i class="dot" style="background:#0f8a4d"></i>선택 월 성수기</span><span><i class="dot" style="background:var(--accent)"></i>사업체·구직 연결</span></div>
   <p class="pc-note" id="mapModeNote">지도 색은 농축산·어업·조림·광업·건설의 regional 규칙만 시각화합니다. 법적 판정은 위 postcode 판정기와 공식 표를 사용하세요.</p>
+
+  <div class="section-h" id="employerHeading">🏢 실제 농장·공장·광산·현장 채용 연결</div>
+  <div class="no417"><b>판정 경계:</b> 사업체나 구인 링크가 지도에 있어도 현재 채용, 워홀 채용, 세컨·서드 실적을 보장하지 않습니다. 반드시 <b>실제 근무지 postcode</b>와 <b>직무</b>를 위 판정기에서 확인하세요. 일반 식품 제조·와인 병입·도시 본사·본사 채용은 지정작업이 아닐 수 있습니다.</div>
+  <div class="emp-tools">
+    <input id="empSearch" type="search" placeholder="사업체·지역·업종 검색" aria-label="사업체 검색">
+    <select id="empState" aria-label="사업체 주 필터"><option value="">전 주/준주</option></select>
+    <select id="empType" aria-label="사업체 유형 필터"><option value="">모든 유형</option></select>
+    <label class="emp-check"><input id="regionalOnly" type="checkbox"> core regional 위치만</label>
+  </div>
+  <p class="emp-summary" id="empSummary"></p>
+  <div class="emp-list" id="empList" aria-live="polite"></div>
 
   <div class="section-h">🧾 417 지정작업 종류 (2026)</div>
   <table class="ind"><thead><tr><th>지정작업</th><th>인정 지역</th><th>예시</th></tr></thead><tbody id="indBody"></tbody></table>
@@ -169,7 +186,7 @@ function classify(st,v,type){
  return{kind:ok?'pass':'fail',st,why:ok?'공식 regional Australia postcode입니다. 실제 업무가 농축산·어업·조림·광업·건설 정의에 맞아야 합니다.':'농축산·어업·조림·광업·건설에 쓰는 regional Australia postcode 목록에 없습니다.'};
 }
 
-let map,centroids={},searchMk=null,selMonth=0,eligibleLayer=null,excludedLayer=null;const markers=[];
+let map,centroids={},searchMk=null,selMonth=0,eligibleLayer=null,excludedLayer=null,empCluster=null;const markers=[],empMarkers=[];
 function popupHtml(r){const M=['1','2','3','4','5','6','7','8','9','10','11','12'];
  return `<div class="pp-name">${r.n} <span style="color:var(--au)">${r.s}</span></div>`
   +`<div><span class="pp-k">작물</span> ${r.crops.join(' · ')}</div>`
@@ -194,7 +211,19 @@ function initMap(){
  Promise.resolve(window.CENT_DATA).then(d=>centroids=d).catch(()=>{});
  REGIONS.forEach(r=>{const m=L.circleMarker([r.lat,r.lng],{pane:'pFarm',radius:6,color:'#fff',weight:2,fillColor:'#1e3a70',fillOpacity:1});
    m.bindPopup(popupHtml(r));m._r=r;m.addTo(map);markers.push(m);});
+ initEmployers();
 }
+const EMPLOYERS=window.AU_EMPLOYERS||[];
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function employerRegional(e){const r=classify(e.state,e.postcode,'core');return r.kind==='pass';}
+function empColor(type){if(type==='구직지원')return'#7b4bb7';if(type==='광업')return'#4e5966';if(type==='건설/현장')return'#2474a6';if(/가공|팩|와이너리/.test(type))return'#d47822';return'#177245';}
+function empWebSearch(e){return `https://www.google.com/search?q=${encodeURIComponent(e.name+' jobs '+e.place+' Australia')}`;}
+function empMapSearch(e){return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.name+' '+e.place+' '+e.state)}`;}
+function empSourceUrl(e){return /^https?:/.test(e.source)?e.source:(e.contact||'https://www.workforceaustralia.gov.au/individuals/jobs/search');}
+function empPopup(e){const regional=employerRegional(e);return `<div class="pp-name">${esc(e.name)}</div><div>${esc(e.place)} · ${esc(e.state)} ${esc(e.postcode)}</div><div><span class="emp-badge">${esc(e.type)}</span><span class="emp-badge ${regional?'regional':'metro'}">${regional?'core regional 위치':'core 지역 불통과/별도 확인'}</span></div><div class="emp-pop-links">${e.contact?`<a href="${esc(e.contact)}" target="_blank" rel="noopener">공식 채용·문의↗</a>`:''}<a href="${empWebSearch(e)}" target="_blank" rel="noopener">현재 채용검색↗</a><a href="${empMapSearch(e)}" target="_blank" rel="noopener">지도↗</a><a href="${empSourceUrl(e)}" target="_blank" rel="noopener">근거↗</a></div><div class="pc-note">표시 지점은 사업장·프로젝트·서비스 거점입니다. 실제 근무지와 직무를 다시 판정하세요.</div>`;}
+function initEmployers(){if(!L.markerClusterGroup||!EMPLOYERS.length)return;empCluster=L.markerClusterGroup({showCoverageOnHover:false,maxClusterRadius:46,spiderfyOnMaxZoom:true});EMPLOYERS.forEach((e,i)=>{const icon=L.divIcon({className:'',html:`<div class="emp-pin" style="background:${empColor(e.type)}"></div>`,iconSize:[13,13],iconAnchor:[6,6]});const m=L.marker([e.lat,e.lng],{icon,title:e.name});m.bindPopup(empPopup(e));m._e=e;m._index=i;empMarkers.push(m);});buildEmployerFilters();applyEmployerFilter();map.addLayer(empCluster);}
+function buildEmployerFilters(){const states=[...new Set(EMPLOYERS.map(e=>e.state))].sort();const types=[...new Set(EMPLOYERS.map(e=>e.type))].sort((a,b)=>a.localeCompare(b,'ko'));document.getElementById('empState').innerHTML='<option value="">전 주/준주</option>'+states.map(s=>`<option>${esc(s)}</option>`).join('');document.getElementById('empType').innerHTML='<option value="">모든 유형</option>'+types.map(t=>`<option>${esc(t)}</option>`).join('');}
+function applyEmployerFilter(){if(!empCluster)return;const q=document.getElementById('empSearch').value.trim().toLowerCase();const st=document.getElementById('empState').value;const type=document.getElementById('empType').value;const regionalOnly=document.getElementById('regionalOnly').checked;const rows=[];empCluster.clearLayers();EMPLOYERS.forEach((e,i)=>{const regional=employerRegional(e);const hay=`${e.name} ${e.place} ${e.state} ${e.postcode} ${e.type}`.toLowerCase();if((q&&!hay.includes(q))||(st&&e.state!==st)||(type&&e.type!==type)||(regionalOnly&&!regional))return;rows.push({e,i,regional});empCluster.addLayer(empMarkers[i]);});document.getElementById('empSummary').textContent=`${rows.length}곳 표시 · 전체 ${EMPLOYERS.length}개 사업체/운영지/구직 거점. 색상: 농장 초록 · 가공 주황 · 광업 회색 · 건설 파랑 · 구직지원 보라.`;document.getElementById('empList').innerHTML=rows.map(({e,i,regional})=>`<article class="emp-card"><button type="button" data-emp-index="${i}"><h3>${esc(e.name)}</h3><p>${esc(e.place)} · ${esc(e.state)} ${esc(e.postcode)}</p><span class="emp-badge">${esc(e.type)}</span><span class="emp-badge ${regional?'regional':'metro'}">${regional?'core regional':'별도 확인'}</span></button><div class="emp-links">${e.contact?`<a href="${esc(e.contact)}" target="_blank" rel="noopener">채용·문의↗</a>`:''}<a href="${empWebSearch(e)}" target="_blank" rel="noopener">현재 채용검색↗</a><a href="${empSourceUrl(e)}" target="_blank" rel="noopener">근거↗</a></div></article>`).join('')||'<p class="pc-note">조건에 맞는 사업체가 없습니다.</p>';document.querySelectorAll('[data-emp-index]').forEach(b=>b.addEventListener('click',()=>{const m=empMarkers[+b.dataset.empIndex];map.setView(m.getLatLng(),10);empCluster.zoomToShowLayer(m,()=>m.openPopup());}));}
 function applyMonth(){markers.forEach(m=>{const r=m._r;
  if(!selMonth){m.setStyle({fillColor:'#1e3a70',fillOpacity:1,radius:6});return;}
  const inS=r.mon.includes(selMonth);m.setStyle({fillColor:inS?'#0f8a4d':'#1e3a70',fillOpacity:inS?1:.25,radius:inS?7:5});});}
@@ -222,9 +251,13 @@ function buildMonths(){const box=document.getElementById('months');const names=[
  box.innerHTML='<span class="mbtn on" data-m="0">전체</span>'+names.map((n,i)=>`<span class="mbtn" data-m="${i+1}">${n}</span>`).join('');
  box.querySelectorAll('.mbtn').forEach(b=>b.addEventListener('click',()=>{box.querySelectorAll('.mbtn').forEach(x=>x.classList.remove('on'));b.classList.add('on');selMonth=+b.dataset.m;applyMonth();}));}
 document.getElementById('indBody').innerHTML=INDUSTRIES.map(([n,geo,ex])=>`<tr><td><b>${n}</b></td><td><span class="geo-all">${geo}</span></td><td>${ex}</td></tr>`).join('');
-document.getElementById('disc').innerHTML='<b>공식 기준 2026-07-14 확인.</b> 이 지도는 방향 안내이며, 색상 경계는 ABS 우편구역 기반이라 실제 주소·고용주 사업장과 다를 수 있습니다. 최종 판정은 <a href="https://immi.homeaffairs.gov.au/what-we-do/whm-program/specified-work-conditions/specified-work-417" target="_blank" rel="noopener">Home Affairs 417 지정작업↗</a>과 <a href="https://immi.homeaffairs.gov.au/supporting/Pages/Work/specified-work.aspx" target="_blank" rel="noopener">공식 postcode·재해지역 표↗</a>를 대조하세요. 같은 고용주 6개월 제한은 <a href="https://immi.homeaffairs.gov.au/what-we-do/whm-program/specified-work-conditions/6-month-work-limitation" target="_blank" rel="noopener">condition 8547 안내↗</a>에서 별도 확인합니다. 경계 데이터 © ferocia/australia-geojsons · ABS · 지도 © OpenStreetMap.';
+document.getElementById('disc').innerHTML='<b>공식 기준 2026-07-14 확인.</b> 이 지도는 방향 안내이며, 색상 경계는 ABS 우편구역 기반이라 실제 주소·고용주 사업장과 다를 수 있습니다. 최종 판정은 <a href="https://immi.homeaffairs.gov.au/what-we-do/whm-program/specified-work-conditions/specified-work-417" target="_blank" rel="noopener">Home Affairs 417 지정작업↗</a>과 <a href="https://immi.homeaffairs.gov.au/supporting/Pages/Work/specified-work.aspx" target="_blank" rel="noopener">공식 postcode·재해지역 표↗</a>를 대조하세요. 같은 고용주 6개월 제한은 <a href="https://immi.homeaffairs.gov.au/what-we-do/whm-program/specified-work-conditions/6-month-work-limitation" target="_blank" rel="noopener">condition 8547 안내↗</a>에서 별도 확인합니다. 고용주 후보는 <a href="https://freshproduce.org.au/about/" target="_blank" rel="noopener">AFPA 회원사↗</a>, <a href="https://www.dewr.gov.au/employment-services-data/resources/harvest-trail-services-evaluation-report" target="_blank" rel="noopener">정부 Harvest Trail 지역·기관↗</a>, 기업 공식 채용 페이지를 연결했으며 공석 여부는 실시간으로 달라집니다. 구직 전 <a href="https://horticulture.fairwork.gov.au/working-the-harvest-trail" target="_blank" rel="noopener">Fair Work 안전수칙↗</a>과 ABN을 확인하세요. 경계 데이터 © ferocia/australia-geojsons · ABS · 지도 © OpenStreetMap.';
 buildChips();buildMonths();initMap();
 document.getElementById('pcBtn').addEventListener('click',runPC);
 document.getElementById('pcInput').addEventListener('keydown',e=>{if(e.key==='Enter')runPC();});
 document.getElementById('workType').addEventListener('change',()=>{syncMapMode();if(document.getElementById('pcResult').classList.contains('show'))runPC();});
+document.getElementById('empSearch').addEventListener('input',applyEmployerFilter);
+document.getElementById('empState').addEventListener('change',applyEmployerFilter);
+document.getElementById('empType').addEventListener('change',applyEmployerFilter);
+document.getElementById('regionalOnly').addEventListener('change',applyEmployerFilter);
 </script>

@@ -114,7 +114,9 @@ for p in PAGES:
 
 STATIC_PAGES = [
     (VAULT / 'au-whv-map.html', ROOT / 'au' / 'whv-map.html'),
+    (VAULT / 'au-employers.js', ROOT / 'au' / 'employers.js'),
     (VAULT / 'nz-whv-map.html', ROOT / 'nz' / 'seasonal-map.html'),
+    (VAULT / 'nz-employers.js', ROOT / 'nz' / 'employers.js'),
 ]
 
 for src, out in STATIC_PAGES:
