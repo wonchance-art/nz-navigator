@@ -34,3 +34,10 @@ jobs:
 
       - name: Verify calculator regression samples
         run: node scripts/verify_calculators.mjs
+
+      - name: Verify numeric claim coverage
+        run: python3 scripts/verify_claim_coverage.py
+
+      - name: Verify diagnosis regression cases
+        if: always()
+        run: node scripts/verify_diagnosis.mjs
