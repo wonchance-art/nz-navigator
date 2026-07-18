@@ -31,3 +31,6 @@ jobs:
 
       - name: Verify claim registry and page markers
         run: python3 scripts/verify_claims.py data/claims.json
+
+      - name: Verify calculator regression samples
+        run: node scripts/verify_calculators.mjs

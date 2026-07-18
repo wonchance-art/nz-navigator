@@ -76,6 +76,17 @@ Run the deterministic, offline registry check used by CI:
 PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_claims.py data/claims.json
 ```
 
+Run the six calculator samples against the JavaScript embedded in the built
+NZ, Japanese, Canada, and Australia pages:
+
+```sh
+node scripts/verify_calculators.mjs
+```
+
+The calculator check reads the expected values from the same claim registry.
+It currently covers NZD 72,800 net pay in both NZ locales, the Canada CRS
+core sample and Ontario CAD 60,000 net pay, and the two Australia tax samples.
+
 Optionally verify live URLs with one `HEAD` request and a `GET` fallback:
 
 ```sh
