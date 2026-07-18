@@ -978,6 +978,7 @@ class SourceAttestationTests(unittest.TestCase):
             total_latency: str,
             result_status: str = "match",
             observation_id: str | None = None,
+            context: bytes = b"reviewed-context",
         ) -> verifier.AttestationReport:
             execution = verifier.RequestExecution(
                 "sha256:" + "1" * 64,
@@ -997,6 +998,7 @@ class SourceAttestationTests(unittest.TestCase):
                     1,
                     1,
                     "No action required.",
+                    context=context,
                 ),
                 execution,
             )
@@ -1025,6 +1027,11 @@ class SourceAttestationTests(unittest.TestCase):
             (verifier.AttemptAudit(1, "ready", "5s-14.999s"),),
             "5s-14.999s",
         )
+        footer_changed = build(
+            (verifier.AttemptAudit(1, "ready", "lt250ms"),),
+            "lt250ms",
+            context=b"unrelated-footer-changed",
+        )
         recovered = build(
             (
                 verifier.AttemptAudit(1, "transient", "lt250ms"),
@@ -1037,13 +1044,26 @@ class SourceAttestationTests(unittest.TestCase):
             "lt250ms",
             result_status="changed",
         )
+        changed_context = build(
+            (verifier.AttemptAudit(1, "ready", "lt250ms"),),
+            "lt250ms",
+            result_status="changed",
+            context=b"changed-source-context",
+        )
         ready_id = ready.to_json()["observationId"]
         self.assertRegex(ready_id, r"^[0-9a-f]{64}$")
         self.assertEqual(ready_id, slower.to_json()["observationId"])
+        self.assertEqual(
+            ready_id, footer_changed.to_json()["observationId"]
+        )
         self.assertNotEqual(
             ready_id, recovered.to_json()["observationId"]
         )
         self.assertNotEqual(ready_id, changed.to_json()["observationId"])
+        self.assertNotEqual(
+            changed.to_json()["observationId"],
+            changed_context.to_json()["observationId"],
+        )
         explicit = build(
             (verifier.AttemptAudit(1, "ready", "lt250ms"),),
             "lt250ms",

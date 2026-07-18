@@ -367,6 +367,43 @@ class AttestationIssueTests(unittest.TestCase):
             reduce_issue(latency_only, [existing])["action"], "noop"
         )
 
+    def test_match_context_is_non_substantive_but_changed_context_is_not(
+        self,
+    ) -> None:
+        first = report("changed", "match")
+        created = reduce_issue(first, [])
+        existing = {
+            "number": 17,
+            "title": ISSUE_TITLE,
+            "state": "open",
+            "body": created["body"],
+        }
+        match_footer_changed = deepcopy(first)
+        match_footer_changed["results"][1][
+            "contextFingerprint"
+        ] = "sha256:" + "2" * 64
+        self.assertEqual(
+            report_body_fingerprint(first),
+            report_body_fingerprint(match_footer_changed),
+        )
+        reduced = reduce_issue(match_footer_changed, [existing])
+        self.assertEqual(reduced["action"], "noop")
+        self.assertEqual(
+            reduced["bodyFingerprint"], created["bodyFingerprint"]
+        )
+
+        changed_context = deepcopy(first)
+        changed_context["results"][0][
+            "contextFingerprint"
+        ] = "sha256:" + "3" * 64
+        self.assertNotEqual(
+            report_body_fingerprint(first),
+            report_body_fingerprint(changed_context),
+        )
+        self.assertEqual(
+            reduce_issue(changed_context, [existing])["action"], "update"
+        )
+
     def test_malformed_duplicate_and_oversize_trend_markers_fail_closed(self) -> None:
         bodies = [
             "<!-- source-attestation-trend:v1:not+base64 -->",

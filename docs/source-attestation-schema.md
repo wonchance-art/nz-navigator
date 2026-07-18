@@ -371,7 +371,10 @@ active transient streak.
 The reducer returns `bodyFingerprint`, computed from sorted substantive
 findings, audit data, normalized trend state, request keys/final states, and
 attempt status sequences/counts while excluding volatile `generatedAt`,
-result order, and latency. Thus a one-attempt ready response versus a
+result order, and latency. A result `contextFingerprint` is substantive only
+for non-match statuses; a matching extracted value/unit/structure does not
+create a new observation or issue update merely because unrelated page bytes
+changed. Thus a one-attempt ready response versus a
 transient-then-ready recovery updates the issue, but latency-bucket-only drift
 does not. The same fingerprint is embedded in the issue body; an open issue
 with the same marker is a `noop`. A v5 issue

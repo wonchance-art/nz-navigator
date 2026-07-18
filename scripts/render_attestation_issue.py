@@ -458,9 +458,10 @@ def report_body_fingerprint(
     for result in results:
         if not isinstance(result, dict):
             raise IssueContractError("every report result must be an object")
-        normalized_results.append(
-            {field: result.get(field) for field in fields}
-        )
+        normalized = {field: result.get(field) for field in fields}
+        if normalized["status"] == "match":
+            normalized["contextFingerprint"] = None
+        normalized_results.append(normalized)
     normalized_results.sort(
         key=lambda item: (
             str(item["status"]),

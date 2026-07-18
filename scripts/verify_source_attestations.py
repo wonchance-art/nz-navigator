@@ -371,7 +371,11 @@ def _automatic_observation_id(report: AttestationReport) -> str:
                     "status": item.status,
                     "actual": item.actual,
                     "expected": item.expected,
-                    "contextFingerprint": item.contextFingerprint,
+                    "contextFingerprint": (
+                        item.contextFingerprint
+                        if item.status != "match"
+                        else None
+                    ),
                     "fix": item.fix,
                     "requestKey": item.requestKey,
                     "requestFinalStatus": item.requestFinalStatus,
