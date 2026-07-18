@@ -4747,7 +4747,7 @@ function renderOnboardGate() {
   }
 }
 function pickEntry(v) { gateEntry = v; renderOnboardGate(); }
-function resetOnboard() { gateEntry = null; try { localStorage.removeItem('nzv.onboard'); } catch (e) {} renderOnboardGate(); }
+function resetOnboard() { gateEntry = null; try { localStorage.removeItem(stateKey('nzv.onboard')); } catch (e) {} renderOnboardGate(); }
 
 function onboardRoute(entry, goal) {
   saveState('nzv.onboard', { entry, goal });
@@ -4871,12 +4871,15 @@ const ALLOWED = {
   city: ['akl', 'chc', 'qtn']
 };
 
+const STATE_NAMESPACE = 'nzv.nz-ja.';
+function stateKey(key) { return STATE_NAMESPACE + key.replace(/^nzv\./, ''); }
+
 function saveState(key, obj) {
-  try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) { /* プライベートモード等での保存失敗時は無視 */ }
+  try { localStorage.setItem(stateKey(key), JSON.stringify(obj)); } catch (e) { /* プライベートモード等での保存失敗時は無視 */ }
 }
 
 function loadState(key) {
-  try { return JSON.parse(localStorage.getItem(key)); } catch (e) { return null; }
+  try { return JSON.parse(localStorage.getItem(stateKey(key))); } catch (e) { return null; }
 }
 
 function setRadio(name, value) {

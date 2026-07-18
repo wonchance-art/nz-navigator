@@ -4998,7 +4998,7 @@ function renderOnboardGate() {
   }
 }
 function pickEntry(v) { gateEntry = v; renderOnboardGate(); }
-function resetOnboard() { gateEntry = null; try { localStorage.removeItem('nzv.onboard'); } catch (e) {} renderOnboardGate(); }
+function resetOnboard() { gateEntry = null; try { localStorage.removeItem(stateKey('nzv.onboard')); } catch (e) {} renderOnboardGate(); }
 
 function onboardRoute(entry, goal) {
   saveState('nzv.onboard', { entry, goal });
@@ -5110,10 +5110,10 @@ function initSearch() {
 // ============ 상태 저장·공유 ============
 const ALLOWED = {
   entry: ['whv', 'student', 'work', 'partner', 'none'],
-  age: ['under30', 'over30', 'over55'],
-  job: ['dev', 'chef', 'trade', 'health', 'teacher', 'engineer', 'agri', 'livestock', 'fieldwork', 'office', 'undecided'],
+  age: ['under30', 'over35', 'over45'],
+  job: ['dev', 'chef', 'trade', 'health', 'ece', 'engineer', 'mining', 'fieldwork', 'office', 'undecided'],
   experience: ['none', 'under2', 'over2', 'qualified'],
-  english: ['none', 'ielts4', 'ielts65'],
+  english: ['none', 'ielts6', 'ielts7', 'ielts8'],
   funding: ['low', 'mid', 'high'],
   education: ['none', 'dip', 'bach', 'master', 'phd'],
   family: ['solo', 'partner', 'kids'],
@@ -5122,12 +5122,15 @@ const ALLOWED = {
   city: ['akl', 'chc', 'qtn']
 };
 
+const STATE_NAMESPACE = 'nzv.au-ko.';
+function stateKey(key) { return STATE_NAMESPACE + key.replace(/^nzv\./, ''); }
+
 function saveState(key, obj) {
-  try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) { /* 프라이빗 모드 등 저장 불가 시 무시 */ }
+  try { localStorage.setItem(stateKey(key), JSON.stringify(obj)); } catch (e) { /* 프라이빗 모드 등 저장 불가 시 무시 */ }
 }
 
 function loadState(key) {
-  try { return JSON.parse(localStorage.getItem(key)); } catch (e) { return null; }
+  try { return JSON.parse(localStorage.getItem(stateKey(key))); } catch (e) { return null; }
 }
 
 function setRadio(name, value) {
@@ -5166,10 +5169,12 @@ function readCalcForm() {
 }
 
 function setCalcForm(s) {
-  if (!s || !ALLOWED.pathway.includes(s.pathway)) return false;
+  const pathwayEl = document.querySelector('input[name="pathway"]');
+  const cityEl = document.getElementById('settleCity');
+  if (!pathwayEl || !cityEl || !s || !ALLOWED.pathway.includes(s.pathway)) return false;
   setRadio('pathway', s.pathway);
   if (ALLOWED.study.includes(s.study)) setRadio('studyType', s.study);
-  if (ALLOWED.city.includes(s.city)) document.getElementById('settleCity').value = s.city;
+  if (ALLOWED.city.includes(s.city)) cityEl.value = s.city;
   document.querySelectorAll('input[name="option"]').forEach(el => {
     el.checked = Array.isArray(s.opts) && s.opts.includes(el.value);
   });
