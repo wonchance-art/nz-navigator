@@ -167,7 +167,13 @@
         "education": "none",
         "family": "solo"
       },
-      "expected": { "primary": "B", "studyVariant": "bachelor" }
+      "expected": {
+        "primary": "B",
+        "studyVariant": "bachelor",
+        "moneyPeriods": ["0–1개월", "1–49개월", "49–52개월", "52–76개월", "76–82개월"],
+        "moneyIncludes": ["주 24시간", "−150", "−255", "−155", "−1,590"],
+        "moneyExcludes": ["20h/주", "−850", "−1,540"]
+      }
     },
     {
       "id": "ca-work-trade",
@@ -231,7 +237,13 @@
         "education": "none",
         "family": "solo"
       },
-      "expected": { "primary": "B", "studyVariant": "bachelor" }
+      "expected": {
+        "primary": "B",
+        "studyVariant": "bachelor",
+        "moneyPeriods": ["0–1개월", "1–37개월", "37–40개월", "40–64개월", "64–68개월"],
+        "moneyIncludes": ["2주 48시간", "−2,500", "−5,750", "−4,015", "−6,135"],
+        "moneyExcludes": ["−850", "−1,540", "25h", "GD 1년"]
+      }
     },
     {
       "id": "au-work-trade",

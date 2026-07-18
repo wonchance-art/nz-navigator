@@ -1,16 +1,21 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-18T21:01:23Z",
+  "generatedAt": "2026-07-18T21:30:00Z",
   "audit": {
     "editions": ["NZ 한국어", "NZ 일본어", "캐나다", "호주"],
     "scope": ["비자 연령·기간·쿼터", "신청비·재정증명", "임금·세율", "처리기간", "점수·실수령 계산 표본"],
     "coveragePolicy": "돈 또는 비자 승인에 직접 영향을 주는 공식 수치와 계산 표본을 등록합니다. 민감 숫자는 전수 탐지하며, 단일 정부값이 아닌 경로 총기간 [추정]만 정확한 지문·사유·담당자·만료일로 예외 처리합니다.",
     "coverage": {
-      "candidateCount": 281,
-      "markedCount": 251,
+      "candidateCount": 283,
+      "markedCount": 253,
       "exemptionCount": 30
     },
-    "lastAuditDate": "2026-07-18"
+    "runtimeBindings": {
+      "claimCount": 80,
+      "bindingCount": 80,
+      "boundarySetCount": 16
+    },
+    "lastAuditDate": "2026-07-19"
   },
   "claims": [
     {
@@ -704,13 +709,14 @@
     {"id":"nz-ko-income-tax-brackets-2026","country":"NZ","locale":"ko","category":"tax","label":"2026-27 개인소득세 누진구간 계산상수","value":"15600@0.105;53500@0.175;78100@0.30;180000@0.33;above@0.39","unit":"NZD/rate","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","effectiveTo":"2027-03-31","sourceUrl":"https://www.ird.govt.nz/tax-rates","pages":["nz/index.html"],"severity":"critical","parityKey":"nz-income-tax-brackets-2026"},
     {"id":"nz-ja-income-tax-brackets-2026","country":"NZ","locale":"ja","category":"tax","label":"2026-27個人所得税累進区分の計算定数","value":"15600@0.105;53500@0.175;78100@0.30;180000@0.33;above@0.39","unit":"NZD/rate","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","effectiveTo":"2027-03-31","sourceUrl":"https://www.ird.govt.nz/tax-rates","pages":["ja/index.html"],"severity":"critical","parityKey":"nz-income-tax-brackets-2026"},
     {"id":"ca-ko-tax-constants-2026","country":"CA","locale":"ko","category":"tax","label":"2026 연방·ON·BC·AB·CPP·EI 계산상수","value":"T4127-123rd-2026-07","unit":"table version","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-07-01","effectiveTo":"2026-12-31","sourceUrl":"https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jul/t4127-jul-payroll-deductions-formulas.html","pages":["ca/index.html"],"severity":"critical","notes":"화면의 세금 계산상수 목록과 CRA T4127 123판을 연결한다. CPP2는 YMPE 초과분부터 계산한다."},
-    {"id":"au-ko-tax-brackets-2026","country":"AU","locale":"ko","category":"tax","label":"2026-27 WHM·거주자 소득세 계산구간","value":"WHM@0.15;18200@0;45000@0.15;135000@0.30;190000@0.37;above@0.45","unit":"AUD/rate","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-07-01","effectiveTo":"2027-06-30","sourceUrl":"https://www.ato.gov.au/law/view/pdf/acts/20250028.pdf","pages":["au/index.html"],"severity":"critical"},
+    {"id":"au-ko-tax-brackets-2026","country":"AU","locale":"ko","category":"tax","label":"2026-27 거주자 소득세 계산구간","value":"18200@0;45000@0.15;135000@0.30;190000@0.37;above@0.45","unit":"AUD/rate","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-07-01","effectiveTo":"2027-06-30","sourceUrl":"https://www.ato.gov.au/law/view/pdf/acts/20250028.pdf","pages":["au/index.html"],"severity":"critical"},
     {"id":"au-ko-tax-medicare-rate-2026","country":"AU","locale":"ko","category":"tax","label":"Medicare levy 계산비율","value":0.02,"unit":"decimal rate","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-07-01","effectiveTo":"2027-06-30","sourceUrl":"https://www.ato.gov.au/law/view/document?docid=PAC%2F19860110%2F6","pages":["au/index.html"],"severity":"critical","notes":"거주자 표본에 적용. WHM 표본은 Medicare levy 면제 가정."},
     {"id":"au-ko-tax-super-rate-2026","country":"AU","locale":"ko","category":"tax","label":"Super guarantee 계산비율","value":0.12,"unit":"decimal rate","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2025-07-01","sourceUrl":"https://www.ato.gov.au/tax-rates-and-codes/key-superannuation-rates-and-thresholds/super-guarantee","pages":["au/index.html"],"severity":"medium","notes":"고용주가 급여 외 지급하는 표기용 값으로 실수령에서 차감하지 않는다."},
     {"id":"au-ko-tax-lito-2026","country":"AU","locale":"ko","category":"tax","label":"Low Income Tax Offset 계산상수","value":"700;37500;45000@0.05;66667@0.015","unit":"AUD/rate","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-07-01","effectiveTo":"2027-06-30","sourceUrl":"https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-110","pages":["au/index.html"],"severity":"critical"},
     {"id":"nz-ko-acc-rate-2026","country":"NZ","locale":"ko","category":"tax","label":"2026-27 ACC earners’ levy율(GST 포함)","value":1.75,"unit":"percent","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","effectiveTo":"2027-03-31","sourceUrl":"https://www.ird.govt.nz/acclevy","pages":["nz/index.html"],"severity":"critical","parityKey":"nz-acc-rate-2026"},
     {"id":"nz-ja-acc-rate-2026","country":"NZ","locale":"ja","category":"tax","label":"2026-27 ACC earners’ levy率（GST込）","value":1.75,"unit":"percent","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","effectiveTo":"2027-03-31","sourceUrl":"https://www.ird.govt.nz/acclevy","pages":["ja/index.html"],"severity":"critical","parityKey":"nz-acc-rate-2026"},
     {"id":"nz-ko-acc-cap-2026","country":"NZ","locale":"ko","category":"tax","label":"2026-27 ACC earners’ levy 최대 과세소득","value":156641,"unit":"NZD/year","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","effectiveTo":"2027-03-31","sourceUrl":"https://www.ird.govt.nz/acclevy","pages":["nz/index.html"],"severity":"critical","parityKey":"nz-acc-cap-2026"},
-    {"id":"nz-ja-acc-cap-2026","country":"NZ","locale":"ja","category":"tax","label":"2026-27 ACC earners’ levy所得上限","value":156641,"unit":"NZD/year","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","effectiveTo":"2027-03-31","sourceUrl":"https://www.ird.govt.nz/acclevy","pages":["ja/index.html"],"severity":"critical","parityKey":"nz-acc-cap-2026"}
+    {"id":"nz-ja-acc-cap-2026","country":"NZ","locale":"ja","category":"tax","label":"2026-27 ACC earners’ levy所得上限","value":156641,"unit":"NZD/year","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","effectiveTo":"2027-03-31","sourceUrl":"https://www.ird.govt.nz/acclevy","pages":["ja/index.html"],"severity":"critical","parityKey":"nz-acc-cap-2026"},
+    {"id":"ca-ko-work-permit-fee","country":"CA","locale":"ko","category":"fee","label":"Work Permit 신청비","value":155,"unit":"CAD","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-07-19","sourceUrl":"https://ircc.canada.ca/english/information/fees/fees.asp","pages":["ca/index.html"],"severity":"critical"}
   ]
 }

@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "claimScope": [
+    "nz-ko-whv-fee",
+    "nz-ja-whv-fee",
+    "nz-ko-acc-rate-2026",
+    "nz-ja-acc-rate-2026",
+    "nz-ko-income-tax-brackets-2026",
+    "nz-ja-income-tax-brackets-2026",
+    "ca-ko-iec-fees",
+    "ca-ko-study-funds",
+    "ca-ko-bc-min-wage-2026",
+    "au-ko-whv-age",
+    "au-ko-whv-duration",
+    "au-ko-student-fee",
+    "au-ko-student-funds",
+    "au-ko-min-wage-2026",
+    "au-ko-tax-medicare-rate-2026"
+  ],
+  "parityKeys": [
+    "nz-whv-fee",
+    "nz-acc-rate-2026",
+    "nz-income-tax-brackets-2026"
+  ],
+  "bindings": [
+    {
+      "claimId": "nz-ko-whv-fee",
+      "edition": "nz",
+      "page": "nz/index.html",
+      "runtimePath": "DB.fees.whv.v",
+      "type": "number",
+      "unit": "NZD",
+      "transform": { "op": "identity" }
+    },
+    {
+      "claimId": "nz-ja-whv-fee",
+      "edition": "ja",
+      "page": "ja/index.html",
+      "runtimePath": "DB.fees.whv.v",
+      "type": "number",
+      "unit": "NZD",
+      "transform": { "op": "identity" }
+    },
+    {
+      "claimId": "nz-ko-acc-rate-2026",
+      "edition": "nz",
+      "page": "nz/index.html",
+      "runtimePath": "NP_ACC.rate",
+      "type": "number",
+      "unit": "percent",
+      "transform": { "op": "multiply", "factor": 100 },
+      "boundary": { "kind": "rate" }
+    },
+    {
+      "claimId": "nz-ja-acc-rate-2026",
+      "edition": "ja",
+      "page": "ja/index.html",
+      "runtimePath": "NP_ACC.rate",
+      "type": "number",
+      "unit": "percent",
+      "transform": { "op": "multiply", "factor": 100 },
+      "boundary": { "kind": "rate" }
+    },
+    {
+      "claimId": "nz-ko-income-tax-brackets-2026",
+      "edition": "nz",
+      "page": "nz/index.html",
+      "runtimePath": "NP_BRACKETS",
+      "type": "string",
+      "unit": "NZD/rate",
+      "transform": {
+        "op": "serializeBrackets",
+        "infinityLabel": "above",
+        "preserveRateScale": true
+      },
+      "boundary": { "kind": "rate" }
+    },
+    {
+      "claimId": "nz-ja-income-tax-brackets-2026",
+      "edition": "ja",
+      "page": "ja/index.html",
+      "runtimePath": "NP_BRACKETS",
+      "type": "string",
+      "unit": "NZD/rate",
+      "transform": {
+        "op": "serializeBrackets",
+        "infinityLabel": "above",
+        "preserveRateScale": true
+      },
+      "boundary": { "kind": "rate" }
+    },
+    {
+      "claimId": "ca-ko-iec-fees",
+      "edition": "ca",
+      "page": "ca/index.html",
+      "runtimePath": [
+        "DB.fees.iecProgram.v",
+        "DB.fees.openWorkPermit.v"
+      ],
+      "type": "number",
+      "unit": "CAD",
+      "transform": { "op": "sum" }
+    },
+    {
+      "claimId": "ca-ko-study-funds",
+      "edition": "ca",
+      "page": "ca/index.html",
+      "runtimePath": "DB.estimates.livingStudent.v",
+      "type": "number",
+      "unit": "CAD/year",
+      "transform": { "op": "identity" }
+    },
+    {
+      "claimId": "ca-ko-bc-min-wage-2026",
+      "edition": "ca",
+      "page": "ca/index.html",
+      "runtimePath": "DB.wages.minWageBC.v",
+      "type": "number",
+      "unit": "CAD/hour",
+      "transform": { "op": "identity" }
+    },
+    {
+      "claimId": "au-ko-whv-age",
+      "edition": "au",
+      "page": "au/index.html",
+      "runtimePath": "DB.pathways[id=A].details.requirements[0]",
+      "type": "string",
+      "unit": "years",
+      "transform": { "op": "extractRange", "separator": "-" },
+      "boundary": { "kind": "age" }
+    },
+    {
+      "claimId": "au-ko-whv-duration",
+      "edition": "au",
+      "page": "au/index.html",
+      "runtimePath": "DB.pathways[id=A].stages[0].months",
+      "type": "number",
+      "unit": "months",
+      "transform": { "op": "identity" },
+      "boundary": { "kind": "duration" }
+    },
+    {
+      "claimId": "au-ko-student-fee",
+      "edition": "au",
+      "page": "au/index.html",
+      "runtimePath": "DB.fees.student500.v",
+      "type": "number",
+      "unit": "AUD",
+      "transform": { "op": "identity" }
+    },
+    {
+      "claimId": "au-ko-student-funds",
+      "edition": "au",
+      "page": "au/index.html",
+      "runtimePath": "DB.estimates.livingStudent.v",
+      "type": "number",
+      "unit": "AUD/year",
+      "transform": { "op": "identity" }
+    },
+    {
+      "claimId": "au-ko-min-wage-2026",
+      "edition": "au",
+      "page": "au/index.html",
+      "runtimePath": "DB.wages.minWage.v",
+      "type": "number",
+      "unit": "AUD/hour",
+      "transform": { "op": "identity" }
+    },
+    {
+      "claimId": "au-ko-tax-medicare-rate-2026",
+      "edition": "au",
+      "page": "au/index.html",
+      "runtimePath": "AU_TAX.resident.medicareLevyRate",
+      "type": "number",
+      "unit": "decimal rate",
+      "transform": { "op": "identity" },
+      "boundary": { "kind": "insurance" }
+    }
+  ]
+}

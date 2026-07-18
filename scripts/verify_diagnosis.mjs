@@ -647,6 +647,59 @@ function validateOutcome(fixture, outcome) {
       ),
     );
   } else {
+    if (Array.isArray(expected.moneyPeriods)) {
+      const actualPeriods = moneyRows.map((row) => row.period);
+      if (
+        JSON.stringify(actualPeriods) !==
+        JSON.stringify(expected.moneyPeriods)
+      ) {
+        errors.push(
+          failure(
+            edition,
+            id,
+            "money.periods",
+            actualPeriods,
+            expected.moneyPeriods,
+            "keep route phases aligned with the reviewed study, work, and processing periods",
+          ),
+        );
+      }
+    }
+    const moneyText = moneyRows
+      .flatMap((row) =>
+        ["period", "visa", "act", "cash"].map((field) =>
+          String(row[field] ?? ""),
+        ),
+      )
+      .join("\n");
+    for (const requiredText of expected.moneyIncludes ?? []) {
+      if (!moneyText.includes(requiredText)) {
+        errors.push(
+          failure(
+            edition,
+            id,
+            "money.requiredText",
+            moneyText,
+            `text containing ${JSON.stringify(requiredText)}`,
+            "use the reviewed country-specific fee, work-limit, and duration values",
+          ),
+        );
+      }
+    }
+    for (const forbiddenText of expected.moneyExcludes ?? []) {
+      if (moneyText.includes(forbiddenText)) {
+        errors.push(
+          failure(
+            edition,
+            id,
+            "money.forbiddenText",
+            forbiddenText,
+            "absent from all money-plan rows",
+            "remove legacy values from the country-specific money plan",
+          ),
+        );
+      }
+    }
     const startFunds = outcome.startFunds?.[fixture.input.funding];
     if (!finiteNumber(startFunds)) {
       errors.push(

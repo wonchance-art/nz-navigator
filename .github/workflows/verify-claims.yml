@@ -41,3 +41,34 @@ jobs:
       - name: Verify diagnosis regression cases
         if: always()
         run: node scripts/verify_diagnosis.mjs
+
+  runtime-parity:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify representative runtime bindings
+        run: >-
+          python3 scripts/verify_runtime_parity.py
+          --bindings tests/fixtures/runtime-bindings.json
+
+      - name: Verify migrated runtime bindings when present
+        shell: bash
+        run: |
+          if [[ -f data/runtime-bindings.json ]]; then
+            python3 scripts/verify_runtime_parity.py \
+              --bindings data/runtime-bindings.json
+          else
+            echo "data/runtime-bindings.json not migrated yet; fixture bindings passed."
+          fi
