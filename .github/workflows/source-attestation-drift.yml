@@ -1,0 +1,126 @@
+name: Source attestation drift
+
+on:
+  schedule:
+    - cron: "23 17 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: source-attestation-drift
+  cancel-in-progress: false
+
+jobs:
+  live-source-attestation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      TZ: Asia/Seoul
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Detect production registry
+        id: registry
+        shell: bash
+        run: |
+          if [[ -f data/source-attestations.json ]]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "Production source attestations are not migrated yet."
+          fi
+
+      - name: Run bounded live audit
+        if: steps.registry.outputs.present == 'true'
+        run: >-
+          python3 scripts/verify_source_attestations.py
+          --attestations data/source-attestations.json
+          --claims data/claims.json
+          --mode live
+          --today "$(date +%F)"
+          --output source-attestation-report.json
+          --no-fail
+
+      - name: Read exact-title issue state
+        if: steps.registry.outputs.present == 'true'
+        run: >-
+          gh issue list
+          --repo "$GITHUB_REPOSITORY"
+          --state all
+          --limit 1000
+          --json number,title,state,body
+          > source-attestation-existing.json
+
+      - name: Reduce idempotent issue payload
+        if: steps.registry.outputs.present == 'true'
+        run: |
+          python3 scripts/render_attestation_issue.py \
+            --report source-attestation-report.json \
+            --existing source-attestation-existing.json \
+            --output source-attestation-issue.json
+          python3 -c \
+            'import json; p=json.load(open("source-attestation-issue.json")); open("source-attestation-body.md","w").write(p["body"])'
+
+      - name: Apply single drift issue
+        if: steps.registry.outputs.present == 'true'
+        shell: bash
+        run: |
+          action="$(python3 -c 'import json; print(json.load(open("source-attestation-issue.json"))["action"])')"
+          number="$(python3 -c 'import json; print(json.load(open("source-attestation-issue.json"))["issueNumber"] or "")')"
+          case "$action" in
+            create)
+              gh issue create \
+                --repo "$GITHUB_REPOSITORY" \
+                --title "Source attestation drift" \
+                --body-file source-attestation-body.md
+              ;;
+            update)
+              gh issue edit "$number" \
+                --repo "$GITHUB_REPOSITORY" \
+                --body-file source-attestation-body.md
+              ;;
+            reopen)
+              gh issue reopen "$number" --repo "$GITHUB_REPOSITORY"
+              gh issue edit "$number" \
+                --repo "$GITHUB_REPOSITORY" \
+                --body-file source-attestation-body.md
+              ;;
+            close)
+              gh issue edit "$number" \
+                --repo "$GITHUB_REPOSITORY" \
+                --body-file source-attestation-body.md
+              gh issue close "$number" \
+                --repo "$GITHUB_REPOSITORY" \
+                --comment "All reviewed source attestations match."
+              ;;
+            noop)
+              echo "Drift issue state is already current."
+              ;;
+            *)
+              echo "Unknown reducer action: $action" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Fail scheduled audit on any non-match
+        if: steps.registry.outputs.present == 'true'
+        run: |
+          python3 -c '
+          import json
+          report = json.load(open("source-attestation-report.json"))
+          bad = [r for r in report["results"] if r["status"] != "match"]
+          if bad:
+              raise SystemExit(f"{len(bad)} non-match source attestation result(s)")
+          '

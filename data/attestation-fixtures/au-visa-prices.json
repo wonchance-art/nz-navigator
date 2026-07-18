@@ -1,0 +1,119 @@
+{
+  "_fixtureNote": "Reviewed exact record subset captured 2026-07-19 from the Home Affairs GetPriceList response. Distractor rows are retained to make record selection strict.",
+  "d": {
+    "data": [
+      {
+        "visaSubclassCode": "417-A",
+        "visaSubclassText": "Working Holiday visa (subclass 417) - First",
+        "streamCode": "",
+        "streamText": "",
+        "basePrice": "AUD840.00"
+      },
+      {
+        "visaSubclassCode": "417-B",
+        "visaSubclassText": "Working Holiday visa (subclass 417) - Second",
+        "streamCode": "",
+        "streamText": "",
+        "basePrice": "AUD1,000.00"
+      },
+      {
+        "visaSubclassCode": "417-C",
+        "visaSubclassText": "Working Holiday visa (subclass 417) - Third",
+        "streamCode": "",
+        "streamText": "",
+        "basePrice": "AUD1,000.00"
+      },
+      {
+        "visaSubclassCode": "485-33",
+        "visaSubclassText": "Temporary Graduate visa (subclass 485) - Post-Vocational Education Work stream",
+        "streamCode": "",
+        "streamText": "",
+        "basePrice": "AUD5,750.00"
+      },
+      {
+        "visaSubclassCode": "485-34",
+        "visaSubclassText": "Temporary Graduate visa (subclass 485) - Post-Higher Education Work stream",
+        "streamCode": "",
+        "streamText": "",
+        "basePrice": "AUD5,750.00"
+      },
+      {
+        "visaSubclassCode": "189-63",
+        "visaSubclassText": "Skilled Independent visa (subclass 189) - Points tested stream",
+        "streamCode": "",
+        "streamText": "",
+        "basePrice": "AUD6,135.00"
+      },
+      {
+        "visaSubclassCode": "190",
+        "visaSubclassText": "Skilled Nominated visa (subclass 190)",
+        "streamCode": "",
+        "streamText": "",
+        "basePrice": "AUD6,140.00"
+      },
+      {
+        "visaSubclassCode": "491",
+        "visaSubclassText": "Skilled Work Regional (Provisional) visa (subclass 491)",
+        "streamCode": "",
+        "streamText": "",
+        "basePrice": "AUD6,140.00"
+      },
+      {
+        "visaSubclassCode": "482-69",
+        "visaSubclassText": "Skills in Demand visa (subclass 482) - Core Skills stream",
+        "streamCode": "",
+        "streamText": "",
+        "basePrice": "AUD4,015.00"
+      },
+      {
+        "visaSubclassCode": "186",
+        "visaSubclassText": "Employer Nomination Scheme visa (subclass 186) - Temporary Residence Transition stream",
+        "streamCode": "",
+        "streamText": "",
+        "basePrice": "AUD6,140.00"
+      },
+      {
+        "visaSubclassCode": "186",
+        "visaSubclassText": "Employer Nomination Scheme visa (subclass 186) - Labour agreement stream",
+        "streamCode": "",
+        "streamText": "",
+        "basePrice": "AUD6,140.00"
+      },
+      {
+        "visaSubclassCode": "801",
+        "visaSubclassText": "Partner visa (subclass 820/801)",
+        "streamCode": "",
+        "streamText": "",
+        "basePrice": "AUD11,710.00"
+      },
+      {
+        "visaSubclassCode": "801",
+        "visaSubclassText": "Partner visa (subclass 820/801) - Ceased Prospective Marriage visa",
+        "streamCode": "",
+        "streamText": "",
+        "basePrice": "AUD2,475.00"
+      },
+      {
+        "visaSubclassCode": "500",
+        "visaSubclassText": "Student visa (subclass 500) - All other students",
+        "streamCode": "5133",
+        "streamText": "All other students",
+        "basePrice": "AUD2,500.00"
+      },
+      {
+        "visaSubclassCode": "500",
+        "visaSubclassText": "Student visa (subclass 500) - ELICOS sector",
+        "streamCode": "5130",
+        "streamText": "",
+        "basePrice": "AUD2,050.00"
+      },
+      {
+        "visaSubclassCode": "500",
+        "visaSubclassText": "Student visa (subclass 500) – Non-Award sector",
+        "streamCode": "5135",
+        "streamText": "",
+        "basePrice": "AUD2,050.00"
+      }
+    ]
+  }
+}

@@ -98,3 +98,40 @@ jobs:
           else
             echo "data/boundary-executions.json not migrated yet; fixture execution passed."
           fi
+
+  source-attestation-offline:
+    needs: boundary-execution
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      TZ: Asia/Seoul
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify source attestation and issue reducer units
+        run: >-
+          python3 -m unittest
+          tests.test_verify_source_attestations
+          tests.test_render_attestation_issue
+          -v
+
+      - name: Verify production source attestations when present
+        shell: bash
+        run: |
+          if [[ -f data/source-attestations.json ]]; then
+            python3 scripts/verify_source_attestations.py \
+              --attestations data/source-attestations.json \
+              --claims data/claims.json \
+              --mode offline \
+              --today "$(date +%F)"
+          else
+            echo "data/source-attestations.json not migrated yet; fixture units passed."
+          fi

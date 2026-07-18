@@ -1,0 +1,1239 @@
+{
+  "schemaVersion": 1,
+  "boundaryManifest": "data/boundary-executions.json",
+  "claimScope": [
+    "nz-ko-whv-age",
+    "nz-ko-whv-duration",
+    "nz-ko-whv-fee",
+    "nz-ko-whv-processing",
+    "nz-ja-whv-age",
+    "nz-ja-whv-duration",
+    "nz-ja-whv-fee",
+    "nz-ja-whv-processing",
+    "nz-ko-student-fee",
+    "nz-ja-student-fee",
+    "nz-ko-student-processing",
+    "nz-ja-student-processing",
+    "nz-ko-student-funds",
+    "nz-ja-student-funds",
+    "nz-ko-min-wage-2026",
+    "nz-ja-min-wage-2026",
+    "nz-ko-acc-rate-2026",
+    "nz-ja-acc-rate-2026",
+    "nz-ko-acc-cap-2026",
+    "nz-ja-acc-cap-2026",
+    "ca-ko-iec-age",
+    "ca-ko-iec-duration",
+    "ca-ko-iec-program-fee",
+    "ca-ko-study-fee",
+    "ca-ko-work-permit-fee",
+    "ca-ko-ee-fee",
+    "ca-ko-rprf-fee",
+    "ca-ko-biometrics-fee",
+    "au-ko-whv-age",
+    "au-ko-whv-fee",
+    "au-ko-second-fee",
+    "au-ko-third-fee",
+    "au-ko-student-fee",
+    "au-ko-485-fee",
+    "au-ko-189-fee",
+    "au-ko-190-fee",
+    "au-ko-491-fee",
+    "au-ko-482-fee",
+    "au-ko-186-fee",
+    "au-ko-partner-820-fee",
+    "au-ko-tax-medicare-rate-2026",
+    "au-ko-tax-super-rate-2026"
+  ],
+  "attestations": [
+    {
+      "id": "nz-income-tax-brackets",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.ird.govt.nz/tax-rates",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-04-01",
+      "reviewAfterDays": 45,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "From 1 April 2025",
+          "headers": ["For each dollar of income", "Tax rate"],
+          "result": "scalar",
+          "fields": [
+            {
+              "key": "brackets",
+              "rowLabels": [
+                "0 - $15,600",
+                "$15,601 - $53,500",
+                "$53,501 - $78,100",
+                "$78,101 - $180,000",
+                "$180,001 and over"
+              ],
+              "valueHeader": "Tax rate",
+              "transform": "tax-brackets",
+              "unit": "NZD/rate"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "type": "array",
+        "unit": "NZD/rate",
+        "value": [
+          [15600, 0.105],
+          [53500, 0.175],
+          [78100, 0.3],
+          [180000, 0.33],
+          [null, 0.39]
+        ]
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-income-tax.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:ba659d52baa99eae7bf8da9afe47e399c75897ab7743efcb331231e7ae32c783",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ird.govt.nz/tax-rates"
+      },
+      "targets": [
+        {"targetId": "nz-paye-acc-nz", "reviewedPath": "/brackets"},
+        {"targetId": "nz-paye-acc-ja", "reviewedPath": "/brackets"}
+      ]
+    },
+    {
+      "id": "nz-acc-runtime-rate",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.ird.govt.nz/acclevy",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-04-01",
+      "reviewAfterDays": 45,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "These amounts include GST.",
+          "headers": ["Year", "Levy rate"],
+          "result": "scalar",
+          "fields": [
+            {
+              "key": "rate",
+              "rowLabels": ["1 April 2026 to 31 March 2027"],
+              "valueHeader": "Levy rate",
+              "transform": "embedded-percent-to-decimal",
+              "unit": "decimal rate"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "type": "number",
+        "unit": "decimal rate",
+        "value": 0.0175
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-acc-levy.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:72e7d7707475a4f87605378b3480cfecc65c76df99d45d85013af37d3ce2f081",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ird.govt.nz/acclevy"
+      },
+      "targets": [
+        {"targetId": "nz-paye-acc-nz", "reviewedPath": "/acc/rate"},
+        {"targetId": "nz-paye-acc-ja", "reviewedPath": "/acc/rate"}
+      ]
+    },
+    {
+      "id": "nz-acc-claim-rate",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.ird.govt.nz/acclevy",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-04-01",
+      "reviewAfterDays": 45,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "These amounts include GST.",
+          "headers": ["Year", "Levy rate"],
+          "result": "scalar",
+          "fields": [
+            {
+              "key": "rate",
+              "rowLabels": ["1 April 2026 to 31 March 2027"],
+              "valueHeader": "Levy rate",
+              "transform": "embedded-percent",
+              "unit": "percent"
+            }
+          ]
+        }
+      },
+      "expected": {"type": "number", "unit": "percent", "value": 1.75},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-acc-levy.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:72e7d7707475a4f87605378b3480cfecc65c76df99d45d85013af37d3ce2f081",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ird.govt.nz/acclevy"
+      },
+      "claims": [
+        {"claimId": "nz-ko-acc-rate-2026"},
+        {"claimId": "nz-ja-acc-rate-2026"}
+      ]
+    },
+    {
+      "id": "nz-acc-cap",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.ird.govt.nz/acclevy",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-04-01",
+      "reviewAfterDays": 45,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Earners' levy deducted on earnings up to an annually prescribed maximum",
+          "headers": ["Year", "Maximum earnings", "Maximum levy payable"],
+          "result": "scalar",
+          "fields": [
+            {
+              "key": "cap",
+              "rowLabels": ["1 April 2026 to 31 March 2027"],
+              "valueHeader": "Maximum earnings",
+              "transform": "currency-to-number",
+              "unit": "NZD/year"
+            }
+          ]
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD/year", "value": 156641},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-acc-levy.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:72e7d7707475a4f87605378b3480cfecc65c76df99d45d85013af37d3ce2f081",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ird.govt.nz/acclevy"
+      },
+      "targets": [
+        {"targetId": "nz-paye-acc-nz", "reviewedPath": "/acc/cap"},
+        {"targetId": "nz-paye-acc-ja", "reviewedPath": "/acc/cap"}
+      ],
+      "claims": [
+        {"claimId": "nz-ko-acc-cap-2026"},
+        {"claimId": "nz-ja-acc-cap-2026"}
+      ]
+    },
+    {
+      "id": "nz-korea-whv-hero",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/visas/korea-working-holiday-visa/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-labelled-values",
+        "params": {
+          "anchor": "Korea Working Holiday Visa",
+          "result": "object",
+          "fields": [
+            {"key": "duration", "label": "Length of stay", "transform": "duration-months", "unit": "months"},
+            {"key": "cost", "label": "Cost", "transform": "currency-to-number", "unit": "NZD"},
+            {"key": "processing", "label": "Processing time", "transform": "duration-weeks", "unit": "weeks"},
+            {"key": "age", "label": "Age range", "transform": "inclusive-range", "unit": "years"}
+          ]
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"duration": "months", "cost": "NZD", "processing": "weeks", "age": "years"},
+        "value": {"duration": 12, "cost": 770, "processing": 3, "age": "18-30"}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-korea-whv.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:6028c54dbca5eb4f018f9963c0fabb83dc029ddcad7357065c15355c8f4804a7",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/visas/korea-working-holiday-visa/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-whv-duration", "expectedPath": "/duration"},
+        {"claimId": "nz-ko-whv-fee", "expectedPath": "/cost"},
+        {"claimId": "nz-ko-whv-processing", "expectedPath": "/processing"},
+        {"claimId": "nz-ko-whv-age", "expectedPath": "/age"}
+      ]
+    },
+    {
+      "id": "nz-japan-whv-hero",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/visas/japan-working-holiday-visa/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-labelled-values",
+        "params": {
+          "anchor": "Japan Working Holiday Visa",
+          "result": "object",
+          "fields": [
+            {"key": "duration", "label": "Length of stay", "transform": "duration-months", "unit": "months"},
+            {"key": "cost", "label": "Cost", "transform": "currency-to-number", "unit": "NZD"},
+            {"key": "processing", "label": "Processing time", "transform": "duration-weeks", "unit": "weeks"},
+            {"key": "age", "label": "Age range", "transform": "inclusive-range", "unit": "years"}
+          ]
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"duration": "months", "cost": "NZD", "processing": "weeks", "age": "years"},
+        "value": {"duration": 12, "cost": 770, "processing": 3, "age": "18-30"}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-japan-whv.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:ba00e3c3bab96115b01677e1cc2c9da498540b2b73ddc312997427daa79ff1c5",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/visas/japan-working-holiday-visa/"
+      },
+      "claims": [
+        {"claimId": "nz-ja-whv-duration", "expectedPath": "/duration"},
+        {"claimId": "nz-ja-whv-fee", "expectedPath": "/cost"},
+        {"claimId": "nz-ja-whv-processing", "expectedPath": "/processing"},
+        {"claimId": "nz-ja-whv-age", "expectedPath": "/age"}
+      ]
+    },
+    {
+      "id": "nz-student-visa-hero",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/visas/fee-paying-student-visa/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-labelled-values",
+        "params": {
+          "anchor": "Fee Paying Student Visa",
+          "result": "object",
+          "fields": [
+            {"key": "cost", "label": "Cost", "transform": "currency-to-number", "unit": "NZD"},
+            {"key": "processing", "label": "Processing time", "transform": "duration-weeks", "unit": "weeks"}
+          ]
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"cost": "NZD", "processing": "weeks"},
+        "value": {"cost": 850, "processing": 8}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-student-visa.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:793203026c6ff4881f8da2aa0f426961fe3e1f1242f06507897d7d62e7b314da",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/visas/fee-paying-student-visa/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-student-fee", "expectedPath": "/cost"},
+        {"claimId": "nz-ja-student-fee", "expectedPath": "/cost"},
+        {"claimId": "nz-ko-student-processing", "expectedPath": "/processing"},
+        {"claimId": "nz-ja-student-processing", "expectedPath": "/processing"}
+      ]
+    },
+    {
+      "id": "nz-student-funds",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/providing-evidence-and-documents-to-support-your-visa-application/student-fund-requirements/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2022-07-31",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "NZD $20,000 for each year, if you are studying for 1 year or more, or",
+          "transform": "leading-currency-to-number",
+          "unit": "NZD/year"
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD/year", "value": 20000},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-student-funds.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:8fc734560bc6189e3a3653bfca777a33ae98053dfe6b35fe0eb3ccf51f0a3a40",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/providing-evidence-and-documents-to-support-your-visa-application/student-fund-requirements/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-student-funds"},
+        {"claimId": "nz-ja-student-funds"}
+      ]
+    },
+    {
+      "id": "nz-minimum-wage",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.employment.govt.nz/pay-and-hours/pay-and-wages/minimum-wage/minimum-wage-rates-and-types",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-04-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Any person, whatever their age, who is employed by an employer to do any work for hire or reward under a ‘contract of service’ (commonly called an ‘employment agreement’).",
+          "headers": ["Type of minimum wage", "Per hour", "8-hour-day", "40-hour week", "80-hour fortnight"],
+          "result": "scalar",
+          "fields": [
+            {
+              "key": "adult",
+              "rowLabels": ["Adult"],
+              "valueHeader": "Per hour",
+              "transform": "currency-to-number",
+              "unit": "NZD/hour"
+            }
+          ]
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD/hour", "value": 23.95},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-minimum-wage.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:a0b02a378d5976fe21e2fd58b3d985a7e0be61271f47680a0f49304d26145588",
+        "httpStatus": 200,
+        "finalUrl": "https://www.employment.govt.nz/pay-and-hours/pay-and-wages/minimum-wage/minimum-wage-rates-and-types"
+      },
+      "claims": [
+        {"claimId": "nz-ko-min-wage-2026"},
+        {"claimId": "nz-ja-min-wage-2026"}
+      ]
+    },
+    {
+      "id": "ca-tax-reviewed-cohort",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jul/t4127-jul-payroll-deductions-formulas.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 45,
+      "extractor": {
+        "mode": "json-pointer",
+        "params": {"pointer": "/reviewed"}
+      },
+      "expected": {
+        "type": "object",
+        "unit": {
+          "federal": {
+            "brackets": "CAD/rate",
+            "bpa": "CAD",
+            "employmentAmount": "CAD",
+            "creditRate": "decimal rate"
+          },
+          "provinces": {
+            "on": {"brackets": "CAD/rate", "bpa": "CAD"},
+            "bc": {"brackets": "CAD/rate", "bpa": "CAD"},
+            "ab": {"brackets": "CAD/rate", "bpa": "CAD"}
+          },
+          "cpp": {
+            "rate": "decimal rate",
+            "baseRate": "decimal rate",
+            "additionalRate": "decimal rate",
+            "ympe": "CAD",
+            "exempt": "CAD",
+            "cpp2Rate": "decimal rate",
+            "cpp2Min": "CAD",
+            "cpp2Max": "CAD"
+          },
+          "ei": {"rate": "decimal rate", "maxInsurable": "CAD"},
+          "ontario": {
+            "surtaxLower": "CAD",
+            "surtaxUpper": "CAD",
+            "surtaxLowerRate": "decimal rate",
+            "surtaxUpperRate": "decimal rate",
+            "taxReduction": "CAD",
+            "health": "CAD/rate"
+          }
+        },
+        "value": {
+          "federal": {
+            "brackets": [[58523, 0.14], [117045, 0.205], [181440, 0.26], [258482, 0.29], [null, 0.33]],
+            "bpa": 16452,
+            "employmentAmount": 1501,
+            "creditRate": 0.14
+          },
+          "provinces": {
+            "on": {
+              "brackets": [[53891, 0.0505], [107785, 0.0915], [150000, 0.1116], [220000, 0.1216], [null, 0.1316]],
+              "bpa": 12989
+            },
+            "bc": {
+              "brackets": [[50363, 0.056], [100728, 0.077], [115648, 0.105], [140430, 0.1229], [190405, 0.147], [265545, 0.168], [null, 0.205]],
+              "bpa": 13216
+            },
+            "ab": {
+              "brackets": [[61200, 0.08], [154259, 0.1], [185111, 0.12], [246813, 0.13], [370220, 0.14], [null, 0.15]],
+              "bpa": 22769
+            }
+          },
+          "cpp": {
+            "rate": 0.0595,
+            "baseRate": 0.0495,
+            "additionalRate": 0.01,
+            "ympe": 74600,
+            "exempt": 3500,
+            "cpp2Rate": 0.04,
+            "cpp2Min": 74600,
+            "cpp2Max": 85000
+          },
+          "ei": {"rate": 0.0163, "maxInsurable": 68900},
+          "ontario": {
+            "surtaxLower": 5818,
+            "surtaxUpper": 7446,
+            "surtaxLowerRate": 0.2,
+            "surtaxUpperRate": 0.36,
+            "taxReduction": 600,
+            "health": {
+              "zeroTo": 20000,
+              "tiers": [
+                {"to": 36000, "base": 0, "offset": 20000, "rate": 0.06, "cap": 300},
+                {"to": 48000, "base": 300, "offset": 36000, "rate": 0.06, "cap": 450},
+                {"to": 72000, "base": 450, "offset": 48000, "rate": 0.25, "cap": 600},
+                {"to": 200000, "base": 600, "offset": 72000, "rate": 0.25, "cap": 750}
+              ],
+              "above": {"base": 750, "offset": 200000, "rate": 0.25, "cap": 900}
+            }
+          }
+        }
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-tax-reviewed.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:781e7e64f72269be8340bc875c34627c098a205a1f38d948c143141b8e00b330",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jul/t4127-jul-payroll-deductions-formulas.html"
+      },
+      "targets": [{"targetId": "ca-tax", "reviewedPath": "/"}]
+    },
+    {
+      "id": "ca-iec-korea-age",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/news/2023/05/new-arrangement-expands-work-opportunities-for-canadian-and-south-korean-youth.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2024-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "The eligibility age will increase from 18–30 to 18–35.",
+          "transform": "final-inclusive-range",
+          "unit": "years"
+        }
+      },
+      "expected": {"type": "string", "unit": "years", "value": "18-35"},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-iec-korea.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:de3e120e0d5316793f89f8b44622979e533ec1c83b8d9849a3f0e49e33fcda85",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/news/2023/05/new-arrangement-expands-work-opportunities-for-canadian-and-south-korean-youth.html"
+      },
+      "claims": [{"claimId": "ca-ko-iec-age"}]
+    },
+    {
+      "id": "ca-iec-korea-duration",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/news/2023/05/new-arrangement-expands-work-opportunities-for-canadian-and-south-korean-youth.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2024-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "Most youth will also have the option to participate twice in the program—each time for up to 24 months.",
+          "transform": "duration-months",
+          "unit": "months"
+        }
+      },
+      "expected": {"type": "number", "unit": "months", "value": 24},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-iec-korea.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:de3e120e0d5316793f89f8b44622979e533ec1c83b8d9849a3f0e49e33fcda85",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/news/2023/05/new-arrangement-expands-work-opportunities-for-canadian-and-south-korean-youth.html"
+      },
+      "claims": [{"claimId": "ca-ko-iec-duration"}]
+    },
+    {
+      "id": "ca-iec-program-fee",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://ircc.canada.ca/english/information/fees/fees.asp",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2025-12-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "International Experience Canada",
+          "headers": ["Fees", "$CAN"],
+          "result": "scalar",
+          "fields": [
+            {"key": "fee", "rowLabels": ["International Experience Canada fee"], "valueHeader": "$CAN", "transform": "number", "unit": "CAD"}
+          ]
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD", "value": 184.75},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-ircc-fees.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:af0ece84ddc98c167e10b2f074ad376c11f4410a3fe1604e150a140dc40ae494",
+        "httpStatus": 200,
+        "finalUrl": "https://ircc.canada.ca/english/information/fees/fees.asp"
+      },
+      "claims": [{"claimId": "ca-ko-iec-program-fee"}]
+    },
+    {
+      "id": "ca-study-permit-fee",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://ircc.canada.ca/english/information/fees/fees.asp",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Study Permits (including extensions)",
+          "headers": ["Fees", "$CAN"],
+          "result": "scalar",
+          "fields": [
+            {"key": "fee", "rowLabels": ["Study permit (including extensions) – per person"], "valueHeader": "$CAN", "transform": "number", "unit": "CAD"}
+          ]
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD", "value": 150},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-ircc-fees.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:af0ece84ddc98c167e10b2f074ad376c11f4410a3fe1604e150a140dc40ae494",
+        "httpStatus": 200,
+        "finalUrl": "https://ircc.canada.ca/english/information/fees/fees.asp"
+      },
+      "claims": [{"claimId": "ca-ko-study-fee"}]
+    },
+    {
+      "id": "ca-work-permit-fee",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://ircc.canada.ca/english/information/fees/fees.asp",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Work Permits (including extensions)",
+          "headers": ["Fees", "$CAN"],
+          "result": "scalar",
+          "fields": [
+            {"key": "fee", "rowLabels": ["Work permit (including extensions) – per person"], "valueHeader": "$CAN", "transform": "number", "unit": "CAD"}
+          ]
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD", "value": 155},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-ircc-fees.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:af0ece84ddc98c167e10b2f074ad376c11f4410a3fe1604e150a140dc40ae494",
+        "httpStatus": 200,
+        "finalUrl": "https://ircc.canada.ca/english/information/fees/fees.asp"
+      },
+      "claims": [{"claimId": "ca-ko-work-permit-fee"}]
+    },
+    {
+      "id": "ca-express-entry-fee",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://ircc.canada.ca/english/information/fees/fees.asp",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-04-30",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Quebec-selected skilled workers",
+          "headers": ["Fees", "$CAN"],
+          "result": "scalar",
+          "fields": [
+            {"key": "fee", "rowLabels": ["Your applicationThis amount includes the processing fee and the right of permanent residence fee."], "valueHeader": "$CAN", "transform": "number", "unit": "CAD"}
+          ]
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD", "value": 1590},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-ircc-fees.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:af0ece84ddc98c167e10b2f074ad376c11f4410a3fe1604e150a140dc40ae494",
+        "httpStatus": 200,
+        "finalUrl": "https://ircc.canada.ca/english/information/fees/fees.asp"
+      },
+      "claims": [{"claimId": "ca-ko-ee-fee"}]
+    },
+    {
+      "id": "ca-rprf-fee",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://ircc.canada.ca/english/information/fees/fees.asp",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-04-30",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Right of permanent residence fee",
+          "headers": ["Fees", "$CAN"],
+          "result": "scalar",
+          "fields": [
+            {"key": "fee", "rowLabels": ["Right of permanent residence fee"], "valueHeader": "$CAN", "transform": "number", "unit": "CAD"}
+          ]
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD", "value": 600},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-ircc-fees.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:af0ece84ddc98c167e10b2f074ad376c11f4410a3fe1604e150a140dc40ae494",
+        "httpStatus": 200,
+        "finalUrl": "https://ircc.canada.ca/english/information/fees/fees.asp"
+      },
+      "claims": [{"claimId": "ca-ko-rprf-fee"}]
+    },
+    {
+      "id": "ca-biometrics-fee",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://ircc.canada.ca/english/information/fees/fees.asp",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Find out if you need to give biometrics.",
+          "headers": ["Fees", "$CAN"],
+          "result": "scalar",
+          "fields": [
+            {"key": "fee", "rowLabels": ["Biometrics – per individual"], "valueHeader": "$CAN", "transform": "number", "unit": "CAD"}
+          ]
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD", "value": 85},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-ircc-fees.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:af0ece84ddc98c167e10b2f074ad376c11f4410a3fe1604e150a140dc40ae494",
+        "httpStatus": 200,
+        "finalUrl": "https://ircc.canada.ca/english/information/fees/fees.asp"
+      },
+      "claims": [{"claimId": "ca-ko-biometrics-fee"}]
+    },
+    {
+      "id": "au-whm-runtime",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://www.ato.gov.au/tax-rates-and-codes/tax-rates-working-holiday-makers",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 45,
+      "extractor": {"mode": "json-pointer", "params": {"pointer": "/records/whm"}},
+      "expected": {
+        "type": "object",
+        "unit": {"cap": "AUD", "rate": "decimal rate"},
+        "value": {"cap": 45000, "rate": 0.15}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/au-tax-reviewed.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:e6ed17b06dc9561b76c70f890544cea52d0b7e9926e84f0638c6aea32a42fc3b",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ato.gov.au/tax-rates-and-codes/tax-rates-working-holiday-makers"
+      },
+      "targets": [{"targetId": "au-tax", "reviewedPath": "/whm"}]
+    },
+    {
+      "id": "au-resident-tax-brackets",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://www.ato.gov.au/law/view/pdf/acts/20250028.pdf",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 45,
+      "extractor": {"mode": "json-pointer", "params": {"pointer": "/records/residentBrackets"}},
+      "expected": {
+        "type": "array",
+        "unit": "AUD/rate",
+        "value": [[18200, 0], [45000, 0.15], [135000, 0.3], [190000, 0.37], [null, 0.45]]
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/au-tax-reviewed.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:e6ed17b06dc9561b76c70f890544cea52d0b7e9926e84f0638c6aea32a42fc3b",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ato.gov.au/law/view/pdf/acts/20250028.pdf"
+      },
+      "targets": [{"targetId": "au-tax", "reviewedPath": "/resident/brackets"}]
+    },
+    {
+      "id": "au-medicare-rate",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19860110%2F6",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 45,
+      "extractor": {"mode": "json-pointer", "params": {"pointer": "/records/medicareRate"}},
+      "expected": {"type": "number", "unit": "decimal rate", "value": 0.02},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-tax-reviewed.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:e6ed17b06dc9561b76c70f890544cea52d0b7e9926e84f0638c6aea32a42fc3b",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19860110%2F6"
+      },
+      "targets": [{"targetId": "au-tax", "reviewedPath": "/resident/medicareRate"}],
+      "claims": [{"claimId": "au-ko-tax-medicare-rate-2026"}]
+    },
+    {
+      "id": "au-super-rate",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://www.ato.gov.au/tax-rates-and-codes/key-superannuation-rates-and-thresholds/super-guarantee",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2025-07-01",
+      "reviewAfterDays": 45,
+      "extractor": {"mode": "json-pointer", "params": {"pointer": "/records/superRate"}},
+      "expected": {"type": "number", "unit": "decimal rate", "value": 0.12},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-tax-reviewed.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:e6ed17b06dc9561b76c70f890544cea52d0b7e9926e84f0638c6aea32a42fc3b",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ato.gov.au/tax-rates-and-codes/key-superannuation-rates-and-thresholds/super-guarantee"
+      },
+      "targets": [{"targetId": "au-tax", "reviewedPath": "/resident/superRate"}],
+      "claims": [{"claimId": "au-ko-tax-super-rate-2026"}]
+    },
+    {
+      "id": "au-lito",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-110",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 45,
+      "extractor": {"mode": "json-pointer", "params": {"pointer": "/records/lito"}},
+      "expected": {
+        "type": "object",
+        "unit": {
+          "maxOffset": "AUD",
+          "fullTo": "AUD",
+          "taper1To": "AUD",
+          "taper1Rate": "decimal rate",
+          "cutOut": "AUD",
+          "taper2Rate": "decimal rate"
+        },
+        "value": {
+          "maxOffset": 700,
+          "fullTo": 37500,
+          "taper1To": 45000,
+          "taper1Rate": 0.05,
+          "cutOut": 66667,
+          "taper2Rate": 0.015
+        }
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/au-tax-reviewed.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:e6ed17b06dc9561b76c70f890544cea52d0b7e9926e84f0638c6aea32a42fc3b",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-110"
+      },
+      "targets": [{"targetId": "au-tax", "reviewedPath": "/resident/lito"}]
+    },
+    {
+      "id": "au-whv-korea-age",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/what-we-do/whm-program/latest-news",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "From 1 July 2026, passport holders from Cyprus, Finland, Germany, and Republic of Korea passport holders are eligible to apply for a Working Holiday (subclass 417) visa if they are 18 to 35 years of age (inclusive).",
+          "transform": "inclusive-range",
+          "unit": "years"
+        }
+      },
+      "expected": {"type": "string", "unit": "years", "value": "18-35"},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-whv-age.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:6085fbb148d821e0a42f9639c3ac147896c3ef03602ded481d1138e6b24fe0e5",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/what-we-do/whm-program/latest-news"
+      },
+      "claims": [{"claimId": "au-ko-whv-age"}]
+    },
+    {
+      "id": "au-first-whv-fee",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges",
+      "request": {
+        "method": "POST",
+        "url": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList",
+        "jsonBody": {"onshore": "All", "category": "Visa"}
+      },
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "api-json-record",
+        "params": {
+          "arrayPointer": "/d/data",
+          "match": {"visaSubclassCode": "417-A"},
+          "valuePointer": "/basePrice",
+          "transform": "currency-to-number"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD", "value": 840},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-visa-prices.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:3031ad0c1be89330c224fc6103abb7d836c6aef28ab1aa3da39fad7b15a6ae54",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList"
+      },
+      "claims": [{"claimId": "au-ko-whv-fee"}]
+    },
+    {
+      "id": "au-second-whv-fee",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing",
+      "request": {
+        "method": "POST",
+        "url": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList",
+        "jsonBody": {"onshore": "All", "category": "Visa"}
+      },
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "api-json-record",
+        "params": {
+          "arrayPointer": "/d/data",
+          "match": {"visaSubclassCode": "417-B"},
+          "valuePointer": "/basePrice",
+          "transform": "currency-to-number"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD", "value": 1000},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-visa-prices.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:3031ad0c1be89330c224fc6103abb7d836c6aef28ab1aa3da39fad7b15a6ae54",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList"
+      },
+      "claims": [{"claimId": "au-ko-second-fee"}]
+    },
+    {
+      "id": "au-third-whv-fee",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing",
+      "request": {
+        "method": "POST",
+        "url": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList",
+        "jsonBody": {"onshore": "All", "category": "Visa"}
+      },
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "api-json-record",
+        "params": {
+          "arrayPointer": "/d/data",
+          "match": {"visaSubclassCode": "417-C"},
+          "valuePointer": "/basePrice",
+          "transform": "currency-to-number"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD", "value": 1000},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-visa-prices.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:3031ad0c1be89330c224fc6103abb7d836c6aef28ab1aa3da39fad7b15a6ae54",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList"
+      },
+      "claims": [{"claimId": "au-ko-third-fee"}]
+    },
+    {
+      "id": "au-student-visa-fee",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges",
+      "request": {
+        "method": "POST",
+        "url": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList",
+        "jsonBody": {"onshore": "All", "category": "Visa"}
+      },
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "api-json-record",
+        "params": {
+          "arrayPointer": "/d/data",
+          "match": {"visaSubclassCode": "500", "streamCode": "5133"},
+          "valuePointer": "/basePrice",
+          "transform": "currency-to-number"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD", "value": 2500},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-visa-prices.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:3031ad0c1be89330c224fc6103abb7d836c6aef28ab1aa3da39fad7b15a6ae54",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList"
+      },
+      "claims": [{"claimId": "au-ko-student-fee"}]
+    },
+    {
+      "id": "au-485-fee",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges",
+      "request": {
+        "method": "POST",
+        "url": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList",
+        "jsonBody": {"onshore": "All", "category": "Visa"}
+      },
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "api-json-record",
+        "params": {
+          "arrayPointer": "/d/data",
+          "match": {"visaSubclassCode": "485-33"},
+          "valuePointer": "/basePrice",
+          "transform": "currency-to-number"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD", "value": 5750},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-visa-prices.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:3031ad0c1be89330c224fc6103abb7d836c6aef28ab1aa3da39fad7b15a6ae54",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList"
+      },
+      "claims": [{"claimId": "au-ko-485-fee"}]
+    },
+    {
+      "id": "au-189-fee",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing",
+      "request": {
+        "method": "POST",
+        "url": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList",
+        "jsonBody": {"onshore": "All", "category": "Visa"}
+      },
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "api-json-record",
+        "params": {
+          "arrayPointer": "/d/data",
+          "match": {"visaSubclassCode": "189-63"},
+          "valuePointer": "/basePrice",
+          "transform": "currency-to-number"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD", "value": 6135},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-visa-prices.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:3031ad0c1be89330c224fc6103abb7d836c6aef28ab1aa3da39fad7b15a6ae54",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList"
+      },
+      "claims": [{"claimId": "au-ko-189-fee"}]
+    },
+    {
+      "id": "au-190-fee",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing",
+      "request": {
+        "method": "POST",
+        "url": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList",
+        "jsonBody": {"onshore": "All", "category": "Visa"}
+      },
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "api-json-record",
+        "params": {
+          "arrayPointer": "/d/data",
+          "match": {"visaSubclassCode": "190"},
+          "valuePointer": "/basePrice",
+          "transform": "currency-to-number"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD", "value": 6140},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-visa-prices.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:3031ad0c1be89330c224fc6103abb7d836c6aef28ab1aa3da39fad7b15a6ae54",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList"
+      },
+      "claims": [{"claimId": "au-ko-190-fee"}]
+    },
+    {
+      "id": "au-491-fee",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing",
+      "request": {
+        "method": "POST",
+        "url": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList",
+        "jsonBody": {"onshore": "All", "category": "Visa"}
+      },
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "api-json-record",
+        "params": {
+          "arrayPointer": "/d/data",
+          "match": {"visaSubclassCode": "491"},
+          "valuePointer": "/basePrice",
+          "transform": "currency-to-number"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD", "value": 6140},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-visa-prices.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:3031ad0c1be89330c224fc6103abb7d836c6aef28ab1aa3da39fad7b15a6ae54",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList"
+      },
+      "claims": [{"claimId": "au-ko-491-fee"}]
+    },
+    {
+      "id": "au-482-fee",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing",
+      "request": {
+        "method": "POST",
+        "url": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList",
+        "jsonBody": {"onshore": "All", "category": "Visa"}
+      },
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "api-json-record",
+        "params": {
+          "arrayPointer": "/d/data",
+          "match": {"visaSubclassCode": "482-69"},
+          "valuePointer": "/basePrice",
+          "transform": "currency-to-number"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD", "value": 4015},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-visa-prices.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:3031ad0c1be89330c224fc6103abb7d836c6aef28ab1aa3da39fad7b15a6ae54",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList"
+      },
+      "claims": [{"claimId": "au-ko-482-fee"}]
+    },
+    {
+      "id": "au-186-fee",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing",
+      "request": {
+        "method": "POST",
+        "url": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList",
+        "jsonBody": {"onshore": "All", "category": "Visa"}
+      },
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "api-json-record",
+        "params": {
+          "arrayPointer": "/d/data",
+          "match": {
+            "visaSubclassCode": "186",
+            "visaSubclassText": "Employer Nomination Scheme visa (subclass 186) - Temporary Residence Transition stream"
+          },
+          "valuePointer": "/basePrice",
+          "transform": "currency-to-number"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD", "value": 6140},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-visa-prices.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:3031ad0c1be89330c224fc6103abb7d836c6aef28ab1aa3da39fad7b15a6ae54",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList"
+      },
+      "claims": [{"claimId": "au-ko-186-fee"}]
+    },
+    {
+      "id": "au-partner-820-fee",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore/temporary-820",
+      "request": {
+        "method": "POST",
+        "url": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList",
+        "jsonBody": {"onshore": "All", "category": "Visa"}
+      },
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "api-json-record",
+        "params": {
+          "arrayPointer": "/d/data",
+          "match": {
+            "visaSubclassCode": "801",
+            "visaSubclassText": "Partner visa (subclass 820/801)"
+          },
+          "valuePointer": "/basePrice",
+          "transform": "currency-to-number"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD", "value": 11710},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-visa-prices.json",
+        "mediaType": "application/json",
+        "sha256": "sha256:3031ad0c1be89330c224fc6103abb7d836c6aef28ab1aa3da39fad7b15a6ae54",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList"
+      },
+      "claims": [{"claimId": "au-ko-partner-820-fee"}]
+    }
+  ]
+}
