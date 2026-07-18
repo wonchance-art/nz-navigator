@@ -50,6 +50,10 @@ jobs:
           --claims data/claims.json
           --mode live
           --today "$(date +%F)"
+          --timeout 15
+          --max-attempts 3
+          --retry-backoff-ms 500
+          --observation-id "${{ github.run_id }}.${{ github.run_attempt }}"
           --output source-attestation-report.json
           --no-fail
 

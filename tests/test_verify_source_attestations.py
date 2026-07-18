@@ -244,8 +244,24 @@ class SourceAttestationTests(unittest.TestCase):
                 "claimCount": 4,
                 "reviewedLeafCount": 5,
                 "liveCapableCount": 4,
+                "liveExtractableCount": 4,
+                "fixtureOnlyCount": 0,
             },
         )
+        payload = report.to_json()
+        self.assertEqual(
+            set(payload["audit"]),
+            {
+                "attestationCount",
+                "claimCount",
+                "reviewedLeafCount",
+                "liveCapableCount",
+                "liveExtractableCount",
+                "fixtureOnlyCount",
+            },
+        )
+        self.assertEqual(payload["requestAudit"]["requestCount"], 4)
+        self.assertEqual(payload["requestAudit"]["totalAttemptCount"], 4)
         api = next(result for result in report.results if result.id == "au-api-source")
         self.assertNotEqual(api.source, api.requestUrl)
 
@@ -421,6 +437,170 @@ class SourceAttestationTests(unittest.TestCase):
                 "$1.75 per $100 (1.74%)", "embedded-percent"
             )
 
+    def test_ato_whm_first_band_and_super_number_percentage(self) -> None:
+        whm_unit, whm_value = verifier._extract_html_table_record(
+            (FIXTURES / "ato-whm.html").read_bytes(),
+            {
+                "section": "Working holiday maker tax rates 2025–26",
+                "headers": ["Taxable income", "Tax on this income"],
+                "result": "scalar",
+                "fields": [{
+                    "key": "whm",
+                    "rowLabels": ["0 – $45,000"],
+                    "valueHeader": "Tax on this income",
+                    "transform": "ato-first-tax-band",
+                    "unit": {"cap": "AUD", "rate": "decimal rate"},
+                }],
+            },
+        )
+        self.assertEqual(
+            (whm_unit, whm_value),
+            (
+                {"cap": "AUD", "rate": "decimal rate"},
+                {"cap": 45000, "rate": 0.15},
+            ),
+        )
+        super_unit, super_value = verifier._extract_html_table_record(
+            (FIXTURES / "ato-super.html").read_bytes(),
+            {
+                "section": "Table 21: Super guarantee percentage",
+                "headers": [
+                    "Period",
+                    "General super guarantee (%)",
+                    (
+                        "Super guarantee (%) for Norfolk Island "
+                        "(transitional rate) (from 1 July 2016)"
+                    ),
+                ],
+                "result": "scalar",
+                "fields": [{
+                    "key": "rate",
+                    "rowLabels": ["1 July 2026 – 30 June 2027"],
+                    "valueHeader": "General super guarantee (%)",
+                    "transform": "percentage-number-to-decimal",
+                    "unit": "decimal rate",
+                }],
+            },
+        )
+        self.assertEqual((super_unit, super_value), ("decimal rate", 0.12))
+        for bad in ("12.00%", "12.00 11", "-1", "101"):
+            with self.subTest(bad=bad), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._transform_html_value(
+                    bad, "percentage-number-to-decimal"
+                )
+
+    def test_ato_whm_and_lito_adversarial_grammar_fails_closed(self) -> None:
+        whm = (FIXTURES / "ato-whm.html").read_text()
+        for old, new in (
+            ("0 – $45,000", "1 – $45,000"),
+            ("0 – $45,000", "0 – $45,000 or $50,000"),
+            ("15c for each $1", "15c for each $2"),
+        ):
+            with self.subTest(new=new), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._extract_html_table_record(
+                    whm.replace(old, new).encode(),
+                    {
+                        "section": "Working holiday maker tax rates 2025–26",
+                        "headers": ["Taxable income", "Tax on this income"],
+                        "result": "scalar",
+                        "fields": [{
+                            "key": "whm",
+                            "rowLabels": [new if old.startswith("0 ") else "0 – $45,000"],
+                            "valueHeader": "Tax on this income",
+                            "transform": "ato-first-tax-band",
+                            "unit": {
+                                "cap": "AUD",
+                                "rate": "decimal rate",
+                            },
+                        }],
+                    },
+                )
+        lito_params = {
+            "anchor": "Low income tax offset",
+            "items": [
+                (
+                    "$37,500 or less, you will get "
+                    "the maximum offset of $700"
+                ),
+                (
+                    "between $37,501 and $45,000, you will get "
+                    "$700 minus 5 cents for every $1 above $37,500"
+                ),
+                (
+                    "between $45,001 and $66,667, you will get "
+                    "$325 minus 1.5 cents for every $1 above $45,000."
+                ),
+            ],
+        }
+        unit, value = verifier._extract_ato_lito(
+            (FIXTURES / "ato-lito.html").read_bytes(), lito_params
+        )
+        self.assertEqual(unit, verifier.ATO_LITO_UNIT)
+        self.assertEqual(
+            value,
+            {
+                "maxOffset": 700,
+                "fullTo": 37500,
+                "taper1To": 45000,
+                "taper1Rate": 0.05,
+                "cutOut": 66667,
+                "taper2Rate": 0.015,
+            },
+        )
+        lito = (FIXTURES / "ato-lito.html").read_text()
+        for old, new in (
+            ("$37,501 and $45,000", "$37,502 and $45,000"),
+            ("$325 minus", "$326 minus"),
+            ("1.5 cents", "1.4 cents"),
+            ("</ul>", f"<li>{lito_params['items'][2]}</li></ul>"),
+        ):
+            mutated = lito.replace(old, new)
+            mutated_params = deepcopy(lito_params)
+            mutated_params["items"] = [
+                item.replace(old, new) for item in mutated_params["items"]
+            ]
+            if old == "</ul>":
+                mutated_params = lito_params
+            with self.subTest(new=new[:30]), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._extract_ato_lito(
+                    mutated.encode(), mutated_params
+                )
+
+    def test_medicare_loose_text_is_exact_and_not_double_collected(self) -> None:
+        anchor = (
+            "The rate of levy payable by a person upon a taxable income is 2%."
+        )
+        params = {
+            "anchor": anchor,
+            "transform": "percent-to-decimal",
+            "unit": "decimal rate",
+        }
+        self.assertEqual(
+            verifier._extract_html_text_anchor(
+                (FIXTURES / "ato-medicare.html").read_bytes(), params
+            ),
+            ("decimal rate", 0.02),
+        )
+        base = (FIXTURES / "ato-medicare.html").read_text()
+        mutations = [
+            base.replace("is 2%.", "is 2.1%."),
+            base.replace("</body>", f"<br>{anchor}</body>"),
+            base.replace("is 2%.", "is <strong>2%</strong>."),
+        ]
+        for mutated in mutations:
+            with self.subTest(), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._extract_html_text_anchor(
+                    mutated.encode(), params
+                )
+
     def test_layout_partial_and_duplicate_rows_are_changed(self) -> None:
         for replacement in (
             "<td>$23.95</td><td>$191.60</td><td>$958.00</td><td>$1,916.00</td>",
@@ -459,10 +639,18 @@ class SourceAttestationTests(unittest.TestCase):
         )
         self.assertTrue(self.run_verify().ok)
 
-    def test_post_cross_host_get_url_and_unofficial_url_fail_closed(self) -> None:
+    def test_request_url_overrides_are_same_host_and_fail_closed(self) -> None:
+        source = "https://www.ato.gov.au/rates-and-calculators"
+        content = (
+            "https://www.ato.gov.au/api/public/content/"
+            "0-2319183b-9958-4848-88f9-ea9dc64b121e"
+        )
+        verifier._validate_request(
+            {"method": "GET", "url": content}, source, "AU"
+        )
+        verifier._validate_request({"method": "GET"}, source, "AU")
         mutations = [
             ("POST", "https://www.ato.gov.au/api", {"x": "y"}),
-            ("GET", "https://immi.homeaffairs.gov.au/api", None),
             ("POST", "https://example.com/api", {"x": "y"}),
         ]
         for method, url, body in mutations:
@@ -473,9 +661,432 @@ class SourceAttestationTests(unittest.TestCase):
                     request["jsonBody"] = body
                 registry["attestations"][3]["request"] = request
                 self.assert_status(self.run_verify(registry), "unsupported")
+        invalid_gets = [
+            {"method": "GET", "url": "https://ato.gov.au/api/content"},
+            {"method": "GET", "url": "https://example.com/api/content"},
+            {"method": "GET", "url": content + "?view=1"},
+            {"method": "GET", "url": content, "jsonBody": {}},
+        ]
+        for request in invalid_gets:
+            with self.subTest(request=request), self.assertRaises(
+                verifier.RegistryError
+            ):
+                verifier._validate_request(request, source, "AU")
         registry = deepcopy(self.registry)
         registry["attestations"][0]["sourceUrl"] = "https://example.com/policy"
         self.assert_status(self.run_verify(registry), "unsupported")
+
+    def test_transient_retry_recovers_and_shared_request_fetches_once_per_attempt(
+        self,
+    ) -> None:
+        first = self.html_attestation()
+        second = deepcopy(first)
+        second["id"] = "nz-wage-source-two"
+        second["targets"] = [
+            {"targetId": "nz-wage-two", "reviewedPath": "/value"}
+        ]
+        second["claims"] = [{"claimId": "claim-wage-two"}]
+        self.boundary = {
+            "schemaVersion": 1,
+            "targets": [
+                {"id": "nz-wage", "reviewed": {"value": 23.95}},
+                {"id": "nz-wage-two", "reviewed": {"value": 23.95}},
+            ],
+        }
+        self.claims = {
+            "schemaVersion": 1,
+            "audit": {},
+            "claims": [
+                self.claim(
+                    "claim-wage",
+                    23.95,
+                    "NZD/hour",
+                    first["sourceUrl"],
+                ),
+                self.claim(
+                    "claim-wage-two",
+                    23.95,
+                    "NZD/hour",
+                    first["sourceUrl"],
+                ),
+            ],
+        }
+        self.registry = {
+            "schemaVersion": 1,
+            "boundaryManifest": "boundary.json",
+            "claimScope": ["claim-wage", "claim-wage-two"],
+            "attestations": [first, second],
+        }
+        self.write_json("boundary.json", self.boundary)
+        self.write_json("claims.json", self.claims)
+        self.write_json("attestations.json", self.registry)
+
+        outcomes = iter([503, 200])
+        calls: list[str] = []
+
+        class Response:
+            headers = {"Content-Type": "text/html"}
+
+            def __init__(self, status: int) -> None:
+                self.status = status
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, _limit):
+                if self.status == 503:
+                    return b"<title>Just a moment...</title>"
+                return (FIXTURES / "employment-wage.html").read_bytes()
+
+            def geturl(self):
+                return first["sourceUrl"]
+
+            def getcode(self):
+                return self.status
+
+        def opener(request, **_kwargs):
+            calls.append(request.full_url)
+            return Response(next(outcomes))
+
+        clocks = iter([0.0, 0.1, 1.0, 1.4])
+        sleeps: list[float] = []
+        report = verifier.verify_source_attestations(
+            self.root,
+            attestations_path="attestations.json",
+            boundary_manifest_path="boundary.json",
+            claims_path="claims.json",
+            mode="live",
+            today=TODAY,
+            max_attempts=3,
+            retry_backoff_ms=10,
+            observation_id="run.1",
+            urlopen=opener,
+            clock=lambda: next(clocks),
+            sleeper=sleeps.append,
+        )
+        self.assertTrue(report.ok, [item.render() for item in report.results])
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(sleeps, [0.01])
+        self.assertEqual(report.fetchedUrls, 1)
+        self.assertEqual(report.requests[0].attemptCount, 2)
+        self.assertEqual(
+            [attempt.status for attempt in report.requests[0].attempts],
+            ["transient", "ready"],
+        )
+        self.assertEqual(
+            {item.attemptCount for item in report.results}, {2}
+        )
+        payload = report.to_json()
+        self.assertEqual(payload["requestAudit"]["totalAttemptCount"], 2)
+        self.assertEqual(payload["requestAudit"]["retriedRequestCount"], 1)
+
+    def test_implicit_live_observation_tracks_semantics_not_latency(self) -> None:
+        response = verifier.SourceResponse(
+            200,
+            "https://www.employment.govt.nz/minimum-wage",
+            "text/html",
+            b"reviewed",
+        )
+
+        def build(
+            attempts: tuple[verifier.AttemptAudit, ...],
+            total_latency: str,
+            result_status: str = "match",
+            observation_id: str | None = None,
+        ) -> verifier.AttestationReport:
+            execution = verifier.RequestExecution(
+                "sha256:" + "1" * 64,
+                response.final_url,
+                "GET",
+                attempts,
+                attempts[-1].status,
+                total_latency,
+                response,
+            )
+            result = verifier._attach_request_execution(
+                verifier._result(
+                    "source-one",
+                    response.final_url,
+                    "/value",
+                    result_status,
+                    1,
+                    1,
+                    "No action required.",
+                ),
+                execution,
+            )
+            report = verifier.AttestationReport(
+                "live",
+                "2026-07-19T00:00:00Z",
+                observation_id,
+                results=[result],
+                requests=[execution],
+            )
+            report.audit = {
+                "attestationCount": 1,
+                "claimCount": 0,
+                "reviewedLeafCount": 1,
+                "liveCapableCount": 1,
+                "liveExtractableCount": 1,
+                "fixtureOnlyCount": 0,
+            }
+            return report
+
+        ready = build(
+            (verifier.AttemptAudit(1, "ready", "lt250ms"),),
+            "lt250ms",
+        )
+        slower = build(
+            (verifier.AttemptAudit(1, "ready", "5s-14.999s"),),
+            "5s-14.999s",
+        )
+        recovered = build(
+            (
+                verifier.AttemptAudit(1, "transient", "lt250ms"),
+                verifier.AttemptAudit(2, "ready", "lt250ms"),
+            ),
+            "250ms-999ms",
+        )
+        changed = build(
+            (verifier.AttemptAudit(1, "ready", "lt250ms"),),
+            "lt250ms",
+            result_status="changed",
+        )
+        ready_id = ready.to_json()["observationId"]
+        self.assertRegex(ready_id, r"^[0-9a-f]{64}$")
+        self.assertEqual(ready_id, slower.to_json()["observationId"])
+        self.assertNotEqual(
+            ready_id, recovered.to_json()["observationId"]
+        )
+        self.assertNotEqual(ready_id, changed.to_json()["observationId"])
+        explicit = build(
+            (verifier.AttemptAudit(1, "ready", "lt250ms"),),
+            "lt250ms",
+            observation_id="workflow.1",
+        )
+        self.assertEqual(
+            explicit.to_json()["observationId"], "workflow.1"
+        )
+
+    def test_transient_retry_exhaustion_preserves_bounded_history(self) -> None:
+        attestation = self.html_attestation()
+        calls: list[int] = []
+
+        class Response:
+            status = 503
+            headers = {"Content-Type": "text/html"}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, _limit):
+                return b"temporarily unavailable"
+
+            def geturl(self):
+                return attestation["sourceUrl"]
+
+            def getcode(self):
+                return self.status
+
+        def opener(_request, **_kwargs):
+            calls.append(1)
+            return Response()
+
+        clocks = iter([0.0, 0.1, 1.0, 1.2, 2.0, 2.3])
+        sleeps: list[float] = []
+        execution = verifier._live_execution(
+            attestation,
+            max_attempts=3,
+            retry_backoff_ms=20,
+            timeout=1,
+            urlopen=opener,
+            clock=lambda: next(clocks),
+            sleeper=sleeps.append,
+        )
+        self.assertEqual(execution.finalStatus, "transient")
+        self.assertEqual(execution.attemptCount, 3)
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(sleeps, [0.02, 0.04])
+        self.assertEqual(
+            [attempt.number for attempt in execution.attempts], [1, 2, 3]
+        )
+        self.assertTrue(
+            all(
+                attempt.status == "transient"
+                for attempt in execution.attempts
+            )
+        )
+
+    def test_nontransient_transport_statuses_are_never_retried(self) -> None:
+        attestation = self.html_attestation()
+
+        class Response:
+            headers = {"Content-Type": "text/html"}
+
+            def __init__(self, status: int, body: bytes) -> None:
+                self.status = status
+                self.body = body
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, _limit):
+                return self.body
+
+            def geturl(self):
+                return attestation["sourceUrl"]
+
+            def getcode(self):
+                return self.status
+
+        cases = [
+            (403, b"denied", "blocked"),
+            (404, b"missing", "changed"),
+            (200, b"", "changed"),
+            (
+                200,
+                b"x" * (verifier.MAX_BODY_BYTES + 1),
+                "unsupported",
+            ),
+            (
+                200,
+                b"<title>Just a moment...</title>",
+                "blocked",
+            ),
+        ]
+        for status, body, expected in cases:
+            calls = []
+            clocks = iter([0.0, 0.1])
+
+            def opener(_request, **_kwargs):
+                calls.append(1)
+                return Response(status, body)
+
+            execution = verifier._live_execution(
+                attestation,
+                max_attempts=4,
+                retry_backoff_ms=10,
+                timeout=1,
+                urlopen=opener,
+                clock=lambda: next(clocks),
+                sleeper=lambda _delay: self.fail("unexpected retry"),
+            )
+            with self.subTest(status=status, expected=expected):
+                self.assertEqual(execution.finalStatus, expected)
+                self.assertEqual(execution.attemptCount, 1)
+                self.assertEqual(len(calls), 1)
+
+        altered = (
+            FIXTURES / "employment-wage.html"
+        ).read_bytes().replace(b"$23.95", b"$24.00", 1)
+        calls = []
+        clocks = iter([0.0, 0.1])
+
+        def altered_opener(_request, **_kwargs):
+            calls.append(1)
+            return Response(200, altered)
+
+        execution = verifier._live_execution(
+            attestation,
+            max_attempts=4,
+            retry_backoff_ms=10,
+            timeout=1,
+            urlopen=altered_opener,
+            clock=lambda: next(clocks),
+            sleeper=lambda _delay: self.fail("unexpected retry"),
+        )
+        result = verifier._evaluate_response(
+            attestation,
+            execution.response,
+            offline=False,
+            root=self.root,
+        )
+        self.assertEqual(execution.finalStatus, "ready")
+        self.assertEqual(result.status, "changed")
+        self.assertEqual(len(calls), 1)
+
+    def test_retry_settings_and_fixture_only_live_policy_fail_closed(self) -> None:
+        for kwargs in (
+            {"max_attempts": 0},
+            {"max_attempts": 5},
+            {"retry_backoff_ms": 0},
+            {"retry_backoff_ms": 2001},
+            {"timeout": 0},
+            {"timeout": 61},
+        ):
+            values = {
+                "max_attempts": 1,
+                "retry_backoff_ms": 1,
+                "timeout": 1,
+                "observation_id": "run.1",
+                **kwargs,
+            }
+            with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
+                verifier._validate_execution_settings("live", **values)
+        with self.assertRaises(ValueError):
+            verifier._validate_execution_settings(
+                "offline",
+                max_attempts=2,
+                retry_backoff_ms=1,
+                timeout=1,
+                observation_id="offline",
+            )
+
+        registry = deepcopy(self.registry)
+        for attestation in registry["attestations"]:
+            attestation["livePolicy"] = {
+                "mode": "fixture-only",
+                "reason": "Compressed official representation.",
+                "manualReviewDays": 7,
+            }
+        offline = self.run_verify(registry)
+        self.assertTrue(offline.ok)
+        self.assertEqual(offline.audit["liveExtractableCount"], 0)
+        self.assertEqual(offline.audit["fixtureOnlyCount"], 4)
+
+        def no_network(*_args, **_kwargs):
+            self.fail("fixture-only live policy attempted a network request")
+
+        live = verifier.verify_source_attestations(
+            self.root,
+            attestations_path="attestations.json",
+            claims_path="claims.json",
+            mode="live",
+            today=TODAY,
+            observation_id="run.fixture",
+            urlopen=no_network,
+        )
+        self.assertEqual(live.fetchedUrls, 0)
+        self.assertTrue(
+            all(item.status == "unsupported" for item in live.results)
+        )
+        self.assertTrue(
+            all(item.attemptCount == 0 for item in live.results)
+        )
+        self.assertIn("Compressed official", live.results[0].actual["reason"])
+        self.assertIn("7 day", live.results[0].fix)
+
+        invalid = [
+            {"mode": "unknown", "reason": "x", "manualReviewDays": 7},
+            {"mode": "fixture-only", "manualReviewDays": 7},
+            {"mode": "fixture-only", "reason": "", "manualReviewDays": 7},
+            {"mode": "fixture-only", "reason": "x", "manualReviewDays": 0},
+            {"mode": "fixture-only", "reason": "x", "manualReviewDays": 31},
+        ]
+        for policy in invalid:
+            mutated = deepcopy(self.registry)
+            mutated["attestations"][0]["livePolicy"] = policy
+            with self.subTest(policy=policy):
+                self.assert_status(self.run_verify(mutated), "unsupported")
 
     def test_unofficial_redirect_and_unsupported_pdf_fail_closed(self) -> None:
         attestation = self.registry["attestations"][0]
@@ -626,6 +1237,8 @@ class SourceAttestationTests(unittest.TestCase):
             "claimCount": 4,
             "reviewedLeafCount": 4,
             "liveCapableCount": 4,
+            "liveExtractableCount": 4,
+            "fixtureOnlyCount": 0,
         }
         self.write_json("claims.json", claims)
         report = self.run_verify()
