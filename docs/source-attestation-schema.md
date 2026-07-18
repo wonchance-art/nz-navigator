@@ -196,10 +196,11 @@ HTML field transforms are fixed enums:
   later year of income`. It requires section `Repeal the table, substitute:`,
   the exact three headers, item `1`, middle cell `does not exceed $N`, and
   rate cell `P%`, then returns `{cap:N,rate:P/100}` with the same fixed unit
-  tree. Exactly one title (caption or the actual three-cell title row with two
-  empty trailing cells before the headers) and exactly one complete item row
-  must match. The guidance transform remains a regression check; production
-  should prefer this law transform when binding 2026–27 applicability.
+  tree. Exactly one title must match: either the caption or a header-width
+  title row computed as `[TITLE] + [""] * (len(headers) - 1)` before the
+  headers. Exactly one complete item row must also match. The guidance
+  transform remains a regression check; production should prefer this law
+  transform when binding 2026–27 applicability.
 - `tax-brackets`, which returns the v4 reviewed shape
   `[[upper,rate],...,[null,rate]]`, checks zero start, continuity, and an open
   last cap

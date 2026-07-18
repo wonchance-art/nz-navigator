@@ -582,6 +582,24 @@ class SourceAttestationTests(unittest.TestCase):
             )
 
         self.assertTrue(run(baseline).ok)
+        title_start = baseline.index(
+            "    <tr>\n      <th>"
+            + verifier.ATO_LAW_FIRST_BAND_TITLE
+        )
+        title_end = (
+            baseline.index("    </tr>", title_start)
+            + len("    </tr>\n")
+        )
+        title_row = baseline[title_start:title_end]
+        header_start = baseline.index(
+            "    <tr>\n      <th>Item</th>", title_end
+        )
+        header_end = (
+            baseline.index("    </tr>", header_start)
+            + len("    </tr>\n")
+        )
+        header_row = baseline[header_start:header_end]
+        without_title = baseline[:title_start] + baseline[title_end:]
         mutations = [
             baseline.replace(
                 verifier.ATO_LAW_FIRST_BAND_TITLE,
@@ -603,6 +621,15 @@ class SourceAttestationTests(unittest.TestCase):
                     "<tr><td>1</td><td>does not exceed $45,000</td>"
                     "<td>15%</td></tr></tbody>"
                 ),
+            ),
+            baseline.replace(
+                "<th></th>", "<th>unexpected</th>", 1
+            ),
+            baseline.replace(
+                header_row, title_row + header_row, 1
+            ),
+            without_title.replace(
+                header_row, header_row + title_row, 1
             ),
         ]
         for body in mutations:

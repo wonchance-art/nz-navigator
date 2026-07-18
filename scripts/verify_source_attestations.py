@@ -2136,10 +2136,13 @@ def _extract_html_table_record(
         field_spec["transform"] == "ato-law-first-tax-band"
         for field_spec in params["fields"]
     ):
+        expected_title_row = [ATO_LAW_FIRST_BAND_TITLE] + [""] * (
+            len(headers) - 1
+        )
         title_rows = [
             index
             for index, row in enumerate(table["rows"])
-            if row == [ATO_LAW_FIRST_BAND_TITLE, "", ""]
+            if row == expected_title_row
         ]
         caption_match = table["caption"] == ATO_LAW_FIRST_BAND_TITLE
         if (
@@ -2148,7 +2151,7 @@ def _extract_html_table_record(
         ):
             raise ChangedExtraction(
                 "ATO law table requires one exact reviewed caption or "
-                "3-column title row before headers"
+                "header-width title row before headers"
             )
     data_rows = table["rows"][header_index + 1 :]
     if not data_rows:
