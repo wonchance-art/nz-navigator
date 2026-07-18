@@ -227,6 +227,8 @@ Failures cover:
 - transform shape or argument failure;
 - `NaN`, unconverted `Infinity`, and other non-finite output;
 - NZ/JA runtime parity mismatch.
+- a public `claims.audit.runtimeBindings` summary that does not exactly match
+  the production binding, claim, and generated boundary-set totals.
 
 ## Commands
 

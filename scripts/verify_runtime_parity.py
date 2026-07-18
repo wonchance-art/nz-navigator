@@ -1271,6 +1271,40 @@ def verify_runtime_parity(
                     runtime_path=f"<parity:{parity_key}>",
                 )
 
+    production_bindings_file = (root_path / "data/runtime-bindings.json").resolve()
+    public_audit = (
+        claims_data.get("audit", {}).get("runtimeBindings")
+        if bindings_file.resolve() == production_bindings_file
+        else None
+    )
+    if public_audit is not None:
+        expected_audit = {
+            "claimCount": len(
+                {
+                    binding.get("claimId")
+                    for binding in bindings_data["bindings"]
+                    if isinstance(binding, dict)
+                    and isinstance(binding.get("claimId"), str)
+                }
+            ),
+            "bindingCount": len(bindings_data["bindings"]),
+            "boundarySetCount": len(report.boundary_cases),
+        }
+        actual_audit = _normalize_json_value(public_audit)
+        normalized_expected = _normalize_json_value(expected_audit)
+        if actual_audit != normalized_expected:
+            _issue(
+                report,
+                "PUBLIC_AUDIT_MISMATCH",
+                None,
+                actual_audit,
+                normalized_expected,
+                "Update claims.audit.runtimeBindings from the verified production binding registry.",
+                claim_id="<runtime-audit>",
+                edition="<all>",
+                runtime_path=str(claims_file),
+            )
+
     return report
 
 

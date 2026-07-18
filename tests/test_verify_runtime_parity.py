@@ -427,6 +427,52 @@ class RuntimeParityTests(unittest.TestCase):
         self.assertEqual(exit_code, 0, stderr.getvalue())
         self.assertIn('"claimId": "tax-rate"', stdout.getvalue())
 
+    def test_public_runtime_audit_must_match_verified_totals(self) -> None:
+        claims = [self.claim("student-fee", 850, "NZD")]
+        (self.root / "data" / "claims.json").write_text(
+            json.dumps(
+                {
+                    "schemaVersion": 1,
+                    "audit": {
+                        "runtimeBindings": {
+                            "claimCount": 99,
+                            "bindingCount": 99,
+                            "boundarySetCount": 99,
+                        }
+                    },
+                    "claims": claims,
+                }
+            ),
+            encoding="utf-8",
+        )
+        self.write_bindings(
+            [self.binding("student-fee", "DB.fees.student.v", "NZD")]
+        )
+
+        production_bindings = self.root / "data" / "runtime-bindings.json"
+        production_bindings.write_text(
+            (
+                self.root
+                / "tests"
+                / "fixtures"
+                / "bindings.json"
+            ).read_text(encoding="utf-8"),
+            encoding="utf-8",
+        )
+        report = parity.verify_runtime_parity(
+            self.root,
+            claims_path="data/claims.json",
+            bindings_path="data/runtime-bindings.json",
+        )
+
+        issue = next(
+            item
+            for item in report.issues
+            if item.code == "PUBLIC_AUDIT_MISMATCH"
+        )
+        self.assertEqual(issue.claim_id, "<runtime-audit>")
+        self.assertIn("runtimeBindings", issue.fix)
+
 
 if __name__ == "__main__":
     unittest.main()

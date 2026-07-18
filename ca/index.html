@@ -3274,14 +3274,14 @@ function moneyPlanRows(pathwayId, input) {
       push('1–25개월', 'Study Permit', '디플로마/석사(2년) — 수업 중 교외근로 주 24시간 한도' + (ielts ? ' · IELTS 응시(−400)' : ''), `학비 −${tuitionMin.toLocaleString('en-CA')}~−${tuitionMax.toLocaleString('en-CA')} · 비자 −${studentFee.toLocaleString('en-CA')} · 생활 순지출`, -studentFee - ieltsCost - tuitionMax - 24 * 1500, -studentFee - tuitionMin - 24 * 300);
       push('25–28개월', 'PGWP', `신청(−${pgwpFee.toLocaleString('en-CA')})·구직`, '비자비 + 구직기 수입 변동', -pgwpFee - 3 * 500, -pgwpFee + 3 * 800);
       push('28–52개월', 'Work Permit', '경력 축적(1년 이상 CEC 요건)', tierTxt + ` · 별도 Work Permit 필요 시 −${workFee.toLocaleString('en-CA')}`, -workFee + 24 * tier[0], 24 * tier[1]);
-      push('52–56개월', 'Express Entry', `CEC 신청(−${eeFee.toLocaleString('en-CA')}, RPRF 포함)`, '영주권 비자비', -eeFee + 4 * tier[0], -eeFee + 4 * tier[1]);
+      push('52–58개월', 'Express Entry', `CEC 신청(−${eeFee.toLocaleString('en-CA')}, RPRF 포함) → 서비스 기준 6개월`, '영주권 비자비', -eeFee + 6 * tier[0], -eeFee + 6 * tier[1]);
     } else {
       const tuitionMin = tuitionBach[0] * 3;
       const tuitionMax = tuitionBach[1] * 3;
       push('1–49개월', 'Study Permit', '학사(3년) — 수업 중 교외근로 주 24시간 한도' + (ielts ? ' · IELTS 응시(−400)' : ''), `학비 −${tuitionMin.toLocaleString('en-CA')}~−${tuitionMax.toLocaleString('en-CA')} · 비자 −${studentFee.toLocaleString('en-CA')} · 생활 순지출`, -studentFee - ieltsCost - tuitionMax - 36 * 1500, -studentFee - tuitionMin - 36 * 300);
       push('49–52개월', 'PGWP', `신청(−${pgwpFee.toLocaleString('en-CA')}) — 최대 3년 오픈워크`, '비자비 + 구직기 수입 변동', -pgwpFee - 3 * 500, -pgwpFee + 3 * 800);
       push('52–76개월', 'Work Permit', '경력 축적(1년 CEC 또는 3년 해외)', tierTxt + ` · 별도 Work Permit 필요 시 −${workFee.toLocaleString('en-CA')}`, -workFee + 24 * tier[0], 24 * tier[1]);
-      push('76–80개월', 'Express Entry', `CEC/FSW 신청(−${eeFee.toLocaleString('en-CA')}, RPRF 포함)`, '영주권 비자비', -eeFee + 4 * tier[0], -eeFee + 4 * tier[1]);
+      push('76–82개월', 'Express Entry', `CEC/FSW 신청(−${eeFee.toLocaleString('en-CA')}, RPRF 포함) → 서비스 기준 6개월`, '영주권 비자비', -eeFee + 6 * tier[0], -eeFee + 6 * tier[1]);
     }
     return rows;
   }

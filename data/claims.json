@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-18T21:24:33Z",
+  "generatedAt": "2026-07-18T21:30:00Z",
   "audit": {
     "editions": ["NZ 한국어", "NZ 일본어", "캐나다", "호주"],
     "scope": ["비자 연령·기간·쿼터", "신청비·재정증명", "임금·세율", "처리기간", "점수·실수령 계산 표본"],
@@ -11,9 +11,9 @@
       "exemptionCount": 30
     },
     "runtimeBindings": {
-      "claimCount": 78,
-      "bindingCount": 78,
-      "boundarySetCount": 15
+      "claimCount": 80,
+      "bindingCount": 80,
+      "boundarySetCount": 16
     },
     "lastAuditDate": "2026-07-19"
   },
