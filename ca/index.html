@@ -1645,7 +1645,7 @@ details.fold:not([open]) > .fold-body { display: none; }
             <li>대학 석사(2년 이상) → <strong>PGWP 최대 3년</strong></li>
             <li>대학 박사 → <strong>PGWP 최대 3년</strong></li>
             <li>컬리지 디플로마·자격증 → <strong>부족 직종만 PGWP 적격</strong> (의료·건설·교육 등 119개 추가)</li>
-            <li>학업 중 근로: 주 24h(캠퍼스 밖) · 학생비자 150 CAD + 자금증명 연 $20,635</li>
+            <li>학업 중 근로: 주 24h(캠퍼스 밖) · 학생비자 150 CAD + 자금증명 연 $22,895</li>
             <li>신입생(2024-11-01 이후): CLB 요구 (대학원 무관 · 컬리지 CLB 5)</li>
           </ul>
         </div>
@@ -1799,6 +1799,21 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span style="font-size: 0.88rem;">🔄 다음 재검증: 08-25 · 11-17 · 2027-01 (정책 변경 시)</span>
     </div>
 
+    <div class="info-box" aria-label="고위험 정보 검증 상태">
+      <strong>🛡️ 2026-07-19 공식 재검증:</strong>
+      <span data-claim-id="ca-ko-iec-age">한국 IEC 18–35세</span> ·
+      <span data-claim-id="ca-ko-iec-duration">최대 24개월</span> ·
+      <span data-claim-id="ca-ko-iec-fees">IEC+OWP CAD 284.75, 생체정보 필요 시 +85</span> ·
+      <span data-claim-id="ca-ko-study-fee">Study Permit CAD 150</span> ·
+      <span data-claim-id="ca-ko-pgwp-fee">PGWP CAD 255(155+100)</span> ·
+      <span data-claim-id="ca-ko-ee-fee">경제이민·EE CAD 1,590(RPRF 포함)</span> ·
+      <span data-claim-id="ca-ko-study-funds">생활비 증명 연 CAD 22,895</span> ·
+      <span data-claim-id="ca-ko-federal-min-wage-2026">연방 최저임금 CAD 18.15/h</span> ·
+      <span data-claim-id="ca-ko-crs-sample-305">CRS 표본 core 305</span> ·
+      <span data-claim-id="ca-ko-tax-on-60000">온타리오 60,000 표본 실수령 CAD 47,340</span>
+      <a href="../verification.html?country=CA" class="source-link">검증 원장·변경이력 →</a>
+    </div>
+
     <h2 id="keyfigures">핵심 수치</h2>
     <p class="fx-note">전 항목 <span class="badge official">[공식]</span> · 원·엔 환산은 환율 반영 <span id="fxNoteRate"></span></p>
     <div style="overflow-x: auto;">
@@ -1870,7 +1885,7 @@ details.fold:not([open]) > .fold-body { display: none; }
 // ============ DATABASE ============
 const DB = {
   wages: {
-    minWage: { v: 18.15, src: 'https://www.canada.ca/en/revenue-agency/services/tax/individuals/tax-rates-brackets/current-year.html', asOf: '2026-07-12', label: '[공식] 연방' },
+    minWage: { v: 18.15, src: 'https://www.canada.ca/en/employment-social-development/news/2026/03/government-of-canada-raises-the-federal-minimum-wage.html', asOf: '2026-07-19', label: '[공식] 연방' },
     minWageON: { v: 17.95, src: 'https://www.labour.gov.on.ca/minimum-wage/', asOf: '2026-10-01', label: '[공식] 온타리오' },
     minWageBC: { v: 18.25, src: 'https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/wages/minimum-wage', asOf: '2026-06-01', label: '[공식] BC' },
     minWageAB: { v: 15.0, src: 'https://www.alberta.ca/minimum-wage', asOf: '2018-10-01', label: '[공식] 앨버타' },
@@ -1881,9 +1896,9 @@ const DB = {
     openWorkPermit: { v: 100, src: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec.html', asOf: '2026-07-12', label: '[공식] OWP' },
     biometrics: { v: 85, src: 'https://www.ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-12', label: '[공식] 바이오메트릭' },
     studentPermit: { v: 150, src: 'https://www.ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-12', label: '[공식]' },
-    pgwp: { v: 155, src: 'https://www.ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-12', label: '[공식]' },
-    eeApplication: { v: 1590, src: 'https://www.ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-12', label: '[공식] Express Entry 신청' },
-    permanenceResidenceFee: { v: 600, src: 'https://www.ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-12', label: '[공식] RPRF' },
+    pgwp: { v: 255, src: 'https://www.ircc.canada.ca/english/helpcentre/answer.asp?qnum=510&top=15', asOf: '2026-07-19', label: '[공식] Work Permit 155 + OWP 100' },
+    eeApplication: { v: 1590, src: 'https://www.ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-19', label: '[공식] Express Entry 신청(RPRF 포함)' },
+    permanenceResidenceFee: { v: 600, src: 'https://www.ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-19', label: '[공식] RPRF — EE 1,590에 포함' },
     pnpBC: { v: 1750, src: 'https://www.welcomebc.ca/immigrate-to-b-c/about-the-bc-provincial-nominee-program', asOf: '2026-07-12', label: '[공식] BC PNP' }
   },
   estimates: {
@@ -1895,7 +1910,7 @@ const DB = {
     initialSettlement: { v: 15000, src: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/', asOf: '2026-07-12', label: '[공식] PR 증명 최소자금(3개월)' },
     tuitionBach: { v: [22000, 58000], src: '', asOf: '2026-07-12', est: true, label: '[추정] 학사 연 학비 (유학생)' },
     tuitionDiploma: { v: [15000, 35000], src: '', asOf: '2026-07-12', est: true, label: '[추정] 디플로마·자격증 연 학비' },
-    livingStudent: { v: 20635, src: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit/get-documents/financial-support.html', asOf: '2026-07-12', label: '[공식] 유학생 연 생활비 (LICO 75%)' }
+    livingStudent: { v: 22895, src: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit/get-documents/financial-support.html', asOf: '2026-07-19', label: '[공식] 유학생 1인 연 생활비(학비·교통비 제외)' }
   },
   jobs: [
     {
@@ -1920,8 +1935,8 @@ const DB = {
         studyShort: '학위 필수(CEC)',
         period: '12–24개월 (경력 쌓기 + CRS 점수 조립)',
         periodShort: '12–24개월',
-        cost: 'CAD 284.75 (IEC/OWP/Biometrics) + EE 신청 1,590 + RPRF 600 / 학위 경유 시 + 학비 66,000–174,000',
-        costShort: '~2.5k–176.5k'
+        cost: 'CAD 284.75 (IEC+OWP) + 생체정보 85(필요 시) + EE 신청 1,590(RPRF 포함) / 학위 경유 시 + 학비 66,000–174,000',
+        costShort: '~1.9k–176k'
       }
     },
     {
@@ -1946,8 +1961,8 @@ const DB = {
         studyShort: '디플로마 권장(2년)',
         period: '24–48개월',
         periodShort: '24–48개월',
-        cost: 'CAD 284.75 (IEC/OWP) + 디플로마 학비 30,000–70,000 + EE/PNP 신청 1,590–1,750 + RPRF 600',
-        costShort: '~32k–74.6k'
+        cost: 'CAD 284.75 (IEC+OWP) + 디플로마 학비 30,000–70,000 + EE 1,590(RPRF 포함) 또는 PNP 비용 별도',
+        costShort: '~31.9k–71.9k+'
       }
     },
     {
@@ -1972,8 +1987,8 @@ const DB = {
         studyShort: 'Apprenticeship + 자격증',
         period: '30–48개월',
         periodShort: '30–48개월',
-        cost: 'CAD 284.75 (IEC/OWP) + Apprenticeship 학비 거의 없음(회사 부담) + 자격 시험비 ~500 [추정] + EE 신청 1,590 + RPRF 600',
-        costShort: '~2.9k–2.8k'
+        cost: 'CAD 284.75 (IEC+OWP) + 생체정보 85(필요 시) + Apprenticeship 학비 거의 없음(회사 부담) + 자격 시험비 ~500 [추정] + EE 신청 1,590(RPRF 포함)',
+        costShort: '~2.4k–2.5k'
       }
     },
     {
@@ -1998,8 +2013,8 @@ const DB = {
         studyShort: 'RN 평가 필수(면허)',
         period: '12–24개월 (경력 + 면허)',
         periodShort: '12–24개월',
-        cost: 'CAD 284.75 (IEC/OWP) + NNAS 평가 ~750 + EE 신청 1,590 + RPRF 600 / PNP ON·AB·NS 평가비 상이',
-        costShort: '~3.2k–4k'
+        cost: 'CAD 284.75 (IEC+OWP) + 생체정보 85(필요 시) + NNAS 평가 ~750 + EE 신청 1,590(RPRF 포함) / PNP ON·AB·NS 평가비 상이',
+        costShort: '~2.6k–3.4k'
       }
     },
     {
@@ -2024,8 +2039,8 @@ const DB = {
         studyShort: 'ECE 디플로마(2년)',
         period: '24–48개월',
         periodShort: '24–48개월',
-        cost: 'CAD 284.75 (IEC/OWP) + ECE 디플로마 학비 30,000–60,000 + PGWP 155 + EE/PNP 1,590–1,750 + RPRF 600',
-        costShort: '~32k–64.9k'
+        cost: 'CAD 284.75 (IEC+OWP) + ECE 디플로마 학비 30,000–60,000 + PGWP 255 + EE 1,590(RPRF 포함) 또는 PNP 비용 별도',
+        costShort: '~32.1k–63k+'
       }
     },
     {
@@ -2050,8 +2065,8 @@ const DB = {
         studyShort: '학위 있으면 불필요',
         period: '12–36개월',
         periodShort: '12–36개월',
-        cost: 'CAD 284.75 (IEC/OWP) + EE 신청 1,590 + RPRF 600 / 학위 경유 시 + 학비 66,000–174,000',
-        costShort: '~2.5k–176.5k'
+        cost: 'CAD 284.75 (IEC+OWP) + EE 신청 1,590(RPRF 포함) / 학위 경유 시 + 학비 66,000–174,000',
+        costShort: '~1.9k–175.9k'
       }
     },
     {
@@ -2076,8 +2091,8 @@ const DB = {
         studyShort: 'CDL 자격증',
         period: '12–36개월',
         periodShort: '12–36개월',
-        cost: 'CAD 284.75 (IEC/OWP) + CDL 과정 3,000–8,000 [추정] + EE 신청 1,590 + RPRF 600',
-        costShort: '~5.5k–10.8k'
+        cost: 'CAD 284.75 (IEC+OWP) + CDL 과정 3,000–8,000 [추정] + EE 신청 1,590(RPRF 포함)',
+        costShort: '~4.9k–9.9k'
       }
     },
     {
@@ -2102,8 +2117,8 @@ const DB = {
         studyShort: '불필요',
         period: '24–60개월 (PNP 지명까지)',
         periodShort: '24–60개월',
-        cost: 'CAD 284.75 (IEC/OWP) + PNP 신청 1,500–1,800 [추정] + RPRF 600',
-        costShort: '~2.4k–2.7k'
+        cost: 'CAD 284.75 (IEC+OWP) + PNP 신청 1,500–1,800 [추정] + 연방 EE 1,590(RPRF 포함)',
+        costShort: '~3.4k–3.7k'
       }
     },
     {
@@ -2128,8 +2143,8 @@ const DB = {
         studyShort: '불필요(승격용 과정)',
         period: '48개월+ (승격 경유)',
         periodShort: '48개월+',
-        cost: 'CAD 284.75 (IEC/OWP) + 승격 과정(있으면) 0–10,000 [추정] + EE/PNP 신청 1,590–1,750 + RPRF 600',
-        costShort: '~3k–12.9k'
+        cost: 'CAD 284.75 (IEC+OWP) + 승격 과정(있으면) 0–10,000 [추정] + EE 1,590(RPRF 포함) 또는 PNP 비용 별도',
+        costShort: '~1.9k–11.9k+'
       }
     },
     {
@@ -2154,8 +2169,8 @@ const DB = {
         studyShort: '회계 권장(자격증)',
         period: '회계 36–72개월 / 마케팅 48개월+',
         periodShort: '36–72개월+',
-        cost: '회계 CAD 284.75 (IEC/OWP) + 디플로마/학사 학비 45,000–174,000 + PGWP 155 + EE/PNP 1,590–1,750 + RPRF 600 / 마케팅 유사',
-        costShort: '~46.7k–177.9k'
+        cost: '회계 CAD 284.75 (IEC+OWP) + 디플로마/학사 학비 45,000–174,000 + PGWP 255 + EE 1,590(RPRF 포함) 또는 PNP 비용 별도 / 마케팅 유사',
+        costShort: '~47.1k–176.1k+'
       }
     }
   ],
@@ -2165,7 +2180,7 @@ const DB = {
       name: 'A. 워홀 직행 (IEC → 1년 경력 → CEC)',
       summary: '임시거주 → 캐나다 경력 축적 → 영주권 신청',
       duration: '18–30개월',
-      cost: 'CAD 284.75 + EE 1,590 + RPRF 600',
+      cost: 'CAD 284.75 + 생체정보 85(필요 시) + EE 1,590(RPRF 포함)',
       stages: [
         { name: 'IEC Working Holiday', months: 24 },
         { name: '직장 경력', months: 12 },
@@ -2173,7 +2188,7 @@ const DB = {
       ],
       details: {
         requirements: ['18–35세', '잡오퍼 (스폰서 불필요)', 'CLB 5 이상 (IELTS 5.0~)'],
-        costs: ['IEC 184.75', 'OWP 100', 'Biometrics 85', 'EE 신청 1,590', 'RPRF 600'],
+        costs: ['IEC 184.75', 'OWP 100', 'Biometrics 85(필요 시)', 'EE 신청 1,590(RPRF 포함)'],
         processing: ['IEC: 8주', 'CEC: 6개월 이내 80%']
       }
     },
@@ -2182,7 +2197,7 @@ const DB = {
       name: 'B. 유학 경유 (Study Permit → PGWP → 경력)',
       summary: '학위 취득 + PGWP 근무 + 영주권',
       duration: '48–96개월+',
-      cost: 'CAD 235 (학생비자) + 학비 45,000–174,000 + EE 1,590 + RPRF 600',
+      cost: 'CAD 235 (학생비자+생체정보) + 학비 45,000–174,000 + PGWP 255 + EE 1,590(RPRF 포함)',
       stages: [
         { name: '학생비자', months: 3 },
         { name: '학위 과정 (2–3년)', months: 24 },
@@ -2212,8 +2227,8 @@ const DB = {
         }
       },
       details: {
-        requirements: ['학교 입학', '자금증명: 20,635/년 (LICO 75%)', 'CLB 5.5+ (IELTS 5.5)'],
-        costs: ['Study Permit 150', 'Biometrics 85', '학비: 30,000–174,000/년', 'PGWP 155', 'EE 1,590', 'RPRF 600'],
+        requirements: ['학교 입학', '자금증명: 22,895/년 (학비·교통비 별도)', 'CLB 5.5+ (IELTS 5.5)'],
+        costs: ['Study Permit 150', 'Biometrics 85(필요 시)', '학비: 30,000–174,000/년', 'PGWP 255', 'EE 1,590(RPRF 포함)'],
         processing: ['Study Permit: 2–8주', 'PGWP: 2–4주', 'EE: 6개월 이내']
       }
     },
@@ -2222,7 +2237,7 @@ const DB = {
       name: 'C. Express Entry (CEC / Federal Skilled)',
       summary: '캐나다 경력 또는 해외 고학력 → 포인트 경쟁 → 영주권',
       duration: '12–24개월',
-      cost: 'CAD 1,590 + 600 (RPRF)',
+      cost: 'CAD 1,590 (처리비 990 + RPRF 600)',
       stages: [
         { name: '경력 축적 (1년+)', months: 12 },
         { name: 'EE 프로필 등록 + 드로우 대기', months: 6 },
@@ -2230,7 +2245,7 @@ const DB = {
       ],
       details: {
         requirements: ['CEC: 1년 캐나다 경력 (TEER 0/1/2/3) / FSW: 3년 해외 고학력 경력 (TEER 0/1/2)', 'CLB 7 이상 (IELTS 6.5)', 'CRS 포인트 경쟁'],
-        costs: ['EE 신청 1,590', 'RPRF 600'],
+        costs: ['EE 신청 1,590(RPRF 포함)'],
         processing: ['EE: 6개월 이내 80%']
       }
     },
@@ -2247,7 +2262,7 @@ const DB = {
       ],
       details: {
         requirements: ['주정부 직무·경력 매치', '특정 직군 (기술·무역·의료·농업 주별 상이)', '영주권(CEC) 기준: TEER 0–1 CLB 7 · TEER 2–3 CLB 5'],
-        costs: ['PNP 신청 1,500–2,000 [추정]', 'EE 1,590', 'RPRF 600'],
+        costs: ['PNP 신청 1,500–2,000 [추정]', 'EE 1,590(RPRF 포함)'],
         processing: ['PNP: 2–6개월', 'EE: 6개월 이내']
       }
     },
@@ -2256,7 +2271,7 @@ const DB = {
       name: 'D. 헬스케어 우대 (2026 신규)',
       summary: '간호사·의료직 → Express Entry Healthcare 카테고리',
       duration: '12–18개월',
-      cost: 'CAD 284.75 + 면허평가 750 + EE 1,590 + RPRF 600',
+      cost: 'CAD 284.75 + 생체정보 85(필요 시) + 면허평가 750 + EE 1,590(RPRF 포함)',
       stages: [
         { name: 'IEC / 학생비자', months: 6 },
         { name: '면허 평가 (RN)', months: 2 },
@@ -2265,7 +2280,7 @@ const DB = {
       ],
       details: {
         requirements: ['RN: NNAS 평가 합격', '의료직 1년 경력', 'CLB 7 이상 (일부 CLB 5.5 OK)'],
-        costs: ['IEC/Study Permit: 235–284.75', 'NNAS 평가 ~750', 'EE 1,590', 'RPRF 600'],
+        costs: ['IEC/Study Permit: 235–284.75 + 생체정보 조건 확인', 'NNAS 평가 ~750', 'EE 1,590(RPRF 포함)'],
         processing: ['Healthcare draw: 2026 우선 (CRS 점수 낮아도 ITA 높음)']
       }
     },
@@ -2274,7 +2289,7 @@ const DB = {
       name: 'E. Trades 카테고리 (2026 신규)',
       summary: '트레이드 자격 + 경력 → Express Entry Trades 드로우',
       duration: '24–48개월',
-      cost: 'CAD 284.75 + CDL/자격 3,000–8,000 + EE 1,590 + RPRF 600',
+      cost: 'CAD 284.75 + 생체정보 85(필요 시) + CDL/자격 3,000–8,000 + EE 1,590(RPRF 포함)',
       stages: [
         { name: 'IEC / 일반 Work Permit', months: 3 },
         { name: '트레이드 자격 취득 (Apprenticeship)', months: 24 },
@@ -2283,7 +2298,7 @@ const DB = {
       ],
       details: {
         requirements: ['Red Seal Certification 또는 Provincial License', '1년+ 기술직 경력', 'CLB 5 이상'],
-        costs: ['IEC 284.75', '자격 과정 3,000–8,000 [추정]', 'EE 1,590', 'RPRF 600'],
+        costs: ['IEC+OWP 284.75 + 생체정보 85(필요 시)', '자격 과정 3,000–8,000 [추정]', 'EE 1,590(RPRF 포함)'],
         processing: ['Trades draw: 2026 신규 (기존 낮은 우선순위 → 상향)']
       }
     }
@@ -2304,7 +2319,7 @@ const DB = {
         },
         {
           label: '학생비자 전환 준비',
-          result: '<strong>장점:</strong> CLB 5.5+ 있으면 컬리지 입학 가능 — ECE·Culinary 등 2년 디플로마 + 최대 3년 PGWP<br><strong>자금:</strong> 학비 30k–60k + 생활비 20,635/년 증명 필수<br><strong>타이밍:</strong> 9월·1월 학기 역산해 지금 지원'
+          result: '<strong>장점:</strong> CLB 5.5+ 있으면 컬리지 입학 가능 — ECE·Culinary 등 2년 디플로마 + 최대 3년 PGWP<br><strong>자금:</strong> 학비 30k–60k + 생활비 22,895/년(학비·교통비 제외) 증명 필수<br><strong>타이밍:</strong> 9월·1월 학기 역산해 지금 지원'
         }
       ],
       advice: '6개월이 골든타임이 아니라 12개월 차가 아직도 회복 가능한 시점. 18개월 전에 직업전환 결정이 없으면 만료 3개월 전 모든 문이 닫힌다.'
@@ -3210,11 +3225,11 @@ function moneyPlanRows(pathwayId, input) {
 
     if (pathwayId === 'A' || pathwayId === 'C-PNP' || pathwayId === 'E') {
       push('1–24개월', 'Work Permit', '(A: 경력 축적 / C-PNP: 동일 직군 점수 확보 / E: 케어기버)', tierTxt, 23 * tier[0], 23 * tier[1]);
-      push('24–28개월', 'Express Entry', 'CEC/PNP 신청(−1,590 EE + 600 RPRF)', '-2,190+4×tier', -2190 + 4 * tier[0], -2190 + 4 * tier[1]);
+      push('24–28개월', 'Express Entry', 'CEC/PNP 신청(−1,590, RPRF 포함)', '-1,590+4×tier', -1590 + 4 * tier[0], -1590 + 4 * tier[1]);
     } else if (pathwayId === 'C-T1') {
       push('1–4개월', 'Work Permit', '근무 시작 + CRS 점수 정산', tierTxt + ' · 비자비', 0 + 3 * tier[0], 0 + 3 * tier[1]);
       push('4–8개월', '처리 대기', 'Express Entry 드로우 대기(6개월 기준)', tierTxt, 4 * tier[0], 4 * tier[1]);
-      push('8–12개월', 'PR(영주권)', 'PR 신청 최종 완료(−2,190)', '-2,190+4×tier', -2190 + 4 * tier[0], -2190 + 4 * tier[1]);
+      push('8–12개월', 'PR(영주권)', 'PR 신청 최종 완료(−1,590, RPRF 포함)', '-1,590+4×tier', -1590 + 4 * tier[0], -1590 + 4 * tier[1]);
     }
     return rows;
   }
@@ -3225,14 +3240,14 @@ function moneyPlanRows(pathwayId, input) {
     push('0–1개월', 'Study Permit', '입국·정착', '정착비 −2,000~−3,500 CAD', -3500, -2000);
     if (hasL7) {
       push('1–25개월', 'Study Permit', '디플로마/석사(2년) — 20h/주 근로 허용' + (ielts ? ' · IELTS 응시(−400)' : ''), '학비·생활 순지출: min −40,000−24×1,500, max −25,000−24×300', -1 * ieltsCost - 40000 - 24 * 1500, -25000 - 24 * 300);
-      push('25–28개월', 'PGWP', '신청(−155)·구직', '비자비 + 구직기 수입 변동', -155 - 3 * 500, -155 + 3 * 800);
+      push('25–28개월', 'PGWP', '신청(−255)·구직', '비자비 + 구직기 수입 변동', -255 - 3 * 500, -255 + 3 * 800);
       push('28–52개월', 'Work Permit', '경력 축적(1년 이상 CEC 요건)', tierTxt + ' · Work Permit −155', -155 + 24 * tier[0], -155 + 24 * tier[1]);
-      push('52–56개월', 'Express Entry', 'CEC 신청(−1,590+600 RPRF)', '영주권 비자비', -2190 + 4 * tier[0], -2190 + 4 * tier[1]);
+      push('52–56개월', 'Express Entry', 'CEC 신청(−1,590, RPRF 포함)', '영주권 비자비', -1590 + 4 * tier[0], -1590 + 4 * tier[1]);
     } else {
       push('1–49개월', 'Study Permit', '학사(3년) — 20h/주 근로 허용' + (ielts ? ' · IELTS 응시(−400)' : ''), '학비·생활 순지출: min −174,000−36×1,500, max −66,000−36×300', -1 * ieltsCost - 174000 - 36 * 1500, -66000 - 36 * 300);
-      push('49–52개월', 'PGWP', '신청(−155) — 최대 3년 오픈워크', '비자비 + 구직기 수입 변동', -155 - 3 * 500, -155 + 3 * 800);
+      push('49–52개월', 'PGWP', '신청(−255) — 최대 3년 오픈워크', '비자비 + 구직기 수입 변동', -255 - 3 * 500, -255 + 3 * 800);
       push('52–76개월', 'Work Permit', '경력 축적(1년 CEC 또는 3년 해외)', tierTxt + ' · Work Permit −155', -155 + 24 * tier[0], -155 + 24 * tier[1]);
-      push('76–80개월', 'Express Entry', 'CEC/FSW 신청(−1,590+600 RPRF)', '영주권 비자비', -2190 + 4 * tier[0], -2190 + 4 * tier[1]);
+      push('76–80개월', 'Express Entry', 'CEC/FSW 신청(−1,590, RPRF 포함)', '영주권 비자비', -1590 + 4 * tier[0], -1590 + 4 * tier[1]);
     }
     return rows;
   }
@@ -3245,33 +3260,33 @@ function moneyPlanRows(pathwayId, input) {
     if (hasL7) {
       push('1–12개월', 'IEC/임시직', '풀타임 임시직으로 학비 저축 + 컬리지·대학 입학 신청' + ieltsTxt, '저축 +CAD 800~1,800/월', 11 * WHV_SAVE[0] - ieltsCost, 11 * WHV_SAVE[1]);
       push('12–24개월', 'Study Permit', '디플로마(2년) — 학기 중 20h/주 근로로 생활비 일부 상쇄', '학비 −30,000~−60,000 · 비자 −150 · 생활 순지출', -150 - 40000 - 12 * 1500, -150 - 25000 - 12 * 300);
-      push('24–27개월', 'PGWP', '졸업 → PGWP 신청(−155) → 전공 직군 풀타임 구직', '비자비 + 구직기 수입 변동', -155 - 3 * 500, -155 + 3 * 800);
+      push('24–27개월', 'PGWP', '졸업 → PGWP 신청(−255) → 전공 직군 풀타임 구직', '비자비 + 구직기 수입 변동', -255 - 3 * 500, -255 + 3 * 800);
       push('27–51개월', 'Work Permit', '경력 축적 — 1년 이상 캐나다 경력 + CRS 점수 쌓기', tierTxt + ' · Work Permit −155', -155 + 24 * tier[0], -155 + 24 * tier[1]);
-      push('51–55개월', 'Express Entry', 'CEC 신청(−1,590+600 RPRF) → 처리 6개월 기준', '영주권 비자비', -2190 + 4 * tier[0], -2190 + 4 * tier[1]);
+      push('51–55개월', 'Express Entry', 'CEC 신청(−1,590, RPRF 포함) → 처리 6개월 기준', '영주권 비자비', -1590 + 4 * tier[0], -1590 + 4 * tier[1]);
     } else {
       push('1–12개월', 'IEC/임시직', '풀타임 임시직으로 학비 저축 + 컬리지·대학 입학 신청' + ieltsTxt, '저축 +CAD 800~1,800/월', 11 * WHV_SAVE[0] - ieltsCost, 11 * WHV_SAVE[1]);
       push('12–48개월', 'Study Permit', '학사(3년) — 학기 중 20h/주 근로로 생활비 일부 상쇄', '학비 −66,000~−174,000 · 비자 −150 · 생활 순지출', -150 - 174000 - 36 * 1500, -150 - 66000 - 36 * 300);
-      push('48–51개월', 'PGWP', '졸업 → PGWP 신청(−155) — 학사는 최대 3년 오픈워크', '비자비 + 구직기 수입 변동', -155 - 3 * 500, -155 + 3 * 800);
+      push('48–51개월', 'PGWP', '졸업 → PGWP 신청(−255) — 학사는 최대 3년 오픈워크', '비자비 + 구직기 수입 변동', -255 - 3 * 500, -255 + 3 * 800);
       push('51–75개월', 'Work Permit', '경력 축적 — 1년 CEC 또는 3년 해외 경력 기준', tierTxt + ' · Work Permit −155', -155 + 24 * tier[0], -155 + 24 * tier[1]);
-      push('75–79개월', 'Express Entry', 'CEC/FSW 신청(−1,590+600 RPRF) → 처리 6개월 기준', '영주권 비자비', -2190 + 4 * tier[0], -2190 + 4 * tier[1]);
+      push('75–79개월', 'Express Entry', 'CEC/FSW 신청(−1,590, RPRF 포함) → 처리 6개월 기준', '영주권 비자비', -1590 + 4 * tier[0], -1590 + 4 * tier[1]);
     }
   } else if (pathwayId === 'C-T1') {
     push('1–9개월', 'IEC/구직', '고수요 직군(IT·간호·교사) 잡오퍼 공략 — 경력 증명·포트폴리오 정리' + ieltsTxt, '저축 +CAD 800~1,800/월', 8 * WHV_SAVE[0] - ieltsCost, 8 * WHV_SAVE[1]);
     push('9–12개월', 'Work Permit', '잡오퍼 확정 → 스폰서 승인(고용주) → Work Permit 신청(−155)', '비자비 지출', -155 + 3 * WHV_SAVE[0], -155 + 3 * WHV_SAVE[1]);
     push('12–15개월', 'Work Permit', '스킬드 근무 시작 — CRS 점수 이미 충분(고수요 직군)', tierTxt + ' · 생활 정착', 0 + 3 * tier[0], 0 + 3 * tier[1]);
-    push('15–19개월', 'Express Entry', 'CEC 신청(−1,590+600 RPRF) → 처리 6개월', tierTxt, 4 * tier[0], 4 * tier[1]);
+    push('15–19개월', 'Express Entry', 'CEC 신청(−1,590, RPRF 포함) → 처리 6개월', tierTxt, -1590 + 4 * tier[0], -1590 + 4 * tier[1]);
   } else if (pathwayId === 'C-PNP' || pathwayId === 'E') {
     const label = pathwayId === 'E' ? '케어기버 이민' : 'PNP(주지명)';
     const target = pathwayId === 'E' ? '케어 시설·가정' : '트레이드·농업 업체';
     push('1–9개월', 'IEC/구직', `해당 직군 현장 진입 → ${target} 스폰서 타진${ieltsTxt}`, '저축 +CAD 800~1,800/월', 8 * WHV_SAVE[0] - ieltsCost, 8 * WHV_SAVE[1]);
     push('9–12개월', 'Work Permit', '고용주 승인 → Work Permit 신청(−155)', '비자비 지출', -155 + 3 * WHV_SAVE[0], -155 + 3 * WHV_SAVE[1]);
     push('12–36개월', 'Work Permit', '동일 직군 24개월 근무(특정 직종 PNP 또는 케어 요건) — 경력 축적이 곧 영주권 요건', tierTxt, 24 * tier[0], 24 * tier[1]);
-    push('36–40개월', 'Express Entry', `${label} 신청(−1,590 EE + 600 RPRF) → 처리 6-12개월`, '영주권 비자비', -2190 + 4 * tier[0], -2190 + 4 * tier[1]);
+    push('36–40개월', 'Express Entry', `${label} 신청(−1,590, RPRF 포함) → 처리 6-12개월`, '영주권 비자비', -1590 + 4 * tier[0], -1590 + 4 * tier[1]);
   } else {
     push('1–9개월', 'IEC/임시직', '풀타임 임시직 → 타깃 직군으로 이동, 경력 서류·추천인 확보' + ieltsTxt, '저축 +CAD 800~1,800/월', 8 * WHV_SAVE[0] - ieltsCost, 8 * WHV_SAVE[1]);
     push('9–12개월', 'Work Permit', '잡오퍼 확정 → 스폰서 승인 → Work Permit 신청(−155)', '비자비 지출', -155 + 3 * WHV_SAVE[0], -155 + 3 * WHV_SAVE[1]);
     push('12–36개월', 'Work Permit', '경력 축적 — 1년 이상 + CRS 점수(학력·나이·경력·언어)', tierTxt, 24 * tier[0], 24 * tier[1]);
-    push('36–40개월', 'Express Entry', 'CEC/FSW 신청(−1,590 EE + 600 RPRF) → 처리 6개월', '영주권 비자비', -2190 + 4 * tier[0], -2190 + 4 * tier[1]);
+    push('36–40개월', 'Express Entry', 'CEC/FSW 신청(−1,590, RPRF 포함) → 처리 6개월', '영주권 비자비', -1590 + 4 * tier[0], -1590 + 4 * tier[1]);
   }
   return rows;
 }
@@ -4042,13 +4057,14 @@ function renderCourseEntry() {
 const CA_TAX = {
   federal: {
     brackets: [
-      [57375, 0.14],
-      [114750, 0.205],
-      [158519, 0.26],
-      [220000, 0.29],
+      [58523, 0.14],
+      [117045, 0.205],
+      [181440, 0.26],
+      [258482, 0.29],
       [Infinity, 0.33]
     ],
-    bpa: 16452
+    bpa: 16452,
+    employmentAmount: 1501
   },
   prov: {
     on: {
@@ -4078,11 +4094,11 @@ const CA_TAX = {
     ab: {
       name: "Alberta",
       brackets: [
-        [60000, 0.08],
-        [151234, 0.10],
-        [181481, 0.12],
-        [241974, 0.13],
-        [362961, 0.14],
+        [61200, 0.08],
+        [154259, 0.10],
+        [185111, 0.12],
+        [246813, 0.13],
+        [370220, 0.14],
         [Infinity, 0.15]
       ],
       bpa: 22769
@@ -4105,41 +4121,61 @@ const CA_TAX = {
 function npTax(gross, prov = 'on') {
   let fedTax = 0, provTax = 0, cppTax = 0, eiTax = 0;
 
-  // 연방 소득세 (BPA로 세액공제)
-  let fedTaxable = Math.max(0, gross - CA_TAX.federal.bpa);
-  let prev = 0;
-  for (const [cap, r] of CA_TAX.federal.brackets) {
-    if (fedTaxable > prev) {
-      fedTax += (Math.min(fedTaxable, cap) - prev) * r;
-    }
-    prev = cap;
-  }
-  fedTax = Math.max(0, fedTax);
-
-  // 주세 (BPA로 세액공제)
-  const provData = CA_TAX.prov[prov] || CA_TAX.prov.on;
-  let provTaxable = Math.max(0, gross - provData.bpa);
-  prev = 0;
-  for (const [cap, r] of provData.brackets) {
-    if (provTaxable > prev) {
-      provTax += (Math.min(provTaxable, cap) - prev) * r;
-    }
-    prev = cap;
-  }
-  provTax = Math.max(0, provTax);
-
-  // CPP (3,500 면제, YMPE 상한)
+  // CPP: base는 세액공제, first additional·CPP2는 과세소득 공제
   const pensionable = Math.max(0, Math.min(gross, CA_TAX.cpp.ympe) - CA_TAX.cpp.exempt);
-  cppTax = pensionable * CA_TAX.cpp.rate;
-  // CPP2 (74,601~85,000)
+  const cppBase = pensionable * 0.0495;
+  const cppAdditional = pensionable * 0.01;
+  let cpp2 = 0;
   if (gross > CA_TAX.cpp.cpp2_min) {
     const cpp2Base = Math.min(gross, CA_TAX.cpp.cpp2_max) - CA_TAX.cpp.cpp2_min;
-    cppTax += Math.max(0, cpp2Base) * CA_TAX.cpp.cpp2_rate;
+    cpp2 = Math.max(0, cpp2Base) * CA_TAX.cpp.cpp2_rate;
   }
+  cppTax = cppBase + cppAdditional + cpp2;
 
   // EI (최대 보험 소득 상한)
   const insurable = Math.min(gross, CA_TAX.ei.max_insurable);
   eiTax = insurable * CA_TAX.ei.rate;
+
+  const taxable = Math.max(0, gross - cppAdditional - cpp2);
+
+  // 연방 소득세: 누진세 계산 후 BPA·CPP base·EI·Canada Employment Amount 세액공제
+  let prev = 0;
+  for (const [cap, r] of CA_TAX.federal.brackets) {
+    if (taxable > prev) {
+      fedTax += (Math.min(taxable, cap) - prev) * r;
+    }
+    prev = cap;
+  }
+  const fedCredits = (CA_TAX.federal.bpa + cppBase + eiTax + Math.min(gross, CA_TAX.federal.employmentAmount)) * 0.14;
+  fedTax = Math.max(0, fedTax - fedCredits);
+
+  // 주세: 누진세 계산 후 주 BPA·CPP base·EI 세액공제
+  const provData = CA_TAX.prov[prov] || CA_TAX.prov.on;
+  prev = 0;
+  for (const [cap, r] of provData.brackets) {
+    if (taxable > prev) {
+      provTax += (Math.min(taxable, cap) - prev) * r;
+    }
+    prev = cap;
+  }
+  provTax = Math.max(0, provTax - (provData.bpa + cppBase + eiTax) * provData.brackets[0][1]);
+
+  // Ontario surtax·health premium·기본 감면(부양가족 없는 표준 TD1 기준)
+  if (prov === 'on') {
+    const surtax = provTax <= 5818
+      ? 0
+      : provTax <= 7446
+        ? (provTax - 5818) * 0.20
+        : (provTax - 5818) * 0.20 + (provTax - 7446) * 0.36;
+    const healthPremium = taxable <= 20000 ? 0
+      : taxable <= 36000 ? Math.min(300, (taxable - 20000) * 0.06)
+      : taxable <= 48000 ? Math.min(450, 300 + (taxable - 36000) * 0.06)
+      : taxable <= 72000 ? Math.min(600, 450 + (taxable - 48000) * 0.25)
+      : taxable <= 200000 ? Math.min(750, 600 + (taxable - 72000) * 0.25)
+      : Math.min(900, 750 + (taxable - 200000) * 0.25);
+    const taxReduction = Math.min(provTax, Math.max(0, 600 - provTax));
+    provTax = Math.max(0, provTax + surtax + healthPremium - taxReduction);
+  }
 
   return { fedTax, provTax, cppTax, eiTax, totalTax: fedTax + provTax + cppTax + eiTax };
 }

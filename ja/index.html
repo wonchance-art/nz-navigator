@@ -1827,6 +1827,20 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span style="font-size: 0.88rem;">🔄 次再検証: 08-25(SMC施行直後) ・ 11-17(PSWV施行直後)</span>
     </div>
 
+    <div class="info-box" aria-label="重要情報の検証状況">
+      <strong>🛡️ 2026-07-19 公式再検証:</strong>
+      <span data-claim-id="nz-ja-whv-age">日本国籍WHV 18～30歳</span> ・
+      <span data-claim-id="nz-ja-whv-duration">最長12か月</span> ・
+      <span data-claim-id="nz-ja-whv-cap">数値上限なし（常時受付）</span> ・
+      <span data-claim-id="nz-ja-whv-fee">申請費NZD 770（IVL込み）</span> ・
+      <span data-claim-id="nz-ja-student-fee">学生ビザNZD 850</span> ・
+      <span data-claim-id="nz-ja-student-processing">80%が8週間以内</span> ・
+      <span data-claim-id="nz-ja-student-funds">生活費証明 年NZD 20,000</span> ・
+      <span data-claim-id="nz-ja-min-wage-2026">最低賃金NZD 23.95/h</span> ・
+      <span data-claim-id="nz-ja-netpay-72800">年収72,800の手取り例 NZD 57,466</span>
+      <a href="../verification.html?country=NZ" class="source-link">検証台帳・変更履歴 →</a>
+    </div>
+
     <h2 id="keyfigures">主要数値</h2>
     <p class="fx-note">全項目 <span class="badge official">[公式]</span> ・ 円・ウォン換算は為替反映 <span id="fxNoteRate"></span></p>
     <div style="overflow-x: auto;">
@@ -1868,7 +1882,7 @@ details.fold:not([open]) > .fold-body { display: none; }
 
         <h3>全体出典</h3>
         <ul style="margin-left: 1.5rem; line-height: 1.8; color: var(--muted); font-size: 0.9rem;">
-          <li><a href="https://www.immigration.govt.nz/visas/korea-working-holiday-visa/" target="_blank" class="source-link">WHV</a></li>
+          <li><a href="https://www.immigration.govt.nz/visas/japan-working-holiday-visa/" target="_blank" class="source-link">WHV</a></li>
           <li><a href="https://www.immigration.govt.nz/visas/accredited-employer-work-visa" target="_blank" class="source-link">AEWV</a></li>
           <li><a href="https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa" target="_blank" class="source-link">SMC</a></li>
           <li><a href="https://www.immigration.govt.nz/visas/straight-to-residence-visa" target="_blank" class="source-link">Straight to Residence</a></li>
@@ -1907,7 +1921,7 @@ const DB = {
     median30: { v: 105.00, src: 'https://www.immigration.govt.nz/visas/accredited-employer-work-visa', asOf: '2026-07-06' }
   },
   fees: {
-    whv: { v: 770, src: 'https://www.immigration.govt.nz/visas/korea-working-holiday-visa/', asOf: '2026-07-06' },
+    whv: { v: 770, src: 'https://www.immigration.govt.nz/visas/japan-working-holiday-visa/', asOf: '2026-07-19' },
     ivl: { v: 100, src: 'https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/fees-processing-times-and-refunds/paying-the-international-visitor-levy/', asOf: '2026-07-06' },
     student: { v: 850, src: 'https://www.immigration.govt.nz/visas/fee-paying-student-visa', asOf: '2026-07-06' },
     pswv: { v: 1670, src: 'https://www.immigration.govt.nz/visas/post-study-work-visa', asOf: '2026-07-07' },
@@ -2271,7 +2285,7 @@ const DB = {
       details: {
         requirements: ['学校入学', '資金証明：年20,000ドル', 'L7以上の学位（PSWV資格）'],
         costs: ['学費：年22,000～58,000ドル', '生活費：年20,000ドル', 'PSWV：1,670ドル', 'AEWV：1,540ドル', 'SMC：6,450ドル'],
-        processing: ['学生ビザ：2～4週', 'PSWV：2～4週', 'AEWV：7週', 'SMC：4ヶ月']
+        processing: ['学生ビザ：8週（80%）', 'PSWV：2～4週', 'AEWV：7週', 'SMC：4ヶ月']
       }
     },
     {
@@ -2502,7 +2516,7 @@ const DB = {
         },
         {
           label: '留学で進入（オフショア学生ビザ）',
-          result: '<strong>手続き：</strong>日本から学生ビザ申請 — 開始4ヶ月前推奨（80% 9.5週）<br><strong>効果：</strong>L7以上課程ならPSWV（最大3年）で年齢無関係にスムーズ進学・GLパスへ<br><strong>資金：</strong>資金証明2万/年 + 学費'
+          result: '<strong>手続き：</strong>日本から学生ビザ申請 — 開始3ヶ月前推奨（現在の公式目安は80%が8週間以内）<br><strong>効果：</strong>L7以上課程ならPSWV（最大3年）で年齢無関係にスムーズ進学・GLパスへ<br><strong>資金：</strong>資金証明2万/年 + 学費'
         },
         {
           label: '訪問ビザで調査後決定',
