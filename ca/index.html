@@ -1907,22 +1907,22 @@ details.fold:not([open]) > .fold-body { display: none; }
 // ============ DATABASE ============
 const DB = {
   wages: {
-    minWage: { v: 18.15, src: 'https://www.canada.ca/en/employment-social-development/news/2026/03/government-of-canada-raises-the-federal-minimum-wage.html', asOf: '2026-07-19', label: '[공식] 연방' },
-    minWageON: { v: 17.60, src: 'https://www.ontario.ca/document/your-guide-employment-standards-act-0/minimum-wage', asOf: '2025-10-01', label: '[공식] 온타리오 — 2026-09-30까지(10-01부터 17.95)' },
-    minWageBC: { v: 18.25, src: 'https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/wages/minimum-wage', asOf: '2026-06-01', label: '[공식] BC' },
-    minWageAB: { v: 15.0, src: 'https://www.alberta.ca/minimum-wage', asOf: '2018-10-01', label: '[공식] 앨버타' },
-    medianWage: { v: 48.08, src: 'https://www.jobbank.gc.ca/marketreport/summary-occupation/22548/ca', asOf: '2026-07-12', label: '[공식] 소프트웨어 개발자' }
+    minWage: { v: 18.15, src: 'https://www.canada.ca/en/employment-social-development/news/2026/03/government-of-canada-raises-the-federal-minimum-wage.html', asOf: '2026-07-18', effectiveFrom: '2026-04-01', label: '[공식] 연방' },
+    minWageON: { v: 17.60, src: 'https://www.ontario.ca/document/your-guide-employment-standards-act-0/minimum-wage', asOf: '2026-07-18', effectiveFrom: '2025-10-01', effectiveTo: '2026-09-30', label: '[공식] 온타리오 — 2026-09-30까지(10-01부터 17.95)' },
+    minWageBC: { v: 18.25, src: 'https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/wages/minimum-wage', asOf: '2026-07-18', effectiveFrom: '2026-06-01', label: '[공식] BC' },
+    minWageAB: { v: 15.0, src: 'https://www.alberta.ca/minimum-wage', asOf: '2026-07-18', effectiveFrom: '2018-10-01', label: '[공식] 앨버타' },
+    medianWage: { v: 48.08, src: 'https://www.jobbank.gc.ca/marketreport/summary-occupation/22548/ca', asOf: '2026-07-18', effectiveFrom: '2026-06-02', label: '[공식] 소프트웨어 개발자' }
   },
   fees: {
-    iecProgram: { v: 184.75, src: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec.html', asOf: '2026-07-12', label: '[공식] IEC 프로그램' },
-    openWorkPermit: { v: 100, src: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec.html', asOf: '2026-07-12', label: '[공식] OWP' },
-    biometrics: { v: 85, src: 'https://www.ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-12', label: '[공식] 바이오메트릭' },
-    studentPermit: { v: 150, src: 'https://www.ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-12', label: '[공식]' },
-    workPermit: { v: 155, src: 'https://www.ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-19', label: '[공식] Work Permit' },
-    pgwp: { v: 255, src: 'https://www.ircc.canada.ca/english/helpcentre/answer.asp?qnum=510&top=15', asOf: '2026-07-19', label: '[공식] Work Permit 155 + OWP 100' },
-    eeApplication: { v: 1590, src: 'https://www.ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-19', label: '[공식] Express Entry 신청(RPRF 포함)' },
-    permanenceResidenceFee: { v: 600, src: 'https://www.ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-19', label: '[공식] RPRF — EE 1,590에 포함' },
-    pnpBC: { v: 1750, src: 'https://www.welcomebc.ca/immigrate-to-b-c/about-the-bc-provincial-nominee-program', asOf: '2026-07-12', label: '[공식] BC PNP' }
+    iecProgram: { v: 184.75, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2025-12-01', label: '[공식] IEC 프로그램' },
+    openWorkPermit: { v: 100, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2025-12-01', label: '[공식] OWP' },
+    biometrics: { v: 85, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2026-07-19', label: '[공식] 바이오메트릭' },
+    studentPermit: { v: 150, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2026-07-19', label: '[공식]' },
+    workPermit: { v: 155, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2026-07-19', label: '[공식] Work Permit' },
+    pgwp: { v: 255, src: 'https://www.ircc.canada.ca/english/helpcentre/answer.asp?qnum=510&top=15', asOf: '2026-07-18', effectiveFrom: '2026-07-19', label: '[공식] Work Permit 155 + OWP 100' },
+    eeApplication: { v: 1590, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2026-04-30', label: '[공식] Express Entry 신청(RPRF 포함)' },
+    permanenceResidenceFee: { v: 600, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2026-04-30', label: '[공식] RPRF — EE 1,590에 포함' },
+    pnpBC: { v: 1750, src: 'https://www.welcomebc.ca/immigrate-to-b-c/for-workers', asOf: '2026-07-18', effectiveFrom: '2026-01-22', label: '[공식] BC PNP' }
   },
   estimates: {
     flight: { v: [800, 1500], src: '', asOf: '2026-07-12', est: true, label: '[추정] 인천↔캐나다 왕복' },
@@ -1930,10 +1930,10 @@ const DB = {
     settleVancouver: { v: [3500, 4800], src: '', asOf: '2026-07-12', est: true, label: '[추정] 밴쿠버 월 생활비' },
     settleMontreal: { v: [2500, 3200], src: '', asOf: '2026-07-12', est: true, label: '[추정] 몬트리올 월 생활비' },
     winterClothing: { v: [150, 400], src: '', asOf: '2026-07-12', est: true, label: '[추정] 겨울옷·부츠' },
-    initialSettlement: { v: 15263, src: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/documents/proof-funds.html', asOf: '2026-07-19', label: '[공식] FSW/FST 1인 정착자금(CEC 등 면제 가능)' },
+    initialSettlement: { v: 15263, src: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/documents/proof-funds.html', asOf: '2026-07-18', effectiveFrom: '2025-07-07', label: '[공식] FSW/FST 1인 정착자금(CEC 등 면제 가능)' },
     tuitionBach: { v: [22000, 58000], src: '', asOf: '2026-07-12', est: true, label: '[추정] 학사 연 학비 (유학생)' },
     tuitionDiploma: { v: [15000, 35000], src: '', asOf: '2026-07-12', est: true, label: '[추정] 디플로마·자격증 연 학비' },
-    livingStudent: { v: 22895, src: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit/get-documents/financial-support.html', asOf: '2026-07-19', label: '[공식] 유학생 1인 연 생활비(학비·교통비 제외)' }
+    livingStudent: { v: 22895, src: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit/get-documents/financial-support.html', asOf: '2026-07-18', effectiveFrom: '2025-09-01', label: '[공식] 유학생 1인 연 생활비(학비·교통비 제외)' }
   },
   jobs: [
     {
@@ -2204,6 +2204,10 @@ const DB = {
       summary: '임시거주 → 캐나다 경력 축적 → 영주권 신청',
       duration: '18–30개월 [추정]',
       cost: 'CAD 284.75 + 생체정보 85(필요 시) + EE 1,590(RPRF 포함)',
+      provenance: {
+        iecAge: { src: 'https://www.canada.ca/en/immigration-refugees-citizenship/news/2023/05/new-arrangement-expands-work-opportunities-for-canadian-and-south-korean-youth.html', asOf: '2026-07-18', effectiveFrom: '2024-01-01' },
+        iecDuration: { src: 'https://www.canada.ca/en/immigration-refugees-citizenship/news/2023/05/new-arrangement-expands-work-opportunities-for-canadian-and-south-korean-youth.html', asOf: '2026-07-18', effectiveFrom: '2024-01-01' }
+      },
       stages: [
         { name: 'IEC Working Holiday', months: 24 },
         { name: '직장 경력', months: 12 },
@@ -4095,6 +4099,14 @@ function renderCourseEntry() {
 
 const CA_TAX = {
   version: "T4127-123rd-2026-07",
+  provenance: {
+    tax: {
+      src: "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jul/t4127-jul-payroll-deductions-formulas.html",
+      asOf: "2026-07-18",
+      effectiveFrom: "2026-07-01",
+      effectiveTo: "2026-12-31"
+    }
+  },
   federal: {
     brackets: [
       [58523, 0.14],

@@ -1949,23 +1949,23 @@ details.fold:not([open]) > .fold-body { display: none; }
 // ============ DATABASE ============
 const DB = {
   wages: {
-    minWage: { v: 23.95, src: 'https://www.employment.govt.nz/pay-and-hours/pay-and-wages/minimum-wage/minimum-wage-rates-and-types', asOf: '2026-07-06' },
-    medianWage: { v: 35.00, src: 'https://www.immigration.govt.nz/about-us/news-centre/new-occupations-recognised-under-the-national-occupation-list-and-annual-median-wage-increase/', asOf: '2026-07-06' },
-    median15: { v: 52.50, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-19' },
-    median20: { v: 70.00, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-19' },
-    median30: { v: 105.00, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-19' }
+    minWage: { v: 23.95, src: 'https://www.employment.govt.nz/pay-and-hours/pay-and-wages/minimum-wage/minimum-wage-rates-and-types', asOf: '2026-07-18', effectiveFrom: '2026-04-01' },
+    medianWage: { v: 35.00, src: 'https://www.immigration.govt.nz/about-us/news-centre/new-occupations-recognised-under-the-national-occupation-list-and-annual-median-wage-increase/', asOf: '2026-07-18', effectiveFrom: '2026-03-09' },
+    median15: { v: 52.50, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-18', effectiveFrom: '2026-03-09' },
+    median20: { v: 70.00, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-18', effectiveFrom: '2026-03-09' },
+    median30: { v: 105.00, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-18', effectiveFrom: '2026-03-09' }
   },
   fees: {
-    whv: { v: 770, src: 'https://www.immigration.govt.nz/visas/korea-working-holiday-visa/', asOf: '2026-07-06' },
-    ivl: { v: 100, src: 'https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/fees-processing-times-and-refunds/paying-the-international-visitor-levy/', asOf: '2026-07-06' },
-    student: { v: 850, src: 'https://www.immigration.govt.nz/visas/fee-paying-student-visa', asOf: '2026-07-06' },
-    pswv: { v: 1670, src: 'https://www.immigration.govt.nz/visas/post-study-work-visa', asOf: '2026-07-07' },
-    aewv: { v: 1540, src: 'https://www.immigration.govt.nz/visas/accredited-employer-work-visa', asOf: '2026-07-06' },
-    residence: { v: 6450, src: 'https://www.immigration.govt.nz/live/resident-visas-to-live-in-new-zealand/skilled-residence-pathways-in-new-zealand/skilled-migrant-category-pathway-to-residence/', asOf: '2026-07-06' },
-    accreditation: { v: 775, src: 'https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/paying-for-aewv-employer-accreditation-and-job-checks/', asOf: '2026-07-06' },
-    jobCheck: { v: 735, src: 'https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/paying-for-aewv-employer-accreditation-and-job-checks/', asOf: '2026-07-06' },
-    partnerWork: { v: 1630, src: 'https://www.immigration.govt.nz/visas/partner-of-a-new-zealander-work-visa', asOf: '2026-07-07' },
-    partnerRes: { v: 5360, src: 'https://www.immigration.govt.nz/visas/partner-of-a-new-zealander-resident-visa', asOf: '2026-07-07' }
+    whv: { v: 770, src: 'https://www.immigration.govt.nz/visas/korea-working-holiday-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
+    ivl: { v: 100, src: 'https://www.immigration.govt.nz/new-zealand-visas/preparing-a-visa-application/your-journey-to-new-zealand/before-you-travel-to-new-zealand/paying-ivl/', asOf: '2026-07-18', effectiveFrom: '2024-10-01' },
+    student: { v: 850, src: 'https://www.immigration.govt.nz/visas/fee-paying-student-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
+    pswv: { v: 1670, src: 'https://www.immigration.govt.nz/visas/post-study-work-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
+    aewv: { v: 1540, src: 'https://www.immigration.govt.nz/visas/accredited-employer-work-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
+    residence: { v: 6450, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
+    accreditation: { v: 775, src: 'https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/paying-for-aewv-employer-accreditation-and-job-checks/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
+    jobCheck: { v: 735, src: 'https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/paying-for-aewv-employer-accreditation-and-job-checks/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
+    partnerWork: { v: 1630, src: 'https://www.immigration.govt.nz/visas/partner-of-a-new-zealander-work-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
+    partnerRes: { v: 5360, src: 'https://www.immigration.govt.nz/visas/partner-of-a-new-zealander-resident-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' }
   },
   estimates: {
     insurance: { v: [600, 800], src: '', asOf: '2026-07-06', est: true },
@@ -1978,7 +1978,7 @@ const DB = {
     settleQtn: { v: [2800, 3800], src: '', asOf: '2026-07-06', est: true },
     tuitionGD: { v: [25000, 40000], src: '', asOf: '2026-07-06', est: true },
     tuitionBach: { v: [22000, 58000], src: '', asOf: '2026-07-06', est: true },
-    livingStudy: { v: 20000, src: 'https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/providing-evidence-and-documents-to-support-your-visa-application/student-fund-requirements/', asOf: '2026-07-06' }
+    livingStudy: { v: 20000, src: 'https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/providing-evidence-and-documents-to-support-your-visa-application/student-fund-requirements/', asOf: '2026-07-18', effectiveFrom: '2022-07-31' }
   },
   jobs: [
     {
@@ -2348,6 +2348,9 @@ const DB = {
       summary: '임시직 → 인증 고용주 스폰서 → 영주권',
       duration: '30–48개월 [추정]',
       cost: 'NZD 11,000–12,700',
+      provenance: {
+        whvDuration: { src: 'https://www.immigration.govt.nz/visas/korea-working-holiday-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' }
+      },
       stages: [
         { name: 'WHV', months: 12 },
         { name: 'AEWV', months: 24 },
@@ -4190,6 +4193,10 @@ function renderCourseEntry() {
 // ===== v34 세후 실수령 계산기 (2026-27 IRD 세율 [공식]) =====
 const NP_BRACKETS = [[15600, 0.105], [53500, 0.175], [78100, 0.30], [180000, 0.33], [Infinity, 0.39]];
 const NP_ACC = { rate: 0.0175, cap: 156641 };
+const NP_META = {
+  brackets: { src: 'https://www.ird.govt.nz/tax-rates', asOf: '2026-07-18', effectiveFrom: '2026-04-01', effectiveTo: '2027-03-31' },
+  acc: { src: 'https://www.ird.govt.nz/acclevy', asOf: '2026-07-18', effectiveFrom: '2026-04-01', effectiveTo: '2027-03-31' }
+};
 
 function npTax(g) {
   let tax = 0, prev = 0;

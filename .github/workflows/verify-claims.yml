@@ -72,3 +72,29 @@ jobs:
           else
             echo "data/runtime-bindings.json not migrated yet; fixture bindings passed."
           fi
+
+  boundary-execution:
+    needs: runtime-parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify reviewed boundary execution fixture
+        run: >-
+          node scripts/verify_boundary_execution.mjs
+          --bindings data/runtime-bindings.json
+          --manifest tests/fixtures/boundary-executions.json
+
+      - name: Verify production boundary execution when present
+        shell: bash
+        run: |
+          if [[ -f data/boundary-executions.json ]]; then
+            node scripts/verify_boundary_execution.mjs \
+              --bindings data/runtime-bindings.json \
+              --manifest data/boundary-executions.json
+          else
+            echo "data/boundary-executions.json not migrated yet; fixture execution passed."
+          fi

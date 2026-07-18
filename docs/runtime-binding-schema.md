@@ -5,11 +5,11 @@ the constants that calculators, roadmaps, and diagnosis logic actually use.
 It is offline, deterministic, and implemented with the Python standard
 library.
 
-The production migration target is `data/runtime-bindings.json`. Until that
-file exists, CI verifies the representative four-edition registry at
+The production registry is `data/runtime-bindings.json`. CI also verifies the
+representative four-edition registry at
 `tests/fixtures/runtime-bindings.json`. The verifier always requires an
-explicit `--bindings` argument, so adding the code does not silently impose
-full-registry coverage.
+explicit `--bindings` argument, so callers cannot accidentally select a
+partial or stale registry.
 
 ## Root schema
 
@@ -58,6 +58,19 @@ addition to claim-registry parity.
   },
   "boundary": {
     "kind": "rate"
+  },
+  "provenance": {
+    "sourcePath": "NP_META.acc.src",
+    "dates": [
+      {
+        "runtimePath": "NP_META.acc.asOf",
+        "claimField": "verifiedAt"
+      },
+      {
+        "runtimePath": "NP_META.acc.effectiveFrom",
+        "claimField": "effectiveFrom"
+      }
+    ]
   }
 }
 ```
@@ -77,6 +90,49 @@ Required entry fields:
 `boundary` is optional. Its `kind` is `rate`, `insurance`, `age`, or
 `duration`. Successful bindings with boundary metadata can generate
 machine-readable edge cases with `--dump-boundaries`.
+
+`provenance` is optional, but strict when declared. It directly connects
+runtime source/date literals to the claim registry:
+
+| Field | Rule |
+| --- | --- |
+| `sourcePath` | One runtime path string, or an array of at least two paths for a composite binding. Every resolved value must equal `claim.sourceUrl`. |
+| `dates` | Non-empty array of date bindings. |
+| `dates[].runtimePath` | One runtime path string, or an array of at least two component paths. |
+| `dates[].claimField` | One of `verifiedAt`, `effectiveFrom`, or `effectiveTo`. Each field may occur only once per binding. |
+
+For example, a composite fee can require both components to carry identical
+reviewed provenance:
+
+```json
+{
+  "provenance": {
+    "sourcePath": [
+      "DB.fees.iecProgram.src",
+      "DB.fees.openWorkPermit.src"
+    ],
+    "dates": [
+      {
+        "runtimePath": [
+          "DB.fees.iecProgram.asOf",
+          "DB.fees.openWorkPermit.asOf"
+        ],
+        "claimField": "verifiedAt"
+      }
+    ]
+  }
+}
+```
+
+Empty arrays and one-item arrays are rejected: a scalar path expresses one
+source, while an array is reserved for a real composite. Missing claim
+fields, duplicate claim date mappings, invalid calendar dates, partial
+provenance objects, and unsupported fields fail verification.
+
+Source URLs must be absolute HTTP(S) URLs without userinfo. Scheme and host
+case and default ports are normalized. Path, query, fragment, and trailing
+slash remain strict, so normalization cannot turn a meaningfully different
+source into a match.
 
 Two entries may not bind the same claim and edition. They also may not bind
 the same edition, page, and runtime target. These rules prevent aliases from
@@ -227,8 +283,17 @@ Failures cover:
 - transform shape or argument failure;
 - `NaN`, unconverted `Infinity`, and other non-finite output;
 - NZ/JA runtime parity mismatch.
+- strict provenance source/date extraction, validity, or equality mismatch;
 - a public `claims.audit.runtimeBindings` summary that does not exactly match
-  the production binding, claim, and generated boundary-set totals.
+  the production binding, claim, generated boundary-set, and provenance
+  source/date check totals owned by this verifier. Audit keys owned by the
+  boundary runner are preserved and checked there.
+
+When at least one production binding declares provenance, the public audit
+must include `provenanceSourceCheckCount` and
+`provenanceDateCheckCount`. Each resolved component path contributes one
+check. The current production migration verifies 81 source paths and 172 date
+paths across 80 bindings.
 
 ## Commands
 
@@ -238,6 +303,16 @@ Verify the checked representative bindings:
 python3 scripts/verify_runtime_parity.py \
   --bindings tests/fixtures/runtime-bindings.json
 ```
+
+Verify production bindings, including every declared provenance path:
+
+```sh
+python3 scripts/verify_runtime_parity.py \
+  --bindings data/runtime-bindings.json
+```
+
+The success summary includes binding, boundary, provenance source, and
+provenance date check counts. Composite paths count once per component.
 
 Generate boundary cases after verification:
 
@@ -254,14 +329,13 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest \
   tests.test_verify_runtime_parity -v
 ```
 
-## Production migration
+## Production maintenance
 
 1. Inventory claims whose reviewed value directly controls a runtime
    constant. Start with fees, wages, proof-of-funds values, tax and insurance
    rates, and pathway age/duration boundaries.
-2. Create `data/runtime-bindings.json` with `schemaVersion: 1`. Add a small
-   explicit `claimScope` so missing bindings fail within the migration cohort
-   without requiring every claim on day one.
+2. Update `data/runtime-bindings.json` with `schemaVersion: 1`. Keep
+   `claimScope` explicit so missing bindings fail within the reviewed cohort.
 3. Migrate both members of an NZ/JA parity pair together and add its
    `parityKey`. Do not bind only one translation.
 4. Prefer stable selectors such as `DB.pathways[id=A]`. Use numeric indexes
@@ -271,7 +345,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest \
    conceal an unexplained discrepancy.
 6. Run `--dump-boundaries` and feed rate, insurance, age, and duration cases
    into later calculator boundary tests.
-7. Commit the production binding registry. CI already detects
-   `data/runtime-bindings.json` and runs it strictly when present.
-8. Expand `claimScope` in reviewed batches until all runtime-backed claims
-   are bound. Claims that are display-only remain outside this registry.
+7. Commit the production binding registry together with reviewed HTML/data
+   changes. CI runs it strictly.
+8. Expand `claimScope` only in reviewed batches. Claims that are display-only
+   remain outside this registry.

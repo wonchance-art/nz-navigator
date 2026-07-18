@@ -8,9 +8,11 @@ import json
 import re
 import sys
 from dataclasses import dataclass, field
+from datetime import date
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit, urlunsplit
 
 
 SCHEMA_VERSION = 1
@@ -41,6 +43,11 @@ TRANSFORMS = frozenset(
     }
 )
 BOUNDARY_KINDS = frozenset({"rate", "insurance", "age", "duration"})
+PROVENANCE_FIELDS = frozenset({"sourcePath", "dates"})
+PROVENANCE_DATE_FIELDS = frozenset({"runtimePath", "claimField"})
+CLAIM_DATE_FIELDS = frozenset(
+    {"verifiedAt", "effectiveFrom", "effectiveTo"}
+)
 IDENTIFIER_RE = re.compile(r"[A-Za-z_$][A-Za-z0-9_$]*")
 NUMBER_RE = re.compile(
     r"[+-]?(?:(?:\d+(?:\.\d*)?)|(?:\.\d+))(?:[eE][+-]?\d+)?"
@@ -73,6 +80,8 @@ class RuntimeIssue:
 class RuntimeReport:
     issues: list[RuntimeIssue] = field(default_factory=list)
     checked_bindings: int = 0
+    checked_provenance_sources: int = 0
+    checked_provenance_dates: int = 0
     boundary_cases: list[dict[str, Any]] = field(default_factory=list)
 
     @property
@@ -85,6 +94,10 @@ class LiteralParseError(ValueError):
 
 
 class RuntimePathError(ValueError):
+    pass
+
+
+class ProvenanceValueError(ValueError):
     pass
 
 
@@ -183,6 +196,63 @@ def _non_finite_path(value: Any, path: str = "$") -> str | None:
             if found:
                 return found
     return None
+
+
+def _iso_date(value: Any) -> str:
+    if not isinstance(value, str) or not re.fullmatch(
+        r"\d{4}-\d{2}-\d{2}", value
+    ):
+        raise ProvenanceValueError("expected an ISO YYYY-MM-DD string")
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError as exc:
+        raise ProvenanceValueError("date is not a real calendar day") from exc
+    return parsed.isoformat()
+
+
+def _normalized_source_url(value: Any) -> str:
+    if not isinstance(value, str) or not value:
+        raise ProvenanceValueError("expected a non-empty source URL string")
+    try:
+        parsed = urlsplit(value)
+        port = parsed.port
+    except ValueError as exc:
+        raise ProvenanceValueError(f"malformed URL: {exc}") from exc
+    scheme = parsed.scheme.lower()
+    if scheme not in {"http", "https"}:
+        raise ProvenanceValueError("source URL scheme must be http or https")
+    if parsed.username is not None or parsed.password is not None:
+        raise ProvenanceValueError("source URL must not contain userinfo")
+    if parsed.hostname is None:
+        raise ProvenanceValueError("source URL must contain a host")
+    try:
+        host = parsed.hostname.encode("idna").decode("ascii").lower()
+    except UnicodeError as exc:
+        raise ProvenanceValueError("source URL host is invalid") from exc
+    if ":" in host:
+        host = f"[{host}]"
+    default_port = (scheme == "http" and port == 80) or (
+        scheme == "https" and port == 443
+    )
+    netloc = host if port is None or default_port else f"{host}:{port}"
+    path = parsed.path
+    return urlunsplit(
+        (scheme, netloc, path, parsed.query, parsed.fragment)
+    )
+
+
+def _is_provenance_path_spec(value: Any) -> bool:
+    return (
+        isinstance(value, str)
+        and bool(value)
+        or isinstance(value, list)
+        and len(value) >= 2
+        and all(isinstance(item, str) and item for item in value)
+    )
+
+
+def _provenance_paths(value: str | list[str]) -> list[str]:
+    return value if isinstance(value, list) else [value]
 
 
 class JSLiteralParser:
@@ -907,6 +977,154 @@ def verify_runtime_parity(
                 "Use a supported transform op.",
             )
             continue
+        provenance = binding.get("provenance")
+        if provenance is not None:
+            if not isinstance(provenance, dict):
+                _issue(
+                    report,
+                    "INVALID_PROVENANCE",
+                    binding,
+                    provenance,
+                    {
+                        "sourcePath": "path or path array",
+                        "dates": "non-empty date binding array",
+                    },
+                    "Replace provenance with the documented object or remove it.",
+                )
+                continue
+            missing_provenance_fields = sorted(
+                PROVENANCE_FIELDS - set(provenance)
+            )
+            if missing_provenance_fields:
+                _issue(
+                    report,
+                    "ORPHAN_PROVENANCE",
+                    binding,
+                    {
+                        "missing": missing_provenance_fields,
+                        "provenance": provenance,
+                    },
+                    sorted(PROVENANCE_FIELDS),
+                    "Declare sourcePath and dates together, or remove provenance.",
+                )
+                continue
+            unsupported_provenance_fields = sorted(
+                set(provenance) - PROVENANCE_FIELDS
+            )
+            if unsupported_provenance_fields:
+                _issue(
+                    report,
+                    "INVALID_PROVENANCE",
+                    binding,
+                    unsupported_provenance_fields,
+                    sorted(PROVENANCE_FIELDS),
+                    "Remove unsupported provenance fields.",
+                )
+                continue
+            if not _is_provenance_path_spec(provenance["sourcePath"]):
+                _issue(
+                    report,
+                    "INVALID_PROVENANCE",
+                    binding,
+                    provenance["sourcePath"],
+                    "one path string or an array of at least two path strings",
+                    "Correct provenance.sourcePath; arrays are for composite bindings only.",
+                )
+                continue
+            dates = provenance["dates"]
+            if not isinstance(dates, list) or not dates:
+                _issue(
+                    report,
+                    "ORPHAN_PROVENANCE",
+                    binding,
+                    dates,
+                    "one or more provenance date bindings",
+                    "Add at least one dates entry or remove provenance.",
+                )
+                continue
+            seen_claim_date_fields: set[str] = set()
+            invalid_dates = False
+            for date_index, date_binding in enumerate(dates):
+                if not isinstance(date_binding, dict):
+                    _issue(
+                        report,
+                        "INVALID_PROVENANCE",
+                        binding,
+                        date_binding,
+                        {
+                            "runtimePath": "path or path array",
+                            "claimField": sorted(CLAIM_DATE_FIELDS),
+                        },
+                        f"Replace provenance.dates[{date_index}] with a date binding object.",
+                    )
+                    invalid_dates = True
+                    continue
+                missing_date_fields = sorted(
+                    PROVENANCE_DATE_FIELDS - set(date_binding)
+                )
+                extra_date_fields = sorted(
+                    set(date_binding) - PROVENANCE_DATE_FIELDS
+                )
+                if missing_date_fields:
+                    _issue(
+                        report,
+                        "ORPHAN_PROVENANCE",
+                        binding,
+                        {"missing": missing_date_fields, "date": date_binding},
+                        sorted(PROVENANCE_DATE_FIELDS),
+                        f"Complete provenance.dates[{date_index}] or remove it.",
+                    )
+                    invalid_dates = True
+                    continue
+                if extra_date_fields:
+                    _issue(
+                        report,
+                        "INVALID_PROVENANCE",
+                        binding,
+                        extra_date_fields,
+                        sorted(PROVENANCE_DATE_FIELDS),
+                        f"Remove unsupported fields from provenance.dates[{date_index}].",
+                    )
+                    invalid_dates = True
+                    continue
+                runtime_path_spec = date_binding["runtimePath"]
+                if not _is_provenance_path_spec(runtime_path_spec):
+                    _issue(
+                        report,
+                        "INVALID_PROVENANCE",
+                        binding,
+                        runtime_path_spec,
+                        "one path string or an array of at least two path strings",
+                        f"Correct provenance.dates[{date_index}].runtimePath.",
+                    )
+                    invalid_dates = True
+                claim_field = date_binding["claimField"]
+                if claim_field not in CLAIM_DATE_FIELDS:
+                    _issue(
+                        report,
+                        "UNSUPPORTED_PROVENANCE_FIELD",
+                        binding,
+                        claim_field,
+                        sorted(CLAIM_DATE_FIELDS),
+                        "Use verifiedAt, effectiveFrom, or effectiveTo.",
+                        runtime_path=str(runtime_path_spec),
+                    )
+                    invalid_dates = True
+                elif claim_field in seen_claim_date_fields:
+                    _issue(
+                        report,
+                        "DUPLICATE_PROVENANCE_DATE",
+                        binding,
+                        claim_field,
+                        "one date mapping per claim field",
+                        f"Remove the duplicate provenance date for {claim_field}.",
+                        runtime_path=str(runtime_path_spec),
+                    )
+                    invalid_dates = True
+                else:
+                    seen_claim_date_fields.add(claim_field)
+            if invalid_dates:
+                continue
         if isinstance(binding["runtimePath"], list) != (transform_op == "sum"):
             _issue(
                 report,
@@ -991,6 +1209,19 @@ def verify_runtime_parity(
     page_cache: dict[str, str] = {}
     constant_cache: dict[tuple[str, str], Any] = {}
     actual_by_claim: dict[str, tuple[dict[str, Any], Any]] = {}
+
+    def extract_runtime_value(page: str, runtime_path: str) -> Any:
+        if page not in page_cache:
+            page_path = (root_path / page).resolve()
+            page_cache[page] = page_path.read_text(encoding="utf-8")
+        root_name, segments = _parse_runtime_path(runtime_path)
+        cache_key = (page, root_name)
+        if cache_key not in constant_cache:
+            constant_cache[cache_key] = _extract_constant(
+                page_cache[page], root_name
+            )
+        return _resolve_runtime_path(constant_cache[cache_key], segments)
+
     for binding in valid_bindings:
         claim = claims[binding["claimId"]]
         edition = binding["edition"]
@@ -1078,20 +1309,10 @@ def verify_runtime_parity(
             else [binding["runtimePath"]]
         )
         try:
-            if page not in page_cache:
-                page_cache[page] = page_path.read_text(encoding="utf-8")
             extracted_values: list[Any] = []
             for runtime_path in runtime_paths:
-                root_name, segments = _parse_runtime_path(runtime_path)
-                cache_key = (page, root_name)
-                if cache_key not in constant_cache:
-                    constant_cache[cache_key] = _extract_constant(
-                        page_cache[page], root_name
-                    )
                 extracted_values.append(
-                    _resolve_runtime_path(
-                        constant_cache[cache_key], segments
-                    )
+                    extract_runtime_value(page, runtime_path)
                 )
             raw_value = (
                 extracted_values
@@ -1162,6 +1383,170 @@ def verify_runtime_parity(
                 claim.get("value"),
                 "Update the runtime constant or claim through the factual review workflow.",
             )
+            continue
+
+        provenance = binding.get("provenance")
+        provenance_ok = True
+        if provenance is not None:
+            claim_source = claim.get("sourceUrl")
+            expected_source: str | None = None
+            try:
+                expected_source = _normalized_source_url(claim_source)
+            except ProvenanceValueError as exc:
+                provenance_ok = False
+                _issue(
+                    report,
+                    "MISSING_CLAIM_PROVENANCE",
+                    binding,
+                    {"value": claim_source, "error": str(exc)},
+                    "claim sourceUrl containing an absolute http(s) URL",
+                    "Repair claim.sourceUrl before enabling strict provenance.",
+                    runtime_path=str(provenance["sourcePath"]),
+                )
+            for source_path in _provenance_paths(
+                provenance["sourcePath"]
+            ):
+                try:
+                    runtime_source = extract_runtime_value(page, source_path)
+                except RuntimePathError as exc:
+                    provenance_ok = False
+                    _issue(
+                        report,
+                        "BAD_PROVENANCE_PATH",
+                        binding,
+                        str(exc),
+                        "valid constant/property/index provenance path",
+                        "Correct provenance.sourcePath.",
+                        runtime_path=source_path,
+                    )
+                    continue
+                except (OSError, UnicodeError, LiteralParseError) as exc:
+                    provenance_ok = False
+                    _issue(
+                        report,
+                        "PROVENANCE_EXTRACTION_FAILED",
+                        binding,
+                        str(exc),
+                        "extractable data-literal provenance value",
+                        "Move provenance into a supported literal constant and correct its path.",
+                        runtime_path=source_path,
+                    )
+                    continue
+                try:
+                    actual_source = _normalized_source_url(runtime_source)
+                except ProvenanceValueError as exc:
+                    provenance_ok = False
+                    _issue(
+                        report,
+                        "INVALID_PROVENANCE_URL",
+                        binding,
+                        {"value": runtime_source, "error": str(exc)},
+                        "absolute http(s) source URL",
+                        "Set the runtime source field to the claim's reviewed sourceUrl.",
+                        runtime_path=source_path,
+                    )
+                    continue
+                if (
+                    expected_source is not None
+                    and actual_source != expected_source
+                ):
+                    provenance_ok = False
+                    _issue(
+                        report,
+                        "PROVENANCE_URL_MISMATCH",
+                        binding,
+                        runtime_source,
+                        claim_source,
+                        "Align every runtime source URL with claim.sourceUrl through factual review.",
+                        runtime_path=source_path,
+                    )
+                elif expected_source is not None:
+                    report.checked_provenance_sources += 1
+
+            for date_binding in provenance["dates"]:
+                claim_date_field = date_binding["claimField"]
+                claim_date = claim.get(claim_date_field)
+                try:
+                    expected_date = _iso_date(claim_date)
+                except ProvenanceValueError as exc:
+                    provenance_ok = False
+                    _issue(
+                        report,
+                        "MISSING_CLAIM_PROVENANCE",
+                        binding,
+                        {
+                            "field": claim_date_field,
+                            "value": claim_date,
+                            "error": str(exc),
+                        },
+                        f"claim.{claim_date_field} as a real ISO YYYY-MM-DD date",
+                        f"Repair claim.{claim_date_field} or remove its provenance date mapping.",
+                        runtime_path=str(date_binding["runtimePath"]),
+                    )
+                    expected_date = None
+                for date_path in _provenance_paths(
+                    date_binding["runtimePath"]
+                ):
+                    try:
+                        runtime_date = extract_runtime_value(page, date_path)
+                    except RuntimePathError as exc:
+                        provenance_ok = False
+                        _issue(
+                            report,
+                            "BAD_PROVENANCE_PATH",
+                            binding,
+                            str(exc),
+                            "valid constant/property/index provenance path",
+                            "Correct the provenance date runtimePath.",
+                            runtime_path=date_path,
+                        )
+                        continue
+                    except (OSError, UnicodeError, LiteralParseError) as exc:
+                        provenance_ok = False
+                        _issue(
+                            report,
+                            "PROVENANCE_EXTRACTION_FAILED",
+                            binding,
+                            str(exc),
+                            "extractable data-literal provenance value",
+                            "Move provenance into a supported literal constant and correct its path.",
+                            runtime_path=date_path,
+                        )
+                        continue
+                    try:
+                        actual_date = _iso_date(runtime_date)
+                    except ProvenanceValueError as exc:
+                        provenance_ok = False
+                        _issue(
+                            report,
+                            "INVALID_PROVENANCE_DATE",
+                            binding,
+                            {
+                                "value": runtime_date,
+                                "error": str(exc),
+                            },
+                            "real ISO YYYY-MM-DD runtime date",
+                            "Set the runtime provenance field to a reviewed literal date.",
+                            runtime_path=date_path,
+                        )
+                        continue
+                    if (
+                        expected_date is not None
+                        and actual_date != expected_date
+                    ):
+                        provenance_ok = False
+                        _issue(
+                            report,
+                            "PROVENANCE_DATE_MISMATCH",
+                            binding,
+                            runtime_date,
+                            claim_date,
+                            f"Align this runtime date with claim.{claim_date_field}.",
+                            runtime_path=date_path,
+                        )
+                    elif expected_date is not None:
+                        report.checked_provenance_dates += 1
+        if not provenance_ok:
             continue
 
         boundary = binding.get("boundary")
@@ -1290,14 +1675,36 @@ def verify_runtime_parity(
             "bindingCount": len(bindings_data["bindings"]),
             "boundarySetCount": len(report.boundary_cases),
         }
+        if any(
+            isinstance(binding, dict) and "provenance" in binding
+            for binding in bindings_data["bindings"]
+        ):
+            expected_audit.update(
+                {
+                    "provenanceSourceCheckCount": (
+                        report.checked_provenance_sources
+                    ),
+                    "provenanceDateCheckCount": (
+                        report.checked_provenance_dates
+                    ),
+                }
+            )
         actual_audit = _normalize_json_value(public_audit)
         normalized_expected = _normalize_json_value(expected_audit)
-        if actual_audit != normalized_expected:
+        audit_subset = (
+            {
+                key: actual_audit.get(key)
+                for key in normalized_expected
+            }
+            if isinstance(actual_audit, dict)
+            else actual_audit
+        )
+        if audit_subset != normalized_expected:
             _issue(
                 report,
                 "PUBLIC_AUDIT_MISMATCH",
                 None,
-                actual_audit,
+                audit_subset,
                 normalized_expected,
                 "Update claims.audit.runtimeBindings from the verified production binding registry.",
                 claim_id="<runtime-audit>",
@@ -1357,7 +1764,9 @@ def main(argv: list[str] | None = None) -> int:
     print(
         f"Runtime parity verification passed: "
         f"{report.checked_bindings} binding(s), "
-        f"{len(report.boundary_cases)} boundary set(s)."
+        f"{len(report.boundary_cases)} boundary set(s), "
+        f"{report.checked_provenance_sources} provenance source check(s), "
+        f"{report.checked_provenance_dates} provenance date check(s)."
     )
     if args.dump_boundaries:
         print(

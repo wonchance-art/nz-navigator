@@ -33,8 +33,20 @@ class RuntimeParityTests(unittest.TestCase):
             <!doctype html><script>
             const DB = {{
               fees: {{
-                student: {{ v: {fee}, label: `Student ${{'fee'}}` }},
-                levy: {{ v: 100 }}
+                student: {{
+                  v: {fee},
+                  label: `Student ${{'fee'}}`,
+                  src: 'HTTPS://EXAMPLE.GOV/fee',
+                  asOf: '2026-07-18',
+                  effectiveFrom: '2026-07-19',
+                  effectiveTo: '2027-06-30'
+                }},
+                levy: {{
+                  v: 100,
+                  src: 'https://example.gov/fee',
+                  asOf: '2026-07-18',
+                  effectiveFrom: '2026-07-19'
+                }}
               }},
               estimates: {{ insurance: {{ v: [600, 800] }} }},
               pathways: [{{
@@ -59,6 +71,10 @@ class RuntimeParityTests(unittest.TestCase):
         *,
         page: str = "nz/index.html",
         parity_key: str | None = None,
+        source_url: str = "https://example.gov/fee",
+        verified_at: str = "2026-07-18",
+        effective_from: str = "2026-07-19",
+        effective_to: str | None = None,
     ) -> dict:
         edition = page.split("/", 1)[0]
         country, locale = {
@@ -74,9 +90,14 @@ class RuntimeParityTests(unittest.TestCase):
             "value": value,
             "unit": unit,
             "pages": [page],
+            "sourceUrl": source_url,
+            "verifiedAt": verified_at,
+            "effectiveFrom": effective_from,
         }
         if parity_key:
             result["parityKey"] = parity_key
+        if effective_to is not None:
+            result["effectiveTo"] = effective_to
         return result
 
     def binding(
@@ -89,6 +110,7 @@ class RuntimeParityTests(unittest.TestCase):
         page: str = "nz/index.html",
         transform: dict | None = None,
         boundary: str | None = None,
+        provenance: dict | None = None,
     ) -> dict:
         result = {
             "claimId": claim_id,
@@ -101,6 +123,8 @@ class RuntimeParityTests(unittest.TestCase):
         }
         if boundary:
             result["boundary"] = {"kind": boundary}
+        if provenance is not None:
+            result["provenance"] = provenance
         return result
 
     def write_claims(self, claims: list[dict]) -> None:
@@ -335,6 +359,314 @@ class RuntimeParityTests(unittest.TestCase):
         )
 
         self.assertIn("data literal", str(issue.actual))
+
+    def test_strict_provenance_supports_multiple_claim_dates(self) -> None:
+        self.write_claims(
+            [
+                self.claim(
+                    "student-fee",
+                    850,
+                    "NZD",
+                    effective_to="2027-06-30",
+                )
+            ]
+        )
+        self.write_bindings(
+            [
+                self.binding(
+                    "student-fee",
+                    "DB.fees.student.v",
+                    "NZD",
+                    provenance={
+                        "sourcePath": "DB.fees.student.src",
+                        "dates": [
+                            {
+                                "runtimePath": "DB.fees.student.asOf",
+                                "claimField": "verifiedAt",
+                            },
+                            {
+                                "runtimePath": "DB.fees.student.effectiveFrom",
+                                "claimField": "effectiveFrom",
+                            },
+                            {
+                                "runtimePath": "DB.fees.student.effectiveTo",
+                                "claimField": "effectiveTo",
+                            },
+                        ],
+                    },
+                )
+            ]
+        )
+
+        report = self.verify()
+
+        self.assertTrue(report.ok, [issue.render() for issue in report.issues])
+        self.assertEqual(report.checked_bindings, 1)
+
+    def test_composite_provenance_arrays_require_every_value_to_match(self) -> None:
+        self.write_claims([self.claim("total-fee", 950, "NZD")])
+        self.write_bindings(
+            [
+                self.binding(
+                    "total-fee",
+                    ["DB.fees.student.v", "DB.fees.levy.v"],
+                    "NZD",
+                    transform={"op": "sum"},
+                    provenance={
+                        "sourcePath": [
+                            "DB.fees.student.src",
+                            "DB.fees.levy.src",
+                        ],
+                        "dates": [
+                            {
+                                "runtimePath": [
+                                    "DB.fees.student.asOf",
+                                    "DB.fees.levy.asOf",
+                                ],
+                                "claimField": "verifiedAt",
+                            },
+                            {
+                                "runtimePath": [
+                                    "DB.fees.student.effectiveFrom",
+                                    "DB.fees.levy.effectiveFrom",
+                                ],
+                                "claimField": "effectiveFrom",
+                            },
+                        ],
+                    },
+                )
+            ]
+        )
+
+        report = self.verify()
+
+        self.assertTrue(report.ok, [issue.render() for issue in report.issues])
+
+    def test_provenance_url_and_date_mismatch_are_actionable(self) -> None:
+        self.write_claims(
+            [
+                self.claim(
+                    "student-fee",
+                    850,
+                    "NZD",
+                    source_url="https://example.gov/fee/",
+                    verified_at="2026-07-17",
+                )
+            ]
+        )
+        self.write_bindings(
+            [
+                self.binding(
+                    "student-fee",
+                    "DB.fees.student.v",
+                    "NZD",
+                    provenance={
+                        "sourcePath": "DB.fees.student.src",
+                        "dates": [
+                            {
+                                "runtimePath": "DB.fees.student.asOf",
+                                "claimField": "verifiedAt",
+                            }
+                        ],
+                    },
+                )
+            ]
+        )
+
+        report = self.verify()
+        by_code = {issue.code: issue for issue in report.issues}
+
+        self.assertIn("PROVENANCE_URL_MISMATCH", by_code)
+        self.assertIn("PROVENANCE_DATE_MISMATCH", by_code)
+        rendered = by_code["PROVENANCE_DATE_MISMATCH"].render()
+        self.assertIn("claim=student-fee", rendered)
+        self.assertIn("edition=nz", rendered)
+        self.assertIn("runtimePath=DB.fees.student.asOf", rendered)
+        self.assertIn('actual="2026-07-18"', rendered)
+        self.assertIn('expected="2026-07-17"', rendered)
+        self.assertIn("Fix:", rendered)
+
+    def test_provenance_root_slash_is_not_normalized_away(self) -> None:
+        page_path = self.root / "nz" / "index.html"
+        source = page_path.read_text(encoding="utf-8").replace(
+            "HTTPS://EXAMPLE.GOV/fee",
+            "https://example.gov",
+            1,
+        )
+        page_path.write_text(source, encoding="utf-8")
+        self.write_claims(
+            [
+                self.claim(
+                    "student-fee",
+                    850,
+                    "NZD",
+                    source_url="https://example.gov/",
+                )
+            ]
+        )
+        self.write_bindings(
+            [
+                self.binding(
+                    "student-fee",
+                    "DB.fees.student.v",
+                    "NZD",
+                    provenance={
+                        "sourcePath": "DB.fees.student.src",
+                        "dates": [
+                            {
+                                "runtimePath": "DB.fees.student.asOf",
+                                "claimField": "verifiedAt",
+                            }
+                        ],
+                    },
+                )
+            ]
+        )
+
+        report = self.verify()
+
+        self.assertIn(
+            "PROVENANCE_URL_MISMATCH",
+            {issue.code for issue in report.issues},
+        )
+
+    def test_bad_provenance_source_path_is_actionable_not_exception(self) -> None:
+        self.write_claims([self.claim("student-fee", 850, "NZD")])
+        self.write_bindings(
+            [
+                self.binding(
+                    "student-fee",
+                    "DB.fees.student.v",
+                    "NZD",
+                    provenance={
+                        "sourcePath": "DB.fees.missing.src",
+                        "dates": [
+                            {
+                                "runtimePath": "DB.fees.student.asOf",
+                                "claimField": "verifiedAt",
+                            }
+                        ],
+                    },
+                )
+            ]
+        )
+
+        report = self.verify()
+        issue = next(
+            item
+            for item in report.issues
+            if item.code == "BAD_PROVENANCE_PATH"
+        )
+
+        self.assertEqual(issue.runtime_path, "DB.fees.missing.src")
+        self.assertIn("Fix:", issue.render())
+
+    def test_invalid_or_orphan_provenance_declarations_fail(self) -> None:
+        claims = [
+            self.claim("missing-date", 850, "NZD"),
+            self.claim("duplicate-date", 100, "NZD"),
+            self.claim("unsupported-date", 1.75, "percent"),
+        ]
+        bindings = [
+            self.binding(
+                "missing-date",
+                "DB.fees.student.v",
+                "NZD",
+                provenance={
+                    "sourcePath": "DB.fees.student.src",
+                    "dates": [],
+                },
+            ),
+            self.binding(
+                "duplicate-date",
+                "DB.fees.levy.v",
+                "NZD",
+                provenance={
+                    "sourcePath": ["DB.fees.student.src"],
+                    "dates": [
+                        {
+                            "runtimePath": "DB.fees.levy.asOf",
+                            "claimField": "verifiedAt",
+                        },
+                        {
+                            "runtimePath": "DB.fees.levy.asOf",
+                            "claimField": "verifiedAt",
+                        },
+                    ],
+                },
+            ),
+            self.binding(
+                "unsupported-date",
+                "TAX.rate",
+                "percent",
+                transform={"op": "multiply", "factor": 100},
+                provenance={
+                    "sourcePath": "DB.fees.student.src",
+                    "dates": [
+                        {
+                            "runtimePath": "DB.fees.student.asOf",
+                            "claimField": "publishedAt",
+                        }
+                    ],
+                },
+            ),
+        ]
+        self.write_claims(claims)
+        self.write_bindings(bindings)
+
+        report = self.verify()
+        codes = {issue.code for issue in report.issues}
+
+        self.assertIn("ORPHAN_PROVENANCE", codes)
+        self.assertIn("INVALID_PROVENANCE", codes)
+        self.assertIn("UNSUPPORTED_PROVENANCE_FIELD", codes)
+
+    def test_orphan_provenance_fix_names_current_contract(self) -> None:
+        self.write_claims([self.claim("student-fee", 850, "NZD")])
+        binding = self.binding(
+            "student-fee",
+            "DB.fees.student.v",
+            "NZD",
+            provenance={"sourcePath": "DB.fees.student.src"},
+        )
+        self.write_bindings([binding])
+
+        report = self.verify()
+        issue = next(
+            item
+            for item in report.issues
+            if item.code == "ORPHAN_PROVENANCE"
+        )
+
+        self.assertIn("sourcePath and dates", issue.fix)
+        self.assertNotIn("asOfPath", issue.fix)
+
+    def test_declared_missing_claim_date_and_computed_source_fail(self) -> None:
+        self.write_claims([self.claim("student-fee", 850, "NZD")])
+        self.write_bindings(
+            [
+                self.binding(
+                    "student-fee",
+                    "DB.fees.student.v",
+                    "NZD",
+                    provenance={
+                        "sourcePath": "COMPUTED",
+                        "dates": [
+                            {
+                                "runtimePath": "DB.fees.student.effectiveTo",
+                                "claimField": "effectiveTo",
+                            }
+                        ],
+                    },
+                )
+            ]
+        )
+
+        report = self.verify()
+        codes = {issue.code for issue in report.issues}
+
+        self.assertIn("PROVENANCE_EXTRACTION_FAILED", codes)
+        self.assertIn("MISSING_CLAIM_PROVENANCE", codes)
 
     def test_edition_mismatch_is_reported(self) -> None:
         self.write_claims([self.claim("student-fee", 850, "NZD")])
