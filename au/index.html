@@ -1926,22 +1926,22 @@ details.fold:not([open]) > .fold-body { display: none; }
 // ============ DATABASE ============
 const DB = {
   wages: {
-    minWage: { v: 26.44, src: 'https://www.fairwork.gov.au/find-help-for/minimum-wages-and-pay', asOf: '2026-07-01' },
-    casualWage: { v: 33.05, src: 'https://www.fairwork.gov.au/find-help-for/casual-workers', asOf: '2026-07-01', label: '캐주얼 로딩 25%' }
+    minWage: { v: 26.44, src: 'https://www.fairwork.gov.au/pay-and-wages/minimum-wages', asOf: '2026-07-18', effectiveFrom: '2026-07-01' },
+    casualWage: { v: 33.05, src: 'https://www.fairwork.gov.au/newsroom/media-releases/2026-media-releases/july-2026/20260701-minimum-wage-increase-media-release', asOf: '2026-07-18', effectiveFrom: '2026-07-01', label: '캐주얼 로딩 25%' }
   },
   fees: {
-    whv417: { v: 840, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-417-working-holiday-visa-korea', asOf: '2026-07-01' },
-    whv2nd: { v: 1000, src: 'https://immi.homeaffairs.gov.au/what-we-do/whm-program/specified-work-conditions/specified-work-417', asOf: '2026-07-01', label: '적격 지정작업 3개월 상당 후' },
-    whv3rd: { v: 1000, src: 'https://immi.homeaffairs.gov.au/what-we-do/whm-program/specified-work-conditions/specified-work-417', asOf: '2026-07-01', label: '세컨드 비자 중 적격 지정작업 6개월 상당 후' },
-    student500: { v: 2500, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-500-student-visa', asOf: '2026-07' },
-    graduate485: { v: 5750, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-485-temporary-graduate-visa', asOf: '2026-07-01' },
-    points189: { v: 6135, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-189-skilled-independent-visa', asOf: '2026-07-01' },
-    points190: { v: 6140, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-190-skilled-nominated-visa', asOf: '2026-07-01' },
-    points491: { v: 6140, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-491-skilled-regional-visa', asOf: '2026-07-01' },
-    sid482: { v: 4015, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing', asOf: '2026-07-01', label: 'Core Skills·Labour Agreement 기본 신청비' },
-    ens186: { v: 6140, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing', asOf: '2026-07-01', label: '기본 신청비' },
-    partner820: { v: 11710, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-820-partner-visa', asOf: '2026-07-01' },
-    partner801: { v: 0, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-801-partner-permanent-visa', asOf: '2026-07-01' }
+    whv417: { v: 840, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges', asOf: '2026-07-18', effectiveFrom: '2026-07-01' },
+    whv2nd: { v: 1000, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing', asOf: '2026-07-18', effectiveFrom: '2026-07-01', label: '적격 지정작업 3개월 상당 후' },
+    whv3rd: { v: 1000, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing', asOf: '2026-07-18', effectiveFrom: '2026-07-01', label: '세컨드 비자 중 적격 지정작업 6개월 상당 후' },
+    student500: { v: 2500, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges', asOf: '2026-07-18', effectiveFrom: '2026-07-01' },
+    graduate485: { v: 5750, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges', asOf: '2026-07-18', effectiveFrom: '2026-07-01' },
+    points189: { v: 6135, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing', asOf: '2026-07-18', effectiveFrom: '2026-07-01' },
+    points190: { v: 6140, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing', asOf: '2026-07-18', effectiveFrom: '2026-07-01' },
+    points491: { v: 6140, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing', asOf: '2026-07-18', effectiveFrom: '2026-07-01' },
+    sid482: { v: 4015, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing', asOf: '2026-07-18', effectiveFrom: '2026-07-01', label: 'Core Skills·Labour Agreement 기본 신청비' },
+    ens186: { v: 6140, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing', asOf: '2026-07-18', effectiveFrom: '2026-07-01', label: '기본 신청비' },
+    partner820: { v: 11710, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore/temporary-820', asOf: '2026-07-18', effectiveFrom: '2026-07-01' },
+    partner801: { v: 0, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore/temporary-820', asOf: '2026-07-18', effectiveFrom: '2026-07-01' }
   },
   estimates: {
     insurance: { v: [500, 800], src: '', asOf: '2026-07-01', est: true },
@@ -1954,7 +1954,7 @@ const DB = {
     settleBris: { v: [2500, 3500], src: '', asOf: '2026-07-01', est: true },
     tuitionGD: { v: [30000, 50000], src: '', asOf: '2026-07-01', est: true },
     tuitionBach: { v: [28000, 70000], src: '', asOf: '2026-07-01', est: true },
-    livingStudent: { v: 29710, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/subclass-500-student-visa', asOf: '2026-07-01', label: '연간 생활비 증명' }
+    livingStudent: { v: 29710, src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/student-500', asOf: '2026-07-18', effectiveFrom: '2026-07-19', label: '연간 생활비 증명' }
   },
   jobs: [
     {
@@ -2225,6 +2225,10 @@ const DB = {
       summary: '417 워홀 12개월 → 경력 인정 → SID 스폰서 또는 포인트',
       duration: '30–60개월 [추정]',
       cost: 'AUD 2,840–9,890',
+      provenance: {
+        whvAge: { src: 'https://immi.homeaffairs.gov.au/what-we-do/whm-program/latest-news', asOf: '2026-07-18', effectiveFrom: '2026-07-01' },
+        whvDuration: { src: 'https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/work-holiday-417/first-working-holiday-417', asOf: '2026-07-18', effectiveFrom: '2026-07-19' }
+      },
       stages: [
         { name: '417 첫 해', months: 12 },
         { name: '417 세컨드(88일 지역노동)', months: 12 },
@@ -4207,6 +4211,12 @@ function renderCourseEntry() {
 // 거주자: 2026-27 브래킷 세율 + medicare 2% + super 12%
 
 const AU_TAX = {
+  provenance: {
+    whm: { src: 'https://www.ato.gov.au/calculators-and-tools/tax-withheld-calculator', asOf: '2026-07-18', effectiveFrom: '2026-07-01' },
+    residentBrackets: { src: 'https://www.ato.gov.au/law/view/pdf/acts/20250028.pdf', asOf: '2026-07-18', effectiveFrom: '2026-07-01', effectiveTo: '2027-06-30' },
+    medicare: { src: 'https://www.ato.gov.au/law/view/document?docid=PAC%2F19860110%2F6', asOf: '2026-07-18', effectiveFrom: '2026-07-01', effectiveTo: '2027-06-30' },
+    super: { src: 'https://www.ato.gov.au/tax-rates-and-codes/key-superannuation-rates-and-thresholds/super-guarantee', asOf: '2026-07-18', effectiveFrom: '2025-07-01' }
+  },
   // 워홀러 기본값
   whm: {
     rate: 0.15,

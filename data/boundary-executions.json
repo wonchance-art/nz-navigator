@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "requiredExecutions": [
+    "nz-paye-acc-nz",
+    "nz-paye-acc-ja",
+    "ca-tax",
+    "au-tax"
+  ],
+  "targets": [
+    {
+      "id": "nz-paye-acc-nz",
+      "kind": "nz-paye-acc",
+      "edition": "nz",
+      "page": "nz/index.html",
+      "probeDelta": 1,
+      "tolerance": 0.01,
+      "rules": ["bracket-continuity", "acc-cap-plateau"],
+      "reviewed": {
+        "brackets": [[15600, 0.105], [53500, 0.175], [78100, 0.30], [180000, 0.33], [null, 0.39]],
+        "acc": {"rate": 0.0175, "cap": 156641}
+      }
+    },
+    {
+      "id": "nz-paye-acc-ja",
+      "kind": "nz-paye-acc",
+      "edition": "ja",
+      "page": "ja/index.html",
+      "probeDelta": 1,
+      "tolerance": 0.01,
+      "rules": ["bracket-continuity", "acc-cap-plateau"],
+      "reviewed": {
+        "brackets": [[15600, 0.105], [53500, 0.175], [78100, 0.30], [180000, 0.33], [null, 0.39]],
+        "acc": {"rate": 0.0175, "cap": 156641}
+      }
+    },
+    {
+      "id": "ca-tax",
+      "kind": "ca-tax",
+      "edition": "ca",
+      "page": "ca/index.html",
+      "probeDelta": 1,
+      "tolerance": 0.01,
+      "rules": ["bracket-continuity", "cpp-cap-plateau", "cpp2-cap-plateau", "ei-cap-plateau"],
+      "reviewed": {
+        "federal": {
+          "brackets": [[58523, 0.14], [117045, 0.205], [181440, 0.26], [258482, 0.29], [null, 0.33]],
+          "bpa": 16452,
+          "employmentAmount": 1501,
+          "creditRate": 0.14
+        },
+        "provinces": {
+          "on": {"brackets": [[53891, 0.0505], [107785, 0.0915], [150000, 0.1116], [220000, 0.1216], [null, 0.1316]], "bpa": 12989},
+          "bc": {"brackets": [[50363, 0.056], [100728, 0.077], [115648, 0.105], [140430, 0.1229], [190405, 0.147], [265545, 0.168], [null, 0.205]], "bpa": 13216},
+          "ab": {"brackets": [[61200, 0.08], [154259, 0.10], [185111, 0.12], [246813, 0.13], [370220, 0.14], [null, 0.15]], "bpa": 22769}
+        },
+        "cpp": {
+          "rate": 0.0595,
+          "baseRate": 0.0495,
+          "additionalRate": 0.01,
+          "ympe": 74600,
+          "exempt": 3500,
+          "cpp2Rate": 0.04,
+          "cpp2Min": 74600,
+          "cpp2Max": 85000
+        },
+        "ei": {"rate": 0.0163, "maxInsurable": 68900},
+        "ontario": {
+          "surtaxLower": 5818,
+          "surtaxUpper": 7446,
+          "surtaxLowerRate": 0.20,
+          "surtaxUpperRate": 0.36,
+          "taxReduction": 600,
+          "health": {
+            "zeroTo": 20000,
+            "tiers": [
+              {"to": 36000, "base": 0, "offset": 20000, "rate": 0.06, "cap": 300},
+              {"to": 48000, "base": 300, "offset": 36000, "rate": 0.06, "cap": 450},
+              {"to": 72000, "base": 450, "offset": 48000, "rate": 0.25, "cap": 600},
+              {"to": 200000, "base": 600, "offset": 72000, "rate": 0.25, "cap": 750}
+            ],
+            "above": {"base": 750, "offset": 200000, "rate": 0.25, "cap": 900}
+          }
+        }
+      }
+    },
+    {
+      "id": "au-tax",
+      "kind": "au-tax",
+      "edition": "au",
+      "page": "au/index.html",
+      "probeDelta": 1,
+      "tolerance": 0.01,
+      "rules": ["bracket-continuity", "lito-continuity"],
+      "reviewed": {
+        "whm": {"cap": 45000, "rate": 0.15},
+        "resident": {
+          "brackets": [[18200, 0], [45000, 0.15], [135000, 0.30], [190000, 0.37], [null, 0.45]],
+          "medicareRate": 0.02,
+          "superRate": 0.12,
+          "lito": {
+            "maxOffset": 700,
+            "fullTo": 37500,
+            "taper1To": 45000,
+            "taper1Rate": 0.05,
+            "cutOut": 66667,
+            "taper2Rate": 0.015
+          }
+        }
+      }
+    }
+  ],
+  "mappings": [
+    {"claimId": "nz-ko-whv-duration", "edition": "nz", "mode": "semantic", "assertion": {"kind": "maximum", "value": 12, "delta": 1}},
+    {"claimId": "nz-ja-whv-duration", "edition": "ja", "mode": "semantic", "assertion": {"kind": "maximum", "value": 12, "delta": 1}},
+    {"claimId": "nz-ko-income-tax-brackets-2026", "edition": "nz", "mode": "execute", "targetId": "nz-paye-acc-nz", "assertion": "nz-paye-brackets"},
+    {"claimId": "nz-ja-income-tax-brackets-2026", "edition": "ja", "mode": "execute", "targetId": "nz-paye-acc-ja", "assertion": "nz-paye-brackets"},
+    {"claimId": "nz-ko-acc-rate-2026", "edition": "nz", "mode": "execute", "targetId": "nz-paye-acc-nz", "assertion": "nz-acc-rate"},
+    {"claimId": "nz-ja-acc-rate-2026", "edition": "ja", "mode": "execute", "targetId": "nz-paye-acc-ja", "assertion": "nz-acc-rate"},
+    {"claimId": "nz-ko-acc-cap-2026", "edition": "nz", "mode": "execute", "targetId": "nz-paye-acc-nz", "assertion": "nz-acc-cap"},
+    {"claimId": "nz-ja-acc-cap-2026", "edition": "ja", "mode": "execute", "targetId": "nz-paye-acc-ja", "assertion": "nz-acc-cap"},
+    {"claimId": "ca-ko-iec-age", "edition": "ca", "mode": "semantic", "assertion": {"kind": "inclusive-range", "min": 18, "max": 35, "delta": 1}},
+    {"claimId": "ca-ko-iec-duration", "edition": "ca", "mode": "semantic", "assertion": {"kind": "maximum", "value": 24, "delta": 1}},
+    {"claimId": "au-ko-whv-age", "edition": "au", "mode": "semantic", "assertion": {"kind": "inclusive-range", "min": 18, "max": 35, "delta": 1}},
+    {"claimId": "au-ko-whv-duration", "edition": "au", "mode": "semantic", "assertion": {"kind": "maximum", "value": 12, "delta": 1}},
+    {"claimId": "au-ko-whm-tax-rate", "edition": "au", "mode": "execute", "targetId": "au-tax", "assertion": "au-whm-rate"},
+    {"claimId": "au-ko-tax-brackets-2026", "edition": "au", "mode": "execute", "targetId": "au-tax", "assertion": "au-resident-brackets"},
+    {"claimId": "au-ko-tax-medicare-rate-2026", "edition": "au", "mode": "execute", "targetId": "au-tax", "assertion": "au-medicare-rate"},
+    {"claimId": "au-ko-tax-super-rate-2026", "edition": "au", "mode": "execute", "targetId": "au-tax", "assertion": "au-super-rate"}
+  ]
+}

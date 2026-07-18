@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-18T21:30:00Z",
+  "generatedAt": "2026-07-18T21:50:45Z",
   "audit": {
     "editions": ["NZ 한국어", "NZ 일본어", "캐나다", "호주"],
     "scope": ["비자 연령·기간·쿼터", "신청비·재정증명", "임금·세율", "처리기간", "점수·실수령 계산 표본"],
@@ -13,7 +13,10 @@
     "runtimeBindings": {
       "claimCount": 80,
       "bindingCount": 80,
-      "boundarySetCount": 16
+      "boundarySetCount": 16,
+      "provenanceSourceCheckCount": 81,
+      "provenanceDateCheckCount": 172,
+      "boundaryProbeCount": 143
     },
     "lastAuditDate": "2026-07-19"
   },
@@ -688,7 +691,7 @@
     {"id":"nz-ko-non-notified-tax","country":"NZ","locale":"ko","category":"tax","label":"IR330 미제출 급여 non-notified 원천세율","value":45,"unit":"percent","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","sourceUrl":"https://www.ird.govt.nz/deductions-from-salary-and-wages","pages":["nz/index.html"],"severity":"critical","parityKey":"nz-non-notified-tax","notes":"45%에 ACC earners’ levy가 추가된다."},
     {"id":"nz-ja-non-notified-tax","country":"NZ","locale":"ja","category":"tax","label":"IR330未提出時のnon-notified源泉税率","value":45,"unit":"percent","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","sourceUrl":"https://www.ird.govt.nz/deductions-from-salary-and-wages","pages":["ja/index.html"],"severity":"critical","parityKey":"nz-non-notified-tax","notes":"45%にACC earners’ levyが加算される。"},
     {"id":"nz-ko-overstay-42-days","country":"NZ","locale":"ko","category":"duration","label":"불법 체류 시 재입국 제한 가능 기준","value":42,"unit":"days","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-07-19","sourceUrl":"https://www.immigration.govt.nz/process-to-apply/once-you-have-a-visa/if-you-stay-in-new-zealand-after-your-visa-expires/","pages":["nz/index.html"],"severity":"critical"},
-    {"id":"ca-ko-iec-program-fee","country":"CA","locale":"ko","category":"fee","label":"IEC 프로그램 참가비","value":184.75,"unit":"CAD","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2025-12-01","sourceUrl":"https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec.html","pages":["ca/index.html"],"severity":"critical"},
+    {"id":"ca-ko-iec-program-fee","country":"CA","locale":"ko","category":"fee","label":"IEC 프로그램 참가비","value":184.75,"unit":"CAD","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2025-12-01","sourceUrl":"https://ircc.canada.ca/english/information/fees/fees.asp","pages":["ca/index.html"],"severity":"critical"},
     {"id":"ca-ko-rprf-fee","country":"CA","locale":"ko","category":"fee","label":"Right of Permanent Residence Fee 구성액","value":600,"unit":"CAD","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-30","sourceUrl":"https://ircc.canada.ca/english/information/fees/fees.asp","pages":["ca/index.html"],"severity":"critical","notes":"화면의 EE 총액 CAD 1,590에 포함되어 있으므로 중복 합산하지 않는다."},
     {"id":"ca-ko-bc-pnp-fee","country":"CA","locale":"ko","category":"fee","label":"BC PNP Skills Immigration 신청비","value":1750,"unit":"CAD","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-01-22","sourceUrl":"https://www.welcomebc.ca/immigrate-to-b-c/for-workers","pages":["ca/index.html"],"severity":"critical"},
     {"id":"ca-ko-software-developer-median-wage","country":"CA","locale":"ko","category":"wage","label":"Software Developer 전국 중위 시급","value":48.08,"unit":"CAD/hour","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-06-02","sourceUrl":"https://www.jobbank.gc.ca/marketreport/summary-occupation/22548/ca","pages":["ca/index.html"],"severity":"medium"},
