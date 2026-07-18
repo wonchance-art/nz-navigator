@@ -215,6 +215,11 @@ python3 scripts/verify_source_attestations.py \
   --output source-attestation-report.json
 ```
 
+CI and the scheduled audit pass `--today` using the site operator's
+`Asia/Seoul` calendar date. This keeps future-date and review-expiry boundaries
+aligned with the dates shown in the public Korean/Japanese verification ledger
+instead of changing at UTC midnight.
+
 The pull-request workflow always runs fixture and reducer units, then runs the
 production registry offline when present. The separate scheduled workflow has
 `contents: read` and `issues: write`, one concurrency group, and no pull-request

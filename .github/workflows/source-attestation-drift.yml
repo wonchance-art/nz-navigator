@@ -20,6 +20,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       PYTHONDONTWRITEBYTECODE: "1"
+      TZ: Asia/Seoul
 
     steps:
       - name: Check out repository
@@ -48,7 +49,7 @@ jobs:
           --attestations data/source-attestations.json
           --claims data/claims.json
           --mode live
-          --today "$(date -u +%F)"
+          --today "$(date +%F)"
           --output source-attestation-report.json
           --no-fail
 

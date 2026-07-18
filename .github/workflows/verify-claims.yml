@@ -105,6 +105,7 @@ jobs:
     timeout-minutes: 5
     env:
       PYTHONDONTWRITEBYTECODE: "1"
+      TZ: Asia/Seoul
 
     steps:
       - name: Check out repository
@@ -130,7 +131,7 @@ jobs:
               --attestations data/source-attestations.json \
               --claims data/claims.json \
               --mode offline \
-              --today "$(date -u +%F)"
+              --today "$(date +%F)"
           else
             echo "data/source-attestations.json not migrated yet; fixture units passed."
           fi
