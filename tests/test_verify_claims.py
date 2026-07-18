@@ -297,7 +297,9 @@ class ClaimVerifierTests(unittest.TestCase):
         self.write_registry([self.claim()])
         methods: list[str] = []
 
-        def urlopen(request: object, timeout: float) -> FakeResponse:
+        def urlopen(
+            request: object, timeout: float, **kwargs: object
+        ) -> FakeResponse:
             method = request.get_method()
             methods.append(method)
             if method == "HEAD":
@@ -311,6 +313,27 @@ class ClaimVerifierTests(unittest.TestCase):
 
         self.assertTrue(report.ok, [issue.render() for issue in report.issues])
         self.assertEqual(methods, ["HEAD", "GET"])
+        self.assertEqual(report.checked_links, 1)
+
+    def test_check_links_accepts_bot_protection_as_reachable(self) -> None:
+        self.write_page(["nz.minimum-wage"])
+        self.write_registry([self.claim()])
+
+        with mock.patch.object(
+            verify_claims.urllib_request,
+            "urlopen",
+            side_effect=urllib_error.HTTPError(
+                "https://www.employment.govt.nz/pay-and-hours/",
+                403,
+                "Forbidden",
+                {},
+                None,
+            ),
+        ) as mocked_urlopen:
+            report = self.validate(check_links=True)
+
+        self.assertTrue(report.ok, [issue.render() for issue in report.issues])
+        self.assertEqual(mocked_urlopen.call_count, 1)
         self.assertEqual(report.checked_links, 1)
 
     def test_failed_link_check_is_actionable_and_deduplicated(self) -> None:

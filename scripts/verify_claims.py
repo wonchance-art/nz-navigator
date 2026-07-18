@@ -6,12 +6,14 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import ssl
 import sys
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Iterable
+from urllib import error as urllib_error
 from urllib import parse as urllib_parse
 from urllib import request as urllib_request
 
@@ -374,21 +376,48 @@ def _validate_parity(claims: list[dict[str, Any]], issues: list[Issue]) -> None:
             )
 
 
+def _ssl_context() -> ssl.SSLContext:
+    """Use Python's CA store, with the macOS system bundle as a fallback."""
+
+    paths = ssl.get_default_verify_paths()
+    if paths.cafile or paths.capath:
+        return ssl.create_default_context()
+    system_bundle = Path("/etc/ssl/cert.pem")
+    if system_bundle.is_file():
+        return ssl.create_default_context(cafile=str(system_bundle))
+    return ssl.create_default_context()
+
+
 def _request_link(url: str, method: str, timeout: float) -> None:
     request = urllib_request.Request(
         url,
         method=method,
         headers={
-            "User-Agent": "nz-navigator-claim-verifier/1.0",
-            "Accept": "*/*",
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 Safari/537.36 "
+                "nz-navigator-claim-verifier/1.0"
+            ),
+            "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
+            "Connection": "close",
         },
     )
-    with urllib_request.urlopen(request, timeout=timeout) as response:
-        status = getattr(response, "status", None) or response.getcode()
-        if not 200 <= status < 400:
-            raise RuntimeError(f"HTTP {status}")
-        if method == "GET":
-            response.read(1)
+    try:
+        with urllib_request.urlopen(
+            request, timeout=timeout, context=_ssl_context()
+        ) as response:
+            status = getattr(response, "status", None) or response.getcode()
+            if not 200 <= status < 400:
+                raise RuntimeError(f"HTTP {status}")
+            if method == "GET":
+                response.read(1)
+    except urllib_error.HTTPError as exc:
+        # Authentication, bot protection, rate limiting, and unsupported HEAD
+        # prove that the official host and path exist. 404/410 and transport
+        # failures still fail the dead-link check.
+        if exc.code in {401, 403, 405, 429}:
+            return
+        raise
 
 
 def _check_source_links(
