@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "exemptions": [
+    {
+      "selector": "nz/index.html::script#DB.pathways.A.duration[1]",
+      "fingerprint": "sha256:397ac0f66a3964d0ec13",
+      "reason": "정부가 보장하는 처리기간이 아니라 구직·근무·신청 단계를 합친 [추정] 계획값이라 단일 공식 주장으로 등록할 수 없다. 2026-08-24 SMC 변경 전에 재검토한다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "nz/index.html::script#DB.pathways.B.duration[1]",
+      "fingerprint": "sha256:1fb8cf21863d67653a03",
+      "reason": "유학·구직·근무·신청 단계를 합친 [추정] 계획값이며 단일 정부 처리기간이 아니다. 2026-08-24 SMC 변경 전에 재검토한다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "nz/index.html::script#DB.pathways.B.duration[2]",
+      "fingerprint": "sha256:fc33f69de61bf4c0afa0",
+      "reason": "GD 학업·구직·근무·신청을 합친 [추정] 계획값으로 단일 공식 수치가 없다. 2026-08-24 SMC 변경 전에 재검토한다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "nz/index.html::script#DB.pathways.B.duration[3]",
+      "fingerprint": "sha256:3c1854a1758e2efd2fcc",
+      "reason": "학사 학업·구직·근무·신청을 합친 [추정] 계획값으로 단일 공식 수치가 없다. 2026-08-24 SMC 변경 전에 재검토한다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "nz/index.html::script#DB.pathways.C-T1.duration[1]",
+      "fingerprint": "sha256:3b64cfd1c9a01b4c3f2c",
+      "reason": "구직·고용주 절차·비자 신청을 합친 [추정] 계획값이라 단일 공식 처리기간으로 등록하지 않는다. 2026-08-24 SMC 변경 전에 재검토한다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "nz/index.html::script#DB.pathways.C-T2.duration[1]",
+      "fingerprint": "sha256:67ab53c5cbc3e765dccb",
+      "reason": "근무기간과 영주 신청 단계를 합친 [추정] 계획값이라 단일 공식 처리기간으로 등록하지 않는다. 2026-08-24 SMC 변경 전에 재검토한다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "nz/index.html::script#DB.pathways.D.duration[1]",
+      "fingerprint": "sha256:3bf96c8e478e44e00245",
+      "reason": "직업 전환·근무·신청 단계를 합친 [추정] 계획값이라 단일 공식 처리기간으로 등록하지 않는다. 2026-08-24 SMC 변경 전에 재검토한다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "ja/index.html::script#DB.pathways.A.duration[1]",
+      "fingerprint": "sha256:aeccaf833fd95c9a7355",
+      "reason": "求職・就労・申請を合算した[推定]計画値であり、政府の単一処理期間ではない。2026-08-24のSMC変更前に再確認する。",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "ja/index.html::script#DB.pathways.B.duration[1]",
+      "fingerprint": "sha256:2bee8e514b3e91833173",
+      "reason": "留学・求職・就労・申請を合算した[推定]計画値であり、単一の政府数値ではない。2026-08-24のSMC変更前に再確認する。",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "ja/index.html::script#DB.pathways.B.duration[2]",
+      "fingerprint": "sha256:a4443724f5197ff1b1de",
+      "reason": "GD修学・求職・就労・申請を合算した[推定]計画値で、単一の公式数値がない。2026-08-24のSMC変更前に再確認する。",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "ja/index.html::script#DB.pathways.B.duration[3]",
+      "fingerprint": "sha256:0af4d89a9bbdaf3119ff",
+      "reason": "学士課程・求職・就労・申請を合算した[推定]計画値で、単一の公式数値がない。2026-08-24のSMC変更前に再確認する。",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "ja/index.html::script#DB.pathways.C-T1.duration[1]",
+      "fingerprint": "sha256:12167aaba790f21b5a17",
+      "reason": "求職・雇用主手続・ビザ申請を合算した[推定]計画値で、単一の公式処理期間ではない。2026-08-24のSMC変更前に再確認する。",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "ja/index.html::script#DB.pathways.C-T2.duration[1]",
+      "fingerprint": "sha256:52bba835879a83544e2f",
+      "reason": "就労期間と永住申請を合算した[推定]計画値で、単一の公式処理期間ではない。2026-08-24のSMC変更前に再確認する。",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "ja/index.html::script#DB.pathways.D.duration[1]",
+      "fingerprint": "sha256:13f589c73facdc994203",
+      "reason": "職種転換・就労・申請を合算した[推定]計画値で、単一の公式処理期間ではない。2026-08-24のSMC変更前に再確認する。",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-08-23"
+    },
+    {
+      "selector": "ca/index.html::script#DB.pathways.A.duration[1]",
+      "fingerprint": "sha256:75bb0551fa02e1ca2af6",
+      "reason": "IEC 진입·취업·경력·이민 신청을 합친 [추정] 계획값으로 IRCC가 공표하는 단일 처리기간이 아니다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "ca/index.html::script#DB.pathways.B.duration[1]",
+      "fingerprint": "sha256:b1c2f3230c6891b95dd1",
+      "reason": "학업·PGWP·경력·이민 신청을 합친 [추정] 계획값으로 IRCC가 공표하는 단일 처리기간이 아니다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "ca/index.html::script#DB.pathways.B.duration[2]",
+      "fingerprint": "sha256:d0c6c9562f323a9aadaf",
+      "reason": "디플로마·PGWP·경력·이민 신청을 합친 [추정] 계획값이며 과정·주별 편차 때문에 단일 공식 수치가 없다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "ca/index.html::script#DB.pathways.B.duration[3]",
+      "fingerprint": "sha256:1405d8409cdb0acbe659",
+      "reason": "학사·PGWP·경력·이민 신청을 합친 [추정] 계획값이며 과정·주별 편차 때문에 단일 공식 수치가 없다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "ca/index.html::script#DB.pathways.C-EE.duration[1]",
+      "fingerprint": "sha256:adaa4b430cd1e681f8fb",
+      "reason": "프로필 준비·ITA 대기·신청을 합친 [추정] 계획값으로 IRCC의 신청 후 서비스 기준과 구분한다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "ca/index.html::script#DB.pathways.C-PNP.duration[1]",
+      "fingerprint": "sha256:9c937dd3cabf55b91817",
+      "reason": "주정부 지명과 연방 신청을 합친 [추정] 계획값으로 주·스트림별 변동이 커 단일 공식 수치가 없다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "ca/index.html::script#DB.pathways.D.duration[1]",
+      "fingerprint": "sha256:3b23f691572bdf939590",
+      "reason": "고용주 확보와 permit 절차를 합친 [추정] 계획값으로 국가·신청유형별 처리기간과 구분한다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "ca/index.html::script#DB.pathways.E.duration[1]",
+      "fingerprint": "sha256:258af4749bd760b296ee",
+      "reason": "관계 증빙·신청·심사를 합친 [추정] 계획값으로 개별 사건별 편차가 커 단일 공식 수치가 아니다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "au/index.html::script#DB.pathways.A.duration[1]",
+      "fingerprint": "sha256:46a7bf2bd034d8e83a99",
+      "reason": "417 진입·경력·skills assessment·EOI·비자 신청을 합친 [추정] 계획값으로 단일 Home Affairs 처리기간이 아니다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "au/index.html::script#DB.pathways.B.duration[1]",
+      "fingerprint": "sha256:67ea8aa19652cd9f4eb1",
+      "reason": "학업·485·경력·EOI·비자 신청을 합친 [추정] 계획값으로 과정·직종별 편차 때문에 단일 공식 수치가 없다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "au/index.html::script#DB.pathways.B.duration[2]",
+      "fingerprint": "sha256:9dd1bf479ee3d53f5b1a",
+      "reason": "적격 2년 학업·485·경력·비자 신청을 합친 [추정] 계획값으로 단일 공식 처리기간이 아니다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "au/index.html::script#DB.pathways.B.duration[3]",
+      "fingerprint": "sha256:2103befe289d05506687",
+      "reason": "학사·485·경력·EOI·비자 신청을 합친 [추정] 계획값으로 단일 공식 처리기간이 아니다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "au/index.html::script#DB.pathways.C-189.duration[1]",
+      "fingerprint": "sha256:1b56f5487a4e73a5dc43",
+      "reason": "skills assessment·EOI 대기·초청·신청을 합친 [추정] 계획값이며 공식 처리시간 도구와 구분한다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "au/index.html::script#DB.pathways.C-190.duration[1]",
+      "fingerprint": "sha256:1b56f5487a4e73a5dc43",
+      "reason": "주정부 지명·EOI 대기·초청·신청을 합친 [추정] 계획값이며 주별 편차 때문에 단일 공식 수치가 없다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "au/index.html::script#DB.pathways.D.duration[1]",
+      "fingerprint": "sha256:46a7bf2bd034d8e83a99",
+      "reason": "고용주 확보·482 경력·186 지명·신청을 합친 [추정] 계획값으로 단일 공식 처리기간이 아니다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    },
+    {
+      "selector": "au/index.html::script#DB.pathways.E.duration[1]",
+      "fingerprint": "sha256:2a7ca769a6eee18122d1",
+      "reason": "관계 증빙·820/801 심사를 합친 [추정] 계획값이며 사건별 편차 때문에 단일 공식 수치가 아니다.",
+      "owner": "NZ Navigator editorial",
+      "expiresAt": "2026-10-31"
+    }
+  ]
+}

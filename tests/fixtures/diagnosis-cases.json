@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "nz-whv-dev",
+      "edition": "nz",
+      "page": "nz/index.html",
+      "parityKey": "nz-ja-whv-dev",
+      "input": {
+        "entry": "whv",
+        "age": "under30",
+        "job": "dev",
+        "experience": "over2",
+        "english": "ielts65",
+        "funding": "mid",
+        "education": "bach",
+        "family": "solo"
+      },
+      "expected": { "primary": "C-T1" }
+    },
+    {
+      "id": "nz-student-undecided",
+      "edition": "nz",
+      "page": "nz/index.html",
+      "parityKey": "nz-ja-student-undecided",
+      "input": {
+        "entry": "student",
+        "age": "under30",
+        "job": "undecided",
+        "experience": "none",
+        "english": "none",
+        "funding": "high",
+        "education": "none",
+        "family": "solo"
+      },
+      "expected": { "primary": "B", "studyVariant": "bach" }
+    },
+    {
+      "id": "nz-work-trade",
+      "edition": "nz",
+      "page": "nz/index.html",
+      "parityKey": "nz-ja-work-trade",
+      "input": {
+        "entry": "work",
+        "age": "over30",
+        "job": "trade",
+        "experience": "over2",
+        "english": "ielts65",
+        "funding": "mid",
+        "education": "bach",
+        "family": "partner"
+      },
+      "expected": { "primary": "C-T2" }
+    },
+    {
+      "id": "nz-overage-whv",
+      "edition": "nz",
+      "page": "nz/index.html",
+      "parityKey": "nz-ja-overage-whv",
+      "input": {
+        "entry": "whv",
+        "age": "over30",
+        "job": "chef",
+        "experience": "under2",
+        "english": "ielts4",
+        "funding": "low",
+        "education": "dip",
+        "family": "solo"
+      },
+      "expected": { "primary": "A", "minWarnings": 1 }
+    },
+    {
+      "id": "ja-whv-dev",
+      "edition": "ja",
+      "page": "ja/index.html",
+      "parityKey": "nz-ja-whv-dev",
+      "input": {
+        "entry": "whv",
+        "age": "under30",
+        "job": "dev",
+        "experience": "over2",
+        "english": "ielts65",
+        "funding": "mid",
+        "education": "bach",
+        "family": "solo"
+      },
+      "expected": { "primary": "C-T1" }
+    },
+    {
+      "id": "ja-student-undecided",
+      "edition": "ja",
+      "page": "ja/index.html",
+      "parityKey": "nz-ja-student-undecided",
+      "input": {
+        "entry": "student",
+        "age": "under30",
+        "job": "undecided",
+        "experience": "none",
+        "english": "none",
+        "funding": "high",
+        "education": "none",
+        "family": "solo"
+      },
+      "expected": { "primary": "B", "studyVariant": "bach" }
+    },
+    {
+      "id": "ja-work-trade",
+      "edition": "ja",
+      "page": "ja/index.html",
+      "parityKey": "nz-ja-work-trade",
+      "input": {
+        "entry": "work",
+        "age": "over30",
+        "job": "trade",
+        "experience": "over2",
+        "english": "ielts65",
+        "funding": "mid",
+        "education": "bach",
+        "family": "partner"
+      },
+      "expected": { "primary": "C-T2" }
+    },
+    {
+      "id": "ja-overage-whv",
+      "edition": "ja",
+      "page": "ja/index.html",
+      "parityKey": "nz-ja-overage-whv",
+      "input": {
+        "entry": "whv",
+        "age": "over30",
+        "job": "chef",
+        "experience": "under2",
+        "english": "ielts4",
+        "funding": "low",
+        "education": "dip",
+        "family": "solo"
+      },
+      "expected": { "primary": "A", "minWarnings": 1 }
+    },
+    {
+      "id": "ca-whv-dev",
+      "edition": "ca",
+      "page": "ca/index.html",
+      "input": {
+        "entry": "whv",
+        "age": "under30",
+        "job": "dev",
+        "experience": "over2",
+        "english": "ielts65",
+        "funding": "mid",
+        "education": "bach",
+        "family": "solo"
+      },
+      "expected": { "primary": "A" }
+    },
+    {
+      "id": "ca-student-health",
+      "edition": "ca",
+      "page": "ca/index.html",
+      "input": {
+        "entry": "student",
+        "age": "under30",
+        "job": "health",
+        "experience": "none",
+        "english": "none",
+        "funding": "high",
+        "education": "none",
+        "family": "solo"
+      },
+      "expected": { "primary": "B", "studyVariant": "bachelor" }
+    },
+    {
+      "id": "ca-work-trade",
+      "edition": "ca",
+      "page": "ca/index.html",
+      "input": {
+        "entry": "work",
+        "age": "over30",
+        "job": "trade",
+        "experience": "over2",
+        "english": "ielts65",
+        "funding": "mid",
+        "education": "bach",
+        "family": "partner"
+      },
+      "expected": { "primary": "C-PNP" }
+    },
+    {
+      "id": "ca-overage-whv",
+      "edition": "ca",
+      "page": "ca/index.html",
+      "input": {
+        "entry": "whv",
+        "age": "over30",
+        "job": "chef",
+        "experience": "under2",
+        "english": "ielts4",
+        "funding": "low",
+        "education": "dip",
+        "family": "solo"
+      },
+      "expected": { "primary": "A", "minWarnings": 1 }
+    },
+    {
+      "id": "au-whv-dev",
+      "edition": "au",
+      "page": "au/index.html",
+      "input": {
+        "entry": "whv",
+        "age": "under30",
+        "job": "dev",
+        "experience": "over2",
+        "english": "ielts7",
+        "funding": "mid",
+        "education": "bach",
+        "family": "solo"
+      },
+      "expected": { "primary": "C-189", "minWarnings": 1 }
+    },
+    {
+      "id": "au-student-ece",
+      "edition": "au",
+      "page": "au/index.html",
+      "input": {
+        "entry": "student",
+        "age": "under30",
+        "job": "ece",
+        "experience": "none",
+        "english": "none",
+        "funding": "high",
+        "education": "none",
+        "family": "solo"
+      },
+      "expected": { "primary": "B", "studyVariant": "bachelor" }
+    },
+    {
+      "id": "au-work-trade",
+      "edition": "au",
+      "page": "au/index.html",
+      "input": {
+        "entry": "work",
+        "age": "over35",
+        "job": "trade",
+        "experience": "over2",
+        "english": "ielts7",
+        "funding": "mid",
+        "education": "bach",
+        "family": "partner"
+      },
+      "expected": { "primary": "D", "alt": "C-189" }
+    },
+    {
+      "id": "au-overage-whv",
+      "edition": "au",
+      "page": "au/index.html",
+      "input": {
+        "entry": "whv",
+        "age": "over35",
+        "job": "chef",
+        "experience": "under2",
+        "english": "ielts6",
+        "funding": "low",
+        "education": "dip",
+        "family": "solo"
+      },
+      "expected": { "primary": "A", "minWarnings": 2 }
+    }
+  ]
+}

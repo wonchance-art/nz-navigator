@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import json
 import math
 import ssl
@@ -33,6 +34,11 @@ COUNTRY_OFFICIAL_DOMAINS = {
     "CA": (
         "canada.ca",
         "ircc.canada.ca",
+        "ontario.ca",
+        "gov.bc.ca",
+        "alberta.ca",
+        "jobbank.gc.ca",
+        "welcomebc.ca",
     ),
     "AU": (
         "immi.homeaffairs.gov.au",
@@ -425,17 +431,25 @@ def _check_source_links(
     timeout: float,
     issues: list[Issue],
 ) -> int:
-    checked = 0
-    for url in sorted(url_claims):
-        checked += 1
+    def check_one(url: str) -> tuple[str, list[str]]:
         failures: list[str] = []
         for method in ("HEAD", "GET"):
             try:
                 _request_link(url, method, timeout)
-                break
+                return url, []
             except Exception as exc:  # Network stacks expose several exception types.
                 failures.append(f"{method}: {exc}")
-        else:
+        return url, failures
+
+    urls = sorted(url_claims)
+    # Government sites can take the full timeout or block HEAD requests.
+    # Bounded concurrency keeps the opt-in audit practical without creating
+    # an unbounded request burst.
+    with ThreadPoolExecutor(max_workers=min(8, len(urls) or 1)) as executor:
+        results = executor.map(check_one, urls)
+        for url, failures in results:
+            if not failures:
+                continue
             detail = "; ".join(failures)
             for claim_id in sorted(url_claims[url]):
                 issues.append(
@@ -447,7 +461,7 @@ def _check_source_links(
                         "current canonical source. Re-run with --check-links.",
                     )
                 )
-    return checked
+    return len(urls)
 
 
 def _load_registry(registry_path: Path, report: ValidationReport) -> Any:
