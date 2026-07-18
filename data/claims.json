@@ -323,6 +323,23 @@
       "severity": "critical"
     },
     {
+      "id": "ca-ko-iec-quota-2026",
+      "country": "CA",
+      "locale": "ko",
+      "category": "quota",
+      "label": "한국 IEC Working Holiday 2026 시즌 쿼터",
+      "value": 10239,
+      "unit": "visas",
+      "status": "official",
+      "verifiedAt": "2026-07-18",
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": "2026-12-31",
+      "sourceUrl": "https://ircc.canada.ca/english/work/iec/selections.asp?cat=wh&country=kr",
+      "pages": ["ca/index.html"],
+      "severity": "critical",
+      "notes": "협정상 전체 연간 참여 한도와 별개인 2026 Working Holiday 카테고리 실제 쿼터."
+    },
+    {
       "id": "ca-ko-iec-fees",
       "country": "CA",
       "locale": "ko",
