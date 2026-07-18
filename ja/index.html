@@ -1837,6 +1837,17 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span data-claim-id="nz-ja-student-processing">80%が8週間以内</span> ・
       <span data-claim-id="nz-ja-student-funds">生活費証明 年NZD 20,000</span> ・
       <span data-claim-id="nz-ja-min-wage-2026">最低賃金NZD 23.95/h</span> ・
+      <span data-claim-id="nz-ja-median-wage-2026">移民中央値賃金NZD 35/h</span> ・
+      <span data-claim-id="nz-ja-median-15-2026">1.5倍基準NZD 52.50/h</span> ・
+      <span data-claim-id="nz-ja-median-20-2026">2倍基準NZD 70/h</span> ・
+      <span data-claim-id="nz-ja-median-30-2026">3倍基準NZD 105/h</span> ・
+      <span data-claim-id="nz-ja-pswv-fee">PSWV NZD 1,670</span> ・
+      <span data-claim-id="nz-ja-aewv-fee">AEWV NZD 1,540</span> ・
+      <span data-claim-id="nz-ja-residence-fee">SMC・技能永住NZD 6,450</span> ・
+      <span data-claim-id="nz-ja-accreditation-fee">標準雇用主認定NZD 775</span> ・
+      <span data-claim-id="nz-ja-job-check-fee">Job Check NZD 735</span> ・
+      <span data-claim-id="nz-ja-partner-work-fee">パートナー就労ビザNZD 1,630</span> ・
+      <span data-claim-id="nz-ja-partner-resident-fee">NZ市民・永住者パートナー永住ビザNZD 5,360</span> ・
       <span data-claim-id="nz-ja-netpay-72800">年収72,800の手取り例 NZD 57,466</span>
       <a href="../verification.html?country=NZ" class="source-link">検証台帳・変更履歴 →</a>
     </div>
@@ -1916,9 +1927,9 @@ const DB = {
   wages: {
     minWage: { v: 23.95, src: 'https://www.employment.govt.nz/pay-and-hours/pay-and-wages/minimum-wage/minimum-wage-rates-and-types', asOf: '2026-07-06' },
     medianWage: { v: 35.00, src: 'https://www.immigration.govt.nz/about-us/news-centre/new-occupations-recognised-under-the-national-occupation-list-and-annual-median-wage-increase/', asOf: '2026-07-06' },
-    median15: { v: 52.50, src: 'https://www.immigration.govt.nz/visas/accredited-employer-work-visa', asOf: '2026-07-06' },
-    median20: { v: 70.00, src: 'https://www.immigration.govt.nz/visas/accredited-employer-work-visa', asOf: '2026-07-06' },
-    median30: { v: 105.00, src: 'https://www.immigration.govt.nz/visas/accredited-employer-work-visa', asOf: '2026-07-06' }
+    median15: { v: 52.50, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-19' },
+    median20: { v: 70.00, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-19' },
+    median30: { v: 105.00, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-19' }
   },
   fees: {
     whv: { v: 770, src: 'https://www.immigration.govt.nz/visas/japan-working-holiday-visa/', asOf: '2026-07-19' },
@@ -3420,8 +3431,8 @@ function entryAdjustedPathway(p, entry) {
   if (!adj) return p;
   let duration = adj[0], cost = adj[1];
   if (p.id === 'B' && p.studyVariants) {
-    const m = p.duration.match(/^(\d+)–(\d+)ヶ月(\+?)$/);
-    if (m) { duration = `${+m[1] - 12}–${+m[2] - 12}ヶ月${m[3]}`; cost = p.cost; }
+    const m = p.duration.match(/^(\d+)[–～](\d+)ヶ月(\+?)$/);
+    if (m) { duration = `${+m[1] - 12}～${+m[2] - 12}ヶ月${m[3]}`; cost = p.cost; }
   }
   return Object.assign({}, p, { stages: p.stages.slice(1), duration, cost, summary: p.summary + ` (${ENTRY_LABEL[entry]} 進入 — WHV段階なし)` });
 }
@@ -4557,7 +4568,7 @@ function renderChangeline() {
 // ============ キーワードナビゲーション ============
 const SEARCH_INDEX = [
   { q: '診断 推奨 開始 自分の経路 カスタマイズ スコア', label: '1分経路診断', desc: '状況入力 → カスタマイズ経路·SMCスコア·実行プラン', go: 'diagnose', target: 'diagnoseForm' },
-  { q: 'ワーホリ ワーキングホリデー whv クォータ 申請 条件 年齢', label: 'WHV 条件・手数料', desc: '18–30歳 · 定員制限なし · NZD 770+100', go: 'snapshot', target: 'keyfigures' },
+  { q: 'ワーホリ ワーキングホリデー whv クォータ 申請 条件 年齢', label: 'WHV 条件・手数料', desc: '18–30歳 · 定員制限なし · NZD 770（IVL込み）', go: 'snapshot', target: 'keyfigures' },
   { q: 'aewv 就労ビザ スポンサー 就職ビザ 求人 直行', label: '直行経路 (WHV→AEWV→SMC)', desc: '30–48か月 · ~NZD 12,700', go: 'diagnose', target: 'path-A' },
   { q: 'smc 永住権 スコア 6点 技能移民 計算', label: 'SMC6点計算機', desc: '学歴·収入·NZ勤務の組み合わせで6点判定', go: 'diagnose', target: 'smcCalc' },
   { q: '留学 学生ビザ 学費 pswv 卒業 学位 大学', label: '留学経由経路', desc: '学費込み総額 ~NZD 80k–247k', go: 'diagnose', target: 'path-B' },

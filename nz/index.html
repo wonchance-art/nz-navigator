@@ -1850,6 +1850,17 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span data-claim-id="nz-ko-student-processing">80% 8주 이내</span> ·
       <span data-claim-id="nz-ko-student-funds">생활비 증명 연 NZD 20,000</span> ·
       <span data-claim-id="nz-ko-min-wage-2026">최저임금 NZD 23.95/h</span> ·
+      <span data-claim-id="nz-ko-median-wage-2026">이민 중위임금 NZD 35/h</span> ·
+      <span data-claim-id="nz-ko-median-15-2026">1.5배 기준 NZD 52.50/h</span> ·
+      <span data-claim-id="nz-ko-median-20-2026">2배 기준 NZD 70/h</span> ·
+      <span data-claim-id="nz-ko-median-30-2026">3배 기준 NZD 105/h</span> ·
+      <span data-claim-id="nz-ko-pswv-fee">PSWV NZD 1,670</span> ·
+      <span data-claim-id="nz-ko-aewv-fee">AEWV NZD 1,540</span> ·
+      <span data-claim-id="nz-ko-residence-fee">SMC·숙련영주 NZD 6,450</span> ·
+      <span data-claim-id="nz-ko-accreditation-fee">표준 고용주 인증 NZD 775</span> ·
+      <span data-claim-id="nz-ko-job-check-fee">Job Check NZD 735</span> ·
+      <span data-claim-id="nz-ko-partner-work-fee">파트너 워크비자 NZD 1,630</span> ·
+      <span data-claim-id="nz-ko-partner-resident-fee">NZ 시민·영주자 파트너 영주비자 NZD 5,360</span> ·
       <span data-claim-id="nz-ko-netpay-72800">연봉 72,800 표본 실수령 NZD 57,466</span>
       <a href="../verification.html?country=NZ" class="source-link">검증 원장·변경이력 →</a>
     </div>
@@ -1929,9 +1940,9 @@ const DB = {
   wages: {
     minWage: { v: 23.95, src: 'https://www.employment.govt.nz/pay-and-hours/pay-and-wages/minimum-wage/minimum-wage-rates-and-types', asOf: '2026-07-06' },
     medianWage: { v: 35.00, src: 'https://www.immigration.govt.nz/about-us/news-centre/new-occupations-recognised-under-the-national-occupation-list-and-annual-median-wage-increase/', asOf: '2026-07-06' },
-    median15: { v: 52.50, src: 'https://www.immigration.govt.nz/visas/accredited-employer-work-visa', asOf: '2026-07-06' },
-    median20: { v: 70.00, src: 'https://www.immigration.govt.nz/visas/accredited-employer-work-visa', asOf: '2026-07-06' },
-    median30: { v: 105.00, src: 'https://www.immigration.govt.nz/visas/accredited-employer-work-visa', asOf: '2026-07-06' }
+    median15: { v: 52.50, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-19' },
+    median20: { v: 70.00, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-19' },
+    median30: { v: 105.00, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-19' }
   },
   fees: {
     whv: { v: 770, src: 'https://www.immigration.govt.nz/visas/korea-working-holiday-visa/', asOf: '2026-07-06' },
@@ -4660,7 +4671,7 @@ function renderChangeline() {
 // ============ 키워드 내비게이션 ============
 const SEARCH_INDEX = [
   { q: '진단 추천 시작 내 경로 맞춤 점수', label: '1분 경로 진단', desc: '상황 입력 → 맞춤 경로·SMC 점수·액션 플랜', go: 'diagnose', target: 'diagnoseForm' },
-  { q: '워홀 워킹홀리데이 whv 쿼터 신청 조건 나이', label: 'WHV 조건·수수료', desc: '18–30세 · 쿼터 3,000 · NZD 770+100', go: 'snapshot', target: 'keyfigures' },
+  { q: '워홀 워킹홀리데이 whv 쿼터 신청 조건 나이', label: 'WHV 조건·수수료', desc: '18–30세 · 쿼터 3,000 · NZD 770(IVL 포함)', go: 'snapshot', target: 'keyfigures' },
   { q: 'aewv 워크비자 스폰서 취업비자 잡오퍼 직행', label: '직행 경로 (WHV→AEWV→SMC)', desc: '30–48개월 · ~NZD 12,700', go: 'diagnose', target: 'path-A' },
   { q: 'smc 영주권 점수 6점 기술이민 계산', label: 'SMC 점수 계산기', desc: '학력·소득·NZ 근무 조합 → 6점', go: 'diagnose', target: 'smcCalc' },
   { q: '유학 학생비자 학비 pswv 졸업 학위 대학', label: '유학 경유 경로', desc: '학비 포함 총 ~NZD 80k–247k', go: 'diagnose', target: 'path-B' },

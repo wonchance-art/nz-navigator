@@ -48,7 +48,7 @@
     .filter[aria-pressed="true"] { background: var(--brand); color: white; border-color: var(--brand); }
     .summary {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
       margin: 12px 0 20px;
     }
@@ -85,11 +85,15 @@
     .critical { color: var(--critical); }
     .claim-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; font-size: 0.88rem; }
     .history ul, .method ul { margin: 8px 0 0; padding-left: 20px; }
+    .coverage-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .coverage-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .coverage-list span { border: 1px solid var(--line); border-radius: 999px; padding: 5px 9px; background: var(--wash); font-size: 0.82rem; }
     .empty { grid-column: 1 / -1; padding: 30px; text-align: center; color: var(--muted); }
     footer { padding: 30px 0 50px; color: var(--muted); font-size: 0.86rem; }
     @media (max-width: 720px) {
       header, main, footer { width: min(100% - 20px, 1120px); }
       .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .coverage-grid { grid-template-columns: 1fr; }
       .claims { grid-template-columns: 1fr; }
       .claim-head { display: block; }
       .claim-head .badge { margin-top: 8px; }
@@ -113,8 +117,24 @@
       <div><strong id="total">—</strong><span>등록 주장</span></div>
       <div><strong id="official">—</strong><span>공식 원문값</span></div>
       <div><strong id="derived">—</strong><span>공식값 계산</span></div>
+      <div><strong id="sources">—</strong><span>고유 공식 원문</span></div>
+      <div><strong id="editions">—</strong><span>연결 국가판</span></div>
       <div><strong id="verified">—</strong><span>마지막 생성일</span></div>
     </div>
+
+    <h2>커버리지</h2>
+    <section class="coverage-grid" aria-label="검증 커버리지">
+      <div class="method">
+        <strong>우선 검증 범위</strong>
+        <div id="scope" class="coverage-list"></div>
+        <p id="coveragePolicy" class="meta"></p>
+      </div>
+      <div class="method">
+        <strong>등록 분포</strong>
+        <div id="distribution" class="coverage-list"></div>
+        <p class="meta">원장 항목은 실제 표시 페이지의 <code>data-claim-id</code>와 연결되며, 끊긴 연결·만료·NZ/일본어 값 불일치는 배포 검사에서 실패합니다.</p>
+      </div>
+    </section>
 
     <div class="nav" role="group" aria-label="국가 필터">
       <button class="filter" type="button" data-country="ALL" aria-pressed="true">전체</button>
@@ -131,6 +151,10 @@
     <h2>변경이력</h2>
     <section class="history">
       <ul>
+        <li><strong>2026-07-19 · 신뢰 기반 v2:</strong> 원장을 39→77개 고위험 주장으로 확대하고 NZ·일본어·CA·AU 전체 핵심 수치 커버리지를 공개.</li>
+        <li><strong>2026-07-19 · 호주:</strong> 482 SID AUD 4,015와 186 ENS AUD 6,140을 2026-07 공식 가격표 API로 재검증하고, 잘못된 3,775·NZ 임금 잔재·820/801/482 가족경로 혼합을 정정.</li>
+        <li><strong>2026-07-19 · 캐나다:</strong> FSW/FST 1인 정착자금 CAD 15,263, 온타리오 현재 최저임금 CAD 17.60을 반영하고 일반 Work Permit과 CEC 언어·학력 요건을 분리.</li>
+        <li><strong>2026-07-19 · 뉴질랜드:</strong> WHV 검색 결과의 IVL 중복 합산을 제거하고, 중위임금 배수·AEWV/PSWV/SMC·고용주 비용을 NZ/일본어 쌍으로 원장화.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v1:</strong> NZ/일본어/CA/AU 공통 원장, 화면 연결 ID, 만료·번역 일치·공식 도메인 자동검사를 도입.</li>
         <li><strong>2026-07-19 · 캐나다:</strong> 학생 생활비 20,635→22,895, PGWP 155→255, EE 1,590에 RPRF가 이미 포함됨을 반영.</li>
         <li><strong>2026-07-19 · 일본어판:</strong> 일본 국적용 WHV 공식 페이지와 무정원 체계를 한국 국적용 자료에서 분리.</li>
@@ -210,7 +234,23 @@
         document.getElementById('total').textContent = registry.claims.length;
         document.getElementById('official').textContent = registry.claims.filter(c => c.status === 'official').length;
         document.getElementById('derived').textContent = registry.claims.filter(c => c.status === 'derived').length;
-        document.getElementById('verified').textContent = registry.generatedAt;
+        document.getElementById('sources').textContent = new Set(registry.claims.map(c => c.sourceUrl)).size;
+        document.getElementById('editions').textContent = new Set(registry.claims.flatMap(c => c.pages)).size;
+        document.getElementById('verified').textContent = registry.audit?.lastAuditDate || registry.generatedAt.slice(0, 10);
+        document.getElementById('scope').innerHTML = (registry.audit?.scope || []).map(item => `<span>${item}</span>`).join('');
+        document.getElementById('coveragePolicy').textContent = registry.audit?.coveragePolicy || '';
+        const countryCounts = Object.entries(registry.claims.reduce((acc, claim) => {
+          acc[claim.country] = (acc[claim.country] || 0) + 1;
+          return acc;
+        }, {}));
+        const categoryCounts = Object.entries(registry.claims.reduce((acc, claim) => {
+          acc[claim.category] = (acc[claim.category] || 0) + 1;
+          return acc;
+        }, {})).sort((a, b) => b[1] - a[1]);
+        document.getElementById('distribution').innerHTML = [
+          ...countryCounts.map(([key, count]) => `<span>${countryNames[key] || key} ${count}</span>`),
+          ...categoryCounts.map(([key, count]) => `<span>${key} ${count}</span>`)
+        ].join('');
         render();
       })
       .catch(error => {
