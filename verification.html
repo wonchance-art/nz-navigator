@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="NZ Navigator 고위험 이민·워홀 정보의 공식 출처, 효력일, 검증일과 변경이력">
+  <title>검증 원장 · NZ Navigator</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #16221d;
+      --muted: #64736b;
+      --line: #dfe7e2;
+      --paper: #fff;
+      --wash: #f4f7f5;
+      --brand: #136c4d;
+      --official: #e8f7ef;
+      --derived: #eef4ff;
+      --critical: #b42318;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--wash);
+      color: var(--ink);
+      font: 15px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--brand); }
+    header, main, footer { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+    header { padding: 36px 0 22px; }
+    h1 { margin: 0 0 8px; font-size: clamp(1.8rem, 5vw, 3rem); line-height: 1.1; }
+    h2 { margin: 34px 0 12px; }
+    p { margin: 0.45rem 0; }
+    .lede { color: var(--muted); max-width: 76ch; }
+    .nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .nav a, .filter {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: var(--paper);
+      text-decoration: none;
+      color: var(--ink);
+      cursor: pointer;
+    }
+    .filter[aria-pressed="true"] { background: var(--brand); color: white; border-color: var(--brand); }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 12px 0 20px;
+    }
+    .summary div, .history, .method {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .summary strong { display: block; font-size: 1.55rem; }
+    .summary span { color: var(--muted); font-size: 0.86rem; }
+    .claims { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .claim {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      overflow-wrap: anywhere;
+    }
+    .claim-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .claim h3 { margin: 0; font-size: 1rem; }
+    .value { margin: 10px 0 8px; font-size: 1.45rem; font-weight: 750; }
+    .meta { color: var(--muted); font-size: 0.86rem; }
+    .badge {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .official { background: var(--official); color: #17633f; }
+    .derived { background: var(--derived); color: #274c93; }
+    .critical { color: var(--critical); }
+    .claim-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; font-size: 0.88rem; }
+    .history ul, .method ul { margin: 8px 0 0; padding-left: 20px; }
+    .empty { grid-column: 1 / -1; padding: 30px; text-align: center; color: var(--muted); }
+    footer { padding: 30px 0 50px; color: var(--muted); font-size: 0.86rem; }
+    @media (max-width: 720px) {
+      header, main, footer { width: min(100% - 20px, 1120px); }
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .claims { grid-template-columns: 1fr; }
+      .claim-head { display: block; }
+      .claim-head .badge { margin-top: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>검증 원장</h1>
+    <p class="lede">돈·비자 승인에 직접 영향을 주는 수치만 따로 관리합니다. 각 항목은 공식 원문, 효력일, 마지막 확인일, 실제 표시 페이지와 연결됩니다. 이 원장은 법률 자문을 대신하지 않습니다.</p>
+    <nav class="nav" aria-label="사이트 판 이동">
+      <a href="./nz/">뉴질랜드판</a>
+      <a href="./ja/">日本語版</a>
+      <a href="./ca/">캐나다판</a>
+      <a href="./au/">호주판</a>
+      <a href="https://github.com/wonchance-art/nz-navigator/issues" rel="noopener">오류 제보</a>
+    </nav>
+  </header>
+  <main>
+    <div class="summary" aria-label="검증 요약">
+      <div><strong id="total">—</strong><span>등록 주장</span></div>
+      <div><strong id="official">—</strong><span>공식 원문값</span></div>
+      <div><strong id="derived">—</strong><span>공식값 계산</span></div>
+      <div><strong id="verified">—</strong><span>마지막 생성일</span></div>
+    </div>
+
+    <div class="nav" role="group" aria-label="국가 필터">
+      <button class="filter" type="button" data-country="ALL" aria-pressed="true">전체</button>
+      <button class="filter" type="button" data-country="NZ" aria-pressed="false">뉴질랜드</button>
+      <button class="filter" type="button" data-country="CA" aria-pressed="false">캐나다</button>
+      <button class="filter" type="button" data-country="AU" aria-pressed="false">호주</button>
+    </div>
+
+    <h2 id="claimHeading">고위험 주장</h2>
+    <section id="claims" class="claims" aria-labelledby="claimHeading" aria-live="polite">
+      <p class="empty">검증 원장을 불러오는 중입니다.</p>
+    </section>
+
+    <h2>변경이력</h2>
+    <section class="history">
+      <ul>
+        <li><strong>2026-07-19 · 신뢰 기반 v1:</strong> NZ/일본어/CA/AU 공통 원장, 화면 연결 ID, 만료·번역 일치·공식 도메인 자동검사를 도입.</li>
+        <li><strong>2026-07-19 · 캐나다:</strong> 학생 생활비 20,635→22,895, PGWP 155→255, EE 1,590에 RPRF가 이미 포함됨을 반영.</li>
+        <li><strong>2026-07-19 · 일본어판:</strong> 일본 국적용 WHV 공식 페이지와 무정원 체계를 한국 국적용 자료에서 분리.</li>
+        <li><strong>2026-07-19 · 뉴질랜드:</strong> Fee Paying Student Visa 공식 카드의 80% 처리기간을 8주로 갱신.</li>
+      </ul>
+    </section>
+
+    <h2>검증 방법과 한계</h2>
+    <section class="method">
+      <ul>
+        <li><strong>official</strong>은 정부 페이지가 직접 표시한 값, <strong>derived</strong>는 그 공식값만으로 계산한 표본입니다.</li>
+        <li>치명 항목은 45일, 나머지는 90일이 지나면 자동검사가 실패합니다. 정책 변경을 발견하면 날짜와 값을 먼저 갱신해야 배포할 수 있습니다.</li>
+        <li>공식 링크의 생존 여부는 정기 네트워크 검사에서 확인하고, 기본 빌드는 외부 장애 때문에 막히지 않도록 구조 검증만 수행합니다.</li>
+        <li>개인별 자격·세금 거주성·부양가족·과거 이력에 따라 결과가 달라질 수 있으므로 신청 직전 정부 도구와 등록 전문가를 함께 확인하세요.</li>
+      </ul>
+    </section>
+  </main>
+  <footer>NZ Navigator · 공개 검증 원장은 사람이 읽는 화면과 기계 검사를 같은 JSON에서 생성합니다.</footer>
+  <script>
+    const state = { claims: [], country: 'ALL' };
+    const countryNames = { NZ: '뉴질랜드', CA: '캐나다', AU: '호주' };
+    const fmt = value => typeof value === 'number' ? value.toLocaleString('en-US') : value;
+    const pageHref = page => `./${page}`;
+
+    function render() {
+      const shown = state.country === 'ALL'
+        ? state.claims
+        : state.claims.filter(claim => claim.country === state.country);
+      const target = document.getElementById('claims');
+      if (!shown.length) {
+        target.innerHTML = '<p class="empty">선택한 국가의 등록 항목이 없습니다.</p>';
+        return;
+      }
+      target.innerHTML = shown.map(claim => `
+        <article class="claim" id="${claim.id}">
+          <div class="claim-head">
+            <h3>${claim.label}</h3>
+            <span class="badge ${claim.status}">${claim.status === 'official' ? '공식 원문' : '공식값 계산'}</span>
+          </div>
+          <div class="value">${fmt(claim.value)} <small>${claim.unit || ''}</small></div>
+          <div class="meta">
+            ${countryNames[claim.country] || claim.country} · ${claim.locale} ·
+            <span class="${claim.severity === 'critical' ? 'critical' : ''}">${claim.severity}</span><br>
+            효력 ${claim.effectiveFrom}${claim.effectiveTo ? `–${claim.effectiveTo}` : ''} · 확인 ${claim.verifiedAt}
+          </div>
+          ${claim.notes ? `<p class="meta">${claim.notes}</p>` : ''}
+          <div class="claim-links">
+            <a href="${claim.sourceUrl}" target="_blank" rel="noopener">정부 원문 ↗</a>
+            ${claim.pages.map(page => `<a href="${pageHref(page)}">표시 페이지 →</a>`).join('')}
+          </div>
+        </article>`).join('');
+    }
+
+    document.querySelectorAll('.filter').forEach(button => {
+      button.addEventListener('click', () => {
+        state.country = button.dataset.country;
+        document.querySelectorAll('.filter').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+        const url = new URL(location.href);
+        state.country === 'ALL' ? url.searchParams.delete('country') : url.searchParams.set('country', state.country);
+        history.replaceState(null, '', url);
+        render();
+      });
+    });
+
+    fetch('./data/claims.json', { cache: 'no-store' })
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then(registry => {
+        state.claims = registry.claims;
+        const requested = new URL(location.href).searchParams.get('country');
+        if (['NZ', 'CA', 'AU'].includes(requested)) {
+          state.country = requested;
+          document.querySelectorAll('.filter').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.country === requested)));
+        }
+        document.getElementById('total').textContent = registry.claims.length;
+        document.getElementById('official').textContent = registry.claims.filter(c => c.status === 'official').length;
+        document.getElementById('derived').textContent = registry.claims.filter(c => c.status === 'derived').length;
+        document.getElementById('verified').textContent = registry.generatedAt;
+        render();
+      })
+      .catch(error => {
+        document.getElementById('claims').innerHTML = `<p class="empty">원장을 불러오지 못했습니다: ${error.message}</p>`;
+      });
+  </script>
+</body>
+</html>
