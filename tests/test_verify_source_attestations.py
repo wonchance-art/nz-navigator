@@ -491,6 +491,161 @@ class SourceAttestationTests(unittest.TestCase):
                     bad, "percentage-number-to-decimal"
                 )
 
+    def test_ato_law_whm_first_band_binds_later_year_table(self) -> None:
+        source = (
+            "https://www.ato.gov.au/law/view/print?"
+            "DocID=PAC%2F20240003%2FSch1-Cl4&PiT=99991231235958"
+        )
+        fixture_path = self.fixture_dir / "ato-whm-law.html"
+        boundary = {
+            "schemaVersion": 1,
+            "targets": [{
+                "id": "au-whm-law",
+                "reviewed": {
+                    "whm": {"cap": 45000, "rate": 0.15}
+                },
+            }],
+        }
+        registry = {
+            "schemaVersion": 1,
+            "boundaryManifest": "boundary.json",
+            "attestations": [{
+                "id": "au-whm-law-source",
+                "jurisdiction": "AU",
+                "sourceUrl": source,
+                "request": {"method": "GET"},
+                "verifiedAt": "2026-07-19",
+                "effectiveFrom": "2024-07-01",
+                "reviewAfterDays": 90,
+                "targets": [{
+                    "targetId": "au-whm-law",
+                    "reviewedPath": "/whm",
+                }],
+                "extractor": {
+                    "mode": "html-table-record",
+                    "params": {
+                        "section": "Repeal the table, substitute:",
+                        "headers": verifier.ATO_LAW_FIRST_BAND_HEADERS,
+                        "result": "scalar",
+                        "fields": [{
+                            "key": "whm",
+                            "rowLabels": ["1"],
+                            "valueHeader": "The rate is:",
+                            "transform": "ato-law-first-tax-band",
+                            "unit": {
+                                "cap": "AUD",
+                                "rate": "decimal rate",
+                            },
+                        }],
+                    },
+                },
+                "expected": {
+                    "type": "object",
+                    "unit": {
+                        "cap": "AUD",
+                        "rate": "decimal rate",
+                    },
+                    "value": {"cap": 45000, "rate": 0.15},
+                },
+                "fixture": {
+                    "path": (
+                        "tests/fixtures/source-attestations/"
+                        "ato-whm-law.html"
+                    ),
+                    "mediaType": "text/html",
+                    "sha256": fingerprint(fixture_path),
+                    "httpStatus": 200,
+                    "finalUrl": source,
+                },
+            }],
+        }
+        self.write_json("boundary.json", boundary)
+        self.write_json(
+            "claims.json",
+            {"schemaVersion": 1, "audit": {}, "claims": []},
+        )
+        baseline = (FIXTURES / "ato-whm-law.html").read_text()
+
+        def run(body: str) -> verifier.AttestationReport:
+            fixture_path.write_text(body)
+            mutated = deepcopy(registry)
+            mutated["attestations"][0]["fixture"]["sha256"] = fingerprint(
+                fixture_path
+            )
+            self.write_json("attestations.json", mutated)
+            return verifier.verify_source_attestations(
+                self.root,
+                attestations_path="attestations.json",
+                boundary_manifest_path="boundary.json",
+                claims_path="claims.json",
+                today=TODAY,
+            )
+
+        self.assertTrue(run(baseline).ok)
+        mutations = [
+            baseline.replace(
+                verifier.ATO_LAW_FIRST_BAND_TITLE,
+                "Tax rates for working holiday makers",
+            ),
+            baseline.replace("<td>1</td>", "<td>2</td>"),
+            baseline.replace(
+                "does not exceed $45,000",
+                "is less than $45,000",
+            ),
+            baseline.replace("The rate is:", "Rate"),
+            baseline.replace("<td>15%</td>", "<td>16%</td>"),
+            baseline.replace(
+                "<td>does not exceed $45,000</td>", ""
+            ),
+            baseline.replace(
+                "</tbody>",
+                (
+                    "<tr><td>1</td><td>does not exceed $45,000</td>"
+                    "<td>15%</td></tr></tbody>"
+                ),
+            ),
+        ]
+        for body in mutations:
+            with self.subTest(body=body[-100:]):
+                self.assert_status(run(body), "changed")
+
+    def test_ato_law_transform_schema_is_exact(self) -> None:
+        base = {
+            "mode": "html-table-record",
+            "params": {
+                "section": "Repeal the table, substitute:",
+                "headers": verifier.ATO_LAW_FIRST_BAND_HEADERS,
+                "result": "scalar",
+                "fields": [{
+                    "key": "whm",
+                    "rowLabels": ["1"],
+                    "valueHeader": "The rate is:",
+                    "transform": "ato-law-first-tax-band",
+                    "unit": {
+                        "cap": "AUD",
+                        "rate": "decimal rate",
+                    },
+                }],
+            },
+        }
+        verifier._validate_extractor(base)
+        mutations = []
+        bad_headers = deepcopy(base)
+        bad_headers["params"]["headers"][1] = "Taxable income"
+        mutations.append(bad_headers)
+        bad_item = deepcopy(base)
+        bad_item["params"]["fields"][0]["rowLabels"] = ["2"]
+        mutations.append(bad_item)
+        bad_column = deepcopy(base)
+        bad_column["params"]["fields"][0]["valueHeader"] = "Item"
+        mutations.append(bad_column)
+        bad_unit = deepcopy(base)
+        bad_unit["params"]["fields"][0]["unit"]["rate"] = "percent"
+        mutations.append(bad_unit)
+        for extractor in mutations:
+            with self.subTest(), self.assertRaises(verifier.RegistryError):
+                verifier._validate_extractor(extractor)
+
     def test_ato_whm_and_lito_adversarial_grammar_fails_closed(self) -> None:
         whm = (FIXTURES / "ato-whm.html").read_text()
         for old, new in (

@@ -191,6 +191,15 @@ HTML field transforms are fixed enums:
 - `ato-first-tax-band`, which accepts exactly one ATO WHM row label
   `0 – $N` and value `Pc for each $1`, returning
   `{cap:N,rate:P/100}` with fixed `{cap:"AUD",rate:"decimal rate"}` units
+- `ato-law-first-tax-band`, which binds the current ATO law table titled
+  `Tax rates for working holiday makers for the 2024-25 year of income or a
+  later year of income`. It requires section `Repeal the table, substitute:`,
+  the exact three headers, item `1`, middle cell `does not exceed $N`, and
+  rate cell `P%`, then returns `{cap:N,rate:P/100}` with the same fixed unit
+  tree. Exactly one title (caption or the actual three-cell title row with two
+  empty trailing cells before the headers) and exactly one complete item row
+  must match. The guidance transform remains a regression check; production
+  should prefer this law transform when binding 2026–27 applicability.
 - `tax-brackets`, which returns the v4 reviewed shape
   `[[upper,rate],...,[null,rate]]`, checks zero start, continuity, and an open
   last cap

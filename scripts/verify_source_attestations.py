@@ -166,6 +166,18 @@ HTML_LABELLED_FIELD_FIELDS = frozenset(
 HTML_TEXT_PARAMETER_FIELDS = frozenset({"anchor", "transform", "unit"})
 ATO_LITO_PARAMETER_FIELDS = frozenset({"anchor", "items"})
 ATO_FIRST_BAND_UNIT = {"cap": "AUD", "rate": "decimal rate"}
+ATO_LAW_FIRST_BAND_TITLE = (
+    "Tax rates for working holiday makers for the 2024-25 year of "
+    "income or a later year of income"
+)
+ATO_LAW_FIRST_BAND_HEADERS = [
+    "Item",
+    (
+        "For the part of the taxpayer's working holiday taxable "
+        "income that:"
+    ),
+    "The rate is:",
+]
 ATO_LITO_UNIT = {
     "maxOffset": "AUD",
     "fullTo": "AUD",
@@ -190,6 +202,7 @@ HTML_VALUE_TRANSFORMS = frozenset(
         "leading-currency-to-number",
         "final-inclusive-range",
         "ato-first-tax-band",
+        "ato-law-first-tax-band",
         "percentage-number-to-decimal",
     }
 )
@@ -938,6 +951,19 @@ def _validate_extractor(extractor: Any) -> None:
             ):
                 raise RegistryError(
                     "ato-first-tax-band requires one row and its fixed unit tree"
+                )
+            if field_spec["transform"] == "ato-law-first-tax-band" and (
+                params["result"] != "scalar"
+                or len(fields) != 1
+                or headers != ATO_LAW_FIRST_BAND_HEADERS
+                or labels != ["1"]
+                or field_spec["valueHeader"] != "The rate is:"
+                or field_spec["unit"] != ATO_FIRST_BAND_UNIT
+            ):
+                raise RegistryError(
+                    "ato-law-first-tax-band requires its exact title-table "
+                    "headers, item 1, rate column, scalar result, and fixed "
+                    "unit tree"
                 )
         return
     if mode == "html-labelled-values":
@@ -2057,6 +2083,36 @@ def _parse_ato_first_tax_band(
     return {"cap": cap, "rate": float(cents) / 100}
 
 
+def _parse_ato_law_first_tax_band(
+    row: list[str],
+) -> dict[str, int | float]:
+    if len(row) != 3 or row[0] != "1":
+        raise ChangedExtraction(
+            "ATO law first-band row must be exact 3-column item 1"
+        )
+    band_match = re.fullmatch(
+        r"does not exceed \$([0-9][0-9,]*)", row[1]
+    )
+    if not band_match:
+        raise ChangedExtraction(
+            f"ATO law band {row[1]!r} is not exact 'does not exceed $N'"
+        )
+    rate_match = re.fullmatch(
+        r"([0-9]+(?:\.[0-9]+)?)%", row[2]
+    )
+    if not rate_match:
+        raise ChangedExtraction(
+            f"ATO law rate {row[2]!r} is not one exact percentage"
+        )
+    cap = _finite_number(band_match.group(1))
+    percent = _finite_number(rate_match.group(1))
+    if not isinstance(cap, int) or cap <= 0:
+        raise ChangedExtraction("ATO law first-band cap must be a positive integer")
+    if not 0 <= percent <= 100:
+        raise ChangedExtraction("ATO law first-band rate is outside 0..100")
+    return {"cap": cap, "rate": float(percent) / 100}
+
+
 def _extract_html_table_record(
     body: bytes, params: dict[str, Any]
 ) -> tuple[Any, Any]:
@@ -2076,6 +2132,24 @@ def _extract_html_table_record(
             f"section/header matched {len(candidates)} tables"
         )
     table, header_index = candidates[0]
+    if any(
+        field_spec["transform"] == "ato-law-first-tax-band"
+        for field_spec in params["fields"]
+    ):
+        title_rows = [
+            index
+            for index, row in enumerate(table["rows"])
+            if row == [ATO_LAW_FIRST_BAND_TITLE, "", ""]
+        ]
+        caption_match = table["caption"] == ATO_LAW_FIRST_BAND_TITLE
+        if (
+            len(title_rows) + int(caption_match) != 1
+            or (title_rows and title_rows[0] >= header_index)
+        ):
+            raise ChangedExtraction(
+                "ATO law table requires one exact reviewed caption or "
+                "3-column title row before headers"
+            )
     data_rows = table["rows"][header_index + 1 :]
     if not data_rows:
         raise ChangedExtraction("matched table has no data rows")
@@ -2106,6 +2180,10 @@ def _extract_html_table_record(
             elif field_spec["transform"] == "ato-first-tax-band":
                 row_values.append(
                     _parse_ato_first_tax_band(label, value_text)
+                )
+            elif field_spec["transform"] == "ato-law-first-tax-band":
+                row_values.append(
+                    _parse_ato_law_first_tax_band(row)
                 )
             else:
                 row_values.append(
