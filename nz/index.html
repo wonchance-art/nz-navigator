@@ -1717,7 +1717,7 @@ details.fold:not([open]) > .fold-body { display: none; }
           <label>주 시간 <input type="number" id="npHours" value="40" min="1" max="80" inputmode="numeric"></label>
         </div>
         <div id="npResult"></div>
-        <p style="color: var(--muted); font-size: 0.78rem; margin-top: 0.7rem;">세율 2026-27 <a href="https://www.ird.govt.nz/income-tax/income-tax-for-individuals/tax-codes-and-tax-rates-for-individuals/tax-rates-for-individuals" target="_blank" class="source-link">IRD↗</a> <span class="badge official">[공식]</span> · ACC 부담금 1.75% (GST 포함 · 상한 156,641) · 세금코드 M·학자금 없음 기준 · 워홀 등 임시비자는 KiwiSaver 대상 아님</p>
+        <p style="color: var(--muted); font-size: 0.78rem; margin-top: 0.7rem;">세율 2026-27 <a href="https://www.ird.govt.nz/income-tax/income-tax-for-individuals/tax-codes-and-tax-rates-for-individuals/tax-rates-for-individuals" target="_blank" class="source-link">IRD↗</a> <span class="badge official">[공식]</span> · ACC 부담금 <span data-claim-id="nz-ko-acc-rate-2026">1.75%</span> (GST 포함 · 상한 <span data-claim-id="nz-ko-acc-cap-2026">156,641</span>) · 세금코드 M·학자금 없음 기준 · 워홀 등 임시비자는 KiwiSaver 대상 아님</p>
       </div>
     </details>
 
@@ -1734,7 +1734,7 @@ details.fold:not([open]) > .fold-body { display: none; }
           <tr><td style="font-weight:700;">청소</td><td>스폰서 관행 거의 없음 + 하도급 구조라 적격 고용 어려움</td><td>수퍼바이저 승격 후 재평가</td></tr>
           <tr><td style="font-weight:700;">우버·배달</td><td>독립 계약자 — <strong>고용관계 자체가 없어 스폰서 원천 불가</strong></td><td>없음 — 수입용으로만</td></tr>
         </tbody></table></div>
-        <p style="color: var(--muted); font-size: 0.88rem; margin-top: 0.8rem;">⚠️ <strong>비자 만료 후 체류(오버스테이)는 42일을 넘기면 재입국 금지 사유</strong>가 될 수 있습니다. 그리고 2025-01-27부터 관광비자·NZeTA로 <strong>해외 고용주 원격근무는 허용</strong>되지만, NZ 고용주 일은 절대 불가입니다.</p>
+        <p style="color: var(--muted); font-size: 0.88rem; margin-top: 0.8rem;">⚠️ 비자 만료 다음 날부터 불법 체류이며 즉시 출국해야 합니다. <strong data-claim-id="nz-ko-overstay-42-days">42일 이상 불법 체류하면 재입국이 제한될 수 있습니다.</strong> 그리고 2025-01-27부터 관광비자·NZeTA로 <strong>해외 고용주 원격근무는 허용</strong>되지만, NZ 고용주 일은 절대 불가입니다.</p>
         <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.4rem;">기준일 2026-07-08 · 이 목록은 "하지 말라"가 아니라 "이 일로는 영주권 설계가 안 된다"는 뜻 — 생활비 벌이로는 전부 유효합니다.</p>
       </div>
     </details>
@@ -1767,10 +1767,10 @@ details.fold:not([open]) > .fold-body { display: none; }
     <h2 id="survival" style="margin-top: 2.5rem;">생활비 생존 전략</h2>
     <p class="dash-sub" style="margin-bottom: 1rem;">6원칙 — 비자비·임금 [공식] · 시세·버퍼 [추정 2026-07]</p>
     <div class="tip-grid">
-      <div class="tip-card"><div class="tip-ic">💵</div><strong>도착 버퍼 6,000+</strong><p>자금증명 4,200은 심사용. 첫 4–6주 무수입 + 정착비 2,000–3,500 + 다음 렌트 대비.</p></div>
-      <div class="tip-card"><div class="tip-ic">⚡</div><strong>첫 수입 2주 안에</strong><p>호스피탈리티·시즌잡이 최속. 최저임금 풀타임 주 ~958(세전). 이력서는 출국 전 준비.</p></div>
+      <div class="tip-card"><div class="tip-ic">💵</div><strong>도착 버퍼 6,000+</strong><p><span data-claim-id="nz-ko-whv-funds">WHV 자금증명 최소 4,200</span>은 심사용. 첫 4–6주 무수입 + 정착비 2,000–3,500 + 다음 렌트 대비.</p></div>
+      <div class="tip-card"><div class="tip-ic">⚡</div><strong>첫 수입 2주 안에</strong><p>호스피탈리티·시즌잡이 비교적 빠름. <span data-claim-id="nz-ko-min-wage-2026">성인 최저임금 23.95/시간(세전)</span>을 하한으로 확인. 이력서는 출국 전 준비.</p></div>
       <div class="tip-card"><div class="tip-ic">🏠</div><strong>주거 = 저축 속도</strong><p>방셰어 200–320 vs 스튜디오 400+. 일부 시즌잡은 숙소를 제공하지만 조건·공제액을 확인. 적격 원예·포도 작업 3개월은 WHE 신청 근거를 보관.</p></div>
-      <div class="tip-card"><div class="tip-ic">🧾</div><strong>도착 주에 IRD</strong><p>무료 발급 — 없으면 45% 원천징수. 3월 말 이후 환급 확인.</p></div>
+      <div class="tip-card"><div class="tip-ic">🧾</div><strong>도착 주에 IRD</strong><p>무료 발급. <span data-claim-id="nz-ko-non-notified-tax">고용주에게 IR330 세금코드를 제출하지 않으면 45%에 ACC levy가 더해진 non-notified 세율</span>이 적용됩니다.</p></div>
       <div class="tip-card"><div class="tip-ic">🏦</div><strong>비자비 분리 적립</strong><p>AEWV 1,540 · 영주권 6,450 — 신청 2–3개월 전 별도 계좌에.</p></div>
       <div class="tip-card"><div class="tip-ic">🎓</div><strong>유학 현금 흐름</strong><p>학기 중 25h(주 ~599)는 생활비만 상쇄 — 학비는 사전 확보.</p></div>
     </div>
@@ -1846,6 +1846,9 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span data-claim-id="nz-ko-whv-duration">최대 12개월</span> ·
       <span data-claim-id="nz-ko-whv-quota-2026">2026 쿼터 3,000명</span> ·
       <span data-claim-id="nz-ko-whv-fee">신청비 NZD 770(IVL 포함)</span> ·
+      <span data-claim-id="nz-ko-ivl-component">내부 IVL 구성액 NZD 100(별도 중복 합산 금지)</span> ·
+      <span data-claim-id="nz-ko-whv-funds">자금증명 NZD 4,200</span> ·
+      <span data-claim-id="nz-ko-whv-processing">WHV 80% 3주</span> ·
       <span data-claim-id="nz-ko-student-fee">학생비자 NZD 850</span> ·
       <span data-claim-id="nz-ko-student-processing">80% 8주 이내</span> ·
       <span data-claim-id="nz-ko-student-funds">생활비 증명 연 NZD 20,000</span> ·
@@ -1855,12 +1858,20 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span data-claim-id="nz-ko-median-20-2026">2배 기준 NZD 70/h</span> ·
       <span data-claim-id="nz-ko-median-30-2026">3배 기준 NZD 105/h</span> ·
       <span data-claim-id="nz-ko-pswv-fee">PSWV NZD 1,670</span> ·
+      <span data-claim-id="nz-ko-pswv-processing">PSWV 80% 5주</span> ·
       <span data-claim-id="nz-ko-aewv-fee">AEWV NZD 1,540</span> ·
+      <span data-claim-id="nz-ko-aewv-processing">AEWV 80% 6.5주</span> ·
       <span data-claim-id="nz-ko-residence-fee">SMC·숙련영주 NZD 6,450</span> ·
+      <span data-claim-id="nz-ko-resident-processing">SMC·StR·WTR 80% 4개월</span> ·
+      <span data-claim-id="nz-ko-skilled-residence-age">숙련영주 연령 55세 이하</span> ·
       <span data-claim-id="nz-ko-accreditation-fee">표준 고용주 인증 NZD 775</span> ·
       <span data-claim-id="nz-ko-job-check-fee">Job Check NZD 735</span> ·
       <span data-claim-id="nz-ko-partner-work-fee">파트너 워크비자 NZD 1,630</span> ·
       <span data-claim-id="nz-ko-partner-resident-fee">NZ 시민·영주자 파트너 영주비자 NZD 5,360</span> ·
+      <span data-claim-id="nz-ko-non-notified-tax">IR330 미제출 원천세율 45% + ACC levy</span> ·
+      <span data-claim-id="nz-ko-income-tax-brackets-2026">소득세 계산상수: 15,600/0.105 · 53,500/0.175 · 78,100/0.30 · 180,000/0.33 · 초과/0.39</span> ·
+      <span data-claim-id="nz-ko-acc-rate-2026">ACC levy 1.75%</span> ·
+      <span data-claim-id="nz-ko-acc-cap-2026">ACC levy 소득상한 NZD 156,641</span> ·
       <span data-claim-id="nz-ko-netpay-72800">연봉 72,800 표본 실수령 NZD 57,466</span>
       <a href="../verification.html?country=NZ" class="source-link">검증 원장·변경이력 →</a>
     </div>
@@ -2335,7 +2346,7 @@ const DB = {
       id: 'A',
       name: 'A. 직행 (WHV→AEWV→SMC)',
       summary: '임시직 → 인증 고용주 스폰서 → 영주권',
-      duration: '30–48개월',
+      duration: '30–48개월 [추정]',
       cost: 'NZD 11,000–12,700',
       stages: [
         { name: 'WHV', months: 12 },
@@ -2345,14 +2356,14 @@ const DB = {
       details: {
         requirements: ['잡오퍼 (인증 고용주, 주 30h+)', '시급 35/h 이상', 'IELTS 6.5 (또는 영어권 학사+)'],
         costs: ['WHV 비자: 770 (IVL 포함)', '의료보험: ~700/년', 'AEWV: 1,540', '정착비: 2,500–3,500', 'SMC: 6,450'],
-        processing: ['WHV: 3주', 'AEWV: 7주', 'SMC: 4개월']
+        processing: ['WHV: 3주(80%)', 'AEWV: 6.5주(80%)', 'SMC: 4개월(80%)']
       }
     },
     {
       id: 'B',
       name: 'B. 유학 경유 (WHV→학업→PSWV→AEWV→SMC)',
       summary: '워홀로 경험 + 학위 취득 + 직업 연결',
-      duration: '48–96개월+',
+      duration: '48–96개월+ [추정]',
       cost: 'NZD 80,000–247,000',
       stages: [
         { name: 'WHV', months: 12 },
@@ -2362,7 +2373,7 @@ const DB = {
       ],
       studyVariants: {
         gd: {
-          label: '학사 보유 → GD 1년', short: '유학 · GD 1년', duration: '48–60개월', cost: 'NZD 80,000–110,000',
+          label: '학사 보유 → GD 1년', short: '유학 · GD 1년', duration: '48–60개월 [추정]', cost: 'NZD 80,000–110,000',
           note: 'GD(L7) 1년 → PSWV 1년은 2026-11-16 개편 시행 후 기준 — 지금 준비해 2027년 입학이면 해당. 학업 중 주 25h 근로 가능. 직군별 과정·학비 비교는 직군 탭의 \'과정 등록으로 시작하기\' 참고.',
           stages: [
             { name: 'WHV', months: 12 },
@@ -2372,7 +2383,7 @@ const DB = {
           ]
         },
         bach: {
-          label: '학사 없음 → 학사 3년', short: '유학 · 학사 3년', duration: '72–96개월+', cost: 'NZD 130,000–247,000',
+          label: '학사 없음 → 학사 3년', short: '유학 · 학사 3년', duration: '72–96개월+ [추정]', cost: 'NZD 130,000–247,000',
           note: '학사(L7, 3년)는 졸업 후 PSWV 최대 3년 — 학사 미보유자의 표준 경로. 학비 연 22,000–58,000.',
           stages: [
             { name: 'WHV', months: 12 },
@@ -2385,14 +2396,14 @@ const DB = {
       details: {
         requirements: ['학교 입학', '자금증명: 20,000/년', 'L7+ 학위(PSWV 자격)'],
         costs: ['학비: 22,000–58,000/년', '생활비: 20,000/년', 'PSWV: 1,670', 'AEWV: 1,540', 'SMC: 6,450'],
-        processing: ['학생비자: 8주(80%)', 'PSWV: 2–4주', 'AEWV: 7주', 'SMC: 4개월']
+        processing: ['학생비자: 8주(80%)', 'PSWV: 5주(80%)', 'AEWV: 6.5주(80%)', 'SMC: 4개월(80%)']
       }
     },
     {
       id: 'C-T1',
       name: 'C. Green List T1 (즉시 영주권)',
       summary: '그린리스트 T1 직종 + 잡오퍼 → 곧장 영주권 신청',
-      duration: '15–24개월',
+      duration: '15–24개월 [추정]',
       cost: 'NZD 10,500–12,000',
       stages: [
         { name: 'WHV', months: 12 },
@@ -2402,14 +2413,14 @@ const DB = {
       details: {
         requirements: ['GL T1 직종(Software Engineer 등)', '잡오퍼 (인증 고용주)', '55세 이하'],
         costs: ['WHV: 770 (IVL 포함)', 'AEWV: 1,540', 'Straight to Residence: 6,450'],
-        processing: ['AEWV: 3주(GL 우대)', 'StR: 4개월']
+        processing: ['AEWV: 6.5주(80%)', 'StR: 4개월(80%)']
       }
     },
     {
       id: 'C-T2',
       name: 'C. 그린리스트 T2 (근무형 영주권)',
       summary: '트레이드 그린리스트 직종으로 24개월 근무 → 영주권',
-      duration: '36–42개월',
+      duration: '36–42개월 [추정]',
       cost: 'NZD 10,500–12,000',
       stages: [
         { name: 'WHV', months: 12 },
@@ -2419,24 +2430,24 @@ const DB = {
       details: {
         requirements: ['GL T2 직종(전기공, 용접 등)', '24개월 근무 (지정 고용주)', '자격 인정'],
         costs: ['WHV: 770 (IVL 포함)', 'AEWV: 1,540', 'Work to Residence: 6,450'],
-        processing: ['AEWV: 3주(GL 우대)', 'WTR: 4개월']
+        processing: ['AEWV: 6.5주(80%)', 'WTR: 4개월(80%)']
       }
     },
     {
       id: 'D',
       name: 'D. 케어 협약 (요양·간호보조)',
       summary: '요양·간호보조로 24개월 근무 → 영주권',
-      duration: '36–39개월',
+      duration: '36–40개월 [추정]',
       cost: 'NZD 9,000–9,500',
       stages: [
         { name: 'WHV', months: 12 },
         { name: '케어 AEWV', months: 24 },
-        { name: '케어 영주권 신청', months: 3 }
+        { name: '케어 영주권 신청', months: 4 }
       ],
       details: {
         requirements: ['승인 직종 (요양, 간호보조, 장애지원)', '중위임금 이상 유지', '24개월 근무 (첫 12개월 직종 변경 불가)'],
         costs: ['WHV: 770 (IVL 포함)', 'AEWV: 1,540', 'Care Residence: 6,450'],
-        processing: ['AEWV: 7주', 'Care Residence: 3개월']
+        processing: ['AEWV: 6.5주(80%)', 'Care WTR: 4개월(80%)']
       }
     }
   ],
@@ -2580,7 +2591,7 @@ const DB = {
         },
         {
           label: '귀국 후 재도전',
-          result: '<strong>사실:</strong> WHV는 1회 한정 — 이후는 오프쇼어 AEWV(잡오퍼 선확보)<br><strong>절대 금지:</strong> 오버스테이 — 42일 초과 시 5년 입국 금지'
+          result: '<strong>사실:</strong> WHV는 1회 한정 — 이후는 오프쇼어 AEWV(잡오퍼 선확보)<br><strong>절대 금지:</strong> 비자 만료 다음 날부터 불법 체류이며 즉시 출국 의무. 42일 이상이면 재입국이 제한될 수 있고, 강제추방 여부·불법 체류 기간에 따라 별도 입국 금지 기간이 적용될 수 있음'
         }
       ],
       advice: '만료 6주 전이 결정 데드라인. ①~④ 중 무엇이든 "만료 전에 신청"이 유일한 원칙이다.'
@@ -5103,7 +5114,7 @@ function buildChecklistText(result) {
     '',
     '[생존 원칙]',
     '☐ 도착 버퍼 6,000+ 준비 (첫 4–6주 무수입 가정)',
-    '☐ 도착 주에 IRD 번호·은행 계좌 (IRD 없으면 45% 원천징수)',
+    '☐ 도착 주에 IRD 번호·은행 계좌·IR330 세금코드 제출 (미제출 시 45% + ACC levy)',
     '☐ 2주 안에 첫 수입 — NZ식 이력서는 출국 전 완성',
     '☐ 방셰어/숙식 제공으로 렌트 최소화',
     '☐ 비자비(1,540 / 6,450)는 신청 2–3개월 전 분리 적립',

@@ -20,6 +20,7 @@ from typing import Any
 
 DEFAULT_PAGES = ("nz/index.html", "ja/index.html", "ca/index.html", "au/index.html")
 DEFAULT_EXEMPTIONS = "data/claim-coverage-exemptions.json"
+DEFAULT_CLAIM_REGISTRY = "data/claims.json"
 EXEMPTION_FIELDS = ("selector", "fingerprint", "reason", "owner", "expiresAt")
 SEMANTIC_TAGS = frozenset(
     {"p", "li", "tr", "label", "summary", "h1", "h2", "h3", "h4", "h5", "h6"}
@@ -45,7 +46,9 @@ VISA_IDENTIFIERS = frozenset(
     }
 )
 NUMBER_RE = re.compile(
+    r"(?<![A-Za-z0-9_])"
     r"(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:[kKmM]\b)?"
+    r"(?![A-Za-z0-9_])"
 )
 DATE_SPAN_RE = re.compile(
     r"\b20\d{2}[-/]\d{1,2}(?:[-/]\d{1,2})?\b|"
@@ -428,14 +431,14 @@ def _categories_for_claim_id(claim_id: str) -> set[str]:
     normalized = claim_id.lower()
     categories: set[str] = set()
     patterns = {
-        "fee": r"(?:^|-)(?:fee|fees)(?:-|$)",
+        "fee": r"(?:^|-)(?:fee|fees|ivl)(?:-|$)",
         "age": r"(?:^|-)age(?:-|$)",
         "quota": r"(?:^|-)(?:quota|cap)(?:-|$)",
-        "wage": r"(?:^|-)wage(?:-|$)",
-        "tax": r"(?:^|-)(?:tax|netpay)(?:-|$)",
+        "wage": r"(?:^|-)(?:wage|median|csit|ssit)(?:-|$)",
+        "tax": r"(?:^|-)(?:tax|netpay|acc)(?:-|$)",
         "funds": r"(?:^|-)funds?(?:-|$)",
-        "processing": r"(?:^|-)processing(?:-|$)",
-        "duration": r"(?:^|-)(?:duration|second-work|third-work)(?:-|$)",
+        "processing": r"(?:^|-)(?:processing|service-standard)(?:-|$)",
+        "duration": r"(?:^|-)(?:duration|second-work|third-work|overstay|reentry-ban|pr-eligibility)(?:-|$)",
     }
     for category, pattern in patterns.items():
         if re.search(pattern, normalized):
@@ -770,6 +773,63 @@ def _load_exemptions(
     return valid
 
 
+def _verify_public_coverage_summary(
+    root: Path, report: CoverageReport
+) -> None:
+    registry_path = root / DEFAULT_CLAIM_REGISTRY
+    if not registry_path.is_file():
+        return
+    try:
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        report.issues.append(
+            CoverageIssue(
+                "INVALID_PUBLIC_COVERAGE",
+                DEFAULT_CLAIM_REGISTRY,
+                "json",
+                str(exc),
+                "readable claim registry JSON",
+                "Repair data/claims.json before publishing coverage totals.",
+            )
+        )
+        return
+    summary = (
+        registry.get("audit", {}).get("coverage")
+        if isinstance(registry, dict)
+        else None
+    )
+    if not isinstance(summary, dict):
+        report.issues.append(
+            CoverageIssue(
+                "MISSING_PUBLIC_COVERAGE",
+                DEFAULT_CLAIM_REGISTRY,
+                "audit.coverage",
+                repr(summary),
+                "candidateCount, markedCount, exemptionCount",
+                "Publish the current verifier totals in audit.coverage.",
+            )
+        )
+        return
+    expected = {
+        "candidateCount": report.candidate_count,
+        "markedCount": report.marked_count,
+        "exemptionCount": report.exempted_count,
+    }
+    for field_name, actual in expected.items():
+        if summary.get(field_name) != actual:
+            report.issues.append(
+                CoverageIssue(
+                    "PUBLIC_COVERAGE_MISMATCH",
+                    DEFAULT_CLAIM_REGISTRY,
+                    f"audit.coverage.{field_name}",
+                    repr(summary.get(field_name)),
+                    str(actual),
+                    "Update the public coverage total only after rerunning "
+                    "scripts/verify_claim_coverage.py.",
+                )
+            )
+
+
 def verify_coverage(
     root: Path | str,
     *,
@@ -834,6 +894,7 @@ def verify_coverage(
                     "reviewing the changed candidate.",
                 )
             )
+    _verify_public_coverage_summary(root_path, report)
     return report
 
 

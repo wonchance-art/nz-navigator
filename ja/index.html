@@ -1709,7 +1709,7 @@ details.fold:not([open]) > .fold-body { display: none; }
           <label>週時間 <input type="number" id="npHours" value="40" min="1" max="80" inputmode="numeric"></label>
         </div>
         <div id="npResult"></div>
-        <p style="color: var(--muted); font-size: 0.78rem; margin-top: 0.7rem;">税率 2026-27 <a href="https://www.ird.govt.nz/income-tax/income-tax-for-individuals/tax-codes-and-tax-rates-for-individuals/tax-rates-for-individuals" target="_blank" class="source-link">IRD↗</a> <span class="badge official">[公式]</span> ・ ACC保険料 1.75% (GST込・上限 156,641) ・ 税コードM・学生ローンなし基準 ・ ワーホリ等の一時ビザはKiwiSaver対象外</p>
+        <p style="color: var(--muted); font-size: 0.78rem; margin-top: 0.7rem;">税率 2026-27 <a href="https://www.ird.govt.nz/income-tax/income-tax-for-individuals/tax-codes-and-tax-rates-for-individuals/tax-rates-for-individuals" target="_blank" class="source-link">IRD↗</a> <span class="badge official">[公式]</span> ・ ACC保険料 <span data-claim-id="nz-ja-acc-rate-2026">1.75%</span> (GST込・上限 <span data-claim-id="nz-ja-acc-cap-2026">156,641</span>) ・ 税コードM・学生ローンなし基準 ・ ワーホリ等の一時ビザはKiwiSaver対象外</p>
       </div>
     </details>
 
@@ -1754,10 +1754,10 @@ details.fold:not([open]) > .fold-body { display: none; }
     <h2 id="survival" style="margin-top: 2.5rem;">生活費生存戦略</h2>
     <p class="dash-sub" style="margin-bottom: 1rem;">6原則 — ビザ費・賃金 [公式] ・ 相場・バッファ [推定 2026-07]</p>
     <div class="tip-grid">
-      <div class="tip-card"><div class="tip-ic">💵</div><strong>到着バッファ 6,000+</strong><p>資金証明 4,200は審査用。最初4–6週無収入 + 定住費 2,000–3,500 + 次のレント対備。</p></div>
-      <div class="tip-card"><div class="tip-ic">⚡</div><strong>初收入 2週以内</strong><p>ホスピタリティ・シーズンジョブが最速。最低賃金フルタイム週 ~958(税前)。履歴書は出国前に準備。</p></div>
+      <div class="tip-card"><div class="tip-ic">💵</div><strong>到着バッファ 6,000+</strong><p><span data-claim-id="nz-ja-whv-funds">WHVの資金証明は最低4,200ドル</span>。最初4–6週の無収入 + 定住費2,000–3,500 + 次の家賃は別途準備。</p></div>
+      <div class="tip-card"><div class="tip-ic">⚡</div><strong>初収入 2週以内</strong><p>ホスピタリティ・シーズンジョブは比較的早い。<span data-claim-id="nz-ja-min-wage-2026">成人最低賃金23.95ドル/時（税前）</span>を下限として確認。履歴書は出国前に準備。</p></div>
       <div class="tip-card"><div class="tip-ic">🏠</div><strong>住居 = 貯蓄速度</strong><p>ルームシェア 200–320 vs スタジオ 400+. シーズンジョブ食事提供なら貯蓄2倍 + 園芸3ヶ月 = WHV延長。</p></div>
-      <div class="tip-card"><div class="tip-ic">🧾</div><strong>到着週にIRD</strong><p>無料発行 — なければ45% 源泉徴収。3月末以降還付確認。</p></div>
+      <div class="tip-card"><div class="tip-ic">🧾</div><strong>到着週にIRD</strong><p>無料発行。<span data-claim-id="nz-ja-non-notified-tax">雇用主にIR330の税コードを提出しない場合、45%にACC levyを加えたnon-notified税率</span>が適用されます。</p></div>
       <div class="tip-card"><div class="tip-ic">🏦</div><strong>ビザ費分離積立</strong><p>AEWV 1,540 ・ 永住権 6,450 — 申請2–3ヶ月前に別口座に。</p></div>
       <div class="tip-card"><div class="tip-ic">🎓</div><strong>留学現金フロー</strong><p>学期中 25h(週 ~599)は生活費のみ相殺 — 学費は事前確保。</p></div>
     </div>
@@ -1833,6 +1833,9 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span data-claim-id="nz-ja-whv-duration">最長12か月</span> ・
       <span data-claim-id="nz-ja-whv-cap">数値上限なし（常時受付）</span> ・
       <span data-claim-id="nz-ja-whv-fee">申請費NZD 770（IVL込み）</span> ・
+      <span data-claim-id="nz-ja-ivl-component">内訳のIVL NZD 100（別途重複加算しない）</span> ・
+      <span data-claim-id="nz-ja-whv-funds">資金証明NZD 4,200</span> ・
+      <span data-claim-id="nz-ja-whv-processing">WHV 80%が3週間以内</span> ・
       <span data-claim-id="nz-ja-student-fee">学生ビザNZD 850</span> ・
       <span data-claim-id="nz-ja-student-processing">80%が8週間以内</span> ・
       <span data-claim-id="nz-ja-student-funds">生活費証明 年NZD 20,000</span> ・
@@ -1842,12 +1845,20 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span data-claim-id="nz-ja-median-20-2026">2倍基準NZD 70/h</span> ・
       <span data-claim-id="nz-ja-median-30-2026">3倍基準NZD 105/h</span> ・
       <span data-claim-id="nz-ja-pswv-fee">PSWV NZD 1,670</span> ・
+      <span data-claim-id="nz-ja-pswv-processing">PSWV 80%が5週間以内</span> ・
       <span data-claim-id="nz-ja-aewv-fee">AEWV NZD 1,540</span> ・
+      <span data-claim-id="nz-ja-aewv-processing">AEWV 80%が6.5週間以内</span> ・
       <span data-claim-id="nz-ja-residence-fee">SMC・技能永住NZD 6,450</span> ・
+      <span data-claim-id="nz-ja-resident-processing">SMC・StR・WTR 80%が4か月以内</span> ・
+      <span data-claim-id="nz-ja-skilled-residence-age">技能永住は55歳以下</span> ・
       <span data-claim-id="nz-ja-accreditation-fee">標準雇用主認定NZD 775</span> ・
       <span data-claim-id="nz-ja-job-check-fee">Job Check NZD 735</span> ・
       <span data-claim-id="nz-ja-partner-work-fee">パートナー就労ビザNZD 1,630</span> ・
       <span data-claim-id="nz-ja-partner-resident-fee">NZ市民・永住者パートナー永住ビザNZD 5,360</span> ・
+      <span data-claim-id="nz-ja-non-notified-tax">IR330未提出の源泉税率45% + ACC levy</span> ・
+      <span data-claim-id="nz-ja-income-tax-brackets-2026">所得税計算定数: 15,600/0.105・53,500/0.175・78,100/0.30・180,000/0.33・超過/0.39</span> ・
+      <span data-claim-id="nz-ja-acc-rate-2026">ACC levy 1.75%</span> ・
+      <span data-claim-id="nz-ja-acc-cap-2026">ACC levy所得上限NZD 156,641</span> ・
       <span data-claim-id="nz-ja-netpay-72800">年収72,800の手取り例 NZD 57,466</span>
       <a href="../verification.html?country=NZ" class="source-link">検証台帳・変更履歴 →</a>
     </div>
@@ -2246,7 +2257,7 @@ const DB = {
       id: 'A',
       name: 'A. 直行（WHV→AEWV→SMC）',
       summary: 'ワーホリで就業→認定雇用主スポンサー→永住権',
-      duration: '30～48ヶ月',
+      duration: '30～48ヶ月 [推定]',
       cost: 'NZD 11,000～12,700',
       stages: [
         { name: 'WHV', months: 12 },
@@ -2256,14 +2267,14 @@ const DB = {
       details: {
         requirements: ['ジョブオファー（認定雇用主、週30h+）', '時給35/h以上', 'IELTS 6.5（または英語圏学士+）'],
         costs: ['WHVビザ：770（IVL込み）', '医療保険：～700/年', 'AEWV：1,540', '定住費：2,500～3,500', 'SMC：6,450'],
-        processing: ['WHV：3週', 'AEWV：7週', 'SMC：4ヶ月']
+        processing: ['WHV：3週（80%）', 'AEWV：6.5週（80%）', 'SMC：4ヶ月（80%）']
       }
     },
     {
       id: 'B',
       name: 'B. 留学経由（WHV→学業→PSWV→AEWV→SMC）',
       summary: 'ワーホリで実績を積み、学位取得、職業に結びつける',
-      duration: '48～96ヶ月+',
+      duration: '48～96ヶ月+ [推定]',
       cost: 'NZD 80,000～247,000',
       stages: [
         { name: 'WHV', months: 12 },
@@ -2273,7 +2284,7 @@ const DB = {
       ],
       studyVariants: {
         gd: {
-          label: '学士保有→GD 1年', short: '留学・GD 1年', duration: '48～60ヶ月', cost: 'NZD 80,000～110,000',
+          label: '学士保有→GD 1年', short: '留学・GD 1年', duration: '48～60ヶ月 [推定]', cost: 'NZD 80,000～110,000',
           note: 'GD（L7）1年→PSWV 1年は2026年11月16日の改編施行後の基準 — 今準備して2027年入学なら対象。学業中は週25時間の勤務が可能。職種別課程・学費比較は職種タブの「課程登録で開始」を参考。',
           stages: [
             { name: 'WHV', months: 12 },
@@ -2283,7 +2294,7 @@ const DB = {
           ]
         },
         bach: {
-          label: '学士なし→学士 3年', short: '留学・学士 3年', duration: '72～96ヶ月+', cost: 'NZD 130,000～247,000',
+          label: '学士なし→学士 3年', short: '留学・学士 3年', duration: '72～96ヶ月+ [推定]', cost: 'NZD 130,000～247,000',
           note: '学士（L7、3年）は卒業後PSWV最大3年が可能 — 学士未保有者の標準経路。学費は年22,000～58,000ドル。',
           stages: [
             { name: 'WHV', months: 12 },
@@ -2296,14 +2307,14 @@ const DB = {
       details: {
         requirements: ['学校入学', '資金証明：年20,000ドル', 'L7以上の学位（PSWV資格）'],
         costs: ['学費：年22,000～58,000ドル', '生活費：年20,000ドル', 'PSWV：1,670ドル', 'AEWV：1,540ドル', 'SMC：6,450ドル'],
-        processing: ['学生ビザ：8週（80%）', 'PSWV：2～4週', 'AEWV：7週', 'SMC：4ヶ月']
+        processing: ['学生ビザ：8週（80%）', 'PSWV：5週（80%）', 'AEWV：6.5週（80%）', 'SMC：4ヶ月（80%）']
       }
     },
     {
       id: 'C-T1',
       name: 'C. Green List T1（即時永住権）',
       summary: 'Green List T1職種＋ジョブオファー→直ぐ永住権申請',
-      duration: '15～24ヶ月',
+      duration: '15～24ヶ月 [推定]',
       cost: 'NZD 10,500～12,000',
       stages: [
         { name: 'WHV', months: 12 },
@@ -2313,14 +2324,14 @@ const DB = {
       details: {
         requirements: ['GLT1職種（Software Engineer等）', 'ジョブオファー（認定雇用主）', '55歳以下'],
         costs: ['WHV：770（IVL込み）', 'AEWV：1,540', 'Straight to Residence：6,450'],
-        processing: ['AEWV：3週（GL優遇）', 'StR：4ヶ月']
+        processing: ['AEWV：6.5週（80%）', 'StR：4ヶ月（80%）']
       }
     },
     {
       id: 'C-T2',
       name: 'C. グリーンリストT2（勤務形永住権）',
       summary: 'Trade Green List職種で24ヶ月勤務→永住権',
-      duration: '36～42ヶ月',
+      duration: '36～42ヶ月 [推定]',
       cost: 'NZD 10,500～12,000',
       stages: [
         { name: 'WHV', months: 12 },
@@ -2330,24 +2341,24 @@ const DB = {
       details: {
         requirements: ['GLT2職種（電気工、溶接等）', '24ヶ月勤務（指定雇用主）', '資格認定'],
         costs: ['WHV：770（IVL込み）', 'AEWV：1,540', 'Work to Residence：6,450'],
-        processing: ['AEWV：3週（GL優遇）', 'WTR：4ヶ月']
+        processing: ['AEWV：6.5週（80%）', 'WTR：4ヶ月（80%）']
       }
     },
     {
       id: 'D',
       name: 'D. ケア協約（介護・看護補助）',
       summary: '介護・看護補助で24ヶ月勤務 → 永住権',
-      duration: '36–39ヶ月',
+      duration: '36～40ヶ月 [推定]',
       cost: 'NZD 9,000–9,500',
       stages: [
         { name: 'WHV', months: 12 },
         { name: 'ケアAEWV', months: 24 },
-        { name: 'ケア永住権申請', months: 3 }
+        { name: 'ケア永住権申請', months: 4 }
       ],
       details: {
         requirements: ['承認職種（介護、看護補助、障害支援）', '中央値賃金以上を維持', '24ヶ月勤務（最初の12ヶ月は職種変更不可）'],
         costs: ['WHV: 770（IVL込み）', 'AEWV: 1,540', 'Care Residence: 6,450'],
-        processing: ['AEWV: 7週', 'Care Residence: 3ヶ月']
+        processing: ['AEWV：6.5週（80%）', 'Care WTR：4ヶ月（80%）']
       }
     }
   ],

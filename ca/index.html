@@ -573,7 +573,12 @@ select {
   border-radius: 4px;
   margin-bottom: 1rem;
   font-size: 0.95rem;
+  overflow-wrap: anywhere;
 }
+
+.fact-detail { margin-top: 0.45rem; }
+.fact-detail summary { cursor: pointer; font-weight: 700; color: var(--brand-deep); }
+.fact-detail span { display: block; margin-top: 0.35rem; font-size: 0.84rem; }
 
 @media (max-width: 680px) {
   .header-content {
@@ -1735,7 +1740,7 @@ details.fold:not([open]) > .fold-body { display: none; }
     <h2 id="survival" style="margin-top: 2.5rem;">생활비 생존 전략</h2>
     <p class="dash-sub" style="margin-bottom: 1rem;">6가지 팁 — 비자·임금 [공식] · 시세·버퍼 [추정 2026-07]</p>
     <div class="tip-grid">
-      <div class="tip-card"><div class="tip-ic">🏛️</div><strong>도착 첫주 SIN 발급</strong><p>사회보험번호 — 5 업무일(온라인) / 현장 방문 즉시. 없으면 급여에서 30% 원천징수.</p></div>
+      <div class="tip-card"><div class="tip-ic">🏛️</div><strong>도착 첫주 SIN 발급</strong><p><span data-claim-id="ca-ko-sin-processing">서류가 완전한 온라인 신청은 약 5업무일 내 처리</span>됩니다. 고용 시작 후 3일 안에 SIN을 고용주에게 제공하거나 즉시 신청해야 하며, 기다리는 동안에도 고용주는 통상 급여 공제를 계속 신고합니다. SIN 미발급만을 이유로 한 고정 고율 원천징수 규정은 없습니다.</p></div>
       <div class="tip-card"><div class="tip-ic">🏥</div><strong>의료보험 대기 기간</strong><p>주별 상이: 온타리오 즉시 · BC 3개월 · 앨버타 3개월. 대기 중 민간보험 필수(월 40-80 CAD).</p></div>
       <div class="tip-card"><div class="tip-ic">🏦</div><strong>은행 개설 보너스</strong><p>CIBC(2년 무료) · TD(6개월 무료) · RBC(12개월 무료) — 각 500-750 CAD 신규 이민자 보너스.</p></div>
       <div class="tip-card"><div class="tip-ic">📱</div><strong>저가 통신 플랜</strong><p>Public Mobile 40 CAD/75GB · Koodo 25-55 CAD — 신용도 불필요 · eSIM 0 CAD.</p></div>
@@ -1805,19 +1810,29 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span data-claim-id="ca-ko-iec-duration">최대 24개월</span> ·
       <span data-claim-id="ca-ko-iec-quota-2026">2026 Working Holiday 쿼터 10,239</span> ·
       <span data-claim-id="ca-ko-iec-fees">IEC+OWP CAD 284.75, 생체정보 필요 시 +85</span> ·
+      <span data-claim-id="ca-ko-iec-program-fee">IEC 프로그램 수수료 CAD 184.75</span> ·
+      <span data-claim-id="ca-ko-iec-processing">IEC 서비스 기준 56일(8주)</span> ·
       <span data-claim-id="ca-ko-biometrics-fee">개인 생체정보 CAD 85</span> ·
       <span data-claim-id="ca-ko-study-fee">Study Permit CAD 150</span> ·
       <span data-claim-id="ca-ko-pgwp-fee">PGWP CAD 255(155+100)</span> ·
       <span data-claim-id="ca-ko-ee-fee">경제이민·EE CAD 1,590(RPRF 포함)</span> ·
+      <span data-claim-id="ca-ko-rprf-fee">RPRF 구성액 CAD 600</span> ·
+      <span data-claim-id="ca-ko-ee-service-standard">EE 서비스 기준 6개월·80%</span> ·
+      <span data-claim-id="ca-ko-bc-pnp-fee">BC PNP Skills Immigration CAD 1,750</span> ·
       <span data-claim-id="ca-ko-study-funds">생활비 증명 연 CAD 22,895</span> ·
       <span data-claim-id="ca-ko-fsw-funds-one">FSW/FST 1인 정착자금 CAD 15,263</span> ·
       <span data-claim-id="ca-ko-federal-min-wage-2026">연방 최저임금 CAD 18.15/h</span> ·
       <span data-claim-id="ca-ko-ontario-min-wage-current">온타리오 CAD 17.60/h(2026-09-30까지)</span> ·
       <span data-claim-id="ca-ko-bc-min-wage-2026">BC CAD 18.25/h</span> ·
       <span data-claim-id="ca-ko-alberta-min-wage">앨버타 CAD 15/h</span> ·
+      <span data-claim-id="ca-ko-software-developer-median-wage">Software Developer 전국 중위임금 CAD 48.08/h</span> ·
       <span data-claim-id="ca-ko-crs-core-maximum">무배우자 core 최대 500점</span> ·
       <span data-claim-id="ca-ko-crs-sample-305">CRS 표본 core 305</span> ·
       <span data-claim-id="ca-ko-tax-on-60000">온타리오 60,000 표본 실수령 CAD 47,340</span>
+      <details class="fact-detail">
+        <summary>2026 세금 계산상수 보기</summary>
+        <span data-claim-id="ca-ko-tax-constants-2026">연방 58,523/0.14·117,045/0.205·181,440/0.26·258,482/0.29·초과/0.33·BPA 16,452·고용공제 1,501; ON 53,891/0.0505·107,785/0.0915·150,000/0.1116·220,000/0.1216·초과/0.1316·BPA 12,989; BC 50,363/0.056·100,728/0.077·115,648/0.105·140,430/0.1229·190,405/0.147·265,545/0.168·초과/0.205·BPA 13,216; AB 61,200/0.08·154,259/0.10·185,111/0.12·246,813/0.13·370,220/0.14·초과/0.15·BPA 22,769; CPP 0.0595·YMPE 74,600·공제 3,500·CPP2 0.04/74,600–85,000; EI 0.0163·CAD 1.63/100·상한 68,900</span>
+      </details>
       <a href="../verification.html?country=CA" class="source-link">검증 원장·변경이력 →</a>
     </div>
 
@@ -2185,7 +2200,7 @@ const DB = {
       id: 'A',
       name: 'A. 워홀 직행 (IEC → 1년 경력 → CEC)',
       summary: '임시거주 → 캐나다 경력 축적 → 영주권 신청',
-      duration: '18–30개월',
+      duration: '18–30개월 [추정]',
       cost: 'CAD 284.75 + 생체정보 85(필요 시) + EE 1,590(RPRF 포함)',
       stages: [
         { name: 'IEC Working Holiday', months: 24 },
@@ -2202,7 +2217,7 @@ const DB = {
       id: 'B',
       name: 'B. 유학 경유 (Study Permit → PGWP → 경력)',
       summary: '학위 취득 + PGWP 근무 + 영주권',
-      duration: '48–96개월+',
+      duration: '42–108개월+ [추정]',
       cost: 'CAD 235 (학생비자+생체정보) + 학비 45,000–174,000 + PGWP 255 + EE 1,590(RPRF 포함)',
       stages: [
         { name: '학생비자', months: 3 },
@@ -2212,7 +2227,7 @@ const DB = {
       ],
       studyVariants: {
         diploma: {
-          label: '디플로마 2년', short: '유학 · 디플로마', duration: '24–36개월', cost: 'CAD 30,000–60,000 학비 + PGWP 최대 3년',
+          label: '디플로마 2년', short: '유학 · 디플로마', duration: '42–72개월+ [추정]', cost: 'CAD 30,000–60,000 학비 + PGWP 최대 3년',
           note: '공립 컬리지 디플로마(2년)는 PGWP 최대 3년 권리. 전공 요건: 건강·교육·건설·교역 우선 (2024-11-01부터 적용).',
           stages: [
             { name: 'Study Permit', months: 3 },
@@ -2222,7 +2237,7 @@ const DB = {
           ]
         },
         bachelor: {
-          label: '학사 3–4년', short: '유학 · 학사', duration: '48–72개월+', cost: 'CAD 66,000–174,000 학비 + PGWP 최대 3년',
+          label: '학사 3–4년', short: '유학 · 학사', duration: '66–108개월+ [추정]', cost: 'CAD 66,000–174,000 학비 + PGWP 최대 3년',
           note: '대학 학사(3년)는 PGWP 최대 3년 — 학사 미보유자의 표준 경로. 2024-11-01부터 대학 졸업자는 전공 제한 없음 (컬리지는 전공 제한 있음).',
           stages: [
             { name: 'Study Permit', months: 3 },
@@ -2235,14 +2250,14 @@ const DB = {
       details: {
         requirements: ['학교 입학', '자금증명: 22,895/년 (학비·교통비 별도)', 'CLB 5.5+ (IELTS 5.5)'],
         costs: ['Study Permit 150', 'Biometrics 85(필요 시)', '학비: 30,000–174,000/년', 'PGWP 255', 'EE 1,590(RPRF 포함)'],
-        processing: ['Study Permit: 2–8주', 'PGWP: 2–4주', 'EE: 6개월 이내']
+        processing: ['Study Permit·PGWP: 공식 처리기간 도구 확인(국가·신청유형별 변동)', 'EE: 프로그램별 현재값 확인']
       }
     },
     {
       id: 'C-EE',
       name: 'C. Express Entry (CEC / Federal Skilled)',
       summary: '캐나다 경력 또는 해외 고학력 → 포인트 경쟁 → 영주권',
-      duration: '12–24개월',
+      duration: '12–24개월 [추정]',
       cost: 'CAD 1,590 (처리비 990 + RPRF 600)',
       stages: [
         { name: '경력 축적 (1년+)', months: 12 },
@@ -2252,15 +2267,15 @@ const DB = {
       details: {
         requirements: ['CEC: 최근 3년 내 캐나다 적격 경력 1년(TEER 0/1/2/3) / FSW: 최근 10년 내 연속 유급 숙련경력 최소 1년', 'CEC 언어: TEER 0–1 CLB 7 · TEER 2–3 CLB 5 / FSW: CLB 7', 'CRS 포인트 경쟁'],
         costs: ['EE 신청 1,590(RPRF 포함)'],
-        processing: ['EE: 6개월 이내 80%']
+        processing: ['EE 서비스 표준: 6개월 이내 80% · 현재값은 프로그램별 확인']
       }
     },
     {
       id: 'C-PNP',
       name: 'C. PNP 경로 (주정부 지명 +600점)',
       summary: '주정부 추천 + Express Entry 가산점 → 빠른 영주권',
-      duration: '6–24개월',
-      cost: 'CAD 1,500–2,000 (PNP) + 1,590 (EE) + 600 (RPRF)',
+      duration: '6–24개월 [추정]',
+      cost: 'CAD 1,500–2,000 (PNP·주별 상이, 추정) + 1,590 (EE·RPRF 포함)',
       stages: [
         { name: 'PNP 지원', months: 2 },
         { name: 'PNP 지명', months: 4 },
@@ -2269,14 +2284,14 @@ const DB = {
       details: {
         requirements: ['주정부 직무·경력 매치', '특정 직군 (기술·무역·의료·농업 주별 상이)', '영주권(CEC) 기준: TEER 0–1 CLB 7 · TEER 2–3 CLB 5'],
         costs: ['PNP 신청 1,500–2,000 [추정]', 'EE 1,590(RPRF 포함)'],
-        processing: ['PNP: 2–6개월', 'EE: 6개월 이내']
+        processing: ['PNP: 주별 공식 처리기간 확인', 'EE 서비스 표준: 6개월 이내 80%']
       }
     },
     {
       id: 'D',
-      name: 'D. 헬스케어 우대 (2026 신규)',
+      name: 'D. 헬스케어 카테고리 우대',
       summary: '간호사·의료직 → Express Entry Healthcare 카테고리',
-      duration: '12–18개월',
+      duration: '12–18개월 [추정]',
       cost: 'CAD 284.75 + 생체정보 85(필요 시) + 면허평가 750 + EE 1,590(RPRF 포함)',
       stages: [
         { name: 'IEC / 학생비자', months: 6 },
@@ -2287,14 +2302,14 @@ const DB = {
       details: {
         requirements: ['RN: NNAS 평가 합격', '의료직 1년 경력', 'CLB 7 이상 (일부 CLB 5.5 OK)'],
         costs: ['IEC/Study Permit: 235–284.75 + 생체정보 조건 확인', 'NNAS 평가 ~750', 'EE 1,590(RPRF 포함)'],
-        processing: ['Healthcare draw: 2026 우선 (CRS 점수 낮아도 ITA 높음)']
+        processing: ['Healthcare 카테고리 초청은 회차별 CRS·인원 확인']
       }
     },
     {
       id: 'E',
-      name: 'E. Trades 카테고리 (2026 신규)',
+      name: 'E. Trades 카테고리',
       summary: '트레이드 자격 + 경력 → Express Entry Trades 드로우',
-      duration: '24–48개월',
+      duration: '24–48개월 [추정]',
       cost: 'CAD 284.75 + 생체정보 85(필요 시) + CDL/자격 3,000–8,000 + EE 1,590(RPRF 포함)',
       stages: [
         { name: 'IEC / 일반 Work Permit', months: 3 },
@@ -2303,9 +2318,9 @@ const DB = {
         { name: 'Federal Skilled Trades 신청', months: 6 }
       ],
       details: {
-        requirements: ['Red Seal Certification 또는 Provincial License', '1년+ 기술직 경력', 'CLB 5 이상'],
+        requirements: ['Federal Skilled Trades: 최근 5년 중 적격 기술직 유급경력 2년', '유효한 1년 이상 잡오퍼 또는 캐나다 주·준주 기술직 자격증', '언어: 말하기·듣기 CLB 5, 읽기·쓰기 CLB 4'],
         costs: ['IEC+OWP 284.75 + 생체정보 85(필요 시)', '자격 과정 3,000–8,000 [추정]', 'EE 1,590(RPRF 포함)'],
-        processing: ['Trades draw: 2026 신규 (기존 낮은 우선순위 → 상향)']
+        processing: ['Trades 카테고리 초청은 회차별 CRS·인원 확인']
       }
     }
   ],
@@ -4111,11 +4126,11 @@ const CA_TAX = {
     }
   },
   cpp: {
-    rate: 0.0595,  // 직원 비율 (기본 9.9% + 강화 2.0%)
+    rate: 0.0595,  // 직원 기본·강화분 합산 비율
     ympe: 74600,  // Year Maximum Pensionable Earnings
     exempt: 3500, // 기본 공제
     cpp2_rate: 0.04,
-    cpp2_min: 74601,
+    cpp2_min: 74600,
     cpp2_max: 85000
   },
   ei: {

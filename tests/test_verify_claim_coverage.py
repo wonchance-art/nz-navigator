@@ -204,6 +204,41 @@ class ClaimCoverageTests(unittest.TestCase):
 
         self.assertEqual(candidate.numbers, ("18", "35"))
 
+    def test_public_coverage_summary_must_match_verifier_totals(self) -> None:
+        self.write_page(
+            '<main><p data-claim-id="nz-fee">Student Visa fee NZD 850</p></main>'
+        )
+        self.write_exemptions()
+        (self.root / "data" / "claims.json").write_text(
+            json.dumps(
+                {
+                    "audit": {
+                        "coverage": {
+                            "candidateCount": 0,
+                            "markedCount": 0,
+                            "exemptionCount": 0,
+                        }
+                    }
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        report = self.verify()
+
+        mismatches = [
+            issue
+            for issue in report.issues
+            if issue.code == "PUBLIC_COVERAGE_MISMATCH"
+        ]
+        self.assertEqual(
+            {issue.field for issue in mismatches},
+            {
+                "audit.coverage.candidateCount",
+                "audit.coverage.markedCount",
+            },
+        )
+
     def test_cli_error_is_actionable(self) -> None:
         self.write_page("<main><p>Student Visa fee NZD 850</p></main>")
         self.write_exemptions()

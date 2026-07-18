@@ -120,6 +120,9 @@
       <div><strong id="sources">—</strong><span>고유 공식 원문</span></div>
       <div><strong id="editions">—</strong><span>연결 국가판</span></div>
       <div><strong id="verified">—</strong><span>마지막 생성일</span></div>
+      <div><strong id="candidates">—</strong><span>탐지 숫자 주장</span></div>
+      <div><strong id="covered">—</strong><span>원장 연결</span></div>
+      <div><strong id="exceptions">—</strong><span>기한부 추정 예외</span></div>
     </div>
 
     <h2>커버리지</h2>
@@ -133,6 +136,12 @@
         <strong>등록 분포</strong>
         <div id="distribution" class="coverage-list"></div>
         <p class="meta">원장 항목은 실제 표시 페이지의 <code>data-claim-id</code>와 연결되며, 끊긴 연결·만료·NZ/일본어 값 불일치는 배포 검사에서 실패합니다.</p>
+      </div>
+      <div class="method">
+        <strong>자동 커버리지 게이트</strong>
+        <div id="coverageGate" class="coverage-list"></div>
+        <p id="exemptionPolicy" class="meta">예외 원장을 불러오는 중입니다.</p>
+        <a class="meta" href="./data/claim-coverage-exemptions.json">기한·담당자·사유가 있는 정확 예외 원문 →</a>
       </div>
     </section>
 
@@ -151,7 +160,8 @@
     <h2>변경이력</h2>
     <section class="history">
       <ul>
-        <li><strong>2026-07-19 · 신뢰 기반 v2:</strong> 원장을 39→77개 고위험 주장으로 확대하고 NZ·일본어·CA·AU 전체 핵심 수치 커버리지를 공개.</li>
+        <li><strong>2026-07-19 · 신뢰 기반 v2:</strong> 원장을 39→121개 고위험 주장으로 확대. 281개 민감 숫자 후보 중 251개를 원장에 연결하고, 단일 정부 수치가 아닌 경로 총기간 [추정] 30개만 담당자·만료일이 있는 정확 예외로 공개.</li>
+        <li><strong>2026-07-19 · 회귀 정정:</strong> 캐나다 SIN 고정 고율 원천징수 오안내, CPP2 YMPE 경계 1달러 오차, 호주 오버스테이 42→28일·485 1년 Diploma 오안내를 공식 근거에 맞게 정정.</li>
         <li><strong>2026-07-19 · 호주:</strong> 482 SID AUD 4,015와 186 ENS AUD 6,140을 2026-07 공식 가격표 API로 재검증하고, 잘못된 3,775·NZ 임금 잔재·820/801/482 가족경로 혼합을 정정.</li>
         <li><strong>2026-07-19 · 캐나다:</strong> FSW/FST 1인 정착자금 CAD 15,263, 온타리오 현재 최저임금 CAD 17.60을 반영하고 일반 Work Permit과 CEC 언어·학력 요건을 분리.</li>
         <li><strong>2026-07-19 · 뉴질랜드:</strong> WHV 검색 결과의 IVL 중복 합산을 제거하고, 중위임금 배수·AEWV/PSWV/SMC·고용주 비용을 NZ/일본어 쌍으로 원장화.</li>
@@ -219,13 +229,21 @@
       });
     });
 
-    fetch('./data/claims.json', { cache: 'no-store' })
-      .then(response => {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return response.json();
+    Promise.all([
+      fetch('./data/claims.json', { cache: 'no-store' }),
+      fetch('./data/claim-coverage-exemptions.json', { cache: 'no-store' })
+    ])
+      .then(async ([claimsResponse, exemptionsResponse]) => {
+        if (!claimsResponse.ok) throw new Error(`claims HTTP ${claimsResponse.status}`);
+        if (!exemptionsResponse.ok) throw new Error(`exemptions HTTP ${exemptionsResponse.status}`);
+        return [await claimsResponse.json(), await exemptionsResponse.json()];
       })
-      .then(registry => {
+      .then(([registry, exemptionRegistry]) => {
         state.claims = registry.claims;
+        const exemptions = exemptionRegistry.exemptions || [];
+        const coverage = registry.audit?.coverage || {};
+        const detectedCandidates = coverage.candidateCount ?? '—';
+        const coveredCandidates = coverage.markedCount ?? '—';
         const requested = new URL(location.href).searchParams.get('country');
         if (['NZ', 'CA', 'AU'].includes(requested)) {
           state.country = requested;
@@ -237,6 +255,9 @@
         document.getElementById('sources').textContent = new Set(registry.claims.map(c => c.sourceUrl)).size;
         document.getElementById('editions').textContent = new Set(registry.claims.flatMap(c => c.pages)).size;
         document.getElementById('verified').textContent = registry.audit?.lastAuditDate || registry.generatedAt.slice(0, 10);
+        document.getElementById('candidates').textContent = detectedCandidates;
+        document.getElementById('covered').textContent = coveredCandidates;
+        document.getElementById('exceptions').textContent = coverage.exemptionCount ?? exemptions.length;
         document.getElementById('scope').innerHTML = (registry.audit?.scope || []).map(item => `<span>${item}</span>`).join('');
         document.getElementById('coveragePolicy').textContent = registry.audit?.coveragePolicy || '';
         const countryCounts = Object.entries(registry.claims.reduce((acc, claim) => {
@@ -251,6 +272,20 @@
           ...countryCounts.map(([key, count]) => `<span>${countryNames[key] || key} ${count}</span>`),
           ...categoryCounts.map(([key, count]) => `<span>${key} ${count}</span>`)
         ].join('');
+        const nearestExpiry = exemptions.map(item => item.expiresAt).sort()[0] || '없음';
+        const exemptCounts = exemptions.reduce((acc, item) => {
+          const edition = item.selector.split('/')[0].toUpperCase();
+          acc[edition] = (acc[edition] || 0) + 1;
+          return acc;
+        }, {});
+        document.getElementById('coverageGate').innerHTML = [
+          `<span>탐지 ${detectedCandidates}</span>`,
+          `<span>원장 연결 ${coveredCandidates}</span>`,
+          `<span>정확 예외 ${exemptions.length}</span>`,
+          ...Object.entries(exemptCounts).map(([key, count]) => `<span>${key} ${count}</span>`)
+        ].join('');
+        document.getElementById('exemptionPolicy').textContent =
+          `미등록 수치는 배포를 막습니다. 현재 예외는 모두 [추정] 경로 총기간이며 가장 빠른 재검토 만료일은 ${nearestExpiry}입니다. 문구나 값이 바뀌면 지문이 달라져 즉시 실패합니다.`;
         render();
       })
       .catch(error => {
