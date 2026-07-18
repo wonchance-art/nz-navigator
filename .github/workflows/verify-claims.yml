@@ -1,0 +1,33 @@
+name: Verify factual claims
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run verifier unit tests
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+
+      - name: Verify claim registry and page markers
+        run: python3 scripts/verify_claims.py data/claims.json
