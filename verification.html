@@ -97,6 +97,14 @@
       font-size: 0.8rem;
       overflow-wrap: anywhere;
     }
+    .source-attested {
+      margin-top: 7px;
+      border-left: 3px solid #315aa8;
+      padding: 7px 9px;
+      background: var(--derived);
+      color: #274c93;
+      font-size: 0.8rem;
+    }
     .empty { grid-column: 1 / -1; padding: 30px; text-align: center; color: var(--muted); }
     footer { padding: 30px 0 50px; color: var(--muted); font-size: 0.86rem; }
     @media (max-width: 720px) {
@@ -138,6 +146,10 @@
       <div><strong id="provenanceSources">—</strong><span>공식 URL 대조</span></div>
       <div><strong id="provenanceDates">—</strong><span>검증·효력일 대조</span></div>
       <div><strong id="boundaryProbes">—</strong><span>실행 경계 표본</span></div>
+      <div><strong id="sourceAttestations">—</strong><span>공식 원문 감시 묶음</span></div>
+      <div><strong id="attestedClaims">—</strong><span>원문 자동감시 주장</span></div>
+      <div><strong id="attestedLeaves">—</strong><span>공식 근거 경계값</span></div>
+      <div><strong id="liveCapable">—</strong><span>정기 라이브 검사</span></div>
     </div>
 
     <h2>커버리지</h2>
@@ -166,6 +178,14 @@
         <br>
         <a class="meta" href="./data/boundary-executions.json">reviewed 경계 실행 manifest 원문 →</a>
       </div>
+      <div class="method">
+        <strong>공식 원문 변경 감시</strong>
+        <div id="attestationGate" class="coverage-list"></div>
+        <p class="meta">체크인한 정부 원문 표본은 모든 배포에서 구조·값·단위·지문을 다시 검사합니다. 정기 라이브 검사는 <code>match</code>, 실제 변경 <code>changed</code>, 접근 차단 <code>blocked</code>, 일시 장애 <code>transient</code>, 안전 추출 불가 <code>unsupported</code>를 구분하며, 뒤 네 상태를 통과로 취급하지 않습니다.</p>
+        <a class="meta" href="./data/source-attestations.json">machine-readable 공식 원문 감시 원장 →</a>
+        <br>
+        <a class="meta" href="https://github.com/wonchance-art/nz-navigator/issues?q=is%3Aissue+%22Source+attestation+drift%22" rel="noopener">최근 라이브 감시 결과 →</a>
+      </div>
     </section>
 
     <div class="nav" role="group" aria-label="국가 필터">
@@ -183,6 +203,7 @@
     <h2>변경이력</h2>
     <section class="history">
       <ul>
+        <li><strong>2026-07-19 · 신뢰 기반 v5:</strong> 공식 원문 35개 감시 묶음으로 핵심 주장 42개와 세금·보험 경계 상수 136개를 출처 구조·값·단위까지 결속. PR은 검토된 원문 표본을 재현하고, 매주 라이브 검사는 변경·차단·일시 장애·안전 추출 한계를 서로 구분해 단일 GitHub 이슈로 보고.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v4:</strong> 80개 실행값 결속에 공식 URL·검증일·효력일 provenance를 추가하고, 세금·보험·연령·체류기간 16개 경계를 실제 계산·진단 함수의 직전·정확히·직후 표본으로 실행. 누진구간 연속성, ACC·CPP·CPP2·EI 상한, LITO 전환을 CI에서 차단.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v3:</strong> 80개 고위험 주장을 실제 4판의 DB·세율·보험료·연령·경로 기간 상수와 직접 결속. 원장값과 실행값의 값·단위·판 불일치, 고아·중복 binding을 CI에서 차단.</li>
         <li><strong>2026-07-19 · 진단 머니플랜:</strong> 호주판에 남아 있던 NZ 학생비자 850·AEWV 1,540 하드코딩과 1년 GD→485 오안내를 AU 500·485·482·186 실제 DB값과 CRICOS 92주/최소 16개월 체계로 교체. 캐나다 20h 근로·디플로마 1년 계산을 24h·2년으로 정정.</li>
@@ -204,6 +225,8 @@
         <li><strong>official</strong>은 정부 페이지가 직접 표시한 값, <strong>derived</strong>는 그 공식값만으로 계산한 표본입니다.</li>
         <li><strong>실행값·출처·날짜 일치</strong>는 원장 숫자와 정부 URL·검증일·효력일을 화면의 실제 DB·세율표·보험료·경로 상수에서 임의 코드 실행 없이 추출해 대조했다는 뜻입니다.</li>
         <li><strong>경계 실행</strong>은 독립 검토 상수로 기대값을 계산하고 실제 계산기 함수에 각 구간·상한의 직전·정확히·직후 값을 주입한다는 뜻입니다. 선언됐지만 실행 manifest에 연결되지 않은 경계는 배포되지 않습니다.</li>
+        <li><strong>공식 원문 감시</strong>는 허용된 정부 도메인의 정확한 표·라벨·문장·API 레코드만 고정 변환기로 읽습니다. 임의 CSS·XPath·원격 정규식·코드는 실행하지 않습니다.</li>
+        <li>CRA·ATO처럼 동적 문서·PDF·봇 차단 때문에 현재 안전 추출기가 원문 전체를 읽지 못하는 근거는 검토 표본으로 CI 정합성을 지키되, 라이브 결과를 <strong>unsupported</strong> 또는 <strong>blocked</strong>로 공개해 자동 확인으로 과장하지 않습니다.</li>
         <li>치명 항목은 45일, 나머지는 90일이 지나면 자동검사가 실패합니다. 정책 변경을 발견하면 날짜와 값을 먼저 갱신해야 배포할 수 있습니다.</li>
         <li>공식 링크의 생존 여부는 정기 네트워크 검사에서 확인하고, 기본 빌드는 외부 장애 때문에 막히지 않도록 구조 검증만 수행합니다.</li>
         <li>개인별 자격·세금 거주성·부양가족·과거 이력에 따라 결과가 달라질 수 있으므로 신청 직전 정부 도구와 등록 전문가를 함께 확인하세요.</li>
@@ -212,7 +235,7 @@
   </main>
   <footer>NZ Navigator · 공개 검증 원장은 사람이 읽는 화면과 기계 검사를 같은 JSON에서 생성합니다.</footer>
   <script>
-    const state = { claims: [], runtimeByClaim: new Map(), country: 'ALL' };
+    const state = { claims: [], runtimeByClaim: new Map(), attestedClaims: new Set(), country: 'ALL' };
     const countryNames = { NZ: '뉴질랜드', CA: '캐나다', AU: '호주' };
     const fmt = value => typeof value === 'number' ? value.toLocaleString('en-US') : value;
     const pageHref = page => `./${page}`;
@@ -245,6 +268,7 @@
           </div>
           ${claim.notes ? `<p class="meta">${claim.notes}</p>` : ''}
           ${runtime ? `<div class="runtime">✓ 실행값·공식 URL·날짜 일치 · ${runtime.edition} · <code>${runtimePath}</code></div>` : ''}
+          ${state.attestedClaims.has(claim.id) ? '<div class="source-attested">✓ 검토 표본 일치 · 정기 공식 원문 변경 감시 대상</div>' : ''}
           <div class="claim-links">
             <a href="${claim.sourceUrl}" target="_blank" rel="noopener">정부 원문 ↗</a>
             ${claim.pages.map(page => `<a href="${pageHref(page)}">표시 페이지 →</a>`).join('')}
@@ -268,18 +292,21 @@
       fetch('./data/claims.json', { cache: 'no-store' }),
       fetch('./data/claim-coverage-exemptions.json', { cache: 'no-store' }),
       fetch('./data/runtime-bindings.json', { cache: 'no-store' }),
-      fetch('./data/boundary-executions.json', { cache: 'no-store' })
+      fetch('./data/boundary-executions.json', { cache: 'no-store' }),
+      fetch('./data/source-attestations.json', { cache: 'no-store' })
     ])
-      .then(async ([claimsResponse, exemptionsResponse, runtimeResponse, boundaryResponse]) => {
+      .then(async ([claimsResponse, exemptionsResponse, runtimeResponse, boundaryResponse, attestationResponse]) => {
         if (!claimsResponse.ok) throw new Error(`claims HTTP ${claimsResponse.status}`);
         if (!exemptionsResponse.ok) throw new Error(`exemptions HTTP ${exemptionsResponse.status}`);
         if (!runtimeResponse.ok) throw new Error(`runtime bindings HTTP ${runtimeResponse.status}`);
         if (!boundaryResponse.ok) throw new Error(`boundary executions HTTP ${boundaryResponse.status}`);
-        return [await claimsResponse.json(), await exemptionsResponse.json(), await runtimeResponse.json(), await boundaryResponse.json()];
+        if (!attestationResponse.ok) throw new Error(`source attestations HTTP ${attestationResponse.status}`);
+        return [await claimsResponse.json(), await exemptionsResponse.json(), await runtimeResponse.json(), await boundaryResponse.json(), await attestationResponse.json()];
       })
-      .then(([registry, exemptionRegistry, runtimeRegistry, boundaryRegistry]) => {
+      .then(([registry, exemptionRegistry, runtimeRegistry, boundaryRegistry, attestationRegistry]) => {
         state.claims = registry.claims;
         state.runtimeByClaim = new Map(runtimeRegistry.bindings.map(binding => [binding.claimId, binding]));
+        state.attestedClaims = new Set((attestationRegistry.attestations || []).flatMap(attestation => (attestation.claims || []).map(mapping => mapping.claimId)));
         const exemptions = exemptionRegistry.exemptions || [];
         const runtimeBindings = runtimeRegistry.bindings || [];
         const runtimeClaims = new Set(runtimeBindings.map(binding => binding.claimId));
@@ -288,6 +315,7 @@
         const provenanceSources = registry.audit?.runtimeBindings?.provenanceSourceCheckCount ?? '—';
         const provenanceDates = registry.audit?.runtimeBindings?.provenanceDateCheckCount ?? '—';
         const boundaryProbes = registry.audit?.runtimeBindings?.boundaryProbeCount ?? '—';
+        const sourceAudit = registry.audit?.sourceAttestations || {};
         const executionTargets = boundaryRegistry.targets || [];
         const boundaryMappings = boundaryRegistry.mappings || [];
         const coverage = registry.audit?.coverage || {};
@@ -313,6 +341,10 @@
         document.getElementById('provenanceSources').textContent = provenanceSources;
         document.getElementById('provenanceDates').textContent = provenanceDates;
         document.getElementById('boundaryProbes').textContent = boundaryProbes;
+        document.getElementById('sourceAttestations').textContent = sourceAudit.attestationCount ?? '—';
+        document.getElementById('attestedClaims').textContent = sourceAudit.claimCount ?? '—';
+        document.getElementById('attestedLeaves').textContent = sourceAudit.reviewedLeafCount ?? '—';
+        document.getElementById('liveCapable').textContent = sourceAudit.liveCapableCount ?? '—';
         document.getElementById('scope').innerHTML = (registry.audit?.scope || []).map(item => `<span>${item}</span>`).join('');
         document.getElementById('coveragePolicy').textContent = registry.audit?.coveragePolicy || '';
         const countryCounts = Object.entries(registry.claims.reduce((acc, claim) => {
@@ -351,6 +383,14 @@
           `<span>실행 target ${executionTargets.length}</span>`,
           `<span>경계 mapping ${boundaryMappings.length}</span>`,
           `<span>실행 probe ${boundaryProbes}</span>`
+        ].join('');
+        document.getElementById('attestationGate').innerHTML = [
+          `<span>감시 묶음 ${sourceAudit.attestationCount ?? '—'}</span>`,
+          `<span>핵심 주장 ${sourceAudit.claimCount ?? '—'}</span>`,
+          `<span>경계 leaf ${sourceAudit.reviewedLeafCount ?? '—'}</span>`,
+          `<span>라이브 대상 ${sourceAudit.liveCapableCount ?? '—'}</span>`,
+          '<span>검토 표본 CI: match</span>',
+          '<span>라이브 non-match: 이슈 보고</span>'
         ].join('');
         render();
       })

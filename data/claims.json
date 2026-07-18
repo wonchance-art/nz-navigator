@@ -18,6 +18,12 @@
       "provenanceDateCheckCount": 172,
       "boundaryProbeCount": 143
     },
+    "sourceAttestations": {
+      "attestationCount": 35,
+      "claimCount": 42,
+      "reviewedLeafCount": 136,
+      "liveCapableCount": 35
+    },
     "lastAuditDate": "2026-07-19"
   },
   "claims": [
