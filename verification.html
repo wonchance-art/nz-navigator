@@ -88,6 +88,15 @@
     .coverage-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .coverage-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
     .coverage-list span { border: 1px solid var(--line); border-radius: 999px; padding: 5px 9px; background: var(--wash); font-size: 0.82rem; }
+    .runtime {
+      margin-top: 10px;
+      border-left: 3px solid var(--brand);
+      padding: 7px 9px;
+      background: var(--official);
+      color: #17633f;
+      font-size: 0.8rem;
+      overflow-wrap: anywhere;
+    }
     .empty { grid-column: 1 / -1; padding: 30px; text-align: center; color: var(--muted); }
     footer { padding: 30px 0 50px; color: var(--muted); font-size: 0.86rem; }
     @media (max-width: 720px) {
@@ -123,6 +132,9 @@
       <div><strong id="candidates">—</strong><span>탐지 숫자 주장</span></div>
       <div><strong id="covered">—</strong><span>원장 연결</span></div>
       <div><strong id="exceptions">—</strong><span>기한부 추정 예외</span></div>
+      <div><strong id="runtimeClaims">—</strong><span>실행값 결속 주장</span></div>
+      <div><strong id="runtimeBindings">—</strong><span>검증 binding</span></div>
+      <div><strong id="boundarySets">—</strong><span>자동 경계 세트</span></div>
     </div>
 
     <h2>커버리지</h2>
@@ -143,6 +155,12 @@
         <p id="exemptionPolicy" class="meta">예외 원장을 불러오는 중입니다.</p>
         <a class="meta" href="./data/claim-coverage-exemptions.json">기한·담당자·사유가 있는 정확 예외 원문 →</a>
       </div>
+      <div class="method">
+        <strong>원장 ↔ 실행값 결속</strong>
+        <div id="runtimeGate" class="coverage-list"></div>
+        <p class="meta">수수료·임금·자금·세율·보험료·대표 체류기간을 실제 <code>DB</code>와 계산 상수에서 안전하게 추출해 원장 값·단위와 비교합니다. 불일치·고아·중복·계산식 주입은 배포를 막습니다.</p>
+        <a class="meta" href="./data/runtime-bindings.json">machine-readable runtime binding 원문 →</a>
+      </div>
     </section>
 
     <div class="nav" role="group" aria-label="국가 필터">
@@ -160,6 +178,8 @@
     <h2>변경이력</h2>
     <section class="history">
       <ul>
+        <li><strong>2026-07-19 · 신뢰 기반 v3:</strong> 78개 고위험 주장을 실제 4판의 DB·세율·보험료·경로 기간 상수와 직접 결속. 원장값과 실행값의 값·단위·판 불일치, 고아·중복 binding을 CI에서 차단.</li>
+        <li><strong>2026-07-19 · 진단 머니플랜:</strong> 호주판에 남아 있던 NZ 학생비자 850·AEWV 1,540 하드코딩과 1년 GD→485 오안내를 AU 500·485·482·186 실제 DB값과 CRICOS 92주/최소 16개월 체계로 교체. 캐나다 20h 근로·디플로마 1년 계산을 24h·2년으로 정정.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v2:</strong> 원장을 39→121개 고위험 주장으로 확대. 281개 민감 숫자 후보 중 251개를 원장에 연결하고, 단일 정부 수치가 아닌 경로 총기간 [추정] 30개만 담당자·만료일이 있는 정확 예외로 공개.</li>
         <li><strong>2026-07-19 · 회귀 정정:</strong> 캐나다 SIN 고정 고율 원천징수 오안내, CPP2 YMPE 경계 1달러 오차, 호주 오버스테이 42→28일·485 1년 Diploma 오안내를 공식 근거에 맞게 정정.</li>
         <li><strong>2026-07-19 · 호주:</strong> 482 SID AUD 4,015와 186 ENS AUD 6,140을 2026-07 공식 가격표 API로 재검증하고, 잘못된 3,775·NZ 임금 잔재·820/801/482 가족경로 혼합을 정정.</li>
@@ -176,6 +196,7 @@
     <section class="method">
       <ul>
         <li><strong>official</strong>은 정부 페이지가 직접 표시한 값, <strong>derived</strong>는 그 공식값만으로 계산한 표본입니다.</li>
+        <li><strong>실행값 일치</strong>는 원장 숫자를 화면의 실제 DB·세율표·보험료·경로 상수에서 임의 코드 실행 없이 추출해 값과 단위를 대조했다는 뜻입니다. 계산 결과 표본은 별도 계산기 회귀가 검증합니다.</li>
         <li>치명 항목은 45일, 나머지는 90일이 지나면 자동검사가 실패합니다. 정책 변경을 발견하면 날짜와 값을 먼저 갱신해야 배포할 수 있습니다.</li>
         <li>공식 링크의 생존 여부는 정기 네트워크 검사에서 확인하고, 기본 빌드는 외부 장애 때문에 막히지 않도록 구조 검증만 수행합니다.</li>
         <li>개인별 자격·세금 거주성·부양가족·과거 이력에 따라 결과가 달라질 수 있으므로 신청 직전 정부 도구와 등록 전문가를 함께 확인하세요.</li>
@@ -184,7 +205,7 @@
   </main>
   <footer>NZ Navigator · 공개 검증 원장은 사람이 읽는 화면과 기계 검사를 같은 JSON에서 생성합니다.</footer>
   <script>
-    const state = { claims: [], country: 'ALL' };
+    const state = { claims: [], runtimeByClaim: new Map(), country: 'ALL' };
     const countryNames = { NZ: '뉴질랜드', CA: '캐나다', AU: '호주' };
     const fmt = value => typeof value === 'number' ? value.toLocaleString('en-US') : value;
     const pageHref = page => `./${page}`;
@@ -198,7 +219,12 @@
         target.innerHTML = '<p class="empty">선택한 국가의 등록 항목이 없습니다.</p>';
         return;
       }
-      target.innerHTML = shown.map(claim => `
+      target.innerHTML = shown.map(claim => {
+        const runtime = state.runtimeByClaim.get(claim.id);
+        const runtimePath = runtime
+          ? (Array.isArray(runtime.runtimePath) ? runtime.runtimePath.join(' + ') : runtime.runtimePath)
+          : '';
+        return `
         <article class="claim" id="${claim.id}">
           <div class="claim-head">
             <h3>${claim.label}</h3>
@@ -211,11 +237,13 @@
             효력 ${claim.effectiveFrom}${claim.effectiveTo ? `–${claim.effectiveTo}` : ''} · 확인 ${claim.verifiedAt}
           </div>
           ${claim.notes ? `<p class="meta">${claim.notes}</p>` : ''}
+          ${runtime ? `<div class="runtime">✓ 실행값 일치 · ${runtime.edition} · <code>${runtimePath}</code></div>` : ''}
           <div class="claim-links">
             <a href="${claim.sourceUrl}" target="_blank" rel="noopener">정부 원문 ↗</a>
             ${claim.pages.map(page => `<a href="${pageHref(page)}">표시 페이지 →</a>`).join('')}
           </div>
-        </article>`).join('');
+        </article>`;
+      }).join('');
     }
 
     document.querySelectorAll('.filter').forEach(button => {
@@ -231,16 +259,23 @@
 
     Promise.all([
       fetch('./data/claims.json', { cache: 'no-store' }),
-      fetch('./data/claim-coverage-exemptions.json', { cache: 'no-store' })
+      fetch('./data/claim-coverage-exemptions.json', { cache: 'no-store' }),
+      fetch('./data/runtime-bindings.json', { cache: 'no-store' })
     ])
-      .then(async ([claimsResponse, exemptionsResponse]) => {
+      .then(async ([claimsResponse, exemptionsResponse, runtimeResponse]) => {
         if (!claimsResponse.ok) throw new Error(`claims HTTP ${claimsResponse.status}`);
         if (!exemptionsResponse.ok) throw new Error(`exemptions HTTP ${exemptionsResponse.status}`);
-        return [await claimsResponse.json(), await exemptionsResponse.json()];
+        if (!runtimeResponse.ok) throw new Error(`runtime bindings HTTP ${runtimeResponse.status}`);
+        return [await claimsResponse.json(), await exemptionsResponse.json(), await runtimeResponse.json()];
       })
-      .then(([registry, exemptionRegistry]) => {
+      .then(([registry, exemptionRegistry, runtimeRegistry]) => {
         state.claims = registry.claims;
+        state.runtimeByClaim = new Map(runtimeRegistry.bindings.map(binding => [binding.claimId, binding]));
         const exemptions = exemptionRegistry.exemptions || [];
+        const runtimeBindings = runtimeRegistry.bindings || [];
+        const runtimeClaims = new Set(runtimeBindings.map(binding => binding.claimId));
+        const runtimeEditions = new Set(runtimeBindings.map(binding => binding.edition));
+        const boundarySets = runtimeBindings.filter(binding => binding.boundary).length;
         const coverage = registry.audit?.coverage || {};
         const detectedCandidates = coverage.candidateCount ?? '—';
         const coveredCandidates = coverage.markedCount ?? '—';
@@ -258,6 +293,9 @@
         document.getElementById('candidates').textContent = detectedCandidates;
         document.getElementById('covered').textContent = coveredCandidates;
         document.getElementById('exceptions').textContent = coverage.exemptionCount ?? exemptions.length;
+        document.getElementById('runtimeClaims').textContent = runtimeClaims.size;
+        document.getElementById('runtimeBindings').textContent = runtimeBindings.length;
+        document.getElementById('boundarySets').textContent = boundarySets;
         document.getElementById('scope').innerHTML = (registry.audit?.scope || []).map(item => `<span>${item}</span>`).join('');
         document.getElementById('coveragePolicy').textContent = registry.audit?.coveragePolicy || '';
         const countryCounts = Object.entries(registry.claims.reduce((acc, claim) => {
@@ -286,6 +324,12 @@
         ].join('');
         document.getElementById('exemptionPolicy').textContent =
           `미등록 수치는 배포를 막습니다. 현재 예외는 모두 [추정] 경로 총기간이며 가장 빠른 재검토 만료일은 ${nearestExpiry}입니다. 문구나 값이 바뀌면 지문이 달라져 즉시 실패합니다.`;
+        document.getElementById('runtimeGate').innerHTML = [
+          `<span>주장 ${runtimeClaims.size}</span>`,
+          `<span>binding ${runtimeBindings.length}</span>`,
+          `<span>판 ${runtimeEditions.size}</span>`,
+          `<span>경계 ${boundarySets}</span>`
+        ].join('');
         render();
       })
       .catch(error => {
