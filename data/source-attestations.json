@@ -46,6 +46,111 @@
     "au-ko-tax-medicare-rate-2026",
     "au-ko-tax-super-rate-2026"
   ],
+  "targetComponents": [
+    {
+      "targetId": "ca-tax",
+      "components": [
+        {
+          "id": "cra-8.1-federal",
+          "reviewedPaths": [
+            "/federal/brackets",
+            "/federal/creditRate"
+          ]
+        },
+        {
+          "id": "cra-8.9-federal-bpa",
+          "reviewedPaths": ["/federal/bpa"]
+        },
+        {
+          "id": "cra-8.2-federal-cea",
+          "reviewedPaths": ["/federal/employmentAmount"]
+        },
+        {
+          "id": "cra-8.1-on",
+          "reviewedPaths": ["/provinces/on/brackets"]
+        },
+        {
+          "id": "cra-8.2-on",
+          "reviewedPaths": [
+            "/provinces/on/bpa",
+            "/ontario/surtaxLower",
+            "/ontario/surtaxUpper",
+            "/ontario/surtaxLowerRate",
+            "/ontario/surtaxUpperRate"
+          ]
+        },
+        {
+          "id": "cra-t4032-on-derived",
+          "reviewedPaths": [
+            "/ontario/taxReduction",
+            "/ontario/health"
+          ]
+        },
+        {
+          "id": "cra-8.1-ab",
+          "reviewedPaths": ["/provinces/ab/brackets"]
+        },
+        {
+          "id": "cra-8.2-ab",
+          "reviewedPaths": ["/provinces/ab/bpa"]
+        },
+        {
+          "id": "cra-8.1-bc-split",
+          "reviewedPaths": [
+            "/provinces/bc/brackets/0/0",
+            "/provinces/bc/brackets/1/0",
+            "/provinces/bc/brackets/1/1",
+            "/provinces/bc/brackets/2/0",
+            "/provinces/bc/brackets/2/1",
+            "/provinces/bc/brackets/3/0",
+            "/provinces/bc/brackets/3/1",
+            "/provinces/bc/brackets/4/0",
+            "/provinces/bc/brackets/4/1",
+            "/provinces/bc/brackets/5/0",
+            "/provinces/bc/brackets/5/1",
+            "/provinces/bc/brackets/6/0",
+            "/provinces/bc/brackets/6/1"
+          ]
+        },
+        {
+          "id": "cra-t4127-bc-annual",
+          "reviewedPaths": ["/provinces/bc/brackets/0/1"]
+        },
+        {
+          "id": "cra-8.2-bc",
+          "reviewedPaths": ["/provinces/bc/bpa"]
+        },
+        {
+          "id": "cra-8.3-cpp-total",
+          "reviewedPaths": [
+            "/cpp/rate",
+            "/cpp/ympe",
+            "/cpp/exempt"
+          ]
+        },
+        {
+          "id": "cra-8.4-cpp-base",
+          "reviewedPaths": ["/cpp/baseRate"]
+        },
+        {
+          "id": "cra-8.5-cpp-first",
+          "reviewedPaths": ["/cpp/additionalRate"]
+        },
+        {
+          "id": "cra-8.6-cpp-second",
+          "reviewedPaths": [
+            "/cpp/cpp2Rate",
+            "/cpp/cpp2Min",
+            "/cpp/cpp2Max"
+          ]
+        },
+        {
+          "id": "cra-8.7-ei",
+          "reviewedPaths": ["/ei"]
+        }
+      ]
+    }
+  ],
   "attestations": [
     {
       "id": "nz-income-tax-brackets",
@@ -409,115 +514,698 @@
       ]
     },
     {
-      "id": "ca-tax-reviewed-cohort",
+      "id": "ca-tax-federal-brackets-credit",
       "jurisdiction": "CA",
-      "sourceUrl": "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jul/t4127-jul-payroll-deductions-formulas.html",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/rates-income-thresholds-constants-26e.csv",
       "request": {"method": "GET"},
       "verifiedAt": "2026-07-19",
       "effectiveFrom": "2026-07-01",
-      "reviewAfterDays": 45,
-      "livePolicy": {
-        "mode": "fixture-only",
-        "reason": "The complete federal, provincial, CPP, CPP2, EI, and Ontario cohort is a human-reviewed structured extract assembled from the current CRA tables; it requires scheduled manual renewal.",
-        "manualReviewDays": 7
-      },
+      "reviewAfterDays": 30,
       "extractor": {
-        "mode": "json-pointer",
-        "params": {"pointer": "/reviewed"}
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-123rd",
+          "effectiveDate": "2026-07-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.1-federal-rates"
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"brackets": "CAD/rate"},
+        "value": {
+          "brackets": [
+            [58523, 0.14],
+            [117045, 0.205],
+            [181440, 0.26],
+            [258482, 0.29],
+            [null, 0.33]
+          ]
+        }
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-rates-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:27a19ea7ea19adc7f3ed568c37f96b1db51748d9ad095b51b8af1276aa04cbfd",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/rates-income-thresholds-constants-26e.csv"
+      },
+      "targets": [
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.1-federal",
+          "reviewedPath": "/federal/brackets",
+          "expectedPath": "/brackets"
+        },
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.1-federal",
+          "reviewedPath": "/federal/creditRate",
+          "expectedPath": "/brackets/0/1"
+        }
+      ]
+    },
+    {
+      "id": "ca-tax-federal-bpa",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jan/cc-fd-01-26e.csv",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-122nd",
+          "effectiveDate": "2026-01-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.9-federal-bpa"
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"bpa": "CAD"},
+        "value": {"bpa": 16452}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-federal-bpa-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:91fa46996e83cde5f12703fc546d0d83927c705495ff3306977dde524f7e8a9d",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jan/cc-fd-01-26e.csv"
+      },
+      "targets": [
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.9-federal-bpa",
+          "reviewedPath": "/federal/bpa",
+          "expectedPath": "/bpa"
+        }
+      ]
+    },
+    {
+      "id": "ca-tax-federal-employment-amount",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/other-rates-amounts-26e.csv",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-123rd",
+          "effectiveDate": "2026-07-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.2-federal-amounts"
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"employmentAmount": "CAD"},
+        "value": {"employmentAmount": 1501}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-other-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:fd9647c666ba3d4565029205e877644d2368f59531ee337975b2349ca300c9a8",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/other-rates-amounts-26e.csv"
+      },
+      "targets": [
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.2-federal-cea",
+          "reviewedPath": "/federal/employmentAmount",
+          "expectedPath": "/employmentAmount"
+        }
+      ]
+    },
+    {
+      "id": "ca-tax-on-brackets",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/rates-income-thresholds-constants-26e.csv",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-123rd",
+          "effectiveDate": "2026-07-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.1-on-rates"
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"brackets": "CAD/rate"},
+        "value": {
+          "brackets": [
+            [53891, 0.0505],
+            [107785, 0.0915],
+            [150000, 0.1116],
+            [220000, 0.1216],
+            [null, 0.1316]
+          ]
+        }
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-rates-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:27a19ea7ea19adc7f3ed568c37f96b1db51748d9ad095b51b8af1276aa04cbfd",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/rates-income-thresholds-constants-26e.csv"
+      },
+      "targets": [
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.1-on",
+          "reviewedPath": "/provinces/on/brackets",
+          "expectedPath": "/brackets"
+        }
+      ]
+    },
+    {
+      "id": "ca-tax-on-bpa-surtax",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/other-rates-amounts-26e.csv",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-123rd",
+          "effectiveDate": "2026-07-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.2-on-amounts"
+        }
       },
       "expected": {
         "type": "object",
         "unit": {
-          "federal": {
-            "brackets": "CAD/rate",
-            "bpa": "CAD",
-            "employmentAmount": "CAD",
-            "creditRate": "decimal rate"
-          },
-          "provinces": {
-            "on": {"brackets": "CAD/rate", "bpa": "CAD"},
-            "bc": {"brackets": "CAD/rate", "bpa": "CAD"},
-            "ab": {"brackets": "CAD/rate", "bpa": "CAD"}
-          },
-          "cpp": {
-            "rate": "decimal rate",
-            "baseRate": "decimal rate",
-            "additionalRate": "decimal rate",
-            "ympe": "CAD",
-            "exempt": "CAD",
-            "cpp2Rate": "decimal rate",
-            "cpp2Min": "CAD",
-            "cpp2Max": "CAD"
-          },
-          "ei": {"rate": "decimal rate", "maxInsurable": "CAD"},
-          "ontario": {
-            "surtaxLower": "CAD",
-            "surtaxUpper": "CAD",
-            "surtaxLowerRate": "decimal rate",
-            "surtaxUpperRate": "decimal rate",
-            "taxReduction": "CAD",
-            "health": "CAD/rate"
-          }
+          "bpa": "CAD",
+          "surtaxLower": "CAD",
+          "surtaxLowerRate": "decimal rate",
+          "surtaxUpper": "CAD",
+          "surtaxUpperRate": "decimal rate"
         },
         "value": {
-          "federal": {
-            "brackets": [[58523, 0.14], [117045, 0.205], [181440, 0.26], [258482, 0.29], [null, 0.33]],
-            "bpa": 16452,
-            "employmentAmount": 1501,
-            "creditRate": 0.14
-          },
-          "provinces": {
-            "on": {
-              "brackets": [[53891, 0.0505], [107785, 0.0915], [150000, 0.1116], [220000, 0.1216], [null, 0.1316]],
-              "bpa": 12989
-            },
-            "bc": {
-              "brackets": [[50363, 0.056], [100728, 0.077], [115648, 0.105], [140430, 0.1229], [190405, 0.147], [265545, 0.168], [null, 0.205]],
-              "bpa": 13216
-            },
-            "ab": {
-              "brackets": [[61200, 0.08], [154259, 0.1], [185111, 0.12], [246813, 0.13], [370220, 0.14], [null, 0.15]],
-              "bpa": 22769
-            }
-          },
-          "cpp": {
-            "rate": 0.0595,
-            "baseRate": 0.0495,
-            "additionalRate": 0.01,
-            "ympe": 74600,
-            "exempt": 3500,
-            "cpp2Rate": 0.04,
-            "cpp2Min": 74600,
-            "cpp2Max": 85000
-          },
-          "ei": {"rate": 0.0163, "maxInsurable": 68900},
-          "ontario": {
-            "surtaxLower": 5818,
-            "surtaxUpper": 7446,
-            "surtaxLowerRate": 0.2,
-            "surtaxUpperRate": 0.36,
-            "taxReduction": 600,
-            "health": {
-              "zeroTo": 20000,
-              "tiers": [
-                {"to": 36000, "base": 0, "offset": 20000, "rate": 0.06, "cap": 300},
-                {"to": 48000, "base": 300, "offset": 36000, "rate": 0.06, "cap": 450},
-                {"to": 72000, "base": 450, "offset": 48000, "rate": 0.25, "cap": 600},
-                {"to": 200000, "base": 600, "offset": 72000, "rate": 0.25, "cap": 750}
-              ],
-              "above": {"base": 750, "offset": 200000, "rate": 0.25, "cap": 900}
-            }
+          "bpa": 12989,
+          "surtaxLower": 5818,
+          "surtaxLowerRate": 0.2,
+          "surtaxUpper": 7446,
+          "surtaxUpperRate": 0.36
+        }
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-other-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:fd9647c666ba3d4565029205e877644d2368f59531ee337975b2349ca300c9a8",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/other-rates-amounts-26e.csv"
+      },
+      "targets": [
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.2-on",
+          "reviewedPath": "/provinces/on/bpa",
+          "expectedPath": "/bpa"
+        },
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.2-on",
+          "reviewedPath": "/ontario/surtaxLower",
+          "expectedPath": "/surtaxLower"
+        },
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.2-on",
+          "reviewedPath": "/ontario/surtaxUpper",
+          "expectedPath": "/surtaxUpper"
+        },
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.2-on",
+          "reviewedPath": "/ontario/surtaxLowerRate",
+          "expectedPath": "/surtaxLowerRate"
+        },
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.2-on",
+          "reviewedPath": "/ontario/surtaxUpperRate",
+          "expectedPath": "/surtaxUpperRate"
+        }
+      ]
+    },
+    {
+      "id": "ca-tax-on-health-reduction",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4032-payroll-deductions-tables/t4032on-jan/t4032on-january-general-information.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4032-on",
+        "params": {"effectiveDate": "2026-01-01"}
+      },
+      "expected": {
+        "type": "object",
+        "unit": {
+          "taxReduction": "CAD",
+          "health": "CAD/rate"
+        },
+        "value": {
+          "taxReduction": 600,
+          "health": {
+            "zeroTo": 20000,
+            "tiers": [
+              {"to": 36000, "base": 0, "offset": 20000, "rate": 0.06, "cap": 300},
+              {"to": 48000, "base": 300, "offset": 36000, "rate": 0.06, "cap": 450},
+              {"to": 72000, "base": 450, "offset": 48000, "rate": 0.25, "cap": 600},
+              {"to": 200000, "base": 600, "offset": 72000, "rate": 0.25, "cap": 750}
+            ],
+            "above": {"base": 750, "offset": 200000, "rate": 0.25, "cap": 900}
           }
         }
       },
       "fixture": {
-        "path": "data/attestation-fixtures/ca-tax-reviewed.json",
-        "mediaType": "application/json",
-        "sha256": "sha256:781e7e64f72269be8340bc875c34627c098a205a1f38d948c143141b8e00b330",
+        "path": "data/attestation-fixtures/ca-t4032-on-2026.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:c29286249d8662c02105b7826b26c805b68108bd7592954d7deae0d1fb410bc7",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4032-payroll-deductions-tables/t4032on-jan/t4032on-january-general-information.html"
+      },
+      "targets": [
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-t4032-on-derived",
+          "reviewedPath": "/ontario/taxReduction",
+          "expectedPath": "/taxReduction"
+        },
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-t4032-on-derived",
+          "reviewedPath": "/ontario/health",
+          "expectedPath": "/health"
+        }
+      ]
+    },
+    {
+      "id": "ca-tax-ab-brackets",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/rates-income-thresholds-constants-26e.csv",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-123rd",
+          "effectiveDate": "2026-07-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.1-ab-rates"
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"brackets": "CAD/rate"},
+        "value": {
+          "brackets": [
+            [61200, 0.08],
+            [154259, 0.1],
+            [185111, 0.12],
+            [246813, 0.13],
+            [370220, 0.14],
+            [null, 0.15]
+          ]
+        }
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-rates-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:27a19ea7ea19adc7f3ed568c37f96b1db51748d9ad095b51b8af1276aa04cbfd",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/rates-income-thresholds-constants-26e.csv"
+      },
+      "targets": [
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.1-ab",
+          "reviewedPath": "/provinces/ab/brackets",
+          "expectedPath": "/brackets"
+        }
+      ]
+    },
+    {
+      "id": "ca-tax-ab-bpa",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/other-rates-amounts-26e.csv",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-123rd",
+          "effectiveDate": "2026-07-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.2-ab-amounts"
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"bpa": "CAD"},
+        "value": {"bpa": 22769}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-other-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:fd9647c666ba3d4565029205e877644d2368f59531ee337975b2349ca300c9a8",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/other-rates-amounts-26e.csv"
+      },
+      "targets": [
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.2-ab",
+          "reviewedPath": "/provinces/ab/bpa",
+          "expectedPath": "/bpa"
+        }
+      ]
+    },
+    {
+      "id": "ca-tax-bc-brackets-split",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/rates-income-thresholds-constants-26e.csv",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-123rd",
+          "effectiveDate": "2026-07-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.1-bc-thresholds-tail-rates"
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {
+          "thresholds": "CAD",
+          "ratesAfterFirst": "decimal rate"
+        },
+        "value": {
+          "thresholds": [50363, 100728, 115648, 140430, 190405, 265545, null],
+          "ratesAfterFirst": [0.077, 0.105, 0.1229, 0.147, 0.168, 0.205]
+        }
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-rates-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:27a19ea7ea19adc7f3ed568c37f96b1db51748d9ad095b51b8af1276aa04cbfd",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/rates-income-thresholds-constants-26e.csv"
+      },
+      "targets": [
+        {"targetId": "ca-tax", "componentId": "cra-8.1-bc-split", "reviewedPath": "/provinces/bc/brackets/0/0", "expectedPath": "/thresholds/0"},
+        {"targetId": "ca-tax", "componentId": "cra-8.1-bc-split", "reviewedPath": "/provinces/bc/brackets/1/0", "expectedPath": "/thresholds/1"},
+        {"targetId": "ca-tax", "componentId": "cra-8.1-bc-split", "reviewedPath": "/provinces/bc/brackets/2/0", "expectedPath": "/thresholds/2"},
+        {"targetId": "ca-tax", "componentId": "cra-8.1-bc-split", "reviewedPath": "/provinces/bc/brackets/3/0", "expectedPath": "/thresholds/3"},
+        {"targetId": "ca-tax", "componentId": "cra-8.1-bc-split", "reviewedPath": "/provinces/bc/brackets/4/0", "expectedPath": "/thresholds/4"},
+        {"targetId": "ca-tax", "componentId": "cra-8.1-bc-split", "reviewedPath": "/provinces/bc/brackets/5/0", "expectedPath": "/thresholds/5"},
+        {"targetId": "ca-tax", "componentId": "cra-8.1-bc-split", "reviewedPath": "/provinces/bc/brackets/6/0", "expectedPath": "/thresholds/6"},
+        {"targetId": "ca-tax", "componentId": "cra-8.1-bc-split", "reviewedPath": "/provinces/bc/brackets/1/1", "expectedPath": "/ratesAfterFirst/0"},
+        {"targetId": "ca-tax", "componentId": "cra-8.1-bc-split", "reviewedPath": "/provinces/bc/brackets/2/1", "expectedPath": "/ratesAfterFirst/1"},
+        {"targetId": "ca-tax", "componentId": "cra-8.1-bc-split", "reviewedPath": "/provinces/bc/brackets/3/1", "expectedPath": "/ratesAfterFirst/2"},
+        {"targetId": "ca-tax", "componentId": "cra-8.1-bc-split", "reviewedPath": "/provinces/bc/brackets/4/1", "expectedPath": "/ratesAfterFirst/3"},
+        {"targetId": "ca-tax", "componentId": "cra-8.1-bc-split", "reviewedPath": "/provinces/bc/brackets/5/1", "expectedPath": "/ratesAfterFirst/4"},
+        {"targetId": "ca-tax", "componentId": "cra-8.1-bc-split", "reviewedPath": "/provinces/bc/brackets/6/1", "expectedPath": "/ratesAfterFirst/5"}
+      ]
+    },
+    {
+      "id": "ca-tax-bc-annual-first-rate",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jul/t4127-jul-payroll-deductions-formulas.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-bc-annual-rate",
+        "params": {"effectiveYear": 2026}
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"rate": "decimal rate"},
+        "value": {"rate": 0.056}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-bc-annual-rate-2026.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:7dba7a204315b146d73b547bfc4d4c0414a6c4891ffec943b2fbef4bd6bc1e0c",
         "httpStatus": 200,
         "finalUrl": "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jul/t4127-jul-payroll-deductions-formulas.html"
       },
-      "targets": [{"targetId": "ca-tax", "reviewedPath": "/"}]
+      "targets": [
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-t4127-bc-annual",
+          "reviewedPath": "/provinces/bc/brackets/0/1",
+          "expectedPath": "/rate"
+        }
+      ]
+    },
+    {
+      "id": "ca-tax-bc-bpa",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/other-rates-amounts-26e.csv",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-123rd",
+          "effectiveDate": "2026-07-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.2-bc-amounts"
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"bpa": "CAD"},
+        "value": {"bpa": 13216}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-other-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:fd9647c666ba3d4565029205e877644d2368f59531ee337975b2349ca300c9a8",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jul/other-rates-amounts-26e.csv"
+      },
+      "targets": [
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.2-bc",
+          "reviewedPath": "/provinces/bc/bpa",
+          "expectedPath": "/bpa"
+        }
+      ]
+    },
+    {
+      "id": "ca-tax-cpp-total",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jan/cpp-qpp-ttl-01-26e.csv",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-122nd",
+          "effectiveDate": "2026-01-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.3-cpp-total"
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {
+          "ympe": "CAD",
+          "exempt": "CAD",
+          "rate": "decimal rate"
+        },
+        "value": {"ympe": 74600, "exempt": 3500, "rate": 0.0595}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-cpp-total-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:0253d9c49a82f96c4733a665d14bfdddc0d03edbdb354aebe9aa2de7daa7ef8b",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jan/cpp-qpp-ttl-01-26e.csv"
+      },
+      "targets": [
+        {"targetId": "ca-tax", "componentId": "cra-8.3-cpp-total", "reviewedPath": "/cpp/rate", "expectedPath": "/rate"},
+        {"targetId": "ca-tax", "componentId": "cra-8.3-cpp-total", "reviewedPath": "/cpp/ympe", "expectedPath": "/ympe"},
+        {"targetId": "ca-tax", "componentId": "cra-8.3-cpp-total", "reviewedPath": "/cpp/exempt", "expectedPath": "/exempt"}
+      ]
+    },
+    {
+      "id": "ca-tax-cpp-base",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jan/cpp-qpp-br-01-26e.csv",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-122nd",
+          "effectiveDate": "2026-01-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.4-cpp-base"
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"baseRate": "decimal rate"},
+        "value": {"baseRate": 0.0495}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-cpp-base-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:8fd83d8f3b35799d9d5fe7f4f76122fa6f21bc78386a52f505d12093c68f7816",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jan/cpp-qpp-br-01-26e.csv"
+      },
+      "targets": [
+        {"targetId": "ca-tax", "componentId": "cra-8.4-cpp-base", "reviewedPath": "/cpp/baseRate", "expectedPath": "/baseRate"}
+      ]
+    },
+    {
+      "id": "ca-tax-cpp-first-additional",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jan/cpp-qpp-addntl-01-26e.csv",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-122nd",
+          "effectiveDate": "2026-01-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.5-cpp-first-additional"
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"additionalRate": "decimal rate"},
+        "value": {"additionalRate": 0.01}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-cpp-first-additional-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:04e56bbd3b277764fc92823c33cc45a74399d57d4236c0f563e4292c6ee0f16d",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jan/cpp-qpp-addntl-01-26e.csv"
+      },
+      "targets": [
+        {"targetId": "ca-tax", "componentId": "cra-8.5-cpp-first", "reviewedPath": "/cpp/additionalRate", "expectedPath": "/additionalRate"}
+      ]
+    },
+    {
+      "id": "ca-tax-cpp-second-additional",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jan/cpp-qpp-scnd-addntl-01-26e.csv",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-122nd",
+          "effectiveDate": "2026-01-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.6-cpp-second-additional"
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {
+          "cpp2Min": "CAD",
+          "cpp2Max": "CAD",
+          "cpp2Rate": "decimal rate"
+        },
+        "value": {"cpp2Min": 74600, "cpp2Max": 85000, "cpp2Rate": 0.04}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-cpp-second-additional-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:c86064b55a6d6db5098b6db912c49378bb2d820d84f3fa9ae1caba3fa70c1e85",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jan/cpp-qpp-scnd-addntl-01-26e.csv"
+      },
+      "targets": [
+        {"targetId": "ca-tax", "componentId": "cra-8.6-cpp-second", "reviewedPath": "/cpp/cpp2Rate", "expectedPath": "/cpp2Rate"},
+        {"targetId": "ca-tax", "componentId": "cra-8.6-cpp-second", "reviewedPath": "/cpp/cpp2Min", "expectedPath": "/cpp2Min"},
+        {"targetId": "ca-tax", "componentId": "cra-8.6-cpp-second", "reviewedPath": "/cpp/cpp2Max", "expectedPath": "/cpp2Max"}
+      ]
+    },
+    {
+      "id": "ca-tax-ei",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jan/ei-01-26e.csv",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "cra-t4127-csv",
+        "params": {
+          "publication": "T4127-122nd",
+          "effectiveDate": "2026-01-01",
+          "encoding": "windows-1252",
+          "cohort": "table-8.7-ei"
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {
+          "maxInsurable": "CAD",
+          "rate": "decimal rate"
+        },
+        "value": {"maxInsurable": 68900, "rate": 0.0163}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-ei-2026.csv",
+        "mediaType": "text/csv",
+        "sha256": "sha256:7f7039436e40deffd623d678600837e7b01e177ed540608dde9cab730e28f712",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/t4127-jan/ei-01-26e.csv"
+      },
+      "targets": [
+        {
+          "targetId": "ca-tax",
+          "componentId": "cra-8.7-ei",
+          "reviewedPath": "/ei",
+          "expectedPath": "/"
+        }
+      ]
     },
     {
       "id": "ca-t4127-version",

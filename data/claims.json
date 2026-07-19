@@ -19,12 +19,12 @@
       "boundaryProbeCount": 143
     },
     "sourceAttestations": {
-      "attestationCount": 37,
+      "attestationCount": 52,
       "claimCount": 43,
       "reviewedLeafCount": 136,
-      "liveCapableCount": 37,
-      "liveExtractableCount": 36,
-      "fixtureOnlyCount": 1
+      "liveCapableCount": 52,
+      "liveExtractableCount": 52,
+      "fixtureOnlyCount": 0
     },
     "lastAuditDate": "2026-07-19"
   },
