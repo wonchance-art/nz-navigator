@@ -30,6 +30,7 @@
     "ca-ko-ee-fee",
     "ca-ko-rprf-fee",
     "ca-ko-biometrics-fee",
+    "ca-ko-tax-constants-2026",
     "au-ko-whv-age",
     "au-ko-whv-fee",
     "au-ko-second-fee",
@@ -415,6 +416,11 @@
       "verifiedAt": "2026-07-19",
       "effectiveFrom": "2026-07-01",
       "reviewAfterDays": 45,
+      "livePolicy": {
+        "mode": "fixture-only",
+        "reason": "The complete federal, provincial, CPP, CPP2, EI, and Ontario cohort is a human-reviewed structured extract assembled from the current CRA tables; it requires scheduled manual renewal.",
+        "manualReviewDays": 7
+      },
       "extractor": {
         "mode": "json-pointer",
         "params": {"pointer": "/reviewed"}
@@ -514,18 +520,82 @@
       "targets": [{"targetId": "ca-tax", "reviewedPath": "/"}]
     },
     {
+      "id": "ca-t4127-version",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jul.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "candidatePolicy": {"mode": "available-parity"},
+      "extractor": {
+        "mode": "cra-t4127-version",
+        "params": {"language": "en"}
+      },
+      "expected": {
+        "type": "string",
+        "unit": "table version",
+        "value": "T4127-123rd-2026-07"
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-t4127-version-en.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:befc84534fc625b23d89d55ceb05757f9300daa2eb10a2f26e192e6fb41fdc7b",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jul.html"
+      },
+      "requestCandidates": [
+        {
+          "id": "english-landing",
+          "sourceRelation": "citation",
+          "request": {"method": "GET"},
+          "mediaType": "text/html",
+          "fixture": {
+            "path": "data/attestation-fixtures/ca-t4127-version-en.html",
+            "mediaType": "text/html",
+            "sha256": "sha256:befc84534fc625b23d89d55ceb05757f9300daa2eb10a2f26e192e6fb41fdc7b",
+            "httpStatus": 200,
+            "finalUrl": "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jul.html"
+          }
+        },
+        {
+          "id": "french-landing",
+          "sourceRelation": "jurisdiction-official",
+          "request": {
+            "method": "GET",
+            "url": "https://www.canada.ca/fr/agence-revenu/services/formulaires-publications/retenues-paie/t4127-formules-calcul-retenues-paie/t4127-jul.html"
+          },
+          "mediaType": "text/html",
+          "extractor": {
+            "mode": "cra-t4127-version",
+            "params": {"language": "fr"}
+          },
+          "fixture": {
+            "path": "data/attestation-fixtures/ca-t4127-version-fr.html",
+            "mediaType": "text/html",
+            "sha256": "sha256:150a24ab42f9f5556ceb1e5a04a24e8e60172e9e594fb7e3f74a316dc73e1d36",
+            "httpStatus": 200,
+            "finalUrl": "https://www.canada.ca/fr/agence-revenu/services/formulaires-publications/retenues-paie/t4127-formules-calcul-retenues-paie/t4127-jul.html"
+          }
+        }
+      ],
+      "claims": [{"claimId": "ca-ko-tax-constants-2026"}]
+    },
+    {
       "id": "ca-iec-korea-age",
       "jurisdiction": "CA",
-      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/news/2023/05/new-arrangement-expands-work-opportunities-for-canadian-and-south-korean-youth.html",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/eligibility/eligibility-by-country.html",
       "request": {"method": "GET"},
       "verifiedAt": "2026-07-19",
       "effectiveFrom": "2024-01-01",
       "reviewAfterDays": 30,
+      "candidatePolicy": {"mode": "available-parity"},
       "extractor": {
-        "mode": "html-text-anchor",
+        "mode": "html-section-text",
         "params": {
-          "anchor": "The eligibility age will increase from 18–30 to 18–35.",
-          "transform": "final-inclusive-range",
+          "heading": "Republic of Korea – Working Holiday",
+          "anchor": "be between the ages of 18 and 35 (inclusive)",
+          "transform": "inclusive-range",
           "unit": "years"
         }
       },
@@ -533,24 +603,66 @@
       "fixture": {
         "path": "data/attestation-fixtures/ca-iec-korea.html",
         "mediaType": "text/html",
-        "sha256": "sha256:de3e120e0d5316793f89f8b44622979e533ec1c83b8d9849a3f0e49e33fcda85",
+        "sha256": "sha256:7e6dfd1e804df34e665e1fd57d6763202901131b317e764273ef4af9d2b3da48",
         "httpStatus": 200,
-        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/news/2023/05/new-arrangement-expands-work-opportunities-for-canadian-and-south-korean-youth.html"
+        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/eligibility/eligibility-by-country.html"
       },
+      "requestCandidates": [
+        {
+          "id": "english-country-page",
+          "sourceRelation": "citation",
+          "request": {"method": "GET"},
+          "mediaType": "text/html",
+          "fixture": {
+            "path": "data/attestation-fixtures/ca-iec-korea.html",
+            "mediaType": "text/html",
+            "sha256": "sha256:7e6dfd1e804df34e665e1fd57d6763202901131b317e764273ef4af9d2b3da48",
+            "httpStatus": 200,
+            "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/eligibility/eligibility-by-country.html"
+          }
+        },
+        {
+          "id": "french-country-page",
+          "sourceRelation": "jurisdiction-official",
+          "request": {
+            "method": "GET",
+            "url": "https://www.canada.ca/fr/immigration-refugies-citoyennete/services/travailler-canada/eic/admisibilite/admissibilite-par-pays-categorie.html"
+          },
+          "mediaType": "text/html",
+          "extractor": {
+            "mode": "html-section-text",
+            "params": {
+              "heading": "République de Corée — Vacances-travail",
+              "anchor": "être âgé de 18 à 35 ans, inclusivement",
+              "transform": "inclusive-range",
+              "unit": "years"
+            }
+          },
+          "fixture": {
+            "path": "data/attestation-fixtures/ca-iec-korea-fr.html",
+            "mediaType": "text/html",
+            "sha256": "sha256:e96c6a99ff151d25f6f4f1c84a8b0e72e54990208cad1613403d457476f7a28c",
+            "httpStatus": 200,
+            "finalUrl": "https://www.canada.ca/fr/immigration-refugies-citoyennete/services/travailler-canada/eic/admisibilite/admissibilite-par-pays-categorie.html"
+          }
+        }
+      ],
       "claims": [{"claimId": "ca-ko-iec-age"}]
     },
     {
       "id": "ca-iec-korea-duration",
       "jurisdiction": "CA",
-      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/news/2023/05/new-arrangement-expands-work-opportunities-for-canadian-and-south-korean-youth.html",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/eligibility/eligibility-by-country.html",
       "request": {"method": "GET"},
       "verifiedAt": "2026-07-19",
       "effectiveFrom": "2024-01-01",
       "reviewAfterDays": 30,
+      "candidatePolicy": {"mode": "available-parity"},
       "extractor": {
-        "mode": "html-text-anchor",
+        "mode": "html-section-text",
         "params": {
-          "anchor": "Most youth will also have the option to participate twice in the program—each time for up to 24 months.",
+          "heading": "Republic of Korea – Working Holiday",
+          "anchor": "Description: The Working Holiday category is designed for citizens of the Republic of Korea who intend to travel in Canada and who wish to find temporary paid employment to help pay for their trip (up to 24 months per participation).",
           "transform": "duration-months",
           "unit": "months"
         }
@@ -559,10 +671,50 @@
       "fixture": {
         "path": "data/attestation-fixtures/ca-iec-korea.html",
         "mediaType": "text/html",
-        "sha256": "sha256:de3e120e0d5316793f89f8b44622979e533ec1c83b8d9849a3f0e49e33fcda85",
+        "sha256": "sha256:7e6dfd1e804df34e665e1fd57d6763202901131b317e764273ef4af9d2b3da48",
         "httpStatus": 200,
-        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/news/2023/05/new-arrangement-expands-work-opportunities-for-canadian-and-south-korean-youth.html"
+        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/eligibility/eligibility-by-country.html"
       },
+      "requestCandidates": [
+        {
+          "id": "english-country-page",
+          "sourceRelation": "citation",
+          "request": {"method": "GET"},
+          "mediaType": "text/html",
+          "fixture": {
+            "path": "data/attestation-fixtures/ca-iec-korea.html",
+            "mediaType": "text/html",
+            "sha256": "sha256:7e6dfd1e804df34e665e1fd57d6763202901131b317e764273ef4af9d2b3da48",
+            "httpStatus": 200,
+            "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/eligibility/eligibility-by-country.html"
+          }
+        },
+        {
+          "id": "french-country-page",
+          "sourceRelation": "jurisdiction-official",
+          "request": {
+            "method": "GET",
+            "url": "https://www.canada.ca/fr/immigration-refugies-citoyennete/services/travailler-canada/eic/admisibilite/admissibilite-par-pays-categorie.html"
+          },
+          "mediaType": "text/html",
+          "extractor": {
+            "mode": "html-section-text",
+            "params": {
+              "heading": "République de Corée — Vacances-travail",
+              "anchor": "Description : La catégorie Vacances-travail est conçue pour les citoyens de la République de Corée qui envisagent de voyager au Canada et qui souhaitent trouver un emploi temporaire rémunéré pour les aider à payer leur voyage (jusqu’à 24 mois par participation).",
+              "transform": "duration-months",
+              "unit": "months"
+            }
+          },
+          "fixture": {
+            "path": "data/attestation-fixtures/ca-iec-korea-fr.html",
+            "mediaType": "text/html",
+            "sha256": "sha256:e96c6a99ff151d25f6f4f1c84a8b0e72e54990208cad1613403d457476f7a28c",
+            "httpStatus": 200,
+            "finalUrl": "https://www.canada.ca/fr/immigration-refugies-citoyennete/services/travailler-canada/eic/admisibilite/admissibilite-par-pays-categorie.html"
+          }
+        }
+      ],
       "claims": [{"claimId": "ca-ko-iec-duration"}]
     },
     {
@@ -783,32 +935,68 @@
       "targets": [{"targetId": "au-tax", "reviewedPath": "/whm"}]
     },
     {
-      "id": "au-resident-tax-brackets",
+      "id": "au-resident-tax-free-band",
       "jurisdiction": "AU",
-      "sourceUrl": "https://www.ato.gov.au/law/view/pdf/acts/20250028.pdf",
+      "sourceUrl": "https://www.ato.gov.au/individuals-and-families/jobs-and-employment-types/tax-free-threshold/how-to-claim-the-tax-free-threshold",
       "request": {"method": "GET"},
       "verifiedAt": "2026-07-19",
       "effectiveFrom": "2026-07-01",
       "reviewAfterDays": 45,
-      "livePolicy": {
-        "mode": "fixture-only",
-        "reason": "The official 2025 Act PDF uses compressed PDF features outside the restricted parser; an authorised human review is required.",
-        "manualReviewDays": 7
+      "extractor": {
+        "mode": "ato-tax-free-band",
+        "params": {
+          "heading": "What is the tax-free threshold",
+          "anchor": "The tax-free threshold is the amount of income you can earn before you pay tax. Most Australian residents can claim tax-free threshold on the first $18,200 of the income they earn in the income year."
+        }
       },
-      "extractor": {"mode": "json-pointer", "params": {"pointer": "/records/residentBrackets"}},
       "expected": {
         "type": "array",
         "unit": "AUD/rate",
-        "value": [[18200, 0], [45000, 0.15], [135000, 0.3], [190000, 0.37], [null, 0.45]]
+        "value": [18200, 0]
       },
       "fixture": {
-        "path": "data/attestation-fixtures/au-resident-tax-reviewed.json",
-        "mediaType": "application/json",
-        "sha256": "sha256:015ad844b975e2463cda0c2c66149d9b76e4111155ee17085f4b76b96e1a3ad4",
+        "path": "data/attestation-fixtures/au-tax-free-threshold.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:8b5cbb62dff55c21fbb14fe74dab9a0e604f6eb303f090a41a56d29d2e13e450",
         "httpStatus": 200,
-        "finalUrl": "https://www.ato.gov.au/law/view/pdf/acts/20250028.pdf"
+        "finalUrl": "https://www.ato.gov.au/individuals-and-families/jobs-and-employment-types/tax-free-threshold/how-to-claim-the-tax-free-threshold"
       },
-      "targets": [{"targetId": "au-tax", "reviewedPath": "/resident/brackets"}]
+      "targets": [
+        {"targetId": "au-tax", "reviewedPath": "/resident/brackets/0"}
+      ]
+    },
+    {
+      "id": "au-resident-tax-brackets",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://www.ato.gov.au/law/view/print?DocID=PAC%2F20250028%2FSch1-Cl2&PiT=99991231235958",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 45,
+      "extractor": {
+        "mode": "ato-law-resident-brackets",
+        "params": {
+          "tableTitle": "Tax rates for resident taxpayers for the 2026-27 year of income"
+        }
+      },
+      "expected": {
+        "type": "array",
+        "unit": "AUD/rate",
+        "value": [[45000, 0.15], [135000, 0.3], [190000, 0.37], [null, 0.45]]
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/au-resident-tax-act.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:1268cab378f8e401be5a897572a471602e475534e279e04ca58a299fe54e05b4",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ato.gov.au/law/view/print?DocID=PAC%2F20250028%2FSch1-Cl2&PiT=99991231235958"
+      },
+      "targets": [
+        {"targetId": "au-tax", "reviewedPath": "/resident/brackets/1", "expectedPath": "/0"},
+        {"targetId": "au-tax", "reviewedPath": "/resident/brackets/2", "expectedPath": "/1"},
+        {"targetId": "au-tax", "reviewedPath": "/resident/brackets/3", "expectedPath": "/2"},
+        {"targetId": "au-tax", "reviewedPath": "/resident/brackets/4", "expectedPath": "/3"}
+      ]
     },
     {
       "id": "au-medicare-rate",
@@ -880,25 +1068,18 @@
     {
       "id": "au-lito",
       "jurisdiction": "AU",
-      "sourceUrl": "https://www.ato.gov.au/api/public/content/0-2319183b-9958-4848-88f9-ea9dc64b121e",
+      "sourceUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-115",
       "request": {"method": "GET"},
       "verifiedAt": "2026-07-19",
       "effectiveFrom": "2022-07-01",
       "reviewAfterDays": 45,
-      "livePolicy": {
-        "mode": "fixture-only",
-        "reason": "The official ATO content representation is served as a PDF to browsers and rejects unattended HTML requests; the restricted verifier cannot safely extract it.",
-        "manualReviewDays": 7
-      },
       "extractor": {
-        "mode": "ato-lito",
+        "mode": "ato-law-lito",
         "params": {
-          "anchor": "Low income tax offset",
-          "items": [
-            "$37,500 or less, you will get the maximum offset of $700",
-            "between $37,501 and $45,000, you will get $700 minus 5 cents for every $1 above $37,500",
-            "between $45,001 and $66,667, you will get $325 minus 1.5 cents for every $1 above $45,000."
-          ]
+          "actTitle": "Income Tax Assessment Act 1997",
+          "section": "SECTION 61-115",
+          "sectionTitle": "Amount of the Low Income tax offset",
+          "tableTitle": "Amount of your tax offset"
         }
       },
       "expected": {
@@ -923,9 +1104,9 @@
       "fixture": {
         "path": "data/attestation-fixtures/au-lito.html",
         "mediaType": "text/html",
-        "sha256": "sha256:c9a79a44c6e38555de8d576b1e47ba15479e90d9b0c096ab4e7b9de83638303d",
+        "sha256": "sha256:a52d45ddfaa4140cf253a3907f6df929483f020c9b557dba5f55f87f162131f1",
         "httpStatus": 200,
-        "finalUrl": "https://www.ato.gov.au/api/public/content/0-2319183b-9958-4848-88f9-ea9dc64b121e"
+        "finalUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-115"
       },
       "targets": [{"targetId": "au-tax", "reviewedPath": "/resident/lito"}]
     },

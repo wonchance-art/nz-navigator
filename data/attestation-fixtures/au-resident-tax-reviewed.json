@@ -1,9 +1,0 @@
-{
-  "_fixtureNote": "Human-reviewed structured extract of the official ATO Treasury Laws Amendment (More Cost of Living Relief) Act 2025 PDF. The live PDF uses compressed features outside the restricted parser, so it remains fixture-only and requires manual review.",
-  "records": {
-    "residentBrackets": {
-      "unit": "AUD/rate",
-      "value": [[18200, 0], [45000, 0.15], [135000, 0.30], [190000, 0.37], [null, 0.45]]
-    }
-  }
-}

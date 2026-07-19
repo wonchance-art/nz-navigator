@@ -19,12 +19,12 @@
       "boundaryProbeCount": 143
     },
     "sourceAttestations": {
-      "attestationCount": 35,
-      "claimCount": 42,
+      "attestationCount": 37,
+      "claimCount": 43,
       "reviewedLeafCount": 136,
-      "liveCapableCount": 35,
-      "liveExtractableCount": 33,
-      "fixtureOnlyCount": 2
+      "liveCapableCount": 37,
+      "liveExtractableCount": 36,
+      "fixtureOnlyCount": 1
     },
     "lastAuditDate": "2026-07-19"
   },
@@ -328,9 +328,9 @@
       "value": "18-35",
       "unit": "years",
       "status": "official",
-      "verifiedAt": "2026-07-18",
+      "verifiedAt": "2026-07-19",
       "effectiveFrom": "2024-01-01",
-      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/news/2023/05/new-arrangement-expands-work-opportunities-for-canadian-and-south-korean-youth.html",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/eligibility/eligibility-by-country.html",
       "pages": ["ca/index.html"],
       "severity": "critical"
     },
@@ -343,9 +343,9 @@
       "value": 24,
       "unit": "months",
       "status": "official",
-      "verifiedAt": "2026-07-18",
+      "verifiedAt": "2026-07-19",
       "effectiveFrom": "2024-01-01",
-      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/news/2023/05/new-arrangement-expands-work-opportunities-for-canadian-and-south-korean-youth.html",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/eligibility/eligibility-by-country.html",
       "pages": ["ca/index.html"],
       "severity": "critical"
     },
@@ -639,9 +639,9 @@
       "value": 50380,
       "unit": "AUD/year",
       "status": "derived",
-      "verifiedAt": "2026-07-18",
+      "verifiedAt": "2026-07-19",
       "effectiveFrom": "2026-07-01",
-      "sourceUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-110",
+      "sourceUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-115",
       "pages": ["au/index.html"],
       "severity": "critical",
       "notes": "2026-27 거주자 세율, LITO 100, Medicare levy 2%, HELP 없음."
@@ -719,11 +719,11 @@
     {"id":"nz-ja-skilled-residence-age","country":"NZ","locale":"ja","category":"eligibility","label":"技能永住申請の上限年齢","value":55,"unit":"years","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-07-19","sourceUrl":"https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/","pages":["ja/index.html"],"severity":"critical","parityKey":"nz-skilled-residence-age"},
     {"id":"nz-ko-income-tax-brackets-2026","country":"NZ","locale":"ko","category":"tax","label":"2026-27 개인소득세 누진구간 계산상수","value":"15600@0.105;53500@0.175;78100@0.30;180000@0.33;above@0.39","unit":"NZD/rate","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","effectiveTo":"2027-03-31","sourceUrl":"https://www.ird.govt.nz/tax-rates","pages":["nz/index.html"],"severity":"critical","parityKey":"nz-income-tax-brackets-2026"},
     {"id":"nz-ja-income-tax-brackets-2026","country":"NZ","locale":"ja","category":"tax","label":"2026-27個人所得税累進区分の計算定数","value":"15600@0.105;53500@0.175;78100@0.30;180000@0.33;above@0.39","unit":"NZD/rate","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","effectiveTo":"2027-03-31","sourceUrl":"https://www.ird.govt.nz/tax-rates","pages":["ja/index.html"],"severity":"critical","parityKey":"nz-income-tax-brackets-2026"},
-    {"id":"ca-ko-tax-constants-2026","country":"CA","locale":"ko","category":"tax","label":"2026 연방·ON·BC·AB·CPP·EI 계산상수","value":"T4127-123rd-2026-07","unit":"table version","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-07-01","effectiveTo":"2026-12-31","sourceUrl":"https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jul/t4127-jul-payroll-deductions-formulas.html","pages":["ca/index.html"],"severity":"critical","notes":"화면의 세금 계산상수 목록과 CRA T4127 123판을 연결한다. CPP2는 YMPE 초과분부터 계산한다."},
-    {"id":"au-ko-tax-brackets-2026","country":"AU","locale":"ko","category":"tax","label":"2026-27 거주자 소득세 계산구간","value":"18200@0;45000@0.15;135000@0.30;190000@0.37;above@0.45","unit":"AUD/rate","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-07-01","effectiveTo":"2027-06-30","sourceUrl":"https://www.ato.gov.au/law/view/pdf/acts/20250028.pdf","pages":["au/index.html"],"severity":"critical"},
+    {"id":"ca-ko-tax-constants-2026","country":"CA","locale":"ko","category":"tax","label":"2026 연방·ON·BC·AB·CPP·EI 계산상수","value":"T4127-123rd-2026-07","unit":"table version","status":"official","verifiedAt":"2026-07-19","effectiveFrom":"2026-07-01","effectiveTo":"2026-12-31","sourceUrl":"https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jul.html","pages":["ca/index.html"],"severity":"critical","notes":"화면의 세금 계산상수 목록과 CRA T4127 123판을 연결한다. CPP2는 YMPE 초과분부터 계산한다."},
+    {"id":"au-ko-tax-brackets-2026","country":"AU","locale":"ko","category":"tax","label":"2026-27 거주자 소득세 계산구간","value":"18200@0;45000@0.15;135000@0.30;190000@0.37;above@0.45","unit":"AUD/rate","status":"official","verifiedAt":"2026-07-19","effectiveFrom":"2026-07-01","effectiveTo":"2027-06-30","sourceUrl":"https://www.ato.gov.au/law/view/print?DocID=PAC%2F20250028%2FSch1-Cl2&PiT=99991231235958","pages":["au/index.html"],"severity":"critical","notes":"2026-27 법률 표의 15%·30%·37%·45% 구간과 ATO tax-free threshold 안내의 AUD 18,200을 함께 검증한다."},
     {"id":"au-ko-tax-medicare-rate-2026","country":"AU","locale":"ko","category":"tax","label":"Medicare levy 계산비율","value":0.02,"unit":"decimal rate","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-07-01","effectiveTo":"2027-06-30","sourceUrl":"https://www.ato.gov.au/law/view/document?docid=PAC%2F19860110%2F6","pages":["au/index.html"],"severity":"critical","notes":"거주자 표본에 적용. WHM 표본은 Medicare levy 면제 가정."},
     {"id":"au-ko-tax-super-rate-2026","country":"AU","locale":"ko","category":"tax","label":"Super guarantee 계산비율","value":0.12,"unit":"decimal rate","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2025-07-01","sourceUrl":"https://www.ato.gov.au/tax-rates-and-codes/key-superannuation-rates-and-thresholds/super-guarantee","pages":["au/index.html"],"severity":"medium","notes":"고용주가 급여 외 지급하는 표기용 값으로 실수령에서 차감하지 않는다."},
-    {"id":"au-ko-tax-lito-2026","country":"AU","locale":"ko","category":"tax","label":"Low Income Tax Offset 계산상수","value":"700;37500;45000@0.05;66667@0.015","unit":"AUD/rate","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-07-01","effectiveTo":"2027-06-30","sourceUrl":"https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-110","pages":["au/index.html"],"severity":"critical"},
+    {"id":"au-ko-tax-lito-2026","country":"AU","locale":"ko","category":"tax","label":"Low Income Tax Offset 계산상수","value":"700;37500;45000@0.05;66667@0.015","unit":"AUD/rate","status":"official","verifiedAt":"2026-07-19","effectiveFrom":"2026-07-01","effectiveTo":"2027-06-30","sourceUrl":"https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-115","pages":["au/index.html"],"severity":"critical"},
     {"id":"nz-ko-acc-rate-2026","country":"NZ","locale":"ko","category":"tax","label":"2026-27 ACC earners’ levy율(GST 포함)","value":1.75,"unit":"percent","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","effectiveTo":"2027-03-31","sourceUrl":"https://www.ird.govt.nz/acclevy","pages":["nz/index.html"],"severity":"critical","parityKey":"nz-acc-rate-2026"},
     {"id":"nz-ja-acc-rate-2026","country":"NZ","locale":"ja","category":"tax","label":"2026-27 ACC earners’ levy率（GST込）","value":1.75,"unit":"percent","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","effectiveTo":"2027-03-31","sourceUrl":"https://www.ird.govt.nz/acclevy","pages":["ja/index.html"],"severity":"critical","parityKey":"nz-acc-rate-2026"},
     {"id":"nz-ko-acc-cap-2026","country":"NZ","locale":"ko","category":"tax","label":"2026-27 ACC earners’ levy 최대 과세소득","value":156641,"unit":"NZD/year","status":"official","verifiedAt":"2026-07-18","effectiveFrom":"2026-04-01","effectiveTo":"2027-03-31","sourceUrl":"https://www.ird.govt.nz/acclevy","pages":["nz/index.html"],"severity":"critical","parityKey":"nz-acc-cap-2026"},

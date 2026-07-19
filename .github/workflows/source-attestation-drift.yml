@@ -42,7 +42,7 @@ jobs:
             echo "Production source attestations are not migrated yet."
           fi
 
-      - name: Run bounded live audit
+      - name: Run bounded candidate-aware live audit
         if: steps.registry.outputs.present == 'true'
         run: >-
           python3 scripts/verify_source_attestations.py
@@ -118,7 +118,7 @@ jobs:
               ;;
           esac
 
-      - name: Fail scheduled audit on any non-match
+      - name: Fail scheduled audit on any semantic non-match
         if: steps.registry.outputs.present == 'true'
         run: |
           python3 -c '

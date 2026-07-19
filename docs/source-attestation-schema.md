@@ -57,10 +57,13 @@ exact root keys:
 }
 ```
 
-`effectiveTo` and `livePolicy` are optional. `targets` and `claims` are
-individually optional, but at least one must be a non-empty array. All other
-entry keys above are required. A target mapping is exactly
-`{targetId,reviewedPath}`. A claim mapping is `{claimId}` or
+`effectiveTo`, `livePolicy`, `requestCandidates`, and `candidatePolicy` are
+optional. `targets` and `claims` are individually optional, but at least one
+must be a non-empty array. All other entry keys above are required. A target
+mapping is `{targetId,reviewedPath}` or
+`{targetId,reviewedPath,expectedPath}`; `/` is the default expected path and
+the selected expected subtree must exactly equal the reviewed subtree. A claim
+mapping is `{claimId}` or
 `{claimId,expectedPath}`; `/` is the default expected path.
 
 `livePolicy`, when present, is exactly
@@ -72,6 +75,13 @@ request or extract that source: it emits `unsupported` with the reason and
 manual-review SLA and can never become `match`. This is used for official
 representations such as compressed PDFs that the reviewed parser cannot
 safely consume.
+
+For `fixture-only`, `verifiedAt + manualReviewDays` is the inclusive manual
+evidence due date. Offline mode still validates the fixture and extractor
+first, then changes an otherwise matching result to `unsupported` on the next
+day. The result records `verifiedAt`, `dueDate`, `daysOverdue`, and the current
+raw fixture SHA-256. A review therefore updates both the date and reviewed
+evidence fingerprint. This deadline is independent of `reviewAfterDays`.
 
 Every boundary reviewed scalar leaf must be covered exactly once. Parent
 pointers may cover a cohort, but overlapping parent/child mappings are
@@ -135,6 +145,82 @@ request is fetched once per attempt and is shared by every linked attestation.
 Redirect final hosts are rechecked against the official jurisdiction
 allowlist. Reports preserve both `source` and `requestUrl`.
 
+### Representation candidates
+
+The required root `request`, `extractor`, and `fixture` preserve the v5/v6
+single-request contract. An attestation may additionally contain one to three
+`requestCandidates` and `candidatePolicy`:
+
+```json
+{
+  "candidatePolicy": {"mode": "available-parity"},
+  "requestCandidates": [
+    {
+      "id": "en",
+      "sourceRelation": "citation",
+      "request": {"method": "GET"},
+      "mediaType": "text/html",
+      "fixture": {
+        "path": "data/attestation-fixtures/iec-korea-en.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:REVIEWED_RAW_SHA256",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/.../eligibility-by-country.html"
+      }
+    },
+    {
+      "id": "fr",
+      "sourceRelation": "same-host",
+      "request": {
+        "method": "GET",
+        "url": "https://www.canada.ca/fr/.../admissibilite-par-pays-categorie.html"
+      },
+      "mediaType": "text/html",
+      "extractor": {
+        "mode": "html-section-text",
+        "params": {
+          "heading": "République de Corée — Vacances-travail",
+          "anchor": "être âgé de 18 à 35 ans, inclusivement",
+          "transform": "inclusive-range",
+          "unit": "years"
+        }
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/iec-korea-fr.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:REVIEWED_RAW_SHA256",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/fr/.../admissibilite-par-pays-categorie.html"
+      }
+    }
+  ]
+}
+```
+
+Each candidate has exactly `id`, `sourceRelation`, `request`, `mediaType`,
+`fixture`, and optional `extractor`. The first candidate must exactly mirror
+the root request/extractor/fixture. Every fixture final URL and exact media
+type must match its candidate. Canonical duplicates inside a chain fail;
+identical canonical requests across attestations share one fetch/retry
+execution.
+
+`sourceRelation` is `citation` (request URL equals `sourceUrl`), `same-host`
+(canonical host equals the citation host), or `jurisdiction-official` (request
+host is on the same jurisdiction allowlist). Explicit candidate GET URLs may
+contain a reviewed query but never a fragment, credential, arbitrary header,
+or body. Redirects remain allowlist-checked, and `citation`/`same-host`
+candidates may not redirect to another canonical host.
+
+`first-match` is the default. Only `transient`, `blocked`, or `unsupported`
+advances to the next candidate; `changed` stops immediately and the first
+match wins. `available-parity` evaluates all candidates: any `changed` stops
+and fails, one or more matches produce a semantic match, and inaccessible
+candidates remain visible in request trend/SLA telemetry. Every reachable
+match must independently equal the same expected value and unit, giving
+strict parity. With no match, the first candidate's deterministic non-match is
+returned. This permits EN/FR failover without allowing fallback to hide
+policy drift.
+
 ## Reviewed extractors
 
 Registry data never supplies a regular expression, CSS selector, XPath, or
@@ -155,6 +241,12 @@ code. Only these code-reviewed modes and bounded parameters run:
   2,000 characters), one fixed transform, and one unit. Nested block parents
   are not duplicated. Split/nested loose text and duplicate nodes do not
   satisfy exact cardinality.
+- `html-section-text`: one exact H3 and one exact leaf `p` or `li` before the
+  next H3. Only `inclusive-range` and `duration-months` are allowed. English
+  `be between the ages of N and M (inclusive)`, `N to M`, and French `N à M`
+  normalize to `N-M`; `duration-months` accepts exactly one English
+  `N month(s)` or French `N mois` token. A matching value in another country
+  section cannot satisfy the extractor.
 - `ato-lito`: exact heading `anchor` plus exactly three reviewed leaf `li`
   strings in order. Its code-fixed grammar accepts the indexed ATO wording
   `$37,500 or less ... get ...`, then the two `between $N and $M ... get ...`
@@ -163,6 +255,25 @@ code. Only these code-reviewed modes and bounded parameters run:
   fixed unit tree. It remains available for a future safe HTML
   representation; production may mark the current PDF representation
   `fixture-only`.
+- `ato-law-lito`: the current section 61-115 table with exact Act H1,
+  one exact normalized `p` containing the two reviewed `strong` siblings
+  `SECTION 61-115` and `Amount of the Low Income tax offset`, single-cell
+  table title, headers, items 1–3, thresholds, amounts, and rates. It verifies
+  taper continuity/arithmetic.
+  Tables under an ancestor ID beginning `History_` or normalized inline style
+  `display:none` are excluded; the accepted current table must be a direct
+  child of exact allowlisted `div#lawBody` or `div#LawBody`.
+- `ato-law-resident-brackets`: the exact 2026–27 Schedule 1 clause 2 table,
+  fixed headers, and complete items 1–4. It returns
+  `[[45000,.15],[135000,.30],[190000,.37],[null,.45]]` only; it never
+  synthesizes the separate tax-free threshold.
+- `ato-tax-free-band`: exact H2 `What is the tax-free threshold` and exact
+  reviewed paragraph including `before you pay tax` and `the first $N`. Only
+  that fixed grammar can create `[N,0]` with unit `AUD/rate`.
+- `cra-t4127-version`: params are exactly `{"language":"en"}` or
+  `{"language":"fr"}`. It requires one language-specific `T4127-JUL` H1,
+  validates edition ordinal and effective date, and normalizes both pages to
+  `T4127-123rd-2026-07` with unit `table version`.
 - `api-json-record`: `arrayPointer`, 1–3 exact string `match` fields,
   `valuePointer`, and optional fixed transform. Zero or multiple matching
   records is drift. `currency-to-number` requires an actual `AUD`, `CAD`, or
@@ -170,15 +281,22 @@ code. Only these code-reviewed modes and bounded parameters run:
 - `json-pointer` / `api-json-pointer`: the pointer must resolve to an exact
   finite `{unit,value}` record; aligned unit trees are supported.
 - `html-table`, `html-definition`, and `pdf-table`: restricted legacy fixture
-  parsers. The PDF parser accepts only bounded, unencrypted literal-text PDFs
-  and rejects compression/object-stream features it cannot safely interpret.
+  parsers. The PDF parser accepts literal `Tj` and literal-only `TJ` array text
+  inside balanced `BT/ET` objects in bounded direct streams with no filter or
+  one `FlateDecode`. Exactly one valid classic xref/startxref is required. It
+  caps body, objects, streams, object size, per-stream and aggregate
+  decompressed bytes, token/nesting depth, and compression ratio. Encryption,
+  `/DecodeParms`, xref/object streams (including whitespace variants), filter
+  chains, hex text operands, ToUnicode/complex fonts, malformed streams,
+  duplicate anchors, and partial tables fail closed. It is not a general PDF
+  engine; reviewed official HTML is preferred.
 
 HTML field transforms are fixed enums:
 
 - `number`, `integer`, `currency-to-number`, `percent-to-decimal`
 - `duration-months`, `duration-weeks`
-- `inclusive-range`, which accepts one `N to M` or dash range and returns
-  canonical `N-M`
+- `inclusive-range`, which accepts one `N to M`, French `N à M`, or dash
+  range and returns canonical `N-M`
 - `final-inclusive-range`, which requires exactly two ranges and returns the
   last as `N-M`
 - `leading-currency-to-number`, which requires the block's sole ISO-prefixed
@@ -237,16 +355,26 @@ verification. A live `fixture-only` result is `unsupported` without a network
 attempt; its reason and `manualReviewDays` are included in the result and
 issue.
 
+Candidate-backed results additionally include `selectedCandidate`,
+`candidatePolicy`, and ordered `candidateChain` telemetry: candidate ID,
+public request hash, official request URL/method, outcome/reason, attempts,
+attempt status sequence, and content-free latency. Candidate IDs/order,
+outcomes, reasons, and attempt statuses are substantive. Latency and matching
+full-body context churn are excluded from observation and issue
+fingerprinting. A fallback match may keep the value audit green while a
+failed candidate request remains an active transport trend in the single
+drift issue.
+
 Successful reports deterministically include:
 
 ```json
 {
-  "attestationCount": 35,
-  "claimCount": 42,
+  "attestationCount": 37,
+  "claimCount": 43,
   "reviewedLeafCount": 136,
-  "liveCapableCount": 35,
-  "liveExtractableCount": 33,
-  "fixtureOnlyCount": 2
+  "liveCapableCount": 37,
+  "liveExtractableCount": 36,
+  "fixtureOnlyCount": 1
 }
 ```
 
@@ -396,10 +524,18 @@ To migrate a cohort:
 7. Review the first scheduled live report; never promote blocked, transient,
    or unsupported to match.
 
+For candidate migration, keep the root request/extractor/fixture as candidate
+zero, add only reviewed official alternatives, and use `available-parity`
+when reachable representations must prove the same value. For split boundary
+evidence, map each source's expected subtree with target `expectedPath`; never
+inject a constant into one extractor merely to recreate a leaf proved by
+another source.
+
 Known limits: the HTML parser intentionally ignores styling and client-side
-rendering; the PDF parser is not a general PDF engine; bot-protected sources
-may remain blocked; and a human-reviewed structured PDF extract can prove
-fixture integrity offline but remains explicitly `fixture-only`/`unsupported`
-against the live PDF until a bounded extractor is reviewed. Retries address
-short-lived transport failures only and do not turn access, layout, value, or
-safe-parser failures into matches.
+rendering; the bounded PDF parser is not a general PDF engine and deliberately
+rejects object/xref streams and complex font mappings; bot-protected sources
+may remain blocked. A human-reviewed structured PDF extract proves fixture
+integrity offline but remains explicitly `fixture-only`/`unsupported` until a
+bounded representation is reviewed. Retries/failover address transport
+availability only and never turn layout, value, unit, or safe-parser drift
+into a match.
