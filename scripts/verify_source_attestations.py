@@ -1914,6 +1914,7 @@ class _HtmlSourceParser(HTMLParser):
         self.list_items: list[tuple[str, str]] = []
         self.section_blocks: list[tuple[str, str, str]] = []
         self.heading_blocks: list[tuple[str, str, str]] = []
+        self.law_strongs: list[str] = []
         self._recent_anchors: list[str] = []
         self._table: dict[str, Any] | None = None
         self._row: list[str] | None = None
@@ -1929,6 +1930,7 @@ class _HtmlSourceParser(HTMLParser):
         self._dt_parts: list[str] | None = None
         self._dd_parts: list[str] | None = None
         self._pending_dt: str | None = None
+        self._law_strong_parts: list[str] | None = None
         self._ignored_depth = 0
         self._tag_stack: list[tuple[str, dict[str, str]]] = []
 
@@ -1951,10 +1953,11 @@ class _HtmlSourceParser(HTMLParser):
                 for _item_tag, item_attrs in self._tag_stack
             )
             direct_law_body = bool(
-                self._tag_stack
-                and self._tag_stack[-1][0] == "div"
-                and self._tag_stack[-1][1].get("id")
-                in {"lawBody", "LawBody"}
+                any(
+                    item_tag == "div"
+                    and item_attrs.get("id") in {"lawBody", "LawBody"}
+                    for item_tag, item_attrs in self._tag_stack
+                )
             )
             self._table = {
                 "caption": "",
@@ -1985,6 +1988,25 @@ class _HtmlSourceParser(HTMLParser):
             self._dt_parts = []
         elif lowered == "dd":
             self._dd_parts = []
+        elif (
+            lowered == "strong"
+            and self._table is None
+            and self._law_strong_parts is None
+            and any(
+                item_tag == "div"
+                and item_attrs.get("id") in {"lawBody", "LawBody"}
+                for item_tag, item_attrs in self._tag_stack
+            )
+            and not any(
+                item_attrs.get("id", "").startswith("History_")
+                or re.sub(
+                    r"\s+", "", item_attrs.get("style", "").lower()
+                )
+                == "display:none"
+                for _item_tag, item_attrs in self._tag_stack
+            )
+        ):
+            self._law_strong_parts = []
         if lowered not in {
             "area", "base", "br", "col", "embed", "hr", "img", "input",
             "link", "meta", "param", "source", "track", "wbr",
@@ -2060,6 +2082,11 @@ class _HtmlSourceParser(HTMLParser):
                 )
             self._pending_dt = None
             self._dd_parts = None
+        elif lowered == "strong" and self._law_strong_parts is not None:
+            value = _normalize_text("".join(self._law_strong_parts))
+            if value:
+                self.law_strongs.append(value)
+            self._law_strong_parts = None
         for index in range(len(self._tag_stack) - 1, -1, -1):
             if self._tag_stack[index][0] == lowered:
                 del self._tag_stack[index:]
@@ -2093,6 +2120,8 @@ class _HtmlSourceParser(HTMLParser):
             self._dt_parts.append(data)
         if self._dd_parts is not None:
             self._dd_parts.append(data)
+        if self._law_strong_parts is not None:
+            self._law_strong_parts.append(data)
 
     def _remember_anchor(self, text: str) -> None:
         if text:
@@ -2830,8 +2859,12 @@ def _extract_ato_law_lito(
         raise ChangedExtraction(
             f"ATO Act H1 matched {title_count} times"
         )
-    section_block = f"{params['section']} {params['sectionTitle']}"
-    section_count = parser.block_texts.count(section_block)
+    section_count = sum(
+        first == params["section"] and second == params["sectionTitle"]
+        for first, second in zip(
+            parser.law_strongs, parser.law_strongs[1:]
+        )
+    )
     if section_count != 1:
         raise ChangedExtraction(
             "ATO LITO requires exactly one reviewed strong-pair section "

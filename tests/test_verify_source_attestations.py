@@ -2020,14 +2020,15 @@ class SourceAttestationTests(unittest.TestCase):
         }
         current = """
         <h1>Income Tax Assessment Act 1997</h1>
+        <div id="lawBody">
         <p><strong>SECTION 61-115</strong>&nbsp;<strong>Amount of the Low Income tax offset</strong>&nbsp;</p>
-        <div id="lawBody"><table>
+        <div class="center"><table>
         <tr><th>Amount of your tax offset</th></tr>
         <tr><th>Item</th><th>If your relevant income:</th><th>The amount of your tax offset is:</th></tr>
         <tr><td>1</td><td>does not exceed $ 37,500</td><td>$ 700</td></tr>
         <tr><td>2</td><td>exceeds $ 37,500 but is not more than $ 45,000</td><td>$ 700, less an amount equal to 5% of the excess</td></tr>
         <tr><td>3</td><td>exceeds $ 45,000 but is not more than $ 66,667</td><td>$ 325, less an amount equal to 1.5% of the excess</td></tr>
-        </table></div>
+        </table></div></div>
         """
         hidden = """
         <div id="History_old"><div class="panel-info" style="display:none"><blockquote><table>
@@ -2060,8 +2061,8 @@ class SourceAttestationTests(unittest.TestCase):
             current.replace("1.5%", "1.6%"),
             current.replace("</table></div>", "</table></div>" + current),
             current.replace(
-                '<div id="lawBody"><table>',
-                '<div id="other"><table>',
+                '<div id="lawBody">',
+                '<div id="other">',
             ),
             current.replace(
                 "<p><strong>SECTION 61-115</strong>&nbsp;<strong>"
@@ -2091,7 +2092,7 @@ class SourceAttestationTests(unittest.TestCase):
     def test_ato_resident_law_and_tax_free_band_are_exact(self) -> None:
         title = "Tax rates for resident taxpayers for the 2026-27 year of income"
         table = f"""
-        <div id="LawBody"><table>
+        <div id="LawBody"><div class="center"><table>
         <tr><th>{title}</th><th></th><th></th></tr>
         <tr><th>Item</th><th>For the part of the ordinary taxable income of the taxpayer that:</th><th>The rate is:</th></tr>
         <tr><td>1</td><td>exceeds the tax-free threshold but does not exceed $45,000</td><td>15%</td></tr>
@@ -2102,7 +2103,7 @@ class SourceAttestationTests(unittest.TestCase):
         <table><tr><th>Tax rates for resident taxpayers for the 2027-28 year of income</th></tr>
         <tr><th>Item</th><th>For the part of the ordinary taxable income of the taxpayer that:</th><th>The rate is:</th></tr>
         <tr><td>1</td><td>exceeds the tax-free threshold but does not exceed $45,000</td><td>14%</td></tr>
-        </table></div>
+        </table></div></div>
         """
         unit, value = verifier._extract_ato_law_resident_brackets(
             table.encode("utf-8"), {"tableTitle": title}

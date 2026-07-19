@@ -987,7 +987,7 @@
       "fixture": {
         "path": "data/attestation-fixtures/au-resident-tax-act.html",
         "mediaType": "text/html",
-        "sha256": "sha256:ac5a9bed4738c3f6d61d832fc93f42b78c9c5a0ef2f42a5e81f2466636e2c18e",
+        "sha256": "sha256:1268cab378f8e401be5a897572a471602e475534e279e04ca58a299fe54e05b4",
         "httpStatus": 200,
         "finalUrl": "https://www.ato.gov.au/law/view/print?DocID=PAC%2F20250028%2FSch1-Cl2&PiT=99991231235958"
       },
@@ -1104,7 +1104,7 @@
       "fixture": {
         "path": "data/attestation-fixtures/au-lito.html",
         "mediaType": "text/html",
-        "sha256": "sha256:ad8e325eecad059751a1e519c01888f9c2a6f21a75bc9fa1bcf56864113e6194",
+        "sha256": "sha256:a52d45ddfaa4140cf253a3907f6df929483f020c9b557dba5f55f87f162131f1",
         "httpStatus": 200,
         "finalUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-115"
       },
