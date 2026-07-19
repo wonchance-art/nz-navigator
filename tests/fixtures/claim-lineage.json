@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 1,
+  "derivedCriticalScope": [
+    "au-ko-partner-801-separate-fee",
+    "au-ko-tax-resident-60000",
+    "au-ko-tax-brackets-2026",
+    "au-ko-tax-whm-52115",
+    "ca-ko-crs-sample-305",
+    "ca-ko-iec-fees",
+    "ca-ko-pgwp-fee",
+    "ca-ko-tax-on-60000",
+    "nz-ja-netpay-72800",
+    "nz-ja-whv-cap",
+    "nz-ko-netpay-72800"
+  ],
+  "mappings": [
+    {
+      "claimId": "nz-ja-whv-cap",
+      "edition": "ja",
+      "page": "ja/index.html",
+      "inputClaimIds": [
+        "nz-ja-whv-age",
+        "nz-ja-whv-duration",
+        "nz-ja-whv-fee",
+        "nz-ja-whv-processing"
+      ],
+      "transform": "uncapped-availability",
+      "target": "nz-ja-whv-uncapped",
+      "expected": {
+        "type": "string",
+        "unit": "availability",
+        "value": "uncapped"
+      },
+      "dates": {
+        "verifiedAt": "2026-07-19",
+        "effectiveFrom": "2026-07-19"
+      },
+      "evidenceTier": "derived-executed",
+      "negativeEvidence": {
+        "attestationId": "nz-japan-whv-hero",
+        "mode": "exact-cardinality",
+        "expectedMatches": 0
+      }
+    },
+    {
+      "claimId": "nz-ko-netpay-72800",
+      "edition": "nz",
+      "page": "nz/index.html",
+      "inputClaimIds": [
+        "nz-ko-income-tax-brackets-2026",
+        "nz-ko-acc-rate-2026",
+        "nz-ko-acc-cap-2026"
+      ],
+      "transform": "calculator-execution",
+      "target": "nz-netpay-72800",
+      "expected": {
+        "type": "number",
+        "unit": "NZD/year",
+        "value": 57466
+      },
+      "dates": {
+        "verifiedAt": "2026-07-19",
+        "effectiveFrom": "2026-04-01"
+      },
+      "evidenceTier": "derived-executed"
+    },
+    {
+      "claimId": "nz-ja-netpay-72800",
+      "edition": "ja",
+      "page": "ja/index.html",
+      "inputClaimIds": [
+        "nz-ja-income-tax-brackets-2026",
+        "nz-ja-acc-rate-2026",
+        "nz-ja-acc-cap-2026"
+      ],
+      "transform": "calculator-execution",
+      "target": "ja-netpay-72800",
+      "expected": {
+        "type": "number",
+        "unit": "NZD/year",
+        "value": 57466
+      },
+      "dates": {
+        "verifiedAt": "2026-07-19",
+        "effectiveFrom": "2026-04-01"
+      },
+      "evidenceTier": "derived-executed"
+    },
+    {
+      "claimId": "ca-ko-iec-fees",
+      "edition": "ca",
+      "page": "ca/index.html",
+      "inputClaimIds": [
+        "ca-ko-iec-program-fee",
+        "ca-ko-open-work-permit-holder-fee"
+      ],
+      "transform": "sum",
+      "target": "ca-iec-fees",
+      "expected": {
+        "type": "number",
+        "unit": "CAD",
+        "value": 284.75
+      },
+      "dates": {
+        "verifiedAt": "2026-07-19",
+        "effectiveFrom": "2025-12-01"
+      },
+      "evidenceTier": "derived-executed"
+    },
+    {
+      "claimId": "ca-ko-pgwp-fee",
+      "edition": "ca",
+      "page": "ca/index.html",
+      "inputClaimIds": [
+        "ca-ko-work-permit-fee",
+        "ca-ko-open-work-permit-holder-fee"
+      ],
+      "transform": "sum",
+      "target": "ca-pgwp-fee",
+      "expected": {
+        "type": "number",
+        "unit": "CAD",
+        "value": 255
+      },
+      "dates": {
+        "verifiedAt": "2026-07-19",
+        "effectiveFrom": "2026-07-19"
+      },
+      "evidenceTier": "derived-executed"
+    },
+    {
+      "claimId": "ca-ko-crs-sample-305",
+      "edition": "ca",
+      "page": "ca/index.html",
+      "inputClaimIds": [
+        "ca-ko-crs-age35-no-spouse",
+        "ca-ko-crs-bachelor-no-spouse",
+        "ca-ko-crs-clb7-four-no-spouse",
+        "ca-ko-crs-canadian-work1-no-spouse"
+      ],
+      "transform": "crs-fixed-profile",
+      "target": "ca-crs-profile-305",
+      "expected": {
+        "type": "number",
+        "unit": "points",
+        "value": 305
+      },
+      "dates": {
+        "verifiedAt": "2026-07-19",
+        "effectiveFrom": "2026-07-19"
+      },
+      "evidenceTier": "derived-executed"
+    },
+    {
+      "claimId": "ca-ko-tax-on-60000",
+      "edition": "ca",
+      "page": "ca/index.html",
+      "inputClaimIds": [
+        "ca-ko-tax-constants-2026"
+      ],
+      "transform": "calculator-execution",
+      "target": "ca-on-netpay-60000",
+      "expected": {
+        "type": "number",
+        "unit": "CAD/year",
+        "value": 47340
+      },
+      "dates": {
+        "verifiedAt": "2026-07-19",
+        "effectiveFrom": "2026-07-01"
+      },
+      "evidenceTier": "derived-executed"
+    },
+    {
+      "claimId": "au-ko-tax-brackets-2026",
+      "edition": "au",
+      "page": "au/index.html",
+      "inputClaimIds": [],
+      "transform": "boundary-serialization",
+      "target": "au-resident-brackets-serialization",
+      "expected": {
+        "type": "string",
+        "unit": "AUD/rate",
+        "value": "18200@0;45000@0.15;135000@0.30;190000@0.37;above@0.45"
+      },
+      "dates": {
+        "verifiedAt": "2026-07-19",
+        "effectiveFrom": "2026-07-01",
+        "effectiveTo": "2027-06-30"
+      },
+      "evidenceTier": "derived-executed",
+      "boundaryEvidence": {
+        "targetId": "au-tax",
+        "reviewedPath": "/resident/brackets",
+        "attestationIds": [
+          "au-resident-tax-free-band",
+          "au-resident-tax-brackets"
+        ]
+      }
+    },
+    {
+      "claimId": "au-ko-tax-whm-52115",
+      "edition": "au",
+      "page": "au/index.html",
+      "inputClaimIds": [
+        "au-ko-whm-tax-rate",
+        "au-ko-tax-brackets-2026"
+      ],
+      "transform": "calculator-execution",
+      "target": "au-whm-netpay-52115",
+      "expected": {
+        "type": "number",
+        "unit": "AUD/year",
+        "value": 43231
+      },
+      "dates": {
+        "verifiedAt": "2026-07-19",
+        "effectiveFrom": "2026-07-01"
+      },
+      "evidenceTier": "derived-executed"
+    },
+    {
+      "claimId": "au-ko-tax-resident-60000",
+      "edition": "au",
+      "page": "au/index.html",
+      "inputClaimIds": [
+        "au-ko-tax-brackets-2026",
+        "au-ko-tax-medicare-rate-2026",
+        "au-ko-tax-lito-2026"
+      ],
+      "transform": "calculator-execution",
+      "target": "au-resident-netpay-60000",
+      "expected": {
+        "type": "number",
+        "unit": "AUD/year",
+        "value": 50380
+      },
+      "dates": {
+        "verifiedAt": "2026-07-19",
+        "effectiveFrom": "2026-07-01"
+      },
+      "evidenceTier": "derived-executed"
+    },
+    {
+      "claimId": "au-ko-partner-801-separate-fee",
+      "edition": "au",
+      "page": "au/index.html",
+      "inputClaimIds": [
+        "au-ko-partner-820-fee"
+      ],
+      "transform": "constant-absence-zero",
+      "target": "au-partner-801-separate-zero",
+      "expected": {
+        "type": "number",
+        "unit": "AUD",
+        "value": 0
+      },
+      "dates": {
+        "verifiedAt": "2026-07-19",
+        "effectiveFrom": "2026-07-01"
+      },
+      "evidenceTier": "derived-executed",
+      "negativeEvidence": {
+        "attestationId": "au-partner-820-fee",
+        "mode": "exact-cardinality",
+        "expectedMatches": 0
+      }
+    }
+  ]
+}

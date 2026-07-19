@@ -762,6 +762,159 @@ function expectedAustralia(gross, mode, reviewed) {
   };
 }
 
+const JS_NUMERIC_LITERAL = /(?<![A-Za-z0-9_$.])(?:0[xX][0-9a-fA-F](?:_?[0-9a-fA-F])*|0[bB][01](?:_?[01])*|0[oO][0-7](?:_?[0-7])*|(?:\d(?:_?\d)*(?:\.(?:\d(?:_?\d)*)?)?|\.\d(?:_?\d)*)(?:[eE][+-]?\d(?:_?\d)*)?)(?![A-Za-z0-9_$])/g;
+
+function sourceContainsNumber(source, value) {
+  return [...maskStringsAndComments(source).matchAll(JS_NUMERIC_LITERAL)]
+    .some(match => Number(match[0].replace(/_/g, '')) === value);
+}
+
+function rejectReviewedSampleLiteral(root, target, gross) {
+  const html = fs.readFileSync(resolveInside(root, target.page), 'utf8');
+  let functionSources;
+  if (target.kind === 'nz-paye-acc') {
+    const block = findBlock(html, 'const NP_BRACKETS =');
+    functionSources = [extractFunction(block, 'npTax')];
+  } else if (target.kind === 'ca-tax') {
+    const block = findBlock(html, 'const CA_TAX =');
+    functionSources = [extractFunction(block, 'npTax')];
+  } else if (target.kind === 'au-tax') {
+    const block = findBlock(html, 'const AU_TAX =');
+    functionSources = [
+      extractFunction(block, 'npTaxResident'),
+      extractFunction(block, 'npTax'),
+    ];
+  } else {
+    throw new Error(`unsupported reviewed calculator kind ${target.kind}`);
+  }
+  if (functionSources.some(source => sourceContainsNumber(source, gross))) {
+    throw new Error(
+      `calculator function contains reviewed sample literal ${gross}`,
+    );
+  }
+}
+
+export function executeReviewedLineageSample({
+  root,
+  target,
+  gross,
+  mode = null,
+}) {
+  if (!Number.isFinite(gross) || gross <= 0) {
+    throw new Error('reviewed lineage gross must be a positive finite number');
+  }
+  rejectReviewedSampleLiteral(root, target, gross);
+  const runtime = loadRuntime(root, target);
+  if (target.kind === 'nz-paye-acc') {
+    const actual = Math.round(
+      gross - runtime.tax(gross) - runtime.acc(gross),
+    );
+    const expected = Math.round(
+      gross -
+      progressiveTax(gross, target.reviewed.brackets) -
+      Math.min(gross, target.reviewed.acc.cap) * target.reviewed.acc.rate,
+    );
+    return { actual, expected };
+  }
+  if (target.kind === 'ca-tax') {
+    if (!['on', 'bc', 'ab'].includes(mode)) {
+      throw new Error('reviewed Canada lineage mode must be on, bc, or ab');
+    }
+    const actualResult = runtime.tax(gross, mode);
+    const expectedResult = expectedCanada(gross, mode, target.reviewed);
+    return {
+      actual: Math.round(gross - actualResult.totalTax),
+      expected: Math.round(gross - expectedResult.totalTax),
+    };
+  }
+  if (target.kind === 'au-tax') {
+    if (!['whm', 'resident'].includes(mode)) {
+      throw new Error(
+        'reviewed Australia lineage mode must be whm or resident',
+      );
+    }
+    return {
+      actual: runtime.tax(gross, mode).net,
+      expected: expectedAustralia(gross, mode, target.reviewed).net,
+    };
+  }
+  throw new Error(`unsupported reviewed calculator kind ${target.kind}`);
+}
+
+export function executeReviewedCrsProfile({ root, page, profile }) {
+  const keys = Object.keys(profile || {}).sort();
+  if (
+    keys.join('\0') !== ['age', 'education', 'experience', 'language']
+      .sort().join('\0') ||
+    Object.values(profile).some(value => typeof value !== 'string')
+  ) {
+    throw new Error('CRS profile must contain exact reviewed string enums');
+  }
+  const html = fs.readFileSync(resolveInside(root, page), 'utf8');
+  const block = findBlock(html, 'const CRS_AGE_SCORES =');
+  const renderer = extractFunction(
+    block,
+    'renderCrsCalc',
+    { enforceTokenAllowlist: false },
+  );
+  const forbidden = /\b(?:eval|Function|process|require|import|fetch|XMLHttpRequest|WebSocket|window|globalThis)\b/;
+  if (forbidden.test(maskStringsAndComments(renderer))) {
+    throw new Error('CRS renderer contains a forbidden runtime token');
+  }
+  for (const value of Object.values(profile)) {
+    const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (new RegExp(`(['"\\x60])${escaped}\\1`).test(renderer)) {
+      throw new Error(`CRS renderer contains reviewed profile literal ${value}`);
+    }
+  }
+  const elements = {
+    crsAge: { value: profile.age },
+    crsEducation: { value: profile.education },
+    crsLanguage: { value: profile.language },
+    crsCanExperience: { value: profile.experience },
+    crsCore: { textContent: '' },
+    crsGaugeBox: { innerHTML: '' },
+  };
+  const context = vm.createContext({
+    document: {
+      getElementById(id) {
+        return Object.hasOwn(elements, id) ? elements[id] : null;
+      },
+    },
+  }, {
+    codeGeneration: { strings: false, wasm: false },
+  });
+  const source = [
+    extractConst(block, 'CRS_AGE_SCORES'),
+    extractConst(block, 'CRS_EDUCATION_SCORES'),
+    extractConst(block, 'CRS_LANGUAGE_SCORES'),
+    extractConst(block, 'CRS_EXPERIENCE_SCORES'),
+    renderer,
+    'renderCrsCalc();',
+    'globalThis.__lineage = {',
+    ' text: document.getElementById("crsCore").textContent,',
+    ' components: {',
+    '  age: CRS_AGE_SCORES[document.getElementById("crsAge").value] ?? null,',
+    '  education: CRS_EDUCATION_SCORES[document.getElementById("crsEducation").value] ?? null,',
+    '  language: CRS_LANGUAGE_SCORES[document.getElementById("crsLanguage").value] ?? null,',
+    '  experience: CRS_EXPERIENCE_SCORES[document.getElementById("crsCanExperience").value] ?? null,',
+    ' },',
+    '};',
+  ].join('\n');
+  vm.runInContext(source, context, { timeout: 200 });
+  const result = JSON.parse(JSON.stringify(context.__lineage));
+  const match = /^core ([0-9]+)점$/.exec(result.text);
+  if (!match) throw new Error('CRS renderer did not produce exact core score text');
+  const independent = Object.values(result.components).reduce(
+    (total, value) => total + value,
+    0,
+  );
+  if (sourceContainsNumber(renderer, independent)) {
+    throw new Error(`CRS renderer contains reviewed output literal ${independent}`);
+  }
+  return { actual: Number(match[1]), components: result.components };
+}
+
 function compareNumbers(actual, expected, tolerance) {
   if (typeof actual === 'number' && typeof expected === 'number') {
     return Number.isFinite(actual) && Math.abs(actual - expected) <= tolerance;
