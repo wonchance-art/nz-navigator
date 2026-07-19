@@ -119,6 +119,9 @@ const REVIEWED_EMPLOYER_OVERRIDES = Object.freeze({
   "au-q-i-t-e-harvest-trail-56051769": {
     contact: { kind: "company", url: "https://www.qite.com/" },
   },
+  "au-rural-enterprises-australia-6fde919b": {
+    contact: { kind: "recruitment", url: "https://seasonal.ruralenterprises.com.au/" },
+  },
   "au-downer-58e2fb4d": {
     source: { kind: "employer-official", url: "https://downergroup.com/life-at-downer/", checkedAt: TODAY },
     contact: { kind: "recruitment", url: "https://downergroup.com/life-at-downer/" },
