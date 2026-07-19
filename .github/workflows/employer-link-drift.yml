@@ -114,13 +114,18 @@ jobs:
               ;;
           esac
 
-      - name: Fail scheduled audit on any non-match
+      - name: Fail only on real drift (changed/unsupported); blocked/transient are review-queue warnings
         if: steps.registry.outputs.present == 'true'
         run: |
           python3 -c '
           import json
           report = json.load(open("employer-link-report.json"))
-          bad = [item for item in report["results"] if item["status"] != "match"]
-          if bad:
-              raise SystemExit(f"{len(bad)} non-match employer link result(s)")
+          results = report["results"]
+          hard = [i for i in results if i["status"] in ("changed", "unsupported")]
+          soft = [i for i in results if i["status"] in ("blocked", "transient")]
+          if soft:
+              print(f"::warning::{len(soft)} blocked/transient link(s) kept in the drift issue for manual review; bot-blocking (403/WAF) and third-party TLS hiccups do not prove drift.")
+          if hard:
+              raise SystemExit(f"{len(hard)} real drift result(s) (changed/unsupported)")
+          print(f"Link audit gate passed: {len(results)} checked, {len(soft)} in review queue, 0 real drift.")
           '

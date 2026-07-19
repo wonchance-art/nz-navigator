@@ -128,7 +128,10 @@ VACANCY_PATTERN = re.compile(
 )
 MAX_TEXT = 500
 MAX_BODY_BYTES = 512 * 1024
-USER_AGENT = "NZ-Navigator-Employer-Link-Verifier/1.0"
+USER_AGENT = (
+    "Mozilla/5.0 (compatible; NZ-Navigator-LinkAudit/1.0; "
+    "+https://github.com/wonchance-art/nz-navigator)"
+)
 
 
 @dataclass(frozen=True)
