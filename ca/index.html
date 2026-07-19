@@ -1811,6 +1811,7 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span data-claim-id="ca-ko-iec-quota-2026">2026 Working Holiday 쿼터 10,239</span> ·
       <span data-claim-id="ca-ko-iec-fees">IEC+OWP CAD 284.75, 생체정보 필요 시 +85</span> ·
       <span data-claim-id="ca-ko-iec-program-fee">IEC 프로그램 수수료 CAD 184.75</span> ·
+      <span data-claim-id="ca-ko-open-work-permit-holder-fee">Open Work Permit Holder 수수료 CAD 100</span> ·
       <span data-claim-id="ca-ko-iec-processing">IEC 서비스 기준 56일(8주)</span> ·
       <span data-claim-id="ca-ko-biometrics-fee">개인 생체정보 CAD 85</span> ·
       <span data-claim-id="ca-ko-study-fee">Study Permit CAD 150</span> ·
@@ -1818,7 +1819,7 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span data-claim-id="ca-ko-pgwp-fee">PGWP CAD 255(155+100)</span> ·
       <span data-claim-id="ca-ko-ee-fee">경제이민·EE CAD 1,590(RPRF 포함)</span> ·
       <span data-claim-id="ca-ko-rprf-fee">RPRF 구성액 CAD 600</span> ·
-      <span data-claim-id="ca-ko-ee-service-standard">EE 서비스 기준 6개월·80%</span> ·
+      <span data-claim-id="ca-ko-ee-service-standard">EE 핵심 경제이민 서비스 기준 180일(약 6개월)·80%</span> ·
       <span data-claim-id="ca-ko-bc-pnp-fee">BC PNP Skills Immigration CAD 1,750</span> ·
       <span data-claim-id="ca-ko-study-funds">생활비 증명 연 CAD 22,895</span> ·
       <span data-claim-id="ca-ko-fsw-funds-one">FSW/FST 1인 정착자금 CAD 15,263</span> ·
@@ -1828,6 +1829,10 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span data-claim-id="ca-ko-alberta-min-wage">앨버타 CAD 15/h</span> ·
       <span data-claim-id="ca-ko-software-developer-median-wage">Software Developer 전국 중위임금 CAD 48.08/h</span> ·
       <span data-claim-id="ca-ko-crs-core-maximum">무배우자 core 최대 500점</span> ·
+      <span data-claim-id="ca-ko-crs-age35-no-spouse">35세 77점</span> ·
+      <span data-claim-id="ca-ko-crs-bachelor-no-spouse">학사 120점</span> ·
+      <span data-claim-id="ca-ko-crs-clb7-per-ability-no-spouse">CLB7 영역당 17점(네 영역 적용)</span> ·
+      <span data-claim-id="ca-ko-crs-canadian-work1-no-spouse">캐나다 경력 1년 40점</span> ·
       <span data-claim-id="ca-ko-crs-sample-305">CRS 표본 core 305</span> ·
       <span data-claim-id="ca-ko-tax-on-60000">온타리오 60,000 표본 실수령 CAD 47,340</span>
       <details class="fact-detail">
@@ -1914,15 +1919,15 @@ const DB = {
     medianWage: { v: 48.08, src: 'https://www.jobbank.gc.ca/marketreport/summary-occupation/22548/ca', asOf: '2026-07-18', effectiveFrom: '2026-06-02', label: '[공식] 소프트웨어 개발자' }
   },
   fees: {
-    iecProgram: { v: 184.75, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2025-12-01', label: '[공식] IEC 프로그램' },
-    openWorkPermit: { v: 100, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2025-12-01', label: '[공식] OWP' },
+    iecProgram: { v: 184.75, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-19', effectiveFrom: '2025-12-01', label: '[공식] IEC 프로그램' },
+    openWorkPermit: { v: 100, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-19', effectiveFrom: '2025-12-01', label: '[공식] OWP' },
     biometrics: { v: 85, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2026-07-19', label: '[공식] 바이오메트릭' },
     studentPermit: { v: 150, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2026-07-19', label: '[공식]' },
     workPermit: { v: 155, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2026-07-19', label: '[공식] Work Permit' },
-    pgwp: { v: 255, src: 'https://www.ircc.canada.ca/english/helpcentre/answer.asp?qnum=510&top=15', asOf: '2026-07-18', effectiveFrom: '2026-07-19', label: '[공식] Work Permit 155 + OWP 100' },
+    pgwp: { v: 255, src: 'https://www.ircc.canada.ca/english/helpcentre/answer.asp?qnum=510&top=15', asOf: '2026-07-19', effectiveFrom: '2026-07-19', label: '[공식] Work Permit 155 + OWP 100' },
     eeApplication: { v: 1590, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2026-04-30', label: '[공식] Express Entry 신청(RPRF 포함)' },
     permanenceResidenceFee: { v: 600, src: 'https://ircc.canada.ca/english/information/fees/fees.asp', asOf: '2026-07-18', effectiveFrom: '2026-04-30', label: '[공식] RPRF — EE 1,590에 포함' },
-    pnpBC: { v: 1750, src: 'https://www.welcomebc.ca/immigrate-to-b-c/for-workers', asOf: '2026-07-18', effectiveFrom: '2026-01-22', label: '[공식] BC PNP' }
+    pnpBC: { v: 1750, src: 'https://www.welcomebc.ca/immigrate-to-b-c/for-workers', asOf: '2026-07-19', effectiveFrom: '2026-01-22', label: '[공식] BC PNP' }
   },
   estimates: {
     flight: { v: [800, 1500], src: '', asOf: '2026-07-12', est: true, label: '[추정] 인천↔캐나다 왕복' },
@@ -1933,7 +1938,7 @@ const DB = {
     initialSettlement: { v: 15263, src: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/documents/proof-funds.html', asOf: '2026-07-19', effectiveFrom: '2025-07-07', label: '[공식] FSW/FST 1인 정착자금(CEC 등 면제 가능)' },
     tuitionBach: { v: [22000, 58000], src: '', asOf: '2026-07-12', est: true, label: '[추정] 학사 연 학비 (유학생)' },
     tuitionDiploma: { v: [15000, 35000], src: '', asOf: '2026-07-12', est: true, label: '[추정] 디플로마·자격증 연 학비' },
-    livingStudent: { v: 22895, src: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit/get-documents/financial-support.html', asOf: '2026-07-18', effectiveFrom: '2025-09-01', label: '[공식] 유학생 1인 연 생활비(학비·교통비 제외)' }
+    livingStudent: { v: 22895, src: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit/get-documents/financial-support.html', asOf: '2026-07-19', effectiveFrom: '2025-09-01', label: '[공식] 유학생 1인 연 생활비(학비·교통비 제외)' }
   },
   jobs: [
     {

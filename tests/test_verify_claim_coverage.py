@@ -178,7 +178,11 @@ class ClaimCoverageTests(unittest.TestCase):
               },
               pathways: []
             };
-            const NP_BRACKETS = [[15600, 0.105], [53500, 0.175]];
+            const NP_BRACKETS = {
+              src: 'https://example.test/law/%22/2026',
+              /* reviewed in 2099 */
+              brackets: [[15600, 0.105], [53500, 0.175]]
+            };
             </script>
             """
         )
@@ -194,6 +198,13 @@ class ClaimCoverageTests(unittest.TestCase):
         self.assertFalse(any("fees.student" in item for item in uncovered))
         self.assertFalse(any("wages.minimum" in item for item in uncovered))
         self.assertTrue(any("NP_BRACKETS" in item for item in uncovered))
+        tax_candidate = next(
+            item for item in report.uncovered if "NP_BRACKETS" in item.selector
+        )
+        self.assertEqual(
+            tax_candidate.numbers,
+            ("15600", "0.105", "53500", "0.175"),
+        )
 
     def test_range_keeps_both_values_next_to_units(self) -> None:
         self.write_page("<main><p>Working Holiday Visa age 18–35 years old</p></main>")

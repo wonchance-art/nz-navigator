@@ -57,7 +57,13 @@ exact root keys:
 }
 ```
 
-`effectiveTo`, `livePolicy`, `requestCandidates`, `candidatePolicy`, and root
+Each attestation must use exactly one effective-date mode: `effectiveFrom`
+(with optional `effectiveTo`) when the official start date is known, or
+`currentAsOf` plus a non-empty `effectiveFromUnknownReason` when the source
+only confirms the current value. The latter mode forbids `effectiveTo`; it
+prevents a verification date from being presented as a policy start date.
+
+`livePolicy`, `requestCandidates`, `candidatePolicy`, and root
 `targetComponents` are optional. `targets` and `claims` are individually optional, but at least one
 must be a non-empty array. All other entry keys above are required. A target
 mapping is `{targetId,reviewedPath}` or
@@ -259,12 +265,27 @@ code. Only these code-reviewed modes and bounded parameters run:
   `object`), and 1–24 `fields`. A field is exactly
   `{key,rowLabels,valueHeader,transform,unit}`. The table must be immediately
   associated with the exact preceding heading/paragraph, and section, header,
-  row, and column cardinality must be unique and complete.
+  row, and column cardinality must be unique and complete. Optional
+  `detailsSummary` binds a table to one exact enclosing `details > summary`;
+  this separates a current table from a historical table with identical
+  headings and columns. Fixed English cohort labels (`From D Month YYYY` and
+  `If you apply on or after Month D, YYYY`) also reject a same-shape table
+  with a later date, so a retained historical table cannot false-green after
+  a new policy cohort is published. Hidden, `aria-hidden`, `display:none`,
+  `visibility:hidden`, and `History_` subtrees never contribute tables,
+  headings, blocks, or anchors.
 - `html-labelled-values`: exact outer `anchor`, `result`, and fields
   `{key,label,transform,unit}`. It handles INZ `h4` plus following `p`
   structures. All bounded paragraphs under the label are tested; exactly one
   must satisfy the fixed transform. Thus helper text such as `Up to` cannot be
   mistaken for `12 months`.
+- `html-home-affairs-schema-anchor`: reads exactly one Home Affairs hidden
+  PageSchema input, parses its value as finite JSON without evaluation,
+  resolves one bounded JSON pointer, and then requires one exact leaf anchor
+  inside the resulting HTML fragment. Duplicate/missing inputs, invalid JSON,
+  missing pointers, and duplicate fragment anchors fail closed. This keeps
+  long client-rendered visa pages tied to their government-published
+  structured content rather than screen position.
 - `html-text-anchor`: one exact normalized `p`, leaf `li`, heading, or
   non-empty loose text node outside tracked table/block containers (up to
   2,000 characters), one fixed transform, and one unit. Nested block parents
@@ -292,6 +313,10 @@ code. Only these code-reviewed modes and bounded parameters run:
   Tables under an ancestor ID beginning `History_` or normalized inline style
   `display:none` are excluded; the accepted current table must be a direct
   child of exact allowlisted `div#lawBody` or `div#LawBody`.
+- `ato-law-lito-serialization`: applies the same table, cardinality,
+  continuity, and arithmetic checks as `ato-law-lito`, then emits only the
+  canonical public claim string
+  `700;37500;45000@0.05;66667@0.015`.
 - `ato-law-resident-brackets`: the exact 2026–27 Schedule 1 clause 2 table,
   fixed headers, and complete items 1–4. It returns
   `[[45000,.15],[135000,.30],[190000,.37],[null,.45]]` only; it never
@@ -299,6 +324,15 @@ code. Only these code-reviewed modes and bounded parameters run:
 - `ato-tax-free-band`: exact H2 `What is the tax-free threshold` and exact
   reviewed paragraph including `before you pay tax` and `the first $N`. Only
   that fixed grammar can create `[N,0]` with unit `AUD/rate`.
+- `iec-quota-xml`: accepts only a UTF-8 `temp` document without DTD/entity
+  declarations, one exact country code/category/location row, and one exact
+  quota. The scalar `chancesdate` and selected row's `first` date must both
+  belong to the declared `seasonYear`; a retained or future season cannot
+  satisfy the current-season claim even when its quota happens to be equal.
+  declarations, selects exactly one `country` with reviewed lowercase
+  `countryCode` and category, and reads one scalar comma-grouped integer
+  `quota`. Extra attributes, duplicate country/category rows, malformed XML,
+  or non-numeric quota text fail closed.
 - `cra-t4127-version`: params are exactly `{"language":"en"}` or
   `{"language":"fr"}`. It requires one language-specific `T4127-JUL` H1,
   validates edition ordinal and effective date, and normalizes both pages to
@@ -349,13 +383,21 @@ code. Only these code-reviewed modes and bounded parameters run:
 HTML field transforms are fixed enums:
 
 - `number`, `integer`, `currency-to-number`, `percent-to-decimal`
-- `duration-months`, `duration-weeks`
+- `duration-months`, `duration-weeks`, `single-duration-days`,
+  `single-duration-years`, and `single-duration-years-to-months`; every
+  `single-*` form requires exactly one integer duration token
 - `inclusive-range`, which accepts one `N to M`, French `N à M`, or dash
   range and returns canonical `N-M`
 - `final-inclusive-range`, which requires exactly two ranges and returns the
   last as `N-M`
 - `leading-currency-to-number`, which requires the block's sole ISO-prefixed
   currency token at the beginning
+- `single-iso-amount-to-number`, which requires exactly one `NZD`, `CAD`, or
+  `AUD` amount, with or without `$`, anywhere in the exact reviewed block
+- `service-standard-months`, which requires exactly one `N-month service
+  standard` token and the exact `80% of cases` target
+- `no-tfn-whm-percent` and `whm-first-band-percent`, which accept only their
+  code-fixed full ATO sentence grammars and reject threshold/rate ambiguity
 - `embedded-percent` and `embedded-percent-to-decimal`, which accept only
   `$N per $100 (P%)`, require `N == P`, and return `P` or `P/100`
 - `percentage-number-to-decimal`, which accepts one unsigned finite numeric
@@ -374,6 +416,9 @@ HTML field transforms are fixed enums:
   headers. Exactly one complete item row must also match. The guidance
   transform remains a regression check; production should prefer this law
   transform when binding 2026–27 applicability.
+- `ato-law-first-tax-rate-percent`, which applies the identical reviewed ATO
+  law title/header/item/threshold grammar but emits the public percentage
+  value rather than the boundary object
 - `tax-brackets`, which returns the v4 reviewed shape
   `[[upper,rate],...,[null,rate]]`, checks zero start, continuity, and an open
   last cap

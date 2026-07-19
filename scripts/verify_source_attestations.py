@@ -14,6 +14,7 @@ import re
 import ssl
 import sys
 import time
+import xml.etree.ElementTree as ET
 import zlib
 from dataclasses import asdict, dataclass, field, replace
 from datetime import date, datetime, timedelta, timezone
@@ -81,14 +82,17 @@ EXTRACTOR_MODES = frozenset(
         "html-definition",
         "html-table-record",
         "html-labelled-values",
+        "html-home-affairs-schema-anchor",
         "html-text-anchor",
         "html-section-text",
+        "iec-quota-xml",
         "pdf-table",
         "json-pointer",
         "api-json-pointer",
         "api-json-record",
         "ato-lito",
         "ato-law-lito",
+        "ato-law-lito-serialization",
         "ato-law-resident-brackets",
         "ato-tax-free-band",
         "cra-t4127-version",
@@ -129,7 +133,6 @@ REQUIRED_ATTESTATION_FIELDS = frozenset(
         "sourceUrl",
         "request",
         "verifiedAt",
-        "effectiveFrom",
         "reviewAfterDays",
         "extractor",
         "expected",
@@ -138,7 +141,10 @@ REQUIRED_ATTESTATION_FIELDS = frozenset(
 )
 OPTIONAL_ATTESTATION_FIELDS = frozenset(
     {
+        "effectiveFrom",
         "effectiveTo",
+        "currentAsOf",
+        "effectiveFromUnknownReason",
         "targets",
         "claims",
         "livePolicy",
@@ -197,6 +203,7 @@ API_RECORD_TRANSFORMS = frozenset({"identity", "currency-to-number"})
 HTML_RECORD_PARAMETER_FIELDS = frozenset(
     {"section", "headers", "result", "fields"}
 )
+HTML_RECORD_OPTIONAL_PARAMETER_FIELDS = frozenset({"detailsSummary"})
 HTML_RECORD_FIELD_FIELDS = frozenset(
     {"key", "rowLabels", "valueHeader", "transform", "unit"}
 )
@@ -207,6 +214,12 @@ HTML_LABELLED_FIELD_FIELDS = frozenset(
     {"key", "label", "transform", "unit"}
 )
 HTML_TEXT_PARAMETER_FIELDS = frozenset({"anchor", "transform", "unit"})
+HOME_AFFAIRS_SCHEMA_PARAMETER_FIELDS = frozenset(
+    {"pointer", "anchor", "transform", "unit"}
+)
+IEC_QUOTA_PARAMETER_FIELDS = frozenset(
+    {"countryCode", "category", "location", "seasonYear"}
+)
 HTML_SECTION_TEXT_PARAMETER_FIELDS = frozenset(
     {"heading", "anchor", "transform", "unit"}
 )
@@ -285,11 +298,21 @@ HTML_VALUE_TRANSFORMS = frozenset(
         "embedded-percent-to-decimal",
         "leading-currency-to-number",
         "single-iso-currency-to-number",
+        "single-iso-amount-to-number",
         "single-dollar-amount-to-number",
         "single-hourly-dollar-amount-to-number",
+        "single-duration-days",
+        "single-duration-days-to-months",
+        "single-duration-years",
+        "single-duration-years-to-months",
+        "service-standard-months",
+        "whm-first-band-percent",
+        "no-tfn-whm-percent",
         "final-inclusive-range",
         "ato-first-tax-band",
+        "ato-first-tax-rate-percent",
         "ato-law-first-tax-band",
+        "ato-law-first-tax-rate-percent",
         "percentage-number-to-decimal",
     }
 )
@@ -299,8 +322,15 @@ JSON_MEDIA_TYPES = frozenset(
     {"application/json", "application/problem+json"}
 )
 CSV_MEDIA_TYPES = frozenset({"text/csv", "application/csv"})
+XML_MEDIA_TYPES = frozenset(
+    {"application/xml", "text/xml", "application/xhtml+xml"}
+)
 SUPPORTED_CANDIDATE_MEDIA = (
-    HTML_MEDIA_TYPES | PDF_MEDIA_TYPES | JSON_MEDIA_TYPES | CSV_MEDIA_TYPES
+    HTML_MEDIA_TYPES
+    | PDF_MEDIA_TYPES
+    | JSON_MEDIA_TYPES
+    | CSV_MEDIA_TYPES
+    | XML_MEDIA_TYPES
 )
 
 CRA_T4127_CSV_SPECS = {
@@ -1161,11 +1191,22 @@ def _validate_extractor(extractor: Any) -> None:
             keys.add(key)
         return
     if mode == "html-table-record":
-        if not _exact_fields(params, HTML_RECORD_PARAMETER_FIELDS):
+        if (
+            not isinstance(params, dict)
+            or not HTML_RECORD_PARAMETER_FIELDS <= set(params)
+            or not set(params) <= (
+                HTML_RECORD_PARAMETER_FIELDS
+                | HTML_RECORD_OPTIONAL_PARAMETER_FIELDS
+            )
+        ):
             raise RegistryError(
                 "html-table-record params do not match the strict schema"
             )
-        _validate_text(params["section"], "section")
+        _validate_anchor_text(params["section"], "section")
+        if "detailsSummary" in params:
+            _validate_anchor_text(
+                params["detailsSummary"], "detailsSummary"
+            )
         headers = params["headers"]
         if (
             not isinstance(headers, list)
@@ -1235,6 +1276,13 @@ def _validate_extractor(extractor: Any) -> None:
                 raise RegistryError(
                     "ato-first-tax-band requires one row and its fixed unit tree"
                 )
+            if field_spec["transform"] == "ato-first-tax-rate-percent" and (
+                len(labels) != 1
+                or field_spec["unit"] != "percent"
+            ):
+                raise RegistryError(
+                    "ato-first-tax-rate-percent requires one row and percent unit"
+                )
             if field_spec["transform"] == "ato-law-first-tax-band" and (
                 params["result"] != "scalar"
                 or len(fields) != 1
@@ -1247,6 +1295,19 @@ def _validate_extractor(extractor: Any) -> None:
                     "ato-law-first-tax-band requires its exact title-table "
                     "headers, item 1, rate column, scalar result, and fixed "
                     "unit tree"
+                )
+            if field_spec["transform"] == "ato-law-first-tax-rate-percent" and (
+                params["result"] != "scalar"
+                or len(fields) != 1
+                or headers != ATO_LAW_FIRST_BAND_HEADERS
+                or labels != ["1"]
+                or field_spec["valueHeader"] != "The rate is:"
+                or field_spec["unit"] != "percent"
+            ):
+                raise RegistryError(
+                    "ato-law-first-tax-rate-percent requires its exact "
+                    "title-table headers, item 1, rate column, scalar result, "
+                    "and percent unit"
                 )
         return
     if mode == "html-labelled-values":
@@ -1283,10 +1344,44 @@ def _validate_extractor(extractor: Any) -> None:
             labels.add(label)
             if field_spec["transform"] not in (
                 HTML_VALUE_TRANSFORMS
-                - {"tax-brackets", "tax-brackets-serialization"}
+                - {
+                    "tax-brackets",
+                    "tax-brackets-serialization",
+                    "ato-first-tax-band",
+                    "ato-first-tax-rate-percent",
+                    "ato-law-first-tax-band",
+                    "ato-law-first-tax-rate-percent",
+                }
             ):
                 raise RegistryError("labelled value transform is unsupported")
             _validate_text(field_spec["unit"], "field.unit")
+        return
+    if mode == "html-home-affairs-schema-anchor":
+        if not _exact_fields(
+            params, HOME_AFFAIRS_SCHEMA_PARAMETER_FIELDS
+        ):
+            raise RegistryError(
+                "html-home-affairs-schema-anchor requires pointer, anchor, "
+                "transform, and unit"
+            )
+        _pointer_parts(params["pointer"])
+        _validate_anchor_text(params["anchor"], "anchor")
+        if params["transform"] not in (
+            HTML_VALUE_TRANSFORMS
+            - {
+                "tax-brackets",
+                "tax-brackets-serialization",
+                "ato-first-tax-band",
+                "ato-first-tax-rate-percent",
+                "ato-law-first-tax-band",
+                "ato-law-first-tax-rate-percent",
+                "percentage-number-to-decimal",
+            }
+        ):
+            raise RegistryError(
+                "Home Affairs schema anchor transform is unsupported"
+            )
+        _validate_text(params["unit"], "unit")
         return
     if mode == "html-text-anchor":
         if not _exact_fields(params, HTML_TEXT_PARAMETER_FIELDS):
@@ -1296,7 +1391,14 @@ def _validate_extractor(extractor: Any) -> None:
         _validate_anchor_text(params["anchor"], "anchor")
         if params["transform"] not in (
             HTML_VALUE_TRANSFORMS
-            - {"tax-brackets", "tax-brackets-serialization"}
+            - {
+                "tax-brackets",
+                "tax-brackets-serialization",
+                "ato-first-tax-band",
+                "ato-first-tax-rate-percent",
+                "ato-law-first-tax-band",
+                "ato-law-first-tax-rate-percent",
+            }
         ):
             raise RegistryError("text anchor transform is unsupported")
         _validate_text(params["unit"], "unit")
@@ -1331,13 +1433,13 @@ def _validate_extractor(extractor: Any) -> None:
         ):
             raise RegistryError("ato-lito items require 3 unique exact texts")
         return
-    if mode == "ato-law-lito":
+    if mode in {"ato-law-lito", "ato-law-lito-serialization"}:
         if not _exact_fields(params, ATO_LAW_LITO_PARAMETER_FIELDS):
             raise RegistryError(
-                "ato-law-lito requires actTitle, section, sectionTitle, and tableTitle"
+                f"{mode} requires actTitle, section, sectionTitle, and tableTitle"
             )
         for key in ATO_LAW_LITO_PARAMETER_FIELDS:
-            _validate_anchor_text(params[key], f"ato-law-lito {key}")
+            _validate_anchor_text(params[key], f"{mode} {key}")
         return
     if mode == "ato-law-resident-brackets":
         if not _exact_fields(params, ATO_LAW_RESIDENT_PARAMETER_FIELDS):
@@ -1401,6 +1503,30 @@ def _validate_extractor(extractor: Any) -> None:
         if params["effectiveDate"] != "2026-01-01":
             raise RegistryError(
                 "cra-t4032-on currently supports effectiveDate 2026-01-01"
+            )
+        return
+    if mode == "iec-quota-xml":
+        if not _exact_fields(params, IEC_QUOTA_PARAMETER_FIELDS):
+            raise RegistryError(
+                "iec-quota-xml requires exact countryCode, category, "
+                "location, and seasonYear"
+            )
+        if not re.fullmatch(r"[a-z]{2}", str(params["countryCode"])):
+            raise RegistryError(
+                "iec-quota-xml countryCode must be two lowercase letters"
+            )
+        if params["category"] not in {"wh", "yp", "ic"}:
+            raise RegistryError(
+                "iec-quota-xml category must be wh, yp, or ic"
+            )
+        _validate_text(params["location"], "location")
+        if (
+            not isinstance(params["seasonYear"], int)
+            or isinstance(params["seasonYear"], bool)
+            or not 2000 <= params["seasonYear"] <= 2100
+        ):
+            raise RegistryError(
+                "iec-quota-xml seasonYear must be an integer in 2000..2100"
             )
         return
     if mode == "pdf-table":
@@ -1956,9 +2082,34 @@ def _validate_registry(
             if "livePolicy" in raw:
                 _validate_live_policy(raw["livePolicy"])
             verified_at = _parse_date(raw["verifiedAt"], "verifiedAt")
-            effective_from = _parse_date(
-                raw["effectiveFrom"], "effectiveFrom"
+            exact_effective_mode = "effectiveFrom" in raw
+            current_only_mode = (
+                "currentAsOf" in raw
+                and "effectiveFromUnknownReason" in raw
             )
+            if exact_effective_mode == current_only_mode:
+                raise RegistryError(
+                    "attestation must use exactly one date mode: "
+                    "effectiveFrom, or currentAsOf plus "
+                    "effectiveFromUnknownReason"
+                )
+            effective_from = (
+                _parse_date(raw["effectiveFrom"], "effectiveFrom")
+                if exact_effective_mode
+                else None
+            )
+            current_as_of = (
+                _parse_date(raw["currentAsOf"], "currentAsOf")
+                if current_only_mode
+                else None
+            )
+            if current_only_mode and (
+                not isinstance(raw["effectiveFromUnknownReason"], str)
+                or not raw["effectiveFromUnknownReason"].strip()
+            ):
+                raise RegistryError(
+                    "effectiveFromUnknownReason must be a non-empty string"
+                )
             effective_to = (
                 _parse_date(raw["effectiveTo"], "effectiveTo")
                 if "effectiveTo" in raw
@@ -1973,7 +2124,17 @@ def _validate_registry(
                 raise RegistryError("reviewAfterDays must be an integer 1-3650")
             if verified_at > today:
                 raise RegistryError("verifiedAt must not be in the future")
-            if effective_to is not None and effective_from > effective_to:
+            if current_as_of is not None and current_as_of > verified_at:
+                raise RegistryError("currentAsOf must not exceed verifiedAt")
+            if current_only_mode and effective_to is not None:
+                raise RegistryError(
+                    "effectiveTo is not allowed when effectiveFrom is unknown"
+                )
+            if (
+                effective_to is not None
+                and effective_from is not None
+                and effective_from > effective_to
+            ):
                 raise RegistryError("effectiveFrom must not exceed effectiveTo")
             if today > verified_at + timedelta(days=review_days):
                 raise RegistryError(
@@ -2245,6 +2406,23 @@ def _normalize_text(value: str) -> str:
     return " ".join(value.split())
 
 
+def _html_node_is_hidden(attrs: dict[str, str]) -> bool:
+    if (
+        "hidden" in attrs
+        or attrs.get("aria-hidden", "").strip().lower() == "true"
+        or attrs.get("id", "").startswith("History_")
+    ):
+        return True
+    declarations = {
+        re.sub(r"\s+", "", declaration.lower())
+        for declaration in attrs.get("style", "").split(";")
+        if declaration.strip()
+    }
+    return bool(
+        declarations.intersection({"display:none", "visibility:hidden"})
+    )
+
+
 class _HtmlSourceParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
@@ -2264,6 +2442,8 @@ class _HtmlSourceParser(HTMLParser):
         self._row: list[str] | None = None
         self._cell_parts: list[str] | None = None
         self._caption_parts: list[str] | None = None
+        self._summary_parts: list[str] | None = None
+        self._details_summaries: list[str] = []
         self._heading_parts: list[str] | None = None
         self._heading_level = 0
         self._current_heading = ""
@@ -2275,8 +2455,8 @@ class _HtmlSourceParser(HTMLParser):
         self._dd_parts: list[str] | None = None
         self._pending_dt: str | None = None
         self._law_strong_parts: list[str] | None = None
-        self._ignored_depth = 0
         self._tag_stack: list[tuple[str, dict[str, str]]] = []
+        self._suppressed_stack: list[bool] = []
 
     def handle_starttag(
         self, tag: str, attrs: list[tuple[str, str | None]]
@@ -2285,17 +2465,28 @@ class _HtmlSourceParser(HTMLParser):
         normalized_attrs = {
             key.lower(): (value or "") for key, value in attrs
         }
-        if lowered in {"script", "style", "template", "noscript"}:
-            self._ignored_depth += 1
+        void_tag = lowered in {
+            "area", "base", "br", "col", "embed", "hr", "img", "input",
+            "link", "meta", "param", "source", "track", "wbr",
+        }
+        parent_suppressed = bool(
+            self._suppressed_stack and self._suppressed_stack[-1]
+        )
+        suppressed = (
+            parent_suppressed
+            or lowered in {"script", "style", "template", "noscript"}
+            or _html_node_is_hidden(normalized_attrs)
+        )
+        if not void_tag:
+            self._tag_stack.append((lowered, normalized_attrs))
+            self._suppressed_stack.append(suppressed)
+        if suppressed:
+            return
+        if lowered == "details":
+            self._details_summaries.append("")
+        elif lowered == "summary" and self._details_summaries:
+            self._summary_parts = []
         if lowered == "table":
-            hidden = any(
-                item_attrs.get("id", "").startswith("History_")
-                or re.sub(
-                    r"\s+", "", item_attrs.get("style", "").lower()
-                )
-                == "display:none"
-                for _item_tag, item_attrs in self._tag_stack
-            )
             direct_law_body = bool(
                 any(
                     item_tag == "div"
@@ -2307,10 +2498,15 @@ class _HtmlSourceParser(HTMLParser):
                 "caption": "",
                 "rows": [],
                 "anchors": list(self._recent_anchors),
-                "hidden": hidden,
+                "hidden": False,
                 "directLawBody": direct_law_body,
                 "section": (
                     self._recent_anchors[-1] if self._recent_anchors else ""
+                ),
+                "detailsSummary": (
+                    self._details_summaries[-1]
+                    if self._details_summaries
+                    else ""
                 ),
             }
         elif lowered == "caption" and self._table is not None:
@@ -2341,27 +2537,27 @@ class _HtmlSourceParser(HTMLParser):
                 and item_attrs.get("id") in {"lawBody", "LawBody"}
                 for item_tag, item_attrs in self._tag_stack
             )
-            and not any(
-                item_attrs.get("id", "").startswith("History_")
-                or re.sub(
-                    r"\s+", "", item_attrs.get("style", "").lower()
-                )
-                == "display:none"
-                for _item_tag, item_attrs in self._tag_stack
-            )
         ):
             self._law_strong_parts = []
-        if lowered not in {
-            "area", "base", "br", "col", "embed", "hr", "img", "input",
-            "link", "meta", "param", "source", "track", "wbr",
-        }:
-            self._tag_stack.append((lowered, normalized_attrs))
 
     def handle_endtag(self, tag: str) -> None:
         lowered = tag.lower()
-        if lowered in {"script", "style", "template", "noscript"}:
-            self._ignored_depth = max(0, self._ignored_depth - 1)
-        if lowered == "caption" and self._caption_parts is not None:
+        stack_index: int | None = None
+        for index in range(len(self._tag_stack) - 1, -1, -1):
+            if self._tag_stack[index][0] == lowered:
+                stack_index = index
+                break
+        if stack_index is not None and self._suppressed_stack[stack_index]:
+            del self._tag_stack[stack_index:]
+            del self._suppressed_stack[stack_index:]
+            return
+        if lowered == "summary" and self._summary_parts is not None:
+            if self._details_summaries:
+                self._details_summaries[-1] = _normalize_text(
+                    "".join(self._summary_parts)
+                )
+            self._summary_parts = None
+        elif lowered == "caption" and self._caption_parts is not None:
             if self._table is not None:
                 self._table["caption"] = _normalize_text(
                     "".join(self._caption_parts)
@@ -2431,12 +2627,15 @@ class _HtmlSourceParser(HTMLParser):
             if value:
                 self.law_strongs.append(value)
             self._law_strong_parts = None
-        for index in range(len(self._tag_stack) - 1, -1, -1):
-            if self._tag_stack[index][0] == lowered:
-                del self._tag_stack[index:]
-                break
+        if lowered == "details" and self._details_summaries:
+            self._details_summaries.pop()
+        if stack_index is not None:
+            del self._tag_stack[stack_index:]
+            del self._suppressed_stack[stack_index:]
 
     def handle_data(self, data: str) -> None:
+        if self._suppressed_stack and self._suppressed_stack[-1]:
+            return
         tracked = any(
             (
                 self._cell_parts is not None,
@@ -2448,7 +2647,7 @@ class _HtmlSourceParser(HTMLParser):
                 self._table is not None,
             )
         )
-        if not tracked and self._ignored_depth == 0:
+        if not tracked:
             loose = _normalize_text(data)
             if loose:
                 self.loose_texts.append(loose)
@@ -2456,6 +2655,8 @@ class _HtmlSourceParser(HTMLParser):
             self._cell_parts.append(data)
         if self._caption_parts is not None:
             self._caption_parts.append(data)
+        if self._summary_parts is not None:
+            self._summary_parts.append(data)
         if self._heading_parts is not None:
             self._heading_parts.append(data)
         if self._block_stack:
@@ -2471,6 +2672,31 @@ class _HtmlSourceParser(HTMLParser):
         if text:
             self._recent_anchors.append(text)
             self._recent_anchors = self._recent_anchors[-8:]
+
+
+class _HomeAffairsSchemaParser(HTMLParser):
+    """Collect exactly the reviewed Home Affairs PageSchema hidden input."""
+
+    INPUT_ID = "ctl00_PlaceHolderMain_PageSchemaHiddenField_Input"
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.values: list[str] = []
+        self.invalid = False
+
+    def handle_starttag(
+        self, tag: str, attrs: list[tuple[str, str | None]]
+    ) -> None:
+        if tag.lower() != "input":
+            return
+        ids = [value for key, value in attrs if key.lower() == "id"]
+        if ids != [self.INPUT_ID]:
+            return
+        values = [value for key, value in attrs if key.lower() == "value"]
+        if len(values) != 1 or values[0] is None or not values[0]:
+            self.invalid = True
+            return
+        self.values.append(values[0])
 
 
 def _parse_number(value: str, value_type: str, null_token: str) -> Any:
@@ -2628,6 +2854,151 @@ def _parse_html(body: bytes) -> _HtmlSourceParser:
     return parser
 
 
+def _extract_home_affairs_schema_anchor(
+    body: bytes, params: dict[str, Any]
+) -> tuple[str, Any]:
+    try:
+        text = body.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise UnsupportedExtraction("Home Affairs HTML is not UTF-8") from exc
+    parser = _HomeAffairsSchemaParser()
+    try:
+        parser.feed(text)
+        parser.close()
+    except Exception as exc:
+        raise ChangedExtraction(
+            f"Home Affairs outer HTML parser failed: {exc}"
+        ) from exc
+    if parser.invalid or len(parser.values) != 1:
+        raise ChangedExtraction(
+            "Home Affairs PageSchema hidden input must occur exactly once "
+            "with one non-empty value"
+        )
+    try:
+        schema = _json_loads(parser.values[0])
+    except (json.JSONDecodeError, ValueError) as exc:
+        raise ChangedExtraction(
+            f"Home Affairs PageSchema is not strict finite JSON: {exc}"
+        ) from exc
+    try:
+        fragment = _resolve_pointer(schema, params["pointer"])
+    except RegistryError as exc:
+        raise ChangedExtraction(str(exc)) from exc
+    if not isinstance(fragment, str) or not fragment.strip():
+        raise ChangedExtraction(
+            "Home Affairs PageSchema pointer must resolve to non-empty HTML"
+        )
+    return _extract_html_text_anchor(
+        fragment.encode("utf-8"),
+        {
+            "anchor": params["anchor"],
+            "transform": params["transform"],
+            "unit": params["unit"],
+        },
+    )
+
+
+def _extract_iec_quota_xml(
+    body: bytes, params: dict[str, Any]
+) -> tuple[str, int]:
+    try:
+        text = body.decode("utf-8-sig")
+    except UnicodeDecodeError as exc:
+        raise UnsupportedExtraction("IEC quota XML is not UTF-8") from exc
+    if re.search(r"<!DOCTYPE|<!ENTITY", text, flags=re.IGNORECASE):
+        raise UnsupportedExtraction(
+            "IEC quota XML contains a prohibited DTD or entity declaration"
+        )
+    try:
+        root = ET.fromstring(text)
+    except ET.ParseError as exc:
+        raise ChangedExtraction(f"IEC quota XML is malformed: {exc}") from exc
+    if root.tag != "temp":
+        raise ChangedExtraction(
+            f"IEC quota XML root is {root.tag!r}, expected 'temp'"
+        )
+    chances_nodes = root.findall("./chancesdate")
+    if len(chances_nodes) != 1 or list(chances_nodes[0]):
+        raise ChangedExtraction(
+            "IEC quota XML must contain exactly one scalar chancesdate"
+        )
+    chances_raw = _normalize_text(chances_nodes[0].text or "")
+    chances_match = re.fullmatch(
+        r"([A-Z][a-z]+) ([0-9]{1,2}), ([0-9]{4})",
+        chances_raw,
+    )
+    if chances_match is None:
+        raise ChangedExtraction(
+            f"IEC chancesdate {chances_raw!r} is not an exact long date"
+        )
+    try:
+        chances_date = datetime.strptime(
+            chances_raw, "%B %d, %Y"
+        ).date()
+    except ValueError as exc:
+        raise ChangedExtraction(
+            f"IEC chancesdate {chances_raw!r} is not a real date"
+        ) from exc
+    if chances_date.year != params["seasonYear"]:
+        raise ChangedExtraction(
+            "IEC chancesdate year does not match the reviewed season"
+        )
+    matches = [
+        item
+        for item in root.findall("./country")
+        if item.attrib == {
+            "location": params["location"],
+            "category": params["category"],
+            "code": params["countryCode"],
+        }
+    ]
+    if len(matches) != 1:
+        raise ChangedExtraction(
+            f"IEC country/category selector matched {len(matches)} rows"
+        )
+    country = matches[0]
+    first_nodes = country.findall("./first")
+    if len(first_nodes) != 1 or list(first_nodes[0]):
+        raise ChangedExtraction(
+            "IEC selected row must contain exactly one scalar first date"
+        )
+    first_raw = _normalize_text(first_nodes[0].text or "")
+    first_match = re.fullmatch(
+        r"Week of ([A-Z][a-z]+) ([0-9]{1,2}), ([0-9]{4})",
+        first_raw,
+    )
+    if first_match is None:
+        raise ChangedExtraction(
+            f"IEC first date {first_raw!r} is not an exact 'Week of' date"
+        )
+    try:
+        first_date = datetime.strptime(
+            first_raw.removeprefix("Week of "), "%B %d, %Y"
+        ).date()
+    except ValueError as exc:
+        raise ChangedExtraction(
+            f"IEC first date {first_raw!r} is not a real date"
+        ) from exc
+    if first_date.year != params["seasonYear"]:
+        raise ChangedExtraction(
+            "IEC first-date year does not match the reviewed season"
+        )
+    quota_nodes = country.findall("./quota")
+    if len(quota_nodes) != 1 or list(quota_nodes[0]):
+        raise ChangedExtraction(
+            "IEC selected row must contain exactly one scalar quota"
+        )
+    raw = (quota_nodes[0].text or "").strip()
+    if not re.fullmatch(r"[0-9]{1,3}(?:,[0-9]{3})*|[0-9]+", raw):
+        raise ChangedExtraction(
+            f"IEC quota {raw!r} is not one exact non-negative integer"
+        )
+    quota = _finite_number(raw)
+    if not isinstance(quota, int) or quota < 0:
+        raise ChangedExtraction("IEC quota must be a non-negative integer")
+    return "visas", quota
+
+
 def _single_numeric_match(
     value: str, pattern: str, description: str
 ) -> re.Match[str]:
@@ -2654,6 +3025,20 @@ def _plain_number(value: int | float) -> str:
 
 def _transform_html_value(value: str, transform: str) -> Any:
     normalized = _normalize_text(value)
+    if transform == "single-iso-amount-to-number":
+        matches = list(
+            re.finditer(
+                r"(?<![A-Za-z0-9])(NZD|CAD|AUD)\s*\$?\s*"
+                r"([0-9][0-9,]*(?:\.[0-9]+)?)(?![A-Za-z0-9])",
+                normalized,
+            )
+        )
+        if len(matches) != 1:
+            raise ChangedExtraction(
+                f"{value!r} contains {len(matches)} exact ISO amounts; "
+                "exactly 1 required"
+            )
+        return _finite_number(matches[0].group(2))
     if transform == "single-dollar-amount-to-number":
         matches = list(
             re.finditer(
@@ -2698,6 +3083,102 @@ def _transform_html_value(value: str, transform: str) -> Any:
                 f"{value!r} must contain at least 2 identical day durations"
             )
         return matches[0]
+    if transform in {
+        "single-duration-days",
+        "single-duration-days-to-months",
+        "single-duration-years",
+        "single-duration-years-to-months",
+    }:
+        unit_word = (
+            "days?"
+            if transform in {
+                "single-duration-days",
+                "single-duration-days-to-months",
+            }
+            else "years?"
+        )
+        match = _single_numeric_match(
+            normalized,
+            rf"(?<![A-Za-z0-9])([0-9][0-9,]*)\s+{unit_word}\b",
+            transform,
+        )
+        duration = _finite_number(match.group(1))
+        if not isinstance(duration, int):
+            raise ChangedExtraction(
+                f"{transform} requires an integer duration"
+            )
+        if transform == "single-duration-years-to-months":
+            return duration * 12
+        if transform == "single-duration-days-to-months":
+            if duration % 30 != 0:
+                raise ChangedExtraction(
+                    "day-based service standard is not an exact 30-day month multiple"
+                )
+            return duration // 30
+        return duration
+    if transform == "service-standard-months":
+        month_matches = list(
+            re.finditer(
+                r"(?<![A-Za-z0-9])([0-9][0-9,]*)-month "
+                r"service standard\b",
+                normalized,
+                flags=re.IGNORECASE,
+            )
+        )
+        target_matches = list(
+            re.finditer(
+                r"(?<![A-Za-z0-9])80%\s+of cases\b",
+                normalized,
+                flags=re.IGNORECASE,
+            )
+        )
+        if len(month_matches) != 1 or len(target_matches) != 1:
+            raise ChangedExtraction(
+                "service standard requires exactly one 'N-month service "
+                "standard' and one '80% of cases' token"
+            )
+        months = _finite_number(month_matches[0].group(1))
+        if not isinstance(months, int) or months <= 0:
+            raise ChangedExtraction(
+                "service standard month count must be a positive integer"
+            )
+        return months
+    if transform == "whm-first-band-percent":
+        grammar = re.fullmatch(
+            r"you're registered as an employer of working holiday makers, "
+            r"then you should apply the Working holiday maker withholding "
+            r"rates of ([0-9]+(?:\.[0-9]+)?)% to the first "
+            r"\$([0-9][0-9,]*) of income earned - income in excess of "
+            r"\$([0-9][0-9,]*) should be withheld at foreign resident "
+            r"withholding rates",
+            normalized,
+        )
+        if grammar is None:
+            raise ChangedExtraction(
+                "working-holiday first band does not match the fixed ATO grammar"
+            )
+        percent = _finite_number(grammar.group(1))
+        first_cap = _finite_number(grammar.group(2))
+        excess_cap = _finite_number(grammar.group(3))
+        if first_cap != excess_cap or not 0 <= percent <= 100:
+            raise ChangedExtraction(
+                "working-holiday first-band thresholds/rate are inconsistent"
+            )
+        return percent
+    if transform == "no-tfn-whm-percent":
+        grammar = re.fullmatch(
+            r"If no TFN is provided you must withhold at "
+            r"([0-9]+(?:\.[0-9]+)?)% on total payments made\.",
+            normalized,
+        )
+        if grammar is None:
+            raise ChangedExtraction(
+                "no-TFN WHM sentence does not match the fixed ATO grammar"
+            )
+        percent = _finite_number(grammar.group(1))
+        if not 0 <= percent <= 100:
+            raise ChangedExtraction("no-TFN WHM percentage is outside 0..100")
+        return percent
     if transform == "single-iso-currency-to-number":
         matches = list(
             re.finditer(
@@ -2926,6 +3407,13 @@ def _parse_ato_first_tax_band(
     return {"cap": cap, "rate": float(cents) / 100}
 
 
+def _parse_ato_first_tax_rate_percent(
+    label: str, rate_text: str
+) -> int | float:
+    band = _parse_ato_first_tax_band(label, rate_text)
+    return band["rate"] * 100
+
+
 def _parse_ato_law_first_tax_band(
     row: list[str],
 ) -> dict[str, int | float]:
@@ -2956,19 +3444,98 @@ def _parse_ato_law_first_tax_band(
     return {"cap": cap, "rate": float(percent) / 100}
 
 
+def _dated_cohort_start(value: str) -> date | None:
+    normalized = _normalize_text(value)
+    income_year = re.fullmatch(
+        r"(?:Working holiday maker tax rates|"
+        r"Tax rates for resident taxpayers for) "
+        r"([0-9]{4})[\-\u2013]([0-9]{2})(?: year of income)?",
+        normalized,
+    )
+    if income_year is not None:
+        start_year = int(income_year.group(1))
+        end_suffix = int(income_year.group(2))
+        if (start_year + 1) % 100 != end_suffix:
+            raise ChangedExtraction(
+                f"income-year cohort {value!r} is not consecutive"
+            )
+        return date(start_year, 7, 1)
+    formats = (
+        (r"From ([0-9]{1,2} [A-Z][a-z]+ [0-9]{4})", "%d %B %Y"),
+        (
+            r"If you apply on or after "
+            r"([A-Z][a-z]+ [0-9]{1,2}, [0-9]{4})",
+            "%B %d, %Y",
+        ),
+    )
+    for pattern, date_format in formats:
+        match = re.fullmatch(pattern, normalized)
+        if match is None:
+            continue
+        try:
+            return datetime.strptime(match.group(1), date_format).date()
+        except ValueError as exc:
+            raise ChangedExtraction(
+                f"dated cohort label {value!r} is not a real date"
+            ) from exc
+    return None
+
+
 def _extract_html_table_record(
     body: bytes, params: dict[str, Any]
 ) -> tuple[Any, Any]:
     parser = _parse_html(body)
     headers = params["headers"]
+    target_summary_date = _dated_cohort_start(
+        params.get("detailsSummary", "")
+    )
+    target_section_date = _dated_cohort_start(params["section"])
+    for table in parser.tables:
+        if table["hidden"]:
+            continue
+        has_headers = sum(row == headers for row in table["rows"]) == 1
+        if not has_headers:
+            continue
+        if target_summary_date is not None:
+            other_date = _dated_cohort_start(table["detailsSummary"])
+            if (
+                table["section"] == params["section"]
+                and other_date is not None
+                and other_date > target_summary_date
+            ):
+                raise ChangedExtraction(
+                    "a newer dated details-summary cohort exists for the "
+                    "same section and headers"
+                )
+        if target_section_date is not None:
+            other_date = _dated_cohort_start(table["section"])
+            if other_date is not None and other_date > target_section_date:
+                raise ChangedExtraction(
+                    "a newer dated section cohort exists for the same headers"
+                )
     candidates: list[tuple[dict[str, Any], int]] = []
     for table in parser.tables:
+        if table["hidden"]:
+            continue
         if params["section"] != table["section"]:
+            continue
+        if (
+            "detailsSummary" in params
+            and params["detailsSummary"] != table["detailsSummary"]
+        ):
             continue
         header_indexes = [
             index for index, row in enumerate(table["rows"]) if row == headers
         ]
         if len(header_indexes) == 1:
+            if any(
+                field_spec["transform"] in {
+                    "ato-law-first-tax-band",
+                    "ato-law-first-tax-rate-percent",
+                }
+                for field_spec in params["fields"]
+            ) and not table["directLawBody"]:
+                continue
             candidates.append((table, header_indexes[0]))
     if len(candidates) != 1:
         raise ChangedExtraction(
@@ -3027,9 +3594,17 @@ def _extract_html_table_record(
                 row_values.append(
                     _parse_ato_first_tax_band(label, value_text)
                 )
+            elif field_spec["transform"] == "ato-first-tax-rate-percent":
+                row_values.append(
+                    _parse_ato_first_tax_rate_percent(label, value_text)
+                )
             elif field_spec["transform"] == "ato-law-first-tax-band":
                 row_values.append(
                     _parse_ato_law_first_tax_band(row)
+                )
+            elif field_spec["transform"] == "ato-law-first-tax-rate-percent":
+                row_values.append(
+                    _parse_ato_law_first_tax_band(row)["rate"] * 100
                 )
             else:
                 row_values.append(
@@ -3391,6 +3966,21 @@ def _extract_ato_law_lito(
     }
 
 
+def _extract_ato_law_lito_serialization(
+    body: bytes, params: dict[str, Any]
+) -> tuple[str, str]:
+    _unit, value = _extract_ato_law_lito(body, params)
+    serialized = (
+        f"{_plain_number(value['maxOffset'])};"
+        f"{_plain_number(value['fullTo'])};"
+        f"{_plain_number(value['taper1To'])}@"
+        f"{_plain_number(value['taper1Rate'])};"
+        f"{_plain_number(value['cutOut'])}@"
+        f"{_plain_number(value['taper2Rate'])}"
+    )
+    return "AUD/rate", serialized
+
+
 def _extract_ato_law_resident_brackets(
     body: bytes, params: dict[str, Any]
 ) -> tuple[str, list[list[int | float | None]]]:
@@ -3399,7 +3989,13 @@ def _extract_ato_law_resident_brackets(
     for table in parser.tables:
         if table["hidden"] or not table["directLawBody"]:
             continue
-        rows = table["rows"]
+        rows = [
+            [
+                cell.replace("$ ", "$").replace(" ' s", "'s")
+                for cell in row
+            ]
+            for row in table["rows"]
+        ]
         header_indexes = [
             index
             for index, row in enumerate(rows)
@@ -4473,14 +5069,17 @@ EXTRACTORS: dict[
     "html-definition": _extract_html_definition,
     "html-table-record": _extract_html_table_record,
     "html-labelled-values": _extract_html_labelled_values,
+    "html-home-affairs-schema-anchor": _extract_home_affairs_schema_anchor,
     "html-text-anchor": _extract_html_text_anchor,
     "html-section-text": _extract_html_section_text,
+    "iec-quota-xml": _extract_iec_quota_xml,
     "pdf-table": _extract_pdf_table,
     "json-pointer": _extract_json_record,
     "api-json-pointer": _extract_json_record,
     "api-json-record": _extract_api_json_record,
     "ato-lito": _extract_ato_lito,
     "ato-law-lito": _extract_ato_law_lito,
+    "ato-law-lito-serialization": _extract_ato_law_lito_serialization,
     "ato-law-resident-brackets": _extract_ato_law_resident_brackets,
     "ato-tax-free-band": _extract_ato_tax_free_band,
     "cra-t4127-version": _extract_cra_t4127_version,
@@ -4504,6 +5103,8 @@ def _expected_media(mode: str, media_type: str) -> bool:
         return normalized in HTML_MEDIA_TYPES
     if mode == "cra-t4127-csv":
         return normalized in CSV_MEDIA_TYPES
+    if mode == "iec-quota-xml":
+        return normalized in XML_MEDIA_TYPES
     if mode == "pdf-table":
         return normalized in PDF_MEDIA_TYPES
     return normalized in JSON_MEDIA_TYPES or normalized.endswith("+json")

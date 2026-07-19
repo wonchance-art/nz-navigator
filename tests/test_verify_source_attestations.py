@@ -3,6 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import date
 import hashlib
+import html
 import json
 from pathlib import Path
 import shutil
@@ -353,6 +354,138 @@ class SourceAttestationTests(unittest.TestCase):
         )
         self.assertEqual((unit, value), ("CAD", 100))
 
+    def test_details_summary_disambiguates_current_and_historical_table(self) -> None:
+        body = """
+        <details><summary>If you apply on or after September 1, 2025</summary>
+        <p>All provinces and territories except Quebec</p>
+        <table><tr><th>Members</th><th>Amount</th></tr>
+        <tr><td>1</td><td>$22,895</td></tr></table></details>
+        <details><summary>Older applications</summary>
+        <h4>All provinces and territories except Quebec</h4>
+        <table><tr><th>Members</th><th>Amount</th></tr>
+        <tr><td>1</td><td>$20,635</td></tr></table></details>
+        """.encode()
+        params = {
+            "section": "All provinces and territories except Quebec",
+            "detailsSummary": "If you apply on or after September 1, 2025",
+            "headers": ["Members", "Amount"],
+            "result": "scalar",
+            "fields": [{
+                "key": "one",
+                "rowLabels": ["1"],
+                "valueHeader": "Amount",
+                "transform": "currency-to-number",
+                "unit": "CAD/year",
+            }],
+        }
+        self.assertEqual(
+            verifier._extract_html_table_record(body, params),
+            ("CAD/year", 22895),
+        )
+        with self.assertRaises(verifier.ChangedExtraction):
+            verifier._extract_html_table_record(
+                body,
+                {
+                    **params,
+                    "detailsSummary": "Missing current cohort",
+                },
+            )
+        newer = body + """
+        <details><summary>If you apply on or after September 1, 2026</summary>
+        <p>All provinces and territories except Quebec</p>
+        <table><tr><th>Members</th><th>Amount</th></tr>
+        <tr><td>1</td><td>$99,999</td></tr></table></details>
+        """.encode()
+        with self.assertRaises(verifier.ChangedExtraction):
+            verifier._extract_html_table_record(newer, params)
+
+    def test_dated_section_rejects_a_newer_table_cohort(self) -> None:
+        params = {
+            "section": "From 1 April 2025",
+            "headers": ["Income", "Rate"],
+            "result": "scalar",
+            "fields": [{
+                "key": "rate",
+                "rowLabels": ["$0 – $15,600"],
+                "valueHeader": "Rate",
+                "transform": "percent-to-decimal",
+                "unit": "decimal rate",
+            }],
+        }
+        old = """
+        <h2>From 1 April 2025</h2>
+        <table><tr><th>Income</th><th>Rate</th></tr>
+        <tr><td>$0 – $15,600</td><td>10.5%</td></tr></table>
+        """.encode()
+        self.assertEqual(
+            verifier._extract_html_table_record(old, params),
+            ("decimal rate", 0.105),
+        )
+        newer = old + """
+        <h2>From 1 April 2026</h2>
+        <table><tr><th>Income</th><th>Rate</th></tr>
+        <tr><td>$0 – $15,600</td><td>99%</td></tr></table>
+        """.encode()
+        with self.assertRaises(verifier.ChangedExtraction):
+            verifier._extract_html_table_record(newer, params)
+
+    def test_hidden_ancestry_is_excluded_from_tables_and_text(self) -> None:
+        table_params = {
+            "section": "Current fees",
+            "headers": ["Fee", "Amount"],
+            "result": "scalar",
+            "fields": [{
+                "key": "fee",
+                "rowLabels": ["Application"],
+                "valueHeader": "Amount",
+                "transform": "integer",
+                "unit": "CAD",
+            }],
+        }
+        visible = """
+        <h2>Current fees</h2><table>
+        <tr><th>Fee</th><th>Amount</th></tr>
+        <tr><td>Application</td><td>100</td></tr></table>
+        """
+        hidden_variants = (
+            '<div hidden>',
+            '<div aria-hidden="true">',
+            '<div style="display: none;">',
+            '<div style="visibility:hidden">',
+            '<div id="History_123">',
+        )
+        for opening in hidden_variants:
+            with self.subTest(opening=opening):
+                hidden = f"{opening}{visible}</div>".encode()
+                with self.assertRaises(verifier.ChangedExtraction):
+                    verifier._extract_html_table_record(
+                        hidden, table_params
+                    )
+                text = (
+                    f"{opening}<p>Maximum 500 points total</p></div>"
+                ).encode()
+                with self.assertRaises(verifier.ChangedExtraction):
+                    verifier._extract_html_text_anchor(
+                        text,
+                        {
+                            "anchor": "Maximum 500 points total",
+                            "transform": "integer",
+                            "unit": "points",
+                        },
+                    )
+        visible_plus_hidden = (
+            visible
+            + '<div style="display:none">'
+            + visible.replace("100", "999")
+            + "</div>"
+        ).encode()
+        self.assertEqual(
+            verifier._extract_html_table_record(
+                visible_plus_hidden, table_params
+            ),
+            ("CAD", 100),
+        )
+
     def test_prose_fixed_transforms_cover_production_sentences(self) -> None:
         body = (FIXTURES / "prose.html").read_bytes()
         cases = [
@@ -438,6 +571,206 @@ class SourceAttestationTests(unittest.TestCase):
                 verifier._transform_html_value(
                     malformed, "identical-duration-days"
                 )
+
+    def test_home_affairs_schema_anchor_is_exact_and_fail_closed(self) -> None:
+        schema = {
+            "applicant": {
+                "overview": {"visaStay": "<p>12 months</p>"},
+                "eligibility": {
+                    "criteria": [
+                        {},
+                        {},
+                        {},
+                        {
+                            "subTitle": (
+                                "<p>You must have completed 3 months of "
+                                "specified subclass 417 work.</p>"
+                            ),
+                            "description": (
+                                "<p>This is usually about AUD5,000 for your "
+                                "initial stay, plus the fare to where you are "
+                                "going after leaving Australia.</p>"
+                            ),
+                        },
+                    ],
+                },
+            },
+        }
+        value = html.escape(
+            json.dumps(schema, separators=(",", ":")), quote=True
+        )
+        body = (
+            "<html><body><input type=\"hidden\" "
+            "id=\"ctl00_PlaceHolderMain_PageSchemaHiddenField_Input\" "
+            f"value=\"{value}\"></body></html>"
+        ).encode()
+        self.assertEqual(
+            verifier._extract_home_affairs_schema_anchor(
+                body,
+                {
+                    "pointer": "/applicant/overview/visaStay",
+                    "anchor": "12 months",
+                    "transform": "duration-months",
+                    "unit": "months",
+                },
+            ),
+            ("months", 12),
+        )
+        self.assertEqual(
+            verifier._extract_home_affairs_schema_anchor(
+                body,
+                {
+                    "pointer": "/applicant/eligibility/criteria/3/description",
+                    "anchor": (
+                        "This is usually about AUD5,000 for your initial stay, "
+                        "plus the fare to where you are going after leaving "
+                        "Australia."
+                    ),
+                    "transform": "single-iso-amount-to-number",
+                    "unit": "AUD",
+                },
+            ),
+            ("AUD", 5000),
+        )
+        mutations = [
+            body + body,
+            body.replace(value.encode(), b"{not-json}"),
+            body.replace(b"12 months", b"13 months"),
+        ]
+        for mutated in mutations:
+            with self.subTest(), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._extract_home_affairs_schema_anchor(
+                    mutated,
+                    {
+                        "pointer": "/applicant/overview/visaStay",
+                        "anchor": "12 months",
+                        "transform": "duration-months",
+                        "unit": "months",
+                    },
+                )
+        with self.assertRaises(verifier.RegistryError):
+            verifier._validate_extractor({
+                "mode": "html-home-affairs-schema-anchor",
+                "params": {
+                    "pointer": "/applicant/overview/visaStay",
+                    "anchor": "12 months",
+                    "transform": "tax-brackets",
+                    "unit": "months",
+                },
+            })
+
+    def test_iec_quota_xml_exact_selector_and_adversarial_rows(self) -> None:
+        baseline = (
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+            "<temp><chancesdate>July 17, 2026</chancesdate>"
+            "<country location=\"Korea, Republic\" category=\"wh\" "
+            "code=\"kr\"><quota><![CDATA[10,239]]></quota>"
+            "<first>Week of January 19, 2026</first></country></temp>"
+        )
+        params = {
+            "countryCode": "kr",
+            "category": "wh",
+            "location": "Korea, Republic",
+            "seasonYear": 2026,
+        }
+        self.assertEqual(
+            verifier._extract_iec_quota_xml(baseline.encode(), params),
+            ("visas", 10239),
+        )
+        mutations = [
+            baseline.replace("</temp>", baseline.split("<temp>", 1)[1]),
+            baseline.replace("10,239", "10 239"),
+            baseline.replace(
+                "code=\"kr\"",
+                "code=\"kr\" unexpected=\"yes\"",
+            ),
+            baseline.replace("<temp>", "<!DOCTYPE temp><temp>"),
+            baseline.replace("2026", "2027"),
+            baseline.replace("Korea, Republic", "Korea"),
+            baseline.replace(
+                "</temp>",
+                "<chancesdate>July 18, 2026</chancesdate></temp>",
+            ),
+        ]
+        for mutated in mutations:
+            with self.subTest(), self.assertRaises(
+                (verifier.ChangedExtraction, verifier.UnsupportedExtraction)
+            ):
+                verifier._extract_iec_quota_xml(
+                    mutated.encode(), params
+                )
+
+    def test_new_fixed_policy_transforms_reject_ambiguous_numbers(self) -> None:
+        cases = [
+            ("students - AUD29,710", "single-iso-amount-to-number", 29710),
+            (
+                "you overstay your visa by more than 28 days",
+                "single-duration-days",
+                28,
+            ),
+            (
+                "This may last for up to 3 years although some people can "
+                "be permanently excluded.",
+                "single-duration-years",
+                3,
+            ),
+            (
+                "You must have held that visa for at least 3 years before "
+                "you apply.",
+                "single-duration-years-to-months",
+                36,
+            ),
+            (
+                "meeting a 6-month service standard for 80% of cases.",
+                "service-standard-months",
+                6,
+            ),
+            (
+                "180 days",
+                "single-duration-days-to-months",
+                6,
+            ),
+            (
+                "you're registered as an employer of working holiday makers, "
+                "then you should apply the Working holiday maker withholding "
+                "rates of 15% to the first $45,000 of income earned - income "
+                "in excess of $45,000 should be withheld at foreign resident "
+                "withholding rates",
+                "whm-first-band-percent",
+                15,
+            ),
+            (
+                "If no TFN is provided you must withhold at 45% on total "
+                "payments made.",
+                "no-tfn-whm-percent",
+                45,
+            ),
+        ]
+        for text, transform, expected in cases:
+            with self.subTest(transform=transform):
+                self.assertEqual(
+                    verifier._transform_html_value(text, transform),
+                    expected,
+                )
+        malformed = [
+            ("students - AUD29,710 and AUD5,000", "single-iso-amount-to-number"),
+            ("wait 28 days or 29 days", "single-duration-days"),
+            ("181 days", "single-duration-days-to-months"),
+            ("a 6-month service standard for 79% of cases.",
+             "service-standard-months"),
+            (
+                "If no TFN is provided you must withhold at 44% on total "
+                "payments.",
+                "no-tfn-whm-percent",
+            ),
+        ]
+        for text, transform in malformed:
+            with self.subTest(transform=transform), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._transform_html_value(text, transform)
 
     def test_nested_list_paragraph_is_not_double_counted(self) -> None:
         body = (
@@ -745,6 +1078,38 @@ class SourceAttestationTests(unittest.TestCase):
 
     def test_ato_whm_and_lito_adversarial_grammar_fails_closed(self) -> None:
         whm = (FIXTURES / "ato-whm.html").read_text()
+        current_params = {
+            "section": "Working holiday maker tax rates 2025–26",
+            "headers": ["Taxable income", "Tax on this income"],
+            "result": "scalar",
+            "fields": [{
+                "key": "rate",
+                "rowLabels": ["0 – $45,000"],
+                "valueHeader": "Tax on this income",
+                "transform": "ato-first-tax-rate-percent",
+                "unit": "percent",
+            }],
+        }
+        self.assertEqual(
+            verifier._extract_html_table_record(
+                whm.encode(), current_params
+            ),
+            ("percent", 15.0),
+        )
+        newer = whm.replace(
+            "</body>",
+            (
+                "<p>Working holiday maker tax rates 2026–27</p>"
+                "<table><tr><td>Taxable income</td>"
+                "<td>Tax on this income</td></tr>"
+                "<tr><td>0 – $45,000</td>"
+                "<td>15c for each $1</td></tr></table></body>"
+            ),
+        )
+        with self.assertRaises(verifier.ChangedExtraction):
+            verifier._extract_html_table_record(
+                newer.encode(), current_params
+            )
         for old, new in (
             ("0 – $45,000", "1 – $45,000"),
             ("0 – $45,000", "0 – $45,000 or $50,000"),
@@ -771,6 +1136,22 @@ class SourceAttestationTests(unittest.TestCase):
                         }],
                     },
                 )
+
+    def test_ato_lito_serialization_uses_the_same_reviewed_law_table(self) -> None:
+        params = {
+            "actTitle": "INCOME TAX ASSESSMENT ACT 1997",
+            "section": "61-115",
+            "sectionTitle": "Amount of low income tax offset",
+            "tableTitle": "Low income tax offset",
+        }
+        body = (FIXTURES / "ato-lito-law.html").read_bytes()
+        unit, value = verifier._extract_ato_law_lito_serialization(
+            body, params
+        )
+        self.assertEqual(unit, "AUD/rate")
+        self.assertEqual(
+            value, "700;37500;45000@0.05;66667@0.015"
+        )
         lito_params = {
             "anchor": "Low income tax offset",
             "items": [
@@ -1498,6 +1879,48 @@ class SourceAttestationTests(unittest.TestCase):
             today=date(2026, 7, 20),
         )
         self.assert_status(report, "unsupported")
+
+    def test_current_as_of_mode_is_valid_without_invented_effective_date(
+        self,
+    ) -> None:
+        registry = deepcopy(self.registry)
+        attestation = registry["attestations"][0]
+        attestation.pop("effectiveFrom")
+        attestation["currentAsOf"] = "2026-07-19"
+        attestation["effectiveFromUnknownReason"] = (
+            "The official page confirms the current value but does not "
+            "publish the original effective date."
+        )
+
+        report = self.run_verify(registry)
+
+        self.assertTrue(report.ok)
+
+    def test_attestation_effective_date_modes_fail_closed(self) -> None:
+        mutations = []
+        both = deepcopy(self.registry)
+        both["attestations"][0]["currentAsOf"] = "2026-07-19"
+        both["attestations"][0]["effectiveFromUnknownReason"] = "Unknown."
+        mutations.append(both)
+        neither = deepcopy(self.registry)
+        neither["attestations"][0].pop("effectiveFrom")
+        mutations.append(neither)
+        incomplete = deepcopy(self.registry)
+        incomplete["attestations"][0].pop("effectiveFrom")
+        incomplete["attestations"][0]["currentAsOf"] = "2026-07-19"
+        mutations.append(incomplete)
+        ranged = deepcopy(self.registry)
+        ranged["attestations"][0].pop("effectiveFrom")
+        ranged["attestations"][0].update(
+            currentAsOf="2026-07-19",
+            effectiveFromUnknownReason="Unknown.",
+            effectiveTo="2026-12-31",
+        )
+        mutations.append(ranged)
+
+        for registry in mutations:
+            with self.subTest():
+                self.assert_status(self.run_verify(registry), "unsupported")
 
     def test_non_object_registry_root_is_actionable(self) -> None:
         (self.root / "attestations.json").write_text("[]\n")

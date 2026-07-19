@@ -99,7 +99,7 @@ runtime source/date literals to the claim registry:
 | `sourcePath` | One runtime path string, or an array of at least two paths for a composite binding. Every resolved value must equal `claim.sourceUrl`. |
 | `dates` | Non-empty array of date bindings. |
 | `dates[].runtimePath` | One runtime path string, or an array of at least two component paths. |
-| `dates[].claimField` | One of `verifiedAt`, `effectiveFrom`, or `effectiveTo`. Each field may occur only once per binding. |
+| `dates[].claimField` | One of `verifiedAt`, `effectiveFrom`, `effectiveTo`, or `currentAsOf`. Each field may occur only once per binding. `currentAsOf` is reserved for a current official value whose original effective date is not published. |
 
 For example, a composite fee can require both components to carry identical
 reviewed provenance:

@@ -38,6 +38,7 @@ class RuntimeParityTests(unittest.TestCase):
                   label: `Student ${{'fee'}}`,
                   src: 'HTTPS://EXAMPLE.GOV/fee',
                   asOf: '2026-07-18',
+                  currentAsOf: '2026-07-18',
                   effectiveFrom: '2026-07-19',
                   effectiveTo: '2027-06-30'
                 }},
@@ -402,6 +403,40 @@ class RuntimeParityTests(unittest.TestCase):
 
         self.assertTrue(report.ok, [issue.render() for issue in report.issues])
         self.assertEqual(report.checked_bindings, 1)
+
+    def test_provenance_supports_current_as_of_without_invented_effective_date(
+        self,
+    ) -> None:
+        claim = self.claim("current-fee", 850, "NZD")
+        del claim["effectiveFrom"]
+        claim["currentAsOf"] = "2026-07-18"
+        self.write_claims([claim])
+        self.write_bindings(
+            [
+                self.binding(
+                    "current-fee",
+                    "DB.fees.student.v",
+                    "NZD",
+                    provenance={
+                        "sourcePath": "DB.fees.student.src",
+                        "dates": [
+                            {
+                                "runtimePath": "DB.fees.student.asOf",
+                                "claimField": "verifiedAt",
+                            },
+                            {
+                                "runtimePath": "DB.fees.student.currentAsOf",
+                                "claimField": "currentAsOf",
+                            },
+                        ],
+                    },
+                )
+            ]
+        )
+
+        report = self.verify()
+
+        self.assertTrue(report.ok, [issue.render() for issue in report.issues])
 
     def test_composite_provenance_arrays_require_every_value_to_match(self) -> None:
         self.write_claims([self.claim("total-fee", 950, "NZD")])

@@ -94,7 +94,32 @@
     "au-ko-min-wage-2026",
     "au-ko-casual-min-wage-2026",
     "au-ko-tax-medicare-rate-2026",
-    "au-ko-tax-super-rate-2026"
+    "au-ko-tax-super-rate-2026",
+    "nz-ko-income-tax-brackets-2026",
+    "nz-ja-income-tax-brackets-2026",
+    "ca-ko-iec-quota-2026",
+    "ca-ko-study-funds",
+    "ca-ko-crs-core-maximum",
+    "ca-ko-open-work-permit-holder-fee",
+    "ca-ko-crs-age35-no-spouse",
+    "ca-ko-crs-bachelor-no-spouse",
+    "ca-ko-crs-clb7-per-ability-no-spouse",
+    "ca-ko-crs-canadian-work1-no-spouse",
+    "ca-ko-bc-pnp-fee",
+    "ca-ko-ee-service-standard",
+    "au-ko-whv-duration",
+    "au-ko-whv-funds",
+    "au-ko-second-work",
+    "au-ko-third-work",
+    "au-ko-student-funds",
+    "au-ko-csit-2026",
+    "au-ko-ssit-2026",
+    "au-ko-no-tfn-withholding",
+    "au-ko-whm-tax-rate",
+    "au-ko-overstay-threshold",
+    "au-ko-reentry-ban-duration",
+    "au-ko-491-pr-eligibility",
+    "au-ko-tax-lito-2026"
   ],
   "targetComponents": [
     {
@@ -208,7 +233,7 @@
       "sourceUrl": "https://www.ird.govt.nz/tax-rates",
       "request": {"method": "GET"},
       "verifiedAt": "2026-07-19",
-      "effectiveFrom": "2026-04-01",
+      "effectiveFrom": "2025-04-01",
       "reviewAfterDays": 45,
       "extractor": {
         "mode": "html-table-record",
@@ -732,7 +757,7 @@
       "extractor": {
         "mode": "html-table-record",
         "params": {
-          "section": "Any person, whatever their age, who is employed by an employer to do any work for hire or reward under a ‘contract of service’ (commonly called an ‘employment agreement’).",
+          "section": "rates apply to all working in New Zealand aged 16 and over. The current minimum wage rates (before tax) are set by the government and are reviewed each year. The wage rates shown below are effective from 1 April 2026.",
           "headers": ["Type of minimum wage", "Per hour", "8-hour-day", "40-hour week", "80-hour fortnight"],
           "result": "scalar",
           "fields": [
@@ -750,7 +775,7 @@
       "fixture": {
         "path": "data/attestation-fixtures/nz-minimum-wage.html",
         "mediaType": "text/html",
-        "sha256": "sha256:a0b02a378d5976fe21e2fd58b3d985a7e0be61271f47680a0f49304d26145588",
+        "sha256": "sha256:5a1effb46ddccd634482247e645b3627b2318ebbb67944c50eef71dab30a6348",
         "httpStatus": 200,
         "finalUrl": "https://www.employment.govt.nz/pay-and-hours/pay-and-wages/minimum-wage/minimum-wage-rates-and-types"
       },
@@ -2033,6 +2058,35 @@
       "claims": [{"claimId": "ca-ko-iec-program-fee"}]
     },
     {
+      "id": "ca-open-work-permit-holder-fee",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://ircc.canada.ca/english/information/fees/fees.asp",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2025-12-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Work Permits (including extensions)",
+          "headers": ["Fees", "$CAN"],
+          "result": "scalar",
+          "fields": [
+            {"key": "fee", "rowLabels": ["Open work permit holder"], "valueHeader": "$CAN", "transform": "number", "unit": "CAD"}
+          ]
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD", "value": 100},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-ircc-fees.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:af0ece84ddc98c167e10b2f074ad376c11f4410a3fe1604e150a140dc40ae494",
+        "httpStatus": 200,
+        "finalUrl": "https://ircc.canada.ca/english/information/fees/fees.asp"
+      },
+      "claims": [{"claimId": "ca-ko-open-work-permit-holder-fee"}]
+    },
+    {
       "id": "ca-study-permit-fee",
       "jurisdiction": "CA",
       "sourceUrl": "https://ircc.canada.ca/english/information/fees/fees.asp",
@@ -2180,27 +2234,28 @@
     {
       "id": "au-whm-runtime",
       "jurisdiction": "AU",
-      "sourceUrl": "https://www.ato.gov.au/law/view/print?DocID=PAC%2F20240003%2FSch1-Cl4&PiT=99991231235958",
+      "sourceUrl": "https://www.ato.gov.au/tax-rates-and-codes/tax-rates-working-holiday-makers",
       "request": {"method": "GET"},
       "verifiedAt": "2026-07-19",
-      "effectiveFrom": "2024-07-01",
+      "effectiveFrom": "2020-07-01",
       "reviewAfterDays": 45,
+      "livePolicy": {
+        "mode": "fixture-only",
+        "reason": "Owner NZ1: ATO shows the current 2025–26 table in a real browser, but bot protection blocks the bounded scheduled request; retain the exact reviewed table and require manual review every 30 days.",
+        "manualReviewDays": 30
+      },
       "extractor": {
         "mode": "html-table-record",
         "params": {
-          "section": "Repeal the table, substitute:",
-          "headers": [
-            "Item",
-            "For the part of the taxpayer's working holiday taxable income that:",
-            "The rate is:"
-          ],
+          "section": "Working holiday maker tax rates 2025–26",
+          "headers": ["Taxable income", "Tax on this income"],
           "result": "scalar",
           "fields": [
             {
               "key": "whm",
-              "rowLabels": ["1"],
-              "valueHeader": "The rate is:",
-              "transform": "ato-law-first-tax-band",
+              "rowLabels": ["0 – $45,000"],
+              "valueHeader": "Tax on this income",
+              "transform": "ato-first-tax-band",
               "unit": {"cap": "AUD", "rate": "decimal rate"}
             }
           ]
@@ -2212,11 +2267,11 @@
         "value": {"cap": 45000, "rate": 0.15}
       },
       "fixture": {
-        "path": "data/attestation-fixtures/au-whm-tax-law.html",
+        "path": "data/attestation-fixtures/au-whm-tax-current.html",
         "mediaType": "text/html",
-        "sha256": "sha256:9687e9644f4ce0a68c62dbd0f8fdd1bfa6f89701b492a4241c9a3b4517fc43b2",
+        "sha256": "sha256:d7e1343e4e06d899e62b4ad2db1ec0af3b511835132b65cd928ae4377daa1549",
         "httpStatus": 200,
-        "finalUrl": "https://www.ato.gov.au/law/view/print?DocID=PAC%2F20240003%2FSch1-Cl4&PiT=99991231235958"
+        "finalUrl": "https://www.ato.gov.au/tax-rates-and-codes/tax-rates-working-holiday-makers"
       },
       "targets": [{"targetId": "au-tax", "reviewedPath": "/whm"}]
     },
@@ -2254,7 +2309,7 @@
     {
       "id": "au-resident-tax-brackets",
       "jurisdiction": "AU",
-      "sourceUrl": "https://www.ato.gov.au/law/view/print?DocID=PAC%2F20250028%2FSch1-Cl2&PiT=99991231235958",
+      "sourceUrl": "https://www.ato.gov.au/law/view/document?LocID=%22PAC%2F19860107%2FSch7-PtI-1%22",
       "request": {"method": "GET"},
       "verifiedAt": "2026-07-19",
       "effectiveFrom": "2026-07-01",
@@ -2273,9 +2328,9 @@
       "fixture": {
         "path": "data/attestation-fixtures/au-resident-tax-act.html",
         "mediaType": "text/html",
-        "sha256": "sha256:1268cab378f8e401be5a897572a471602e475534e279e04ca58a299fe54e05b4",
+        "sha256": "sha256:84f7efa4afca2674ed62dfe7920e66be9a9c9953ddfc6cb5551708caea12cd4d",
         "httpStatus": 200,
-        "finalUrl": "https://www.ato.gov.au/law/view/print?DocID=PAC%2F20250028%2FSch1-Cl2&PiT=99991231235958"
+        "finalUrl": "https://www.ato.gov.au/law/view/document?LocID=%22PAC%2F19860107%2FSch7-PtI-1%22"
       },
       "targets": [
         {"targetId": "au-tax", "reviewedPath": "/resident/brackets/1", "expectedPath": "/0"},
@@ -3007,6 +3062,820 @@
         "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/after-apply-next-steps.html"
       },
       "claims": [{"claimId": "ca-ko-iec-processing"}]
+    },
+    {
+      "id": "nz-income-tax-brackets-claims",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.ird.govt.nz/tax-rates",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2025-04-01",
+      "reviewAfterDays": 45,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "From 1 April 2025",
+          "headers": ["For each dollar of income", "Tax rate"],
+          "result": "scalar",
+          "fields": [{
+            "key": "brackets",
+            "rowLabels": [
+              "0 - $15,600",
+              "$15,601 - $53,500",
+              "$53,501 - $78,100",
+              "$78,101 - $180,000",
+              "$180,001 and over"
+            ],
+            "valueHeader": "Tax rate",
+            "transform": "tax-brackets-serialization",
+            "unit": "NZD/rate"
+          }]
+        }
+      },
+      "expected": {
+        "type": "string",
+        "unit": "NZD/rate",
+        "value": "15600@0.105;53500@0.175;78100@0.30;180000@0.33;above@0.39"
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-income-tax.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:ba659d52baa99eae7bf8da9afe47e399c75897ab7743efcb331231e7ae32c783",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ird.govt.nz/tax-rates"
+      },
+      "claims": [
+        {"claimId": "nz-ko-income-tax-brackets-2026"},
+        {"claimId": "nz-ja-income-tax-brackets-2026"}
+      ]
+    },
+    {
+      "id": "ca-iec-korea-wh-quota-2026",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://ircc.canada.ca/english/work/iec/selections.asp?cat=wh&country=kr",
+      "request": {
+        "method": "GET",
+        "url": "https://ircc.canada.ca/english/work/iec/selections.xml"
+      },
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-01-01",
+      "effectiveTo": "2026-12-31",
+      "reviewAfterDays": 14,
+      "extractor": {
+        "mode": "iec-quota-xml",
+        "params": {
+          "countryCode": "kr",
+          "category": "wh",
+          "location": "Korea, Republic",
+          "seasonYear": 2026
+        }
+      },
+      "expected": {"type": "number", "unit": "visas", "value": 10239},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-iec-quota-2026.xml",
+        "mediaType": "text/xml",
+        "sha256": "sha256:4e8a7ca88321e11f5667d8df3648f4963937de903b3ab843005fe014b6e676c3",
+        "httpStatus": 200,
+        "finalUrl": "https://ircc.canada.ca/english/work/iec/selections.xml"
+      },
+      "claims": [{"claimId": "ca-ko-iec-quota-2026"}]
+    },
+    {
+      "id": "ca-study-funds-one-2025",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit/get-documents/financial-support.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2025-09-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "All provinces and territories except Quebec",
+          "detailsSummary": "If you apply on or after September 1, 2025",
+          "headers": [
+            "Number of family members (including the applicant)",
+            "Amount required per year (excluding tuition and transportation costs) (in CAN$)"
+          ],
+          "result": "scalar",
+          "fields": [{
+            "key": "one",
+            "rowLabels": ["1"],
+            "valueHeader": "Amount required per year (excluding tuition and transportation costs) (in CAN$)",
+            "transform": "currency-to-number",
+            "unit": "CAD/year"
+          }]
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD/year", "value": 22895},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-study-funds-2025.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:83afe1db3a8d8147c4f8cfbb8ca1403037b189ceb5146602193cd0d451e01906",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit/get-documents/financial-support.html"
+      },
+      "claims": [{"claimId": "ca-ko-study-funds"}]
+    },
+    {
+      "id": "ca-crs-core-maximum",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2015-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "Without a spouse or common-law partner: Maximum 500 points total",
+          "transform": "integer",
+          "unit": "points"
+        }
+      },
+      "expected": {"type": "number", "unit": "points", "value": 500},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-crs-components.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:32f52c262422ba6bce4d5cd7ad70df80e069c737df37433bef329ff6bd0a02ee",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html"
+      },
+      "claims": [{"claimId": "ca-ko-crs-core-maximum"}]
+    },
+    {
+      "id": "ca-crs-age35-no-spouse",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2015-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Without a spouse or common-law partner: Maximum 500 points total",
+          "detailsSummary": "Points breakdown of Core/human capital factors",
+          "headers": [
+            "Age",
+            "With a spouse or common-law partner(Maximum 100 points)",
+            "Without a spouse or common-law partner(Maximum 110 points)"
+          ],
+          "result": "scalar",
+          "fields": [{
+            "key": "age35",
+            "rowLabels": ["35 years of age"],
+            "valueHeader": "Without a spouse or common-law partner(Maximum 110 points)",
+            "transform": "integer",
+            "unit": "points"
+          }]
+        }
+      },
+      "expected": {"type": "number", "unit": "points", "value": 77},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-crs-components.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:32f52c262422ba6bce4d5cd7ad70df80e069c737df37433bef329ff6bd0a02ee",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html"
+      },
+      "claims": [{"claimId": "ca-ko-crs-age35-no-spouse"}]
+    },
+    {
+      "id": "ca-crs-bachelor-no-spouse",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2015-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Without a spouse or common-law partner: Maximum 500 points total",
+          "detailsSummary": "Points breakdown of Core/human capital factors",
+          "headers": [
+            "Level of Education",
+            "With a spouse or common-law partner(Maximum 140 points)",
+            "Without a spouse or common-law partner(Maximum 150 points)"
+          ],
+          "result": "scalar",
+          "fields": [{
+            "key": "bachelor",
+            "rowLabels": ["Bachelor's degree OR a three or more year program at a university, college, trade or technical school, or other institute"],
+            "valueHeader": "Without a spouse or common-law partner(Maximum 150 points)",
+            "transform": "integer",
+            "unit": "points"
+          }]
+        }
+      },
+      "expected": {"type": "number", "unit": "points", "value": 120},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-crs-components.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:32f52c262422ba6bce4d5cd7ad70df80e069c737df37433bef329ff6bd0a02ee",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html"
+      },
+      "claims": [{"claimId": "ca-ko-crs-bachelor-no-spouse"}]
+    },
+    {
+      "id": "ca-crs-clb7-per-ability-no-spouse",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2015-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "34 without a spouse or common-law partner",
+          "detailsSummary": "Points breakdown of Core/human capital factors",
+          "headers": [
+            "Canadian Language Benchmark (CLB) level per ability",
+            "With a spouse or common-law partner(Maximum 128 points)",
+            "Without a spouse or common-law partner(Maximum 136 points)"
+          ],
+          "result": "scalar",
+          "fields": [{
+            "key": "clb7",
+            "rowLabels": ["CLB 7"],
+            "valueHeader": "Without a spouse or common-law partner(Maximum 136 points)",
+            "transform": "integer",
+            "unit": "points/ability"
+          }]
+        }
+      },
+      "expected": {"type": "number", "unit": "points/ability", "value": 17},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-crs-components.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:32f52c262422ba6bce4d5cd7ad70df80e069c737df37433bef329ff6bd0a02ee",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html"
+      },
+      "claims": [{"claimId": "ca-ko-crs-clb7-per-ability-no-spouse"}]
+    },
+    {
+      "id": "ca-crs-canadian-work1-no-spouse",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2015-01-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "6 without a spouse or common-law partner (up to a combined maximum of 24 points)",
+          "detailsSummary": "Points breakdown of Core/human capital factors",
+          "headers": [
+            "Canadian work experience",
+            "With a spouse or common-law partner (Maximum 70 points)",
+            "Without a spouse or common-law partner (Maximum 80 points)"
+          ],
+          "result": "scalar",
+          "fields": [{
+            "key": "work1",
+            "rowLabels": ["1 year"],
+            "valueHeader": "Without a spouse or common-law partner (Maximum 80 points)",
+            "transform": "integer",
+            "unit": "points"
+          }]
+        }
+      },
+      "expected": {"type": "number", "unit": "points", "value": 40},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-crs-components.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:32f52c262422ba6bce4d5cd7ad70df80e069c737df37433bef329ff6bd0a02ee",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/check-score/crs-criteria.html"
+      },
+      "claims": [{"claimId": "ca-ko-crs-canadian-work1-no-spouse"}]
+    },
+    {
+      "id": "ca-bcpnp-application-fee",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.welcomebc.ca/immigrate-to-b-c/for-workers",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-01-22",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "The BC PNP charges fees to process applications. These fees cover the cost of administering the program, including providing support services to nominees until they become permanent residents.",
+          "headers": ["Process", "Fee"],
+          "result": "scalar",
+          "fields": [{
+            "key": "application",
+            "rowLabels": ["Application"],
+            "valueHeader": "Fee",
+            "transform": "currency-to-number",
+            "unit": "CAD"
+          }]
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD", "value": 1750},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-bcpnp-application-fee.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:fb3d3a44b863a1486b440c8e1a589df6bbac85499ba7f0609759141ba7613ab6",
+        "httpStatus": 200,
+        "finalUrl": "https://www.welcomebc.ca/immigrate-to-b-c/for-workers"
+      },
+      "claims": [{"claimId": "ca-ko-bc-pnp-fee"}]
+    },
+    {
+      "id": "ca-ee-six-month-service-standard",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/corporate/mandate/service-declaration/service-standards.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2015-03-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Economic immigration",
+          "detailsSummary": "Economic immigration",
+          "headers": [
+            "Type of service",
+            "Our service standard",
+            "Our performance",
+            "Our target",
+            "Service standard introduced",
+            "Service standard reviewed"
+          ],
+          "result": "object",
+          "fields": [
+            {
+              "key": "cecMonths",
+              "rowLabels": ["Canadian experience class (via Express Entry)"],
+              "valueHeader": "Our service standard",
+              "transform": "single-duration-days-to-months",
+              "unit": "months"
+            },
+            {
+              "key": "fswMonths",
+              "rowLabels": ["Federal Skilled Worker Program (via Express Entry)"],
+              "valueHeader": "Our service standard",
+              "transform": "single-duration-days-to-months",
+              "unit": "months"
+            },
+            {
+              "key": "pnpMonths",
+              "rowLabels": ["Provincial Nominee Program (via Express Entry – Electronic applications)"],
+              "valueHeader": "Our service standard",
+              "transform": "single-duration-days-to-months",
+              "unit": "months"
+            },
+            {
+              "key": "fstMonths",
+              "rowLabels": ["Federal Skilled Trades Program (via Express Entry)"],
+              "valueHeader": "Our service standard",
+              "transform": "single-duration-days-to-months",
+              "unit": "months"
+            },
+            {
+              "key": "cecTarget",
+              "rowLabels": ["Canadian experience class (via Express Entry)"],
+              "valueHeader": "Our target",
+              "transform": "number",
+              "unit": "percent"
+            },
+            {
+              "key": "fswTarget",
+              "rowLabels": ["Federal Skilled Worker Program (via Express Entry)"],
+              "valueHeader": "Our target",
+              "transform": "number",
+              "unit": "percent"
+            },
+            {
+              "key": "pnpTarget",
+              "rowLabels": ["Provincial Nominee Program (via Express Entry – Electronic applications)"],
+              "valueHeader": "Our target",
+              "transform": "number",
+              "unit": "percent"
+            },
+            {
+              "key": "fstTarget",
+              "rowLabels": ["Federal Skilled Trades Program (via Express Entry)"],
+              "valueHeader": "Our target",
+              "transform": "number",
+              "unit": "percent"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {
+          "cecMonths": "months",
+          "fswMonths": "months",
+          "pnpMonths": "months",
+          "fstMonths": "months",
+          "cecTarget": "percent",
+          "fswTarget": "percent",
+          "pnpTarget": "percent",
+          "fstTarget": "percent"
+        },
+        "value": {
+          "cecMonths": 6,
+          "fswMonths": 6,
+          "pnpMonths": 6,
+          "fstMonths": 6,
+          "cecTarget": 80,
+          "fswTarget": 80,
+          "pnpTarget": 80,
+          "fstTarget": 80
+        }
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-ee-service-standard.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:80a8e6f0004063a72a8ddc8760419e69544153f372e2ceb5b1c66acd5cd0b025",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/corporate/mandate/service-declaration/service-standards.html"
+      },
+      "claims": [
+        {"claimId": "ca-ko-ee-service-standard", "expectedPath": "/cecMonths"}
+      ]
+    },
+    {
+      "id": "au-first-whv-duration",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/work-holiday-417/first-working-holiday-417",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "currentAsOf": "2026-07-19",
+      "effectiveFromUnknownReason": "Home Affairs confirms the current 12-month stay but does not publish the original effective date.",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-home-affairs-schema-anchor",
+        "params": {
+          "pointer": "/applicant/overview/visaStay",
+          "anchor": "12 months",
+          "transform": "duration-months",
+          "unit": "months"
+        }
+      },
+      "expected": {"type": "number", "unit": "months", "value": 12},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-first-whv-schema.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:b963ee6425f2c32a19962a157b207fa2c3b6df0d08c00f6315b41268cdb31863",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/work-holiday-417/first-working-holiday-417"
+      },
+      "claims": [{"claimId": "au-ko-whv-duration"}]
+    },
+    {
+      "id": "au-first-whv-funds",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/work-holiday-417/first-working-holiday-417",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "currentAsOf": "2026-07-19",
+      "effectiveFromUnknownReason": "Home Affairs confirms the current usual AUD5,000 amount but does not publish its original effective date.",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-home-affairs-schema-anchor",
+        "params": {
+          "pointer": "/applicant/eligibility/criteria/3/description",
+          "anchor": "This is usually about AUD5,000 for your initial stay, plus the fare to where you are going after leaving Australia.",
+          "transform": "single-iso-amount-to-number",
+          "unit": "AUD"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD", "value": 5000},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-first-whv-schema.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:b963ee6425f2c32a19962a157b207fa2c3b6df0d08c00f6315b41268cdb31863",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/work-holiday-417/first-working-holiday-417"
+      },
+      "claims": [{"claimId": "au-ko-whv-funds"}]
+    },
+    {
+      "id": "au-second-whv-specified-work",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/work-holiday-417/second-working-holiday-417",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2005-11-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-home-affairs-schema-anchor",
+        "params": {
+          "pointer": "/applicant/eligibility/criteria/3/subTitle",
+          "anchor": "You must have completed 3 months of specified subclass 417 work.",
+          "transform": "duration-months",
+          "unit": "months"
+        }
+      },
+      "expected": {"type": "number", "unit": "months", "value": 3},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-second-whv-schema.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:3a50cfa533499fc0ce17445c861591e03b74dc1314c477a051fb94c9cf290786",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/work-holiday-417/second-working-holiday-417"
+      },
+      "claims": [{"claimId": "au-ko-second-work"}]
+    },
+    {
+      "id": "au-third-whv-specified-work",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/work-holiday-417/third-working-holiday-417",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2019-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-home-affairs-schema-anchor",
+        "params": {
+          "pointer": "/applicant/eligibility/criteria/3/subTitle",
+          "anchor": "You must have completed 6 months of specified subclass 417 work.",
+          "transform": "duration-months",
+          "unit": "months"
+        }
+      },
+      "expected": {"type": "number", "unit": "months", "value": 6},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-third-whv-schema.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:8c58d2caa068c0d61361ec337a6146938ae6d06490205697c621f47a453f8a08",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/work-holiday-417/third-working-holiday-417"
+      },
+      "claims": [{"claimId": "au-ko-third-work"}]
+    },
+    {
+      "id": "au-student-living-costs",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/student-500",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2024-05-10",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-home-affairs-schema-anchor",
+        "params": {
+          "pointer": "/applicant/stepGuide/steps/1/steps/5/description",
+          "anchor": "students - AUD29,710",
+          "transform": "single-iso-amount-to-number",
+          "unit": "AUD/year"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD/year", "value": 29710},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-student-funds-schema.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:8ebc624be8726dbcc133e45aaaf82db036ca411285943785c0e230227e4b1c68",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/student-500"
+      },
+      "claims": [{"claimId": "au-ko-student-funds"}]
+    },
+    {
+      "id": "au-csit-2026",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/employing-and-sponsoring-someone/sponsoring-workers/nominating-a-position/salary-requirements",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "effectiveTo": "2027-06-30",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-home-affairs-schema-anchor",
+        "params": {
+          "pointer": "/content/1/block",
+          "anchor": "AUD79,423 for Nomination applications lodged on and between 1 July 2026 and 30 June 2027.",
+          "transform": "single-iso-amount-to-number",
+          "unit": "AUD/year"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD/year", "value": 79423},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-salary-thresholds-schema.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:c2286e9aa4ea767b5b3aefb4377f9b836fd6fcfff75b2a4dbc8f17a1e654de44",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/visas/employing-and-sponsoring-someone/sponsoring-workers/nominating-a-position/salary-requirements"
+      },
+      "claims": [{"claimId": "au-ko-csit-2026"}]
+    },
+    {
+      "id": "au-ssit-2026",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/employing-and-sponsoring-someone/sponsoring-workers/nominating-a-position/salary-requirements",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "effectiveTo": "2027-06-30",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-home-affairs-schema-anchor",
+        "params": {
+          "pointer": "/content/2/block",
+          "anchor": "AUD146,576 for Nomination applications lodged on and between 1 July 2026 and 30 June 2027.",
+          "transform": "single-iso-amount-to-number",
+          "unit": "AUD/year"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD/year", "value": 146576},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-salary-thresholds-schema.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:c2286e9aa4ea767b5b3aefb4377f9b836fd6fcfff75b2a4dbc8f17a1e654de44",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/visas/employing-and-sponsoring-someone/sponsoring-workers/nominating-a-position/salary-requirements"
+      },
+      "claims": [{"claimId": "au-ko-ssit-2026"}]
+    },
+    {
+      "id": "au-no-tfn-whm-withholding",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://www.ato.gov.au/api/public/content/0-79a7cb05-b7c6-48c9-b75d-1d2fc5e56cda",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "If no TFN is provided you must withhold at 45% on total payments made.",
+          "transform": "no-tfn-whm-percent",
+          "unit": "percent"
+        }
+      },
+      "expected": {"type": "number", "unit": "percent", "value": 45},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-no-tfn-whm.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:472a9198ff2bc1017ce3a8b926cf52c3df22e81cf92725771b594777cb894700",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ato.gov.au/api/public/content/0-79a7cb05-b7c6-48c9-b75d-1d2fc5e56cda"
+      },
+      "livePolicy": {
+        "mode": "fixture-only",
+        "reason": "Owner NZ1: ATO Schedule 15 API blocks automated retrieval; retain exact reviewed official text and require a manual review every 30 days.",
+        "manualReviewDays": 30
+      },
+      "claims": [{"claimId": "au-ko-no-tfn-withholding"}]
+    },
+    {
+      "id": "au-whm-first-band-percent",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://www.ato.gov.au/tax-rates-and-codes/tax-rates-working-holiday-makers",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2020-07-01",
+      "reviewAfterDays": 45,
+      "livePolicy": {
+        "mode": "fixture-only",
+        "reason": "Owner NZ1: ATO shows the current 15% first band in a real browser, but bot protection blocks the bounded scheduled request; retain the exact reviewed table and require manual review every 30 days.",
+        "manualReviewDays": 30
+      },
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Working holiday maker tax rates 2025–26",
+          "headers": ["Taxable income", "Tax on this income"],
+          "result": "scalar",
+          "fields": [{
+            "key": "rate",
+            "rowLabels": ["0 – $45,000"],
+            "valueHeader": "Tax on this income",
+            "transform": "ato-first-tax-rate-percent",
+            "unit": "percent"
+          }]
+        }
+      },
+      "expected": {"type": "number", "unit": "percent", "value": 15},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-whm-tax-current.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:d7e1343e4e06d899e62b4ad2db1ec0af3b511835132b65cd928ae4377daa1549",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ato.gov.au/tax-rates-and-codes/tax-rates-working-holiday-makers"
+      },
+      "claims": [{"claimId": "au-ko-whm-tax-rate"}]
+    },
+    {
+      "id": "au-overstay-reentry-threshold",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/entering-and-leaving-australia/entering-australia/can-i-go-to-australia/re-entry-ban",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "you overstay your visa by more than 28 days",
+          "transform": "single-duration-days",
+          "unit": "days"
+        }
+      },
+      "expected": {"type": "number", "unit": "days", "value": 28},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-reentry-ban.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:2ab1de614bcd0245930ffce56ecf60af7c0eae6e800e2f29785a460e79888f6a",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/entering-and-leaving-australia/entering-australia/can-i-go-to-australia/re-entry-ban"
+      },
+      "claims": [{"claimId": "au-ko-overstay-threshold"}]
+    },
+    {
+      "id": "au-reentry-ban-maximum",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/entering-and-leaving-australia/entering-australia/can-i-go-to-australia/re-entry-ban",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "A re-entry ban means a person may not be granted further visas to return to Australia. This is also known as an exclusion period. This may last for up to 3 years although some people can be permanently excluded.",
+          "transform": "single-duration-years",
+          "unit": "years"
+        }
+      },
+      "expected": {"type": "number", "unit": "years", "value": 3},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-reentry-ban.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:2ab1de614bcd0245930ffce56ecf60af7c0eae6e800e2f29785a460e79888f6a",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/entering-and-leaving-australia/entering-australia/can-i-go-to-australia/re-entry-ban"
+      },
+      "claims": [{"claimId": "au-ko-reentry-ban-duration"}]
+    },
+    {
+      "id": "au-491-to-191-minimum-holding",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-regional-191/regional-provisional",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-home-affairs-schema-anchor",
+        "params": {
+          "pointer": "/applicant/eligibility/criteria/0/description",
+          "anchor": "You must hold an eligible visa when you apply. You must have held that visa for at least 3 years before you apply.",
+          "transform": "single-duration-years-to-months",
+          "unit": "months"
+        }
+      },
+      "expected": {"type": "number", "unit": "months", "value": 36},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-191-schema.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:56d8425aa1acc1cd3e40fa254607879bf45fb7cc586c348ffbd3667bf2a3e1ff",
+        "httpStatus": 200,
+        "finalUrl": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-regional-191/regional-provisional"
+      },
+      "claims": [{"claimId": "au-ko-491-pr-eligibility"}]
+    },
+    {
+      "id": "au-lito-serialization",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-115",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "effectiveTo": "2027-06-30",
+      "reviewAfterDays": 45,
+      "extractor": {
+        "mode": "ato-law-lito-serialization",
+        "params": {
+          "actTitle": "Income Tax Assessment Act 1997",
+          "section": "SECTION 61-115",
+          "sectionTitle": "Amount of the Low Income tax offset",
+          "tableTitle": "Amount of your tax offset"
+        }
+      },
+      "expected": {
+        "type": "string",
+        "unit": "AUD/rate",
+        "value": "700;37500;45000@0.05;66667@0.015"
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/au-lito.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:a52d45ddfaa4140cf253a3907f6df929483f020c9b557dba5f55f87f162131f1",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-115"
+      },
+      "claims": [{"claimId": "au-ko-tax-lito-2026"}]
     }
   ]
 }

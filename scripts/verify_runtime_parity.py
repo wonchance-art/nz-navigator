@@ -46,7 +46,7 @@ BOUNDARY_KINDS = frozenset({"rate", "insurance", "age", "duration"})
 PROVENANCE_FIELDS = frozenset({"sourcePath", "dates"})
 PROVENANCE_DATE_FIELDS = frozenset({"runtimePath", "claimField"})
 CLAIM_DATE_FIELDS = frozenset(
-    {"verifiedAt", "effectiveFrom", "effectiveTo"}
+    {"verifiedAt", "effectiveFrom", "effectiveTo", "currentAsOf"}
 )
 IDENTIFIER_RE = re.compile(r"[A-Za-z_$][A-Za-z0-9_$]*")
 NUMBER_RE = re.compile(
@@ -1106,7 +1106,7 @@ def verify_runtime_parity(
                         binding,
                         claim_field,
                         sorted(CLAIM_DATE_FIELDS),
-                        "Use verifiedAt, effectiveFrom, or effectiveTo.",
+                        "Use verifiedAt, effectiveFrom, effectiveTo, or currentAsOf.",
                         runtime_path=str(runtime_path_spec),
                     )
                     invalid_dates = True
