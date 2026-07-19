@@ -18,6 +18,22 @@
     "nz-ja-student-funds",
     "nz-ko-min-wage-2026",
     "nz-ja-min-wage-2026",
+    "nz-ko-pswv-fee",
+    "nz-ja-pswv-fee",
+    "nz-ko-pswv-processing",
+    "nz-ja-pswv-processing",
+    "nz-ko-aewv-fee",
+    "nz-ja-aewv-fee",
+    "nz-ko-aewv-processing",
+    "nz-ja-aewv-processing",
+    "nz-ko-residence-fee",
+    "nz-ja-residence-fee",
+    "nz-ko-skilled-residence-age",
+    "nz-ja-skilled-residence-age",
+    "nz-ko-partner-work-fee",
+    "nz-ja-partner-work-fee",
+    "nz-ko-partner-resident-fee",
+    "nz-ja-partner-resident-fee",
     "nz-ko-acc-rate-2026",
     "nz-ja-acc-rate-2026",
     "nz-ko-acc-cap-2026",
@@ -511,6 +527,182 @@
       "claims": [
         {"claimId": "nz-ko-min-wage-2026"},
         {"claimId": "nz-ja-min-wage-2026"}
+      ]
+    },
+    {
+      "id": "nz-post-study-work-visa-hero",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/visas/post-study-work-visa/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-labelled-values",
+        "params": {
+          "anchor": "Post Study Work Visa",
+          "result": "object",
+          "fields": [
+            {"key": "cost", "label": "Cost", "transform": "currency-to-number", "unit": "NZD"},
+            {"key": "processing", "label": "Processing time", "transform": "duration-weeks", "unit": "weeks"}
+          ]
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"cost": "NZD", "processing": "weeks"},
+        "value": {"cost": 1670, "processing": 3}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-post-study-work-visa.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:8f3a2b6134e2c744bc7e2a3e62863b69f42f7e45d31ca028606641355580c278",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/visas/post-study-work-visa/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-pswv-fee", "expectedPath": "/cost"},
+        {"claimId": "nz-ja-pswv-fee", "expectedPath": "/cost"},
+        {"claimId": "nz-ko-pswv-processing", "expectedPath": "/processing"},
+        {"claimId": "nz-ja-pswv-processing", "expectedPath": "/processing"}
+      ]
+    },
+    {
+      "id": "nz-accredited-employer-work-visa-hero",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/visas/accredited-employer-work-visa/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-labelled-values",
+        "params": {
+          "anchor": "Accredited Employer Work Visa",
+          "result": "object",
+          "fields": [
+            {"key": "cost", "label": "Cost", "transform": "currency-to-number", "unit": "NZD"},
+            {"key": "processing", "label": "Processing time", "transform": "duration-weeks", "unit": "weeks"}
+          ]
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"cost": "NZD", "processing": "weeks"},
+        "value": {"cost": 1540, "processing": 6.5}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-accredited-employer-work-visa.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:bc3c299972b9761b62918d07bba78d017a27d6a9ead3378912cfb3fd6f6e17cd",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/visas/accredited-employer-work-visa/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-aewv-fee", "expectedPath": "/cost"},
+        {"claimId": "nz-ja-aewv-fee", "expectedPath": "/cost"},
+        {"claimId": "nz-ko-aewv-processing", "expectedPath": "/processing"},
+        {"claimId": "nz-ja-aewv-processing", "expectedPath": "/processing"}
+      ]
+    },
+    {
+      "id": "nz-skilled-migrant-category-resident-visa-hero",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-labelled-values",
+        "params": {
+          "anchor": "Skilled Migrant Category Resident Visa",
+          "result": "object",
+          "fields": [
+            {"key": "cost", "label": "Cost", "transform": "currency-to-number", "unit": "NZD"},
+            {"key": "age", "label": "Age range", "transform": "integer", "unit": "years"}
+          ]
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"cost": "NZD", "age": "years"},
+        "value": {"cost": 6450, "age": 55}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-skilled-migrant-category-resident-visa.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:e454e2d56a013b011488ba1160dbce4d577b27c33178b20623f34f73b67e7fed",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-residence-fee", "expectedPath": "/cost"},
+        {"claimId": "nz-ja-residence-fee", "expectedPath": "/cost"},
+        {"claimId": "nz-ko-skilled-residence-age", "expectedPath": "/age"},
+        {"claimId": "nz-ja-skilled-residence-age", "expectedPath": "/age"}
+      ]
+    },
+    {
+      "id": "nz-partner-work-visa-hero",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/visas/partner-of-a-new-zealander-work-visa/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-labelled-values",
+        "params": {
+          "anchor": "Partner of a New Zealander Work Visa",
+          "result": "scalar",
+          "fields": [
+            {"key": "cost", "label": "Cost", "transform": "currency-to-number", "unit": "NZD"}
+          ]
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD", "value": 1630},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-partner-work-visa.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:ec722ee5a7c38652077091189f7a406e5c71224a575c23c9df4b0dd70ecc084e",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/visas/partner-of-a-new-zealander-work-visa/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-partner-work-fee"},
+        {"claimId": "nz-ja-partner-work-fee"}
+      ]
+    },
+    {
+      "id": "nz-partner-resident-visa-hero",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/visas/partner-of-a-new-zealander-resident-visa/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-labelled-values",
+        "params": {
+          "anchor": "Partner of a New Zealander Resident Visa",
+          "result": "scalar",
+          "fields": [
+            {"key": "cost", "label": "Cost", "transform": "currency-to-number", "unit": "NZD"}
+          ]
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD", "value": 5360},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-partner-resident-visa.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:e79b47065e6c31492ad9fd7b87fe78161a21def8c8fd7cc3220852b58dcfde75",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/visas/partner-of-a-new-zealander-resident-visa/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-partner-resident-fee"},
+        {"claimId": "nz-ja-partner-resident-fee"}
       ]
     },
     {
