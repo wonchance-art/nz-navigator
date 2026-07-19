@@ -198,3 +198,45 @@ jobs:
           else
             echo "data/claim-lineage.json not migrated yet; strict four-edition fixture passed."
           fi
+
+  employer-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      TZ: Asia/Seoul
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify employer registry and issue reducer boundaries
+        run: >-
+          python3 -m unittest
+          tests.test_verify_employers
+          tests.test_render_employer_issue
+          -v
+
+      - name: Verify deterministic employer fixture
+        run: >-
+          python3 scripts/verify_employers.py
+          tests/fixtures/employers.json
+          --today 2026-07-19
+          --dump-duplicates
+
+      - name: Verify production employer registry when present
+        shell: bash
+        run: |
+          if [[ -f data/employers.json ]]; then
+            python3 scripts/verify_employers.py \
+              data/employers.json \
+              --today "$(date +%F)" \
+              --dump-duplicates
+          else
+            echo "data/employers.json not migrated yet; strict fixture passed."
+          fi
