@@ -796,7 +796,7 @@
       "fixture": {
         "path": "data/attestation-fixtures/ca-t4032-on-2026.html",
         "mediaType": "text/html",
-        "sha256": "sha256:c29286249d8662c02105b7826b26c805b68108bd7592954d7deae0d1fb410bc7",
+        "sha256": "sha256:d237bf070b1e5fa379397e4453fed261fb7b88a0c22267856780708d30452891",
         "httpStatus": 200,
         "finalUrl": "https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4032-payroll-deductions-tables/t4032on-jan/t4032on-january-general-information.html"
       },
