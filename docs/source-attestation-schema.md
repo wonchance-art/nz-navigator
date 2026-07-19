@@ -555,6 +555,10 @@ trigger. It fetches each canonical request once, reduces the report to one
 exact-title issue, and creates, updates, reopens, closes, or no-ops
 idempotently. Duplicate exact-title issues fail closed. Changed, blocked,
 transient, and unsupported results render in distinct issue sections.
+The reducer accepts GitHub CLI/API issue states in either uppercase or
+lowercase (`OPEN`/`CLOSED` or `open`/`closed`) and rejects every other state,
+so a clean live report closes the actual GitHub issue instead of silently
+no-oping on representation casing.
 
 The issue body also contains one hidden, versioned marker:
 
