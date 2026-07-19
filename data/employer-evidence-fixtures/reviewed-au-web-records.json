@@ -1,0 +1,2023 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-19",
+  "records": [
+    {
+      "employerId": "au-costa-group-berries-4296f9c0",
+      "sourceUrl": "https://costagroup.com.au/careers/",
+      "sourceName": "Costa Group — berries",
+      "aliases": [
+        "Costa Group"
+      ],
+      "location": {
+        "label": "Corindi Beach",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2456",
+        "lat": -30.019,
+        "lng": 153.185,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://costagroup.com.au/careers/"
+    },
+    {
+      "employerId": "au-costa-group-citrus-fb8aa227",
+      "sourceUrl": "https://costagroup.com.au/careers/",
+      "sourceName": "Costa Group — citrus",
+      "aliases": [
+        "Costa Group"
+      ],
+      "location": {
+        "label": "Renmark",
+        "region": "SA",
+        "state": "SA",
+        "postcode": "5341",
+        "lat": -34.174,
+        "lng": 140.744,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://costagroup.com.au/careers/"
+    },
+    {
+      "employerId": "au-costa-group-berries-0cf8ef78",
+      "sourceUrl": "https://costagroup.com.au/careers/",
+      "sourceName": "Costa Group — berries",
+      "aliases": [
+        "Costa Group"
+      ],
+      "location": {
+        "label": "Devonport",
+        "region": "TAS",
+        "state": "TAS",
+        "postcode": "7310",
+        "lat": -41.178,
+        "lng": 146.351,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://costagroup.com.au/careers/"
+    },
+    {
+      "employerId": "au-costa-group-avocado-banana-b6f5ca98",
+      "sourceUrl": "https://costagroup.com.au/careers/",
+      "sourceName": "Costa Group — avocado/banana",
+      "aliases": [
+        "Costa Group"
+      ],
+      "location": {
+        "label": "Atherton Tablelands",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4883",
+        "lat": -17.267,
+        "lng": 145.476,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://costagroup.com.au/careers/"
+    },
+    {
+      "employerId": "au-costa-group-mushrooms-0c15b62a",
+      "sourceUrl": "https://costagroup.com.au/careers/",
+      "sourceName": "Costa Group — mushrooms",
+      "aliases": [
+        "Costa Group"
+      ],
+      "location": {
+        "label": "Monarto",
+        "region": "SA",
+        "state": "SA",
+        "postcode": "5254",
+        "lat": -35.05,
+        "lng": 139.13,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://costagroup.com.au/careers/"
+    },
+    {
+      "employerId": "au-perfection-fresh-glasshouse-22f3df47",
+      "sourceUrl": "https://www.perfection.com.au/perfection-fresh-jobs",
+      "sourceName": "Perfection Fresh — glasshouse",
+      "aliases": [
+        "Perfection Fresh"
+      ],
+      "location": {
+        "label": "Two Wells",
+        "region": "SA",
+        "state": "SA",
+        "postcode": "5501",
+        "lat": -34.594,
+        "lng": 138.514,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.perfection.com.au/perfection-fresh-jobs"
+    },
+    {
+      "employerId": "au-perfection-fresh-farm-packing-79893e0b",
+      "sourceUrl": "https://www.perfection.com.au/perfection-fresh-jobs",
+      "sourceName": "Perfection Fresh — farm/packing",
+      "aliases": [
+        "Perfection Fresh"
+      ],
+      "location": {
+        "label": "Bundaberg",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4670",
+        "lat": -24.866,
+        "lng": 152.349,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.perfection.com.au/perfection-fresh-jobs"
+    },
+    {
+      "employerId": "au-flavorite-glasshouse-ac3428df",
+      "sourceUrl": "https://www.flavorite.com.au/careers",
+      "sourceName": "Flavorite — glasshouse",
+      "aliases": [
+        "Flavorite"
+      ],
+      "location": {
+        "label": "Warragul",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3820",
+        "lat": -38.159,
+        "lng": 145.931,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.flavorite.com.au/careers"
+    },
+    {
+      "employerId": "au-flavorite-glasshouse-c0634baf",
+      "sourceUrl": "https://www.flavorite.com.au/careers",
+      "sourceName": "Flavorite — glasshouse",
+      "aliases": [
+        "Flavorite"
+      ],
+      "location": {
+        "label": "Tatura",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3616",
+        "lat": -36.44,
+        "lng": 145.229,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.flavorite.com.au/careers"
+    },
+    {
+      "employerId": "au-flavorite-glasshouse-4494d275",
+      "sourceUrl": "https://www.flavorite.com.au/careers",
+      "sourceName": "Flavorite — glasshouse",
+      "aliases": [
+        "Flavorite"
+      ],
+      "location": {
+        "label": "Katunga",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3640",
+        "lat": -35.997,
+        "lng": 145.46,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.flavorite.com.au/careers"
+    },
+    {
+      "employerId": "au-pinata-farms-pineapple-berries-93dd8c77",
+      "sourceUrl": "https://www.pinata.com.au/seasonal-opportunities",
+      "sourceName": "Piñata Farms — pineapple/berries",
+      "aliases": [
+        "Piñata Farms"
+      ],
+      "location": {
+        "label": "Wamuran",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4512",
+        "lat": -27.04,
+        "lng": 152.86,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.pinata.com.au/seasonal-opportunities"
+    },
+    {
+      "employerId": "au-pinata-farms-berries-4558ecdd",
+      "sourceUrl": "https://www.pinata.com.au/seasonal-opportunities",
+      "sourceName": "Piñata Farms — berries",
+      "aliases": [
+        "Piñata Farms"
+      ],
+      "location": {
+        "label": "Stanthorpe",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4380",
+        "lat": -28.655,
+        "lng": 151.934,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.pinata.com.au/seasonal-opportunities"
+    },
+    {
+      "employerId": "au-pinata-farms-pineapple-mango-fb293660",
+      "sourceUrl": "https://www.pinata.com.au/seasonal-opportunities",
+      "sourceName": "Piñata Farms — pineapple/mango",
+      "aliases": [
+        "Piñata Farms"
+      ],
+      "location": {
+        "label": "Mareeba",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4880",
+        "lat": -16.991,
+        "lng": 145.424,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.pinata.com.au/seasonal-opportunities"
+    },
+    {
+      "employerId": "au-pinata-farms-mango-4d2fb374",
+      "sourceUrl": "https://www.pinata.com.au/seasonal-opportunities",
+      "sourceName": "Piñata Farms — mango",
+      "aliases": [
+        "Piñata Farms"
+      ],
+      "location": {
+        "label": "Katherine / Mataranka",
+        "region": "NT",
+        "state": "NT",
+        "postcode": "0850",
+        "lat": -14.465,
+        "lng": 132.264,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.pinata.com.au/seasonal-opportunities"
+    },
+    {
+      "employerId": "au-pinata-farms-mango-bbb3b9e0",
+      "sourceUrl": "https://www.pinata.com.au/seasonal-opportunities",
+      "sourceName": "Piñata Farms — mango",
+      "aliases": [
+        "Piñata Farms"
+      ],
+      "location": {
+        "label": "Darwin region",
+        "region": "NT",
+        "state": "NT",
+        "postcode": "0822",
+        "lat": -12.463,
+        "lng": 130.846,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.pinata.com.au/seasonal-opportunities"
+    },
+    {
+      "employerId": "au-pinata-farms-berries-4a76bed9",
+      "sourceUrl": "https://www.pinata.com.au/seasonal-opportunities",
+      "sourceName": "Piñata Farms — berries",
+      "aliases": [
+        "Piñata Farms"
+      ],
+      "location": {
+        "label": "Orielton",
+        "region": "TAS",
+        "state": "TAS",
+        "postcode": "7172",
+        "lat": -42.737,
+        "lng": 147.532,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.pinata.com.au/seasonal-opportunities"
+    },
+    {
+      "employerId": "au-fresh-produce-group-34935729",
+      "sourceUrl": "https://fpg.com.au/work-with-us/",
+      "sourceName": "Fresh Produce Group",
+      "aliases": [],
+      "location": {
+        "label": "Griffith",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2680",
+        "lat": -34.288,
+        "lng": 146.05,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://fpg.com.au/work-with-us/"
+    },
+    {
+      "employerId": "au-fresh-produce-group-8201fe9f",
+      "sourceUrl": "https://fpg.com.au/work-with-us/",
+      "sourceName": "Fresh Produce Group",
+      "aliases": [],
+      "location": {
+        "label": "Mundubbera",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4626",
+        "lat": -25.59,
+        "lng": 151.296,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://fpg.com.au/work-with-us/"
+    },
+    {
+      "employerId": "au-fresh-produce-group-d2774b6c",
+      "sourceUrl": "https://fpg.com.au/work-with-us/",
+      "sourceName": "Fresh Produce Group",
+      "aliases": [],
+      "location": {
+        "label": "Lakeland",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4871",
+        "lat": -15.858,
+        "lng": 144.857,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://fpg.com.au/work-with-us/"
+    },
+    {
+      "employerId": "au-fresh-produce-group-1a2c29b9",
+      "sourceUrl": "https://fpg.com.au/work-with-us/",
+      "sourceName": "Fresh Produce Group",
+      "aliases": [],
+      "location": {
+        "label": "Katherine",
+        "region": "NT",
+        "state": "NT",
+        "postcode": "0850",
+        "lat": -14.465,
+        "lng": 132.264,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://fpg.com.au/work-with-us/"
+    },
+    {
+      "employerId": "au-select-harvests-almonds-100c1dd5",
+      "sourceUrl": "https://www.selectharvests.com.au/career-opportunities/",
+      "sourceName": "Select Harvests — almonds",
+      "aliases": [
+        "Select Harvests"
+      ],
+      "location": {
+        "label": "Robinvale",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3549",
+        "lat": -34.583,
+        "lng": 142.772,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.selectharvests.com.au/career-opportunities/"
+    },
+    {
+      "employerId": "au-select-harvests-almonds-673c1fc4",
+      "sourceUrl": "https://www.selectharvests.com.au/career-opportunities/",
+      "sourceName": "Select Harvests — almonds",
+      "aliases": [
+        "Select Harvests"
+      ],
+      "location": {
+        "label": "Lake Powell",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3597",
+        "lat": -35.352,
+        "lng": 143.541,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.selectharvests.com.au/career-opportunities/"
+    },
+    {
+      "employerId": "au-select-harvests-almonds-6f1ef8cd",
+      "sourceUrl": "https://www.selectharvests.com.au/career-opportunities/",
+      "sourceName": "Select Harvests — almonds",
+      "aliases": [
+        "Select Harvests"
+      ],
+      "location": {
+        "label": "Renmark district",
+        "region": "SA",
+        "state": "SA",
+        "postcode": "5341",
+        "lat": -34.174,
+        "lng": 140.744,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.selectharvests.com.au/career-opportunities/"
+    },
+    {
+      "employerId": "au-select-harvests-processing-213a76c2",
+      "sourceUrl": "https://www.selectharvests.com.au/career-opportunities/",
+      "sourceName": "Select Harvests — processing",
+      "aliases": [
+        "Select Harvests"
+      ],
+      "location": {
+        "label": "Carina West",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3496",
+        "lat": -35.214,
+        "lng": 141.087,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.selectharvests.com.au/career-opportunities/"
+    },
+    {
+      "employerId": "au-montague-farms-apples-80bfbf51",
+      "sourceUrl": "https://freshproduce.org.au/about/",
+      "sourceName": "Montague Farms — apples",
+      "aliases": [
+        "Montague Farms"
+      ],
+      "location": {
+        "label": "Batlow",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2730",
+        "lat": -35.519,
+        "lng": 148.147,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://montaguefarms.com.au/careers/"
+    },
+    {
+      "employerId": "au-montague-farms-apples-75ed9018",
+      "sourceUrl": "https://freshproduce.org.au/about/",
+      "sourceName": "Montague Farms — apples",
+      "aliases": [
+        "Montague Farms"
+      ],
+      "location": {
+        "label": "Legana",
+        "region": "TAS",
+        "state": "TAS",
+        "postcode": "7277",
+        "lat": -41.365,
+        "lng": 147.045,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://montaguefarms.com.au/careers/"
+    },
+    {
+      "employerId": "au-montague-farms-packing-6f0abdf8",
+      "sourceUrl": "https://freshproduce.org.au/about/",
+      "sourceName": "Montague Farms — packing",
+      "aliases": [
+        "Montague Farms"
+      ],
+      "location": {
+        "label": "Mildura",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3500",
+        "lat": -34.188,
+        "lng": 142.159,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://montaguefarms.com.au/careers/"
+    },
+    {
+      "employerId": "au-rugby-farming-group-c79fd209",
+      "sourceUrl": "https://freshproduce.org.au/about/",
+      "sourceName": "Rugby Farming Group",
+      "aliases": [
+        "Rugby Farm"
+      ],
+      "location": {
+        "label": "Gatton",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4343",
+        "lat": -27.558,
+        "lng": 152.277,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://rugbyfarm.com.au/"
+    },
+    {
+      "employerId": "au-rugby-farming-group-51b87eb1",
+      "sourceUrl": "https://freshproduce.org.au/about/",
+      "sourceName": "Rugby Farming Group",
+      "aliases": [
+        "Rugby Farm"
+      ],
+      "location": {
+        "label": "Bowen",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4805",
+        "lat": -20.013,
+        "lng": 148.247,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://rugbyfarm.com.au/"
+    },
+    {
+      "employerId": "au-mackays-bananas-854f6ada",
+      "sourceUrl": "https://freshproduce.org.au/about/",
+      "sourceName": "Mackays Bananas",
+      "aliases": [
+        "Mackays Marketing"
+      ],
+      "location": {
+        "label": "Tully",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4854",
+        "lat": -17.932,
+        "lng": 145.923,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.mackays.com.au/"
+    },
+    {
+      "employerId": "au-fresh-select-92d67544",
+      "sourceUrl": "https://freshproduce.org.au/about/",
+      "sourceName": "Fresh Select",
+      "aliases": [],
+      "location": {
+        "label": "Werribee South",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3030",
+        "lat": -37.947,
+        "lng": 144.692,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://freshselect.com.au/"
+    },
+    {
+      "employerId": "au-driscoll-s-australia-berries-faaf7b8c",
+      "sourceUrl": "https://freshproduce.org.au/about/",
+      "sourceName": "Driscoll's Australia — berries",
+      "aliases": [
+        "Driscoll's"
+      ],
+      "location": {
+        "label": "Coffs Harbour district",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2450",
+        "lat": -30.297,
+        "lng": 153.114,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.driscolls.com.au/"
+    },
+    {
+      "employerId": "au-driscoll-s-australia-berries-955130f1",
+      "sourceUrl": "https://freshproduce.org.au/about/",
+      "sourceName": "Driscoll's Australia — berries",
+      "aliases": [
+        "Driscoll's"
+      ],
+      "location": {
+        "label": "Devonport district",
+        "region": "TAS",
+        "state": "TAS",
+        "postcode": "7310",
+        "lat": -41.178,
+        "lng": 146.351,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.driscolls.com.au/"
+    },
+    {
+      "employerId": "au-premier-fresh-australia-5b158de1",
+      "sourceUrl": "https://freshproduce.org.au/about/",
+      "sourceName": "Premier Fresh Australia",
+      "aliases": [],
+      "location": {
+        "label": "Mildura",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3500",
+        "lat": -34.188,
+        "lng": 142.159,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://premierfresh.com.au/"
+    },
+    {
+      "employerId": "au-australian-produce-partners-1e37e40b",
+      "sourceUrl": "https://freshproduce.org.au/about/",
+      "sourceName": "Australian Produce Partners",
+      "aliases": [],
+      "location": {
+        "label": "Bundaberg district",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4670",
+        "lat": -24.866,
+        "lng": 152.349,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19"
+    },
+    {
+      "employerId": "au-austchilli-e5fb37fd",
+      "sourceUrl": "https://austchilli.com.au/",
+      "sourceName": "Austchilli",
+      "aliases": [],
+      "location": {
+        "label": "Bundaberg",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4670",
+        "lat": -24.866,
+        "lng": 152.349,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://austchilli.com.au/"
+    },
+    {
+      "employerId": "au-greensill-farming-group-195affd3",
+      "sourceUrl": "https://greensillfarming.com.au/",
+      "sourceName": "Greensill Farming Group",
+      "aliases": [],
+      "location": {
+        "label": "Bundaberg",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4670",
+        "lat": -24.866,
+        "lng": 152.349,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://greensillfarming.com.au/"
+    },
+    {
+      "employerId": "au-macadamias-australia-d6c4c8c9",
+      "sourceUrl": "https://macadamiasaustralia.com/",
+      "sourceName": "Macadamias Australia",
+      "aliases": [],
+      "location": {
+        "label": "Bundaberg",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4670",
+        "lat": -24.866,
+        "lng": 152.349,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://macadamiasaustralia.com/"
+    },
+    {
+      "employerId": "au-sweet-potatoes-australia-a6d631c2",
+      "sourceUrl": "https://sweetpotatoesaustralia.com.au/",
+      "sourceName": "Sweet Potatoes Australia",
+      "aliases": [],
+      "location": {
+        "label": "Bundaberg",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4670",
+        "lat": -24.866,
+        "lng": 152.349,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://sweetpotatoesaustralia.com.au/"
+    },
+    {
+      "employerId": "au-kalfresh-vegetables-37c30c91",
+      "sourceUrl": "https://kalfresh.com.au/",
+      "sourceName": "Kalfresh Vegetables",
+      "aliases": [],
+      "location": {
+        "label": "Kalbar",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4309",
+        "lat": -27.941,
+        "lng": 152.623,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://kalfresh.com.au/"
+    },
+    {
+      "employerId": "au-mulgowie-farming-company-d48b3e13",
+      "sourceUrl": "https://mulgowie.com.au/",
+      "sourceName": "Mulgowie Farming Company",
+      "aliases": [],
+      "location": {
+        "label": "Mulgowie",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4341",
+        "lat": -27.734,
+        "lng": 152.37,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://mulgowie.com.au/"
+    },
+    {
+      "employerId": "au-windolf-farms-6a130eb9",
+      "sourceUrl": "https://www.qrida.qld.gov.au/news/lockyer-valley-horticulture-producer-combats-food-waste-help-red-grant",
+      "sourceName": "Windolf Farms",
+      "aliases": [],
+      "location": {
+        "label": "Gatton district",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4343",
+        "lat": -27.558,
+        "lng": 152.277,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19"
+    },
+    {
+      "employerId": "au-howe-farming-921c6ef3",
+      "sourceUrl": "https://www.howefarms.com/contact-us-2/",
+      "sourceName": "Howe Farming",
+      "aliases": [],
+      "location": {
+        "label": "Walkamin / Mareeba",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4872",
+        "lat": -17.129,
+        "lng": 145.428,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.howefarms.com/contact-us-2/"
+    },
+    {
+      "employerId": "au-skybury-farms-3c906f30",
+      "sourceUrl": "https://www.skybury.com.au/",
+      "sourceName": "Skybury Farms",
+      "aliases": [],
+      "location": {
+        "label": "Mareeba",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4880",
+        "lat": -16.991,
+        "lng": 145.424,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.skybury.com.au/"
+    },
+    {
+      "employerId": "au-rocky-ponds-produce-c579bd06",
+      "sourceUrl": "https://abr.business.gov.au/Search/ResultsActive?SearchText=rocky+ponds+produce",
+      "sourceName": "Rocky Ponds Produce",
+      "aliases": [],
+      "location": {
+        "label": "Bowen",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4805",
+        "lat": -20.013,
+        "lng": 148.247,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://au.seek.com/rocky-ponds-jobs"
+    },
+    {
+      "employerId": "au-marto-farms-6a5cef33",
+      "sourceUrl": "https://ausveg.com.au/knowledge-hub/2024-australia-japan-horticulture-showcase/",
+      "sourceName": "Marto Farms",
+      "aliases": [],
+      "location": {
+        "label": "Bundaberg region",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4670",
+        "lat": -24.866,
+        "lng": 152.348,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19"
+    },
+    {
+      "employerId": "au-rombola-family-farms-e85507e1",
+      "sourceUrl": "https://abr.business.gov.au/ABN/View?id=94605093294",
+      "sourceName": "Rombola Family Farms",
+      "aliases": [],
+      "location": {
+        "label": "Griffith",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2680",
+        "lat": -34.288,
+        "lng": 146.05,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://employmenthero.com/jobs/organisations/rombola-family-farms/"
+    },
+    {
+      "employerId": "au-casella-family-brands-ca97bc5d",
+      "sourceUrl": "https://casellafamilybrands.com/careers/",
+      "sourceName": "Casella Family Brands",
+      "aliases": [],
+      "location": {
+        "label": "Yenda",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2681",
+        "lat": -34.245,
+        "lng": 146.202,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://casellafamilybrands.com/careers/"
+    },
+    {
+      "employerId": "au-de-bortoli-wines-0813803a",
+      "sourceUrl": "https://www.debortoli.com.au/careers",
+      "sourceName": "De Bortoli Wines",
+      "aliases": [],
+      "location": {
+        "label": "Bilbul",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2680",
+        "lat": -34.273,
+        "lng": 146.143,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.debortoli.com.au/careers"
+    },
+    {
+      "employerId": "au-baiada-poultry-6a0fe7bc",
+      "sourceUrl": "https://www.baiada.com.au/careers/",
+      "sourceName": "Baiada Poultry",
+      "aliases": [],
+      "location": {
+        "label": "Hanwood / Griffith",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2680",
+        "lat": -34.33,
+        "lng": 146.04,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.baiada.com.au/careers/"
+    },
+    {
+      "employerId": "au-sunrice-911137c1",
+      "sourceUrl": "https://www.sunrice.com.au/careers/",
+      "sourceName": "SunRice",
+      "aliases": [],
+      "location": {
+        "label": "Leeton",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2705",
+        "lat": -34.552,
+        "lng": 146.405,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.sunrice.com.au/careers/"
+    },
+    {
+      "employerId": "au-spc-7bbfdd54",
+      "sourceUrl": "https://spc.com.au/work-with-us/",
+      "sourceName": "SPC",
+      "aliases": [],
+      "location": {
+        "label": "Shepparton",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3630",
+        "lat": -36.383,
+        "lng": 145.399,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://spc.com.au/work-with-us/"
+    },
+    {
+      "employerId": "au-geoffrey-thompson-holdings-46e84151",
+      "sourceUrl": "https://redlandfruit.com.au/our-farms/",
+      "sourceName": "Redland Premium Fruit — Shepparton",
+      "aliases": [
+        "Redland Premium Fruit"
+      ],
+      "location": {
+        "label": "Shepparton",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3630",
+        "lat": -36.383,
+        "lng": 145.399,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://redlandfruit.com.au/job-application/"
+    },
+    {
+      "employerId": "au-ofi-australia-almonds-27d23dd1",
+      "sourceUrl": "https://careers.ofi.com/",
+      "sourceName": "ofi Australia — almonds",
+      "aliases": [
+        "ofi Australia"
+      ],
+      "location": {
+        "label": "Carwarp",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3494",
+        "lat": -34.46,
+        "lng": 142.2,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://careers.ofi.com/"
+    },
+    {
+      "employerId": "au-mitolo-family-farms-ae8152e0",
+      "sourceUrl": "https://www.mitolofamilyfarms.com.au/careers/",
+      "sourceName": "Mitolo Family Farms",
+      "aliases": [],
+      "location": {
+        "label": "Virginia",
+        "region": "SA",
+        "state": "SA",
+        "postcode": "5120",
+        "lat": -34.666,
+        "lng": 138.56,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.mitolofamilyfarms.com.au/careers/"
+    },
+    {
+      "employerId": "au-mitolo-family-farms-e22e60d8",
+      "sourceUrl": "https://www.mitolofamilyfarms.com.au/careers/",
+      "sourceName": "Mitolo Family Farms",
+      "aliases": [],
+      "location": {
+        "label": "Waikerie",
+        "region": "SA",
+        "state": "SA",
+        "postcode": "5330",
+        "lat": -34.18,
+        "lng": 139.986,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.mitolofamilyfarms.com.au/careers/"
+    },
+    {
+      "employerId": "au-almondco-australia-ccc196df",
+      "sourceUrl": "https://www.almondco.com.au/",
+      "sourceName": "Almondco Australia",
+      "aliases": [],
+      "location": {
+        "label": "Renmark",
+        "region": "SA",
+        "state": "SA",
+        "postcode": "5341",
+        "lat": -34.174,
+        "lng": 140.744,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.almondco.com.au/"
+    },
+    {
+      "employerId": "au-accolade-wines-a9fe2fec",
+      "sourceUrl": "https://careers.vinarchy.com/",
+      "sourceName": "Vinarchy — Berri Estates",
+      "aliases": [
+        "Vinarchy"
+      ],
+      "location": {
+        "label": "Berri",
+        "region": "SA",
+        "state": "SA",
+        "postcode": "5343",
+        "lat": -34.285,
+        "lng": 140.6,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://careers.vinarchy.com/"
+    },
+    {
+      "employerId": "au-treasury-wine-estates-78a6d0b3",
+      "sourceUrl": "https://www.tweglobal.com/life-at-twe",
+      "sourceName": "Treasury Wine Estates",
+      "aliases": [],
+      "location": {
+        "label": "Barossa Valley",
+        "region": "SA",
+        "state": "SA",
+        "postcode": "5352",
+        "lat": -34.54,
+        "lng": 138.96,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.tweglobal.com/life-at-twe"
+    },
+    {
+      "employerId": "au-thomas-foods-international-7481e38c",
+      "sourceUrl": "https://thomasfoods.com/careers/",
+      "sourceName": "Thomas Foods International",
+      "aliases": [],
+      "location": {
+        "label": "Murray Bridge",
+        "region": "SA",
+        "state": "SA",
+        "postcode": "5253",
+        "lat": -35.119,
+        "lng": 139.273,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://thomasfoods.com/careers/"
+    },
+    {
+      "employerId": "au-newton-orchards-c43d793f",
+      "sourceUrl": "https://www.newtonorchards.com.au/",
+      "sourceName": "Newton Orchards",
+      "aliases": [],
+      "location": {
+        "label": "Manjimup",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6258",
+        "lat": -34.241,
+        "lng": 116.146,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.newtonorchards.com.au/"
+    },
+    {
+      "employerId": "au-harvey-beef-7a1ea632",
+      "sourceUrl": "https://www.harveybeef.com.au/careers/",
+      "sourceName": "Harvey Beef",
+      "aliases": [],
+      "location": {
+        "label": "Harvey",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6220",
+        "lat": -33.078,
+        "lng": 115.899,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.harveybeef.com.au/careers/"
+    },
+    {
+      "employerId": "au-harvest-road-group-5eb2ee2b",
+      "sourceUrl": "https://www.harvestroad.com/work-with-us/career-opportunities",
+      "sourceName": "Harvest Road Group",
+      "aliases": [],
+      "location": {
+        "label": "Harvey / Koojan",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6220",
+        "lat": -33.078,
+        "lng": 115.899,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.harvestroad.com/work-with-us/career-opportunities"
+    },
+    {
+      "employerId": "au-kimberley-agricultural-investment-ba1118ee",
+      "sourceUrl": "https://www.kai-australia.com.au/",
+      "sourceName": "Kimberley Agricultural Investment",
+      "aliases": [],
+      "location": {
+        "label": "Kununurra",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6743",
+        "lat": -15.778,
+        "lng": 128.742,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.kai-australia.com.au/"
+    },
+    {
+      "employerId": "au-manbulloo-mangoes-fa490396",
+      "sourceUrl": "https://www.manbulloo.com/",
+      "sourceName": "Manbulloo Mangoes",
+      "aliases": [],
+      "location": {
+        "label": "Katherine",
+        "region": "NT",
+        "state": "NT",
+        "postcode": "0850",
+        "lat": -14.465,
+        "lng": 132.264,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.manbulloo.com/"
+    },
+    {
+      "employerId": "au-tou-s-garden-5f375828",
+      "sourceUrl": "https://tousgarden.com.au/working-conditions/",
+      "sourceName": "Tou's Garden",
+      "aliases": [],
+      "location": {
+        "label": "395 Acacia Gap Road, Manton",
+        "region": "NT",
+        "state": "NT",
+        "postcode": "0837",
+        "lat": -12.69,
+        "lng": 131.08,
+        "precision": "town",
+        "address": "395 Acacia Gap Road, Manton NT 0837"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://tousgarden.com.au/jobapplication/"
+    },
+    {
+      "employerId": "au-reid-fruits-8c722d3d",
+      "sourceUrl": "https://reidfruits.com/employment/",
+      "sourceName": "Reid Fruits",
+      "aliases": [],
+      "location": {
+        "label": "Huonville",
+        "region": "TAS",
+        "state": "TAS",
+        "postcode": "7109",
+        "lat": -43.03,
+        "lng": 147.049,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://reidfruits.com/employment/"
+    },
+    {
+      "employerId": "au-hansen-orchards-487405c9",
+      "sourceUrl": "https://www.hansenorchards.au/work-with-us",
+      "sourceName": "Hansen Orchards",
+      "aliases": [],
+      "location": {
+        "label": "Grove",
+        "region": "TAS",
+        "state": "TAS",
+        "postcode": "7109",
+        "lat": -42.98,
+        "lng": 147.08,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.hansenorchards.au/work-with-us"
+    },
+    {
+      "employerId": "au-harvest-moon-f50e61e4",
+      "sourceUrl": "https://harvestmoon.com.au/",
+      "sourceName": "Harvest Moon",
+      "aliases": [],
+      "location": {
+        "label": "Forth",
+        "region": "TAS",
+        "state": "TAS",
+        "postcode": "7310",
+        "lat": -41.19,
+        "lng": 146.25,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://harvestmoon.com.au/"
+    },
+    {
+      "employerId": "au-simplot-australia-6175c439",
+      "sourceUrl": "https://simplot.com.au/careers",
+      "sourceName": "Simplot Australia",
+      "aliases": [],
+      "location": {
+        "label": "Ulverstone",
+        "region": "TAS",
+        "state": "TAS",
+        "postcode": "7315",
+        "lat": -41.158,
+        "lng": 146.17,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://simplot.com.au/careers"
+    },
+    {
+      "employerId": "au-mccain-foods-8603962f",
+      "sourceUrl": "https://careers.mccain.com/",
+      "sourceName": "McCain Foods",
+      "aliases": [],
+      "location": {
+        "label": "Smithton",
+        "region": "TAS",
+        "state": "TAS",
+        "postcode": "7330",
+        "lat": -40.842,
+        "lng": 145.125,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://careers.mccain.com/"
+    },
+    {
+      "employerId": "au-houston-s-farm-e30e9309",
+      "sourceUrl": "https://houstonsfarm.com.au/",
+      "sourceName": "Houston's Farm",
+      "aliases": [],
+      "location": {
+        "label": "Cambridge",
+        "region": "TAS",
+        "state": "TAS",
+        "postcode": "7170",
+        "lat": -42.834,
+        "lng": 147.438,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://houstonsfarm.com.au/"
+    },
+    {
+      "employerId": "au-jbs-australia-a6ba6d3c",
+      "sourceUrl": "https://careers.jbssa.com.au/",
+      "sourceName": "JBS Australia",
+      "aliases": [],
+      "location": {
+        "label": "Longford",
+        "region": "TAS",
+        "state": "TAS",
+        "postcode": "7301",
+        "lat": -41.595,
+        "lng": 147.12,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://careers.jbssa.com.au/"
+    },
+    {
+      "employerId": "au-teys-australia-9e60d8ec",
+      "sourceUrl": "https://au.teysgroup.com/people/current-vacancies/",
+      "sourceName": "Teys Australia",
+      "aliases": [],
+      "location": {
+        "label": "Rockhampton",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4700",
+        "lat": -23.378,
+        "lng": 150.513,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://au.teysgroup.com/people/current-vacancies/"
+    },
+    {
+      "employerId": "au-teys-australia-b5de6d01",
+      "sourceUrl": "https://au.teysgroup.com/people/current-vacancies/",
+      "sourceName": "Teys Australia",
+      "aliases": [],
+      "location": {
+        "label": "Wagga Wagga",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2650",
+        "lat": -35.109,
+        "lng": 147.37,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://au.teysgroup.com/people/current-vacancies/"
+    },
+    {
+      "employerId": "au-teys-australia-7cdc53b9",
+      "sourceUrl": "https://au.teysgroup.com/people/current-vacancies/",
+      "sourceName": "Teys Australia",
+      "aliases": [],
+      "location": {
+        "label": "Naracoorte",
+        "region": "SA",
+        "state": "SA",
+        "postcode": "5271",
+        "lat": -36.957,
+        "lng": 140.744,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://au.teysgroup.com/people/current-vacancies/"
+    },
+    {
+      "employerId": "au-inghams-bd9cd108",
+      "sourceUrl": "https://inghams.com.au/working-with-us/",
+      "sourceName": "Inghams",
+      "aliases": [],
+      "location": {
+        "label": "Lockyer Valley",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4343",
+        "lat": -27.558,
+        "lng": 152.277,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://inghams.com.au/working-with-us/"
+    },
+    {
+      "employerId": "au-bhp-wa-iron-ore-de706c70",
+      "sourceUrl": "https://careers.bhp.com/go/All-Jobs/8531900/?location=Australia",
+      "sourceName": "BHP — WA Iron Ore",
+      "aliases": [
+        "BHP"
+      ],
+      "location": {
+        "label": "Newman",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6753",
+        "lat": -23.356,
+        "lng": 119.736,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://careers.bhp.com/go/All-Jobs/8531900/?location=Australia"
+    },
+    {
+      "employerId": "au-bhp-port-operations-4ece7323",
+      "sourceUrl": "https://careers.bhp.com/go/All-Jobs/8531900/?location=Australia",
+      "sourceName": "BHP — port operations",
+      "aliases": [
+        "BHP"
+      ],
+      "location": {
+        "label": "Port Hedland",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6721",
+        "lat": -20.31,
+        "lng": 118.601,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://careers.bhp.com/go/All-Jobs/8531900/?location=Australia"
+    },
+    {
+      "employerId": "au-bhp-olympic-dam-486ee4ff",
+      "sourceUrl": "https://careers.bhp.com/go/All-Jobs/8531900/?location=Australia",
+      "sourceName": "BHP — Olympic Dam",
+      "aliases": [
+        "BHP"
+      ],
+      "location": {
+        "label": "Olympic Dam",
+        "region": "SA",
+        "state": "SA",
+        "postcode": "5725",
+        "lat": -30.443,
+        "lng": 136.886,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://careers.bhp.com/go/All-Jobs/8531900/?location=Australia"
+    },
+    {
+      "employerId": "au-rio-tinto-pilbara-8d36eaea",
+      "sourceUrl": "https://www.riotinto.com/careers",
+      "sourceName": "Rio Tinto — Pilbara",
+      "aliases": [
+        "Rio Tinto"
+      ],
+      "location": {
+        "label": "Tom Price",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6751",
+        "lat": -22.694,
+        "lng": 117.793,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.riotinto.com/careers"
+    },
+    {
+      "employerId": "au-rio-tinto-bauxite-ea92516c",
+      "sourceUrl": "https://www.riotinto.com/careers",
+      "sourceName": "Rio Tinto — bauxite",
+      "aliases": [
+        "Rio Tinto"
+      ],
+      "location": {
+        "label": "Weipa",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4874",
+        "lat": -12.677,
+        "lng": 141.879,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.riotinto.com/careers"
+    },
+    {
+      "employerId": "au-fortescue-pilbara-4c7871ec",
+      "sourceUrl": "https://fortescue.com/careers",
+      "sourceName": "Fortescue — Pilbara",
+      "aliases": [
+        "Fortescue"
+      ],
+      "location": {
+        "label": "Cloudbreak / Pilbara",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6760",
+        "lat": -22.33,
+        "lng": 119.42,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://fortescue.com/careers"
+    },
+    {
+      "employerId": "au-roy-hill-hancock-iron-ore-c4165b7d",
+      "sourceUrl": "https://careers.hancockironore.com.au/go/",
+      "sourceName": "Roy Hill / Hancock Iron Ore",
+      "aliases": [],
+      "location": {
+        "label": "Newman / Pilbara",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6753",
+        "lat": -23.356,
+        "lng": 119.736,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://careers.hancockironore.com.au/go/"
+    },
+    {
+      "employerId": "au-mineral-resources-b51271e9",
+      "sourceUrl": "https://careers.mineralresources.com.au/",
+      "sourceName": "Mineral Resources",
+      "aliases": [],
+      "location": {
+        "label": "Goldfields / Pilbara",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6430",
+        "lat": -30.748,
+        "lng": 121.466,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://careers.mineralresources.com.au/"
+    },
+    {
+      "employerId": "au-newmont-tanami-8d459d80",
+      "sourceUrl": "https://jobs.newmont.com/",
+      "sourceName": "Newmont — Tanami",
+      "aliases": [
+        "Newmont"
+      ],
+      "location": {
+        "label": "Tanami",
+        "region": "NT",
+        "state": "NT",
+        "postcode": "0852",
+        "lat": -20.57,
+        "lng": 129.71,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://jobs.newmont.com/"
+    },
+    {
+      "employerId": "au-newmont-cadia-cb590378",
+      "sourceUrl": "https://jobs.newmont.com/",
+      "sourceName": "Newmont — Cadia",
+      "aliases": [
+        "Newmont"
+      ],
+      "location": {
+        "label": "Orange district",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2800",
+        "lat": -33.283,
+        "lng": 149.1,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://jobs.newmont.com/"
+    },
+    {
+      "employerId": "au-northern-star-resources-12edde11",
+      "sourceUrl": "https://www.nsrltd.com/join-our-team/current-opportunities/",
+      "sourceName": "Northern Star Resources",
+      "aliases": [],
+      "location": {
+        "label": "Kalgoorlie",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6430",
+        "lat": -30.748,
+        "lng": 121.466,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.nsrltd.com/join-our-team/current-opportunities/"
+    },
+    {
+      "employerId": "au-evolution-mining-cowal-966f9642",
+      "sourceUrl": "https://careers.evolutionmining.com.au/",
+      "sourceName": "Evolution Mining — Cowal",
+      "aliases": [
+        "Evolution Mining"
+      ],
+      "location": {
+        "label": "West Wyalong",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2671",
+        "lat": -33.923,
+        "lng": 147.204,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://careers.evolutionmining.com.au/"
+    },
+    {
+      "employerId": "au-glencore-mount-isa-d7ad59b4",
+      "sourceUrl": "https://www.glencore.com/careers",
+      "sourceName": "Glencore — Mount Isa",
+      "aliases": [
+        "Glencore"
+      ],
+      "location": {
+        "label": "Mount Isa",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4825",
+        "lat": -20.725,
+        "lng": 139.493,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.glencore.com/careers"
+    },
+    {
+      "employerId": "au-south32-cannington-2164d42f",
+      "sourceUrl": "https://www.south32.net/careers",
+      "sourceName": "South32 — Cannington",
+      "aliases": [
+        "South32"
+      ],
+      "location": {
+        "label": "McKinlay district",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4823",
+        "lat": -21.274,
+        "lng": 141.29,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://careers.south32.net/?locale=en_US&wpmobileexternal=true"
+    },
+    {
+      "employerId": "au-south32-gemco-1b3247d6",
+      "sourceUrl": "https://www.south32.net/careers",
+      "sourceName": "South32 — GEMCO",
+      "aliases": [
+        "South32"
+      ],
+      "location": {
+        "label": "Groote Eylandt",
+        "region": "NT",
+        "state": "NT",
+        "postcode": "0885",
+        "lat": -13.86,
+        "lng": 136.42,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://careers.south32.net/?locale=en_US&wpmobileexternal=true"
+    },
+    {
+      "employerId": "au-thiess-37894727",
+      "sourceUrl": "https://thiess.com/careers",
+      "sourceName": "Thiess",
+      "aliases": [],
+      "location": {
+        "label": "Mackay / Bowen Basin",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4740",
+        "lat": -21.142,
+        "lng": 149.186,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://thiess.com/careers"
+    },
+    {
+      "employerId": "au-cpb-contractors-66bac831",
+      "sourceUrl": "https://www.cpbcon.com.au/join-us",
+      "sourceName": "CPB Contractors",
+      "aliases": [],
+      "location": {
+        "label": "Pilbara projects",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6721",
+        "lat": -20.31,
+        "lng": 118.601,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.cpbcon.com.au/join-us"
+    },
+    {
+      "employerId": "au-downer-58e2fb4d",
+      "sourceUrl": "https://downergroup.com/life-at-downer/",
+      "sourceName": "Downer",
+      "aliases": [],
+      "location": {
+        "label": "regional projects",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2830",
+        "lat": -32.257,
+        "lng": 148.601,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://downergroup.com/life-at-downer/"
+    },
+    {
+      "employerId": "au-ugl-a3537a0b",
+      "sourceUrl": "https://www.ugllimited.com/work-with-us",
+      "sourceName": "UGL",
+      "aliases": [],
+      "location": {
+        "label": "Gladstone projects",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4680",
+        "lat": -23.842,
+        "lng": 151.255,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.ugllimited.com/work-with-us"
+    },
+    {
+      "employerId": "au-monadelphous-5b5d3fc9",
+      "sourceUrl": "https://news.monadelphous.com.au/jobs-with-us",
+      "sourceName": "Monadelphous",
+      "aliases": [],
+      "location": {
+        "label": "Karratha",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6714",
+        "lat": -20.736,
+        "lng": 116.846,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://news.monadelphous.com.au/jobs-with-us"
+    },
+    {
+      "employerId": "au-nrw-holdings-f4fed357",
+      "sourceUrl": "https://nrw.com.au/people-careers/",
+      "sourceName": "NRW Holdings",
+      "aliases": [],
+      "location": {
+        "label": "Goldfields / Pilbara",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6430",
+        "lat": -30.748,
+        "lng": 121.466,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://nrw.com.au/people-careers/"
+    },
+    {
+      "employerId": "au-fulton-hogan-c0eeaa08",
+      "sourceUrl": "https://www.fultonhogan.com/join-our-team/",
+      "sourceName": "Fulton Hogan",
+      "aliases": [],
+      "location": {
+        "label": "regional projects",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3630",
+        "lat": -36.383,
+        "lng": 145.399,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.fultonhogan.com/join-our-team/"
+    },
+    {
+      "employerId": "au-workforce-australia-harvest-jobs-4807f587",
+      "sourceUrl": "https://www.workforceaustralia.gov.au/individuals/jobs/search",
+      "sourceName": "Workforce Australia Harvest jobs",
+      "aliases": [],
+      "location": {
+        "label": "전국 검색",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2830",
+        "lat": -32.257,
+        "lng": 148.601,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.workforceaustralia.gov.au/individuals/jobs/search"
+    },
+    {
+      "employerId": "au-madec-harvest-trail-sunraysia-723e55bf",
+      "sourceUrl": "https://www.dewr.gov.au/employment-services-data/resources/harvest-trail-services-evaluation-report",
+      "sourceName": "MADEC Harvest Trail — Sunraysia",
+      "aliases": [
+        "MADEC Harvest Trail"
+      ],
+      "location": {
+        "label": "Mildura",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3500",
+        "lat": -34.188,
+        "lng": 142.159,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://madec.edu.au/"
+    },
+    {
+      "employerId": "au-madec-harvest-trail-goulburn-valley-01de321e",
+      "sourceUrl": "https://www.dewr.gov.au/employment-services-data/resources/harvest-trail-services-evaluation-report",
+      "sourceName": "MADEC Harvest Trail — Goulburn Valley",
+      "aliases": [
+        "MADEC Harvest Trail"
+      ],
+      "location": {
+        "label": "Shepparton",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3630",
+        "lat": -36.383,
+        "lng": 145.399,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://madec.edu.au/"
+    },
+    {
+      "employerId": "au-madec-harvest-trail-mid-murray-e1693b60",
+      "sourceUrl": "https://www.dewr.gov.au/employment-services-data/resources/harvest-trail-services-evaluation-report",
+      "sourceName": "MADEC Harvest Trail — Mid Murray",
+      "aliases": [
+        "MADEC Harvest Trail"
+      ],
+      "location": {
+        "label": "Robinvale",
+        "region": "VIC",
+        "state": "VIC",
+        "postcode": "3549",
+        "lat": -34.583,
+        "lng": 142.772,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://madec.edu.au/"
+    },
+    {
+      "employerId": "au-madec-harvest-trail-riverina-4ac1f1a4",
+      "sourceUrl": "https://www.dewr.gov.au/employment-services-data/resources/harvest-trail-services-evaluation-report",
+      "sourceName": "MADEC Harvest Trail — Riverina",
+      "aliases": [
+        "MADEC Harvest Trail"
+      ],
+      "location": {
+        "label": "Griffith",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2680",
+        "lat": -34.288,
+        "lng": 146.05,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://madec.edu.au/"
+    },
+    {
+      "employerId": "au-madec-harvest-trail-wide-bay-70792f41",
+      "sourceUrl": "https://www.dewr.gov.au/employment-services-data/resources/harvest-trail-services-evaluation-report",
+      "sourceName": "MADEC Harvest Trail — Wide Bay",
+      "aliases": [
+        "MADEC Harvest Trail"
+      ],
+      "location": {
+        "label": "Bundaberg",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4670",
+        "lat": -24.866,
+        "lng": 152.349,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://madec.edu.au/"
+    },
+    {
+      "employerId": "au-madec-harvest-trail-tasmania-f7b6f4d2",
+      "sourceUrl": "https://www.dewr.gov.au/employment-services-data/resources/harvest-trail-services-evaluation-report",
+      "sourceName": "MADEC Harvest Trail — Tasmania",
+      "aliases": [
+        "MADEC Harvest Trail"
+      ],
+      "location": {
+        "label": "Devonport",
+        "region": "TAS",
+        "state": "TAS",
+        "postcode": "7310",
+        "lat": -41.178,
+        "lng": 146.351,
+        "precision": "town"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://madec.edu.au/"
+    },
+    {
+      "employerId": "au-acclaimed-workforce-harvest-trail-6313ce6a",
+      "sourceUrl": "https://www.dewr.gov.au/employment-services-data/resources/harvest-trail-services-evaluation-report",
+      "sourceName": "Acclaimed Workforce Harvest Trail",
+      "aliases": [],
+      "location": {
+        "label": "Hunter / Central West",
+        "region": "NSW",
+        "state": "NSW",
+        "postcode": "2800",
+        "lat": -33.283,
+        "lng": 149.1,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.baysidegroup.com.au/harvest-trail-recruitment"
+    },
+    {
+      "employerId": "au-best-employment-harvest-trail-c424fe5f",
+      "sourceUrl": "https://www.dewr.gov.au/employment-services-data/resources/harvest-trail-services-evaluation-report",
+      "sourceName": "BEST Employment Harvest Trail",
+      "aliases": [],
+      "location": {
+        "label": "Gatton / Southern QLD",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4343",
+        "lat": -27.558,
+        "lng": 152.277,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://best.com.au/"
+    },
+    {
+      "employerId": "au-q-i-t-e-harvest-trail-56051769",
+      "sourceUrl": "https://www.dewr.gov.au/employment-services-data/resources/harvest-trail-services-evaluation-report",
+      "sourceName": "Q.I.T.E. Harvest Trail",
+      "aliases": [],
+      "location": {
+        "label": "Mareeba / Far North QLD",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4880",
+        "lat": -16.991,
+        "lng": 145.424,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.qite.com/"
+    },
+    {
+      "employerId": "au-rural-enterprises-australia-6fde919b",
+      "sourceUrl": "https://www.dewr.gov.au/employment-services-data/resources/harvest-trail-services-evaluation-report",
+      "sourceName": "Rural Enterprises Australia",
+      "aliases": [],
+      "location": {
+        "label": "Manjimup / South West",
+        "region": "WA",
+        "state": "WA",
+        "postcode": "6258",
+        "lat": -34.241,
+        "lng": 116.146,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://seasonal.ruralenterprises.com.au/"
+    },
+    {
+      "employerId": "au-nt-farmers-association-harvest-trail-71851dd7",
+      "sourceUrl": "https://www.dewr.gov.au/employment-services-data/resources/harvest-trail-services-evaluation-report",
+      "sourceName": "NT Farmers Association Harvest Trail",
+      "aliases": [],
+      "location": {
+        "label": "Darwin / Top End",
+        "region": "NT",
+        "state": "NT",
+        "postcode": "0822",
+        "lat": -12.463,
+        "lng": 130.846,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.ntfarmers.org.au/"
+    },
+    {
+      "employerId": "au-agri-labour-australia-b98a0cb5",
+      "sourceUrl": "https://www.agrilabour.com.au/jobs/",
+      "sourceName": "Agri Labour Australia",
+      "aliases": [],
+      "location": {
+        "label": "전국 농업 채용",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4670",
+        "lat": -24.866,
+        "lng": 152.349,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.agrilabour.com.au/jobs/"
+    },
+    {
+      "employerId": "au-agri-talent-65edb6ca",
+      "sourceUrl": "https://www.agritalent.com.au/",
+      "sourceName": "Agri Talent",
+      "aliases": [],
+      "location": {
+        "label": "전국 농업 채용",
+        "region": "QLD",
+        "state": "QLD",
+        "postcode": "4343",
+        "lat": -27.558,
+        "lng": 152.277,
+        "precision": "region"
+      },
+      "reviewedAt": "2026-07-19",
+      "contactUrl": "https://www.agritalent.com.au/"
+    }
+  ]
+}
