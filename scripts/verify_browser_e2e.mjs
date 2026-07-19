@@ -1763,7 +1763,14 @@ export async function runBrowserE2E(options) {
     const profilePath = await fs.promises.mkdtemp(
       path.join(os.tmpdir(), "nz-navigator-browser-e2e-"),
     );
-    cleanup.use(() => fs.promises.rm(profilePath, { recursive: true, force: true }));
+    cleanup.use(() =>
+      fs.promises.rm(profilePath, {
+        recursive: true,
+        force: true,
+        maxRetries: 8,
+        retryDelay: 100,
+      })
+    );
     const browser = await createBrowserSession(
       browserPath,
       profilePath,
