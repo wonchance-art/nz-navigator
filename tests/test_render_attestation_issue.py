@@ -580,6 +580,154 @@ class AttestationIssueTests(unittest.TestCase):
             with self.subTest(), self.assertRaises(IssueContractError):
                 _validate_trend_state(mutation)
 
+    def test_candidate_fallback_keeps_transport_trend_and_renders_chain(self) -> None:
+        fallback = report_v2(
+            "match", "run.fallback.1", "2026-07-19T00:00:00Z"
+        )
+        primary = fallback["requestAudit"]["requests"][0]
+        primary["finalStatus"] = "transient"
+        primary["attempts"][0]["status"] = "transient"
+        second_key = request_key("fallback")
+        fallback["requestAudit"]["requests"].append({
+            "requestKey": second_key,
+            "requestUrl": "https://www.canada.ca/fr/representation",
+            "method": "GET",
+            "attemptCount": 1,
+            "finalStatus": "ready",
+            "latencyBucket": "250ms-999ms",
+            "attempts": [{
+                "number": 1,
+                "status": "ready",
+                "latencyBucket": "250ms-999ms",
+            }],
+        })
+        fallback["requestAudit"].update({
+            "requestCount": 2,
+            "totalAttemptCount": 2,
+            "retriedRequestCount": 0,
+        })
+        fallback["results"][0].update({
+            "selectedCandidate": "fr",
+            "candidatePolicy": "available-parity",
+            "candidateChain": [
+                {
+                    "candidateId": "en",
+                    "requestKey": request_key(),
+                    "requestUrl": "https://www.canada.ca/en/representation",
+                    "method": "GET",
+                    "outcome": "transient",
+                    "reason": "HTTP 503",
+                    "attemptCount": 1,
+                    "latencyBucket": "lt250ms",
+                    "attempts": [{
+                        "number": 1,
+                        "status": "transient",
+                        "latencyBucket": "lt250ms",
+                    }],
+                },
+                {
+                    "candidateId": "fr",
+                    "requestKey": second_key,
+                    "requestUrl": "https://www.canada.ca/fr/representation",
+                    "method": "GET",
+                    "outcome": "match",
+                    "reason": {"value": "18-35"},
+                    "attemptCount": 1,
+                    "latencyBucket": "250ms-999ms",
+                    "attempts": [{
+                        "number": 1,
+                        "status": "ready",
+                        "latencyBucket": "250ms-999ms",
+                    }],
+                },
+            ],
+        })
+        created = reduce_issue(fallback, [])
+        self.assertEqual(created["action"], "create")
+        self.assertIn("Representation candidate chains", created["body"])
+        self.assertIn("available-parity", created["body"])
+        self.assertEqual(
+            created["trendState"]["requests"][request_key()][
+                "consecutiveTransient"
+            ],
+            1,
+        )
+        blocked_fallback = deepcopy(fallback)
+        blocked_fallback["observationId"] = "run.blocked.1"
+        blocked_fallback["requestAudit"]["requests"][0][
+            "finalStatus"
+        ] = "blocked"
+        blocked_fallback["requestAudit"]["requests"][0]["attempts"][0][
+            "status"
+        ] = "blocked"
+        blocked_fallback["results"][0]["candidateChain"][0][
+            "outcome"
+        ] = "blocked"
+        blocked_payload = reduce_issue(blocked_fallback, [])
+        self.assertEqual(blocked_payload["action"], "create")
+        self.assertIn("blocked candidates require access review", blocked_payload["body"])
+
+        latency_only = deepcopy(fallback)
+        latency_only["results"][0]["candidateChain"][1][
+            "latencyBucket"
+        ] = "15s-plus"
+        latency_only["requestAudit"]["requests"][1][
+            "latencyBucket"
+        ] = "15s-plus"
+        latency_only["requestAudit"]["requests"][1]["attempts"][0][
+            "latencyBucket"
+        ] = "15s-plus"
+        self.assertEqual(
+            report_body_fingerprint(fallback),
+            report_body_fingerprint(latency_only),
+        )
+
+        recovered = deepcopy(fallback)
+        recovered["observationId"] = "run.fallback.2"
+        recovered["generatedAt"] = "2026-07-26T00:00:00Z"
+        recovered["requestAudit"]["requests"][0]["finalStatus"] = "ready"
+        recovered["requestAudit"]["requests"][0]["attempts"][0][
+            "status"
+        ] = "ready"
+        recovered["results"][0]["candidateChain"][0]["outcome"] = "match"
+        recovered["results"][0]["candidateChain"][0][
+            "reason"
+        ] = {"value": "18-35"}
+        existing = [{
+            "number": 24,
+            "title": ISSUE_TITLE,
+            "state": "open",
+            "body": created["body"],
+        }]
+        reduced = reduce_issue(recovered, existing)
+        self.assertEqual(reduced["action"], "close")
+        self.assertEqual(
+            reduced["trendState"]["requests"][request_key()][
+                "consecutiveTransient"
+            ],
+            0,
+        )
+
+    def test_manual_review_due_evidence_is_visible_and_substantive(self) -> None:
+        overdue = report("unsupported")
+        overdue["results"][0]["manualReview"] = {
+            "verifiedAt": "2026-07-01",
+            "dueDate": "2026-07-08",
+            "daysOverdue": 11,
+            "evidenceFingerprint": "sha256:" + "a" * 64,
+            "reason": "Compressed reviewed evidence.",
+            "manualReviewDays": 7,
+        }
+        body = render_issue_body(overdue)
+        self.assertIn("2026-07-08", body)
+        self.assertIn("daysOverdue", body)
+        changed = deepcopy(overdue)
+        changed["results"][0]["manualReview"]["daysOverdue"] = 12
+        self.assertNotEqual(
+            report_body_fingerprint(overdue),
+            report_body_fingerprint(changed),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

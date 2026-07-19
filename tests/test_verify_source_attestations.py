@@ -9,6 +9,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+import zlib
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1304,7 +1305,7 @@ class SourceAttestationTests(unittest.TestCase):
             root=self.root,
         )
         self.assertEqual(result.status, "unsupported")
-        with self.assertRaises(verifier.UnsupportedExtraction):
+        with self.assertRaises(verifier.ChangedExtraction):
             verifier._extract_pdf_table(
                 b"%PDF-1.4\n/FlateDecode\n",
                 self.pdf_attestation()["extractor"]["params"],
@@ -1482,6 +1483,764 @@ class SourceAttestationTests(unittest.TestCase):
             captured["body"], b'{"category":"Visa","onshore":"All"}'
         )
         self.assertEqual(response.status, 200)
+
+    def test_candidate_transient_falls_back_but_changed_short_circuits(self) -> None:
+        transient_path = self.fixture_dir / "primary-transient.html"
+        transient_path.write_text("<h1>temporary</h1>", encoding="utf-8")
+        alternate_path = self.fixture_dir / "alternate-wage.html"
+        alternate_path.write_bytes(
+            (FIXTURES / "employment-wage.html").read_bytes()
+        )
+        alternate_url = (
+            "https://www.employment.govt.nz/minimum-wage/representation"
+        )
+        registry = deepcopy(self.registry)
+        attestation = registry["attestations"][0]
+        attestation["fixture"] = self.fixture(
+            "primary-transient.html", "text/html", attestation["sourceUrl"]
+        )
+        attestation["fixture"]["httpStatus"] = 503
+        attestation["requestCandidates"] = [
+            {
+                "id": "citation",
+                "sourceRelation": "citation",
+                "request": attestation["request"],
+                "mediaType": "text/html",
+                "fixture": deepcopy(attestation["fixture"]),
+            },
+            {
+                "id": "alternate",
+                "sourceRelation": "same-host",
+                "request": {"method": "GET", "url": alternate_url},
+                "mediaType": "text/html",
+                "fixture": self.fixture(
+                    "alternate-wage.html", "text/html", alternate_url
+                ),
+            },
+        ]
+        attestation["candidatePolicy"] = {"mode": "available-parity"}
+        report = self.run_verify(registry)
+        result = next(item for item in report.results if item.id == "nz-wage-source")
+        self.assertEqual(result.status, "match")
+        self.assertEqual(result.selectedCandidate, "alternate")
+        self.assertEqual(
+            [item["outcome"] for item in result.candidateChain],
+            ["transient", "match"],
+        )
+
+        changed_path = self.fixture_dir / "primary-changed.html"
+        changed_path.write_text(
+            (FIXTURES / "employment-wage.html")
+            .read_text(encoding="utf-8")
+            .replace("$23.95", "$99.95"),
+            encoding="utf-8",
+        )
+        attestation["fixture"] = self.fixture(
+            "primary-changed.html", "text/html", attestation["sourceUrl"]
+        )
+        attestation["requestCandidates"][0]["fixture"] = deepcopy(
+            attestation["fixture"]
+        )
+        report = self.run_verify(registry)
+        result = next(item for item in report.results if item.id == "nz-wage-source")
+        self.assertEqual(result.status, "changed")
+        self.assertIsNone(result.selectedCandidate)
+        self.assertEqual(len(result.candidateChain), 1)
+
+    def test_available_parity_candidate_mode_and_candidate_schema_fail_closed(self) -> None:
+        alternate_path = self.fixture_dir / "alternate-parity.html"
+        alternate_path.write_bytes(
+            (FIXTURES / "employment-wage.html").read_bytes()
+        )
+        alternate_url = (
+            "https://www.employment.govt.nz/minimum-wage/parity"
+        )
+        registry = deepcopy(self.registry)
+        attestation = registry["attestations"][0]
+        attestation["candidatePolicy"] = {"mode": "available-parity"}
+        attestation["requestCandidates"] = [
+            {
+                "id": "citation",
+                "sourceRelation": "citation",
+                "request": attestation["request"],
+                "mediaType": "text/html",
+                "fixture": deepcopy(attestation["fixture"]),
+            },
+            {
+                "id": "reviewed-alt",
+                "sourceRelation": "same-host",
+                "request": {"method": "GET", "url": alternate_url},
+                "mediaType": "text/html",
+                "extractor": deepcopy(attestation["extractor"]),
+                "fixture": self.fixture(
+                    "alternate-parity.html", "text/html", alternate_url
+                ),
+            },
+        ]
+        report = self.run_verify(registry)
+        result = next(item for item in report.results if item.id == "nz-wage-source")
+        self.assertEqual(result.status, "match")
+        self.assertEqual(len(result.candidateChain), 2)
+
+        mutations = []
+        duplicate = deepcopy(registry)
+        duplicate["attestations"][0]["requestCandidates"][1][
+            "request"
+        ] = {"method": "GET"}
+        duplicate["attestations"][0]["requestCandidates"][1][
+            "fixture"
+        ] = deepcopy(duplicate["attestations"][0]["fixture"])
+        mutations.append(duplicate)
+        unofficial = deepcopy(registry)
+        unofficial["attestations"][0]["requestCandidates"][1][
+            "request"
+        ] = {"method": "GET", "url": "https://example.com/policy"}
+        mutations.append(unofficial)
+        cross_host = deepcopy(registry)
+        cross_host["attestations"][0]["requestCandidates"][1][
+            "request"
+        ] = {
+            "method": "GET",
+            "url": "https://www.ird.govt.nz/policy",
+        }
+        mutations.append(cross_host)
+        bad_media = deepcopy(registry)
+        bad_media["attestations"][0]["requestCandidates"][1][
+            "mediaType"
+        ] = "text/plain"
+        mutations.append(bad_media)
+        for mutation in mutations:
+            with self.subTest():
+                self.assert_status(self.run_verify(mutation), "unsupported")
+
+    def test_candidate_blocked_all_transient_unsupported_changed_matrix(self) -> None:
+        alternate_url = (
+            "https://www.employment.govt.nz/minimum-wage/fallback"
+        )
+        alternate_path = self.fixture_dir / "matrix-alternate.html"
+        alternate_path.write_bytes(
+            (FIXTURES / "employment-wage.html").read_bytes()
+        )
+
+        def candidate_registry(
+            primary_name: str,
+            primary_status: int,
+            alternate_name: str,
+            alternate_status: int,
+        ) -> dict[str, object]:
+            registry = deepcopy(self.registry)
+            attestation = registry["attestations"][0]
+            attestation["fixture"] = self.fixture(
+                primary_name,
+                "text/html",
+                attestation["sourceUrl"],
+            )
+            attestation["fixture"]["httpStatus"] = primary_status
+            alternate_fixture = self.fixture(
+                alternate_name, "text/html", alternate_url
+            )
+            alternate_fixture["httpStatus"] = alternate_status
+            attestation["candidatePolicy"] = {
+                "mode": "available-parity"
+            }
+            attestation["requestCandidates"] = [
+                {
+                    "id": "primary",
+                    "sourceRelation": "citation",
+                    "request": {"method": "GET"},
+                    "mediaType": "text/html",
+                    "fixture": deepcopy(attestation["fixture"]),
+                },
+                {
+                    "id": "alternate",
+                    "sourceRelation": "same-host",
+                    "request": {"method": "GET", "url": alternate_url},
+                    "mediaType": "text/html",
+                    "fixture": alternate_fixture,
+                },
+            ]
+            return registry
+
+        blocked = self.fixture_dir / "matrix-blocked.html"
+        blocked.write_text("<h1>access denied</h1>", encoding="utf-8")
+        blocked_registry = candidate_registry(
+            "matrix-blocked.html", 403, "matrix-alternate.html", 200
+        )
+        result = next(
+            item
+            for item in self.run_verify(blocked_registry).results
+            if item.id == "nz-wage-source"
+        )
+        self.assertEqual(result.status, "match")
+        self.assertEqual(
+            [item["outcome"] for item in result.candidateChain],
+            ["blocked", "match"],
+        )
+
+        transient = self.fixture_dir / "matrix-transient.html"
+        transient.write_text("<h1>temporary</h1>", encoding="utf-8")
+        transient_alt = self.fixture_dir / "matrix-transient-alt.html"
+        transient_alt.write_text("<h1>temporary too</h1>", encoding="utf-8")
+        all_transient = candidate_registry(
+            "matrix-transient.html",
+            503,
+            "matrix-transient-alt.html",
+            503,
+        )
+        result = next(
+            item
+            for item in self.run_verify(all_transient).results
+            if item.id == "nz-wage-source"
+        )
+        self.assertEqual(result.status, "transient")
+        self.assertEqual(
+            [item["outcome"] for item in result.candidateChain],
+            ["transient", "transient"],
+        )
+
+        unsupported_pdf = self.fixture_dir / "matrix-unsupported.pdf"
+        unsupported_pdf.write_bytes(
+            b"%PDF-1.4\n/ObjStm\n%%EOF\n"
+        )
+        changed_alt = self.fixture_dir / "matrix-changed.html"
+        changed_alt.write_text(
+            (FIXTURES / "employment-wage.html")
+            .read_text(encoding="utf-8")
+            .replace("$23.95", "$24.95"),
+            encoding="utf-8",
+        )
+        unsupported_changed = candidate_registry(
+            "matrix-blocked.html", 200, "matrix-changed.html", 200
+        )
+        attestation = unsupported_changed["attestations"][0]
+        attestation["fixture"] = self.fixture(
+            "matrix-unsupported.pdf",
+            "application/pdf",
+            attestation["sourceUrl"],
+        )
+        attestation["extractor"] = deepcopy(
+            self.pdf_attestation()["extractor"]
+        )
+        attestation["requestCandidates"][0].update({
+            "mediaType": "application/pdf",
+            "extractor": deepcopy(attestation["extractor"]),
+            "fixture": deepcopy(attestation["fixture"]),
+        })
+        attestation["requestCandidates"][1]["extractor"] = deepcopy(
+            self.html_attestation()["extractor"]
+        )
+        result = next(
+            item
+            for item in self.run_verify(unsupported_changed).results
+            if item.id == "nz-wage-source"
+        )
+        self.assertEqual(result.status, "changed")
+        self.assertEqual(
+            [item["outcome"] for item in result.candidateChain],
+            ["unsupported", "changed"],
+        )
+
+        primary_context = verifier._candidate_contexts(
+            blocked_registry["attestations"][0]
+        )[0][1]
+        redirected = verifier._evaluate_response(
+            primary_context,
+            verifier.SourceResponse(
+                200,
+                "https://www.ird.govt.nz/minimum-wage",
+                "text/html",
+                (FIXTURES / "employment-wage.html").read_bytes(),
+            ),
+            offline=False,
+            root=self.root,
+        )
+        self.assertEqual(redirected.status, "unsupported")
+
+    def test_html_section_text_scopes_en_and_fr_iec_values(self) -> None:
+        english = b"""
+        <h3>Republic of Korea \xe2\x80\x93 Working Holiday</h3>
+        <p>Korean citizens can now participate in IEC twice for up to 24 months per participation...</p>
+        <ul><li>be between the ages of 18 and 35 (inclusive)</li></ul>
+        <h3>Another country</h3><p>up to 24 months per participation...</p>
+        """
+        french = """
+        <h3>République de Corée — Vacances-travail</h3>
+        <p>Description : les citoyens peuvent participer (jusqu’à 24 mois par participation).</p>
+        <li>être âgé de 18 à 35 ans, inclusivement</li>
+        """.encode("utf-8")
+        cases = [
+            (
+                english,
+                {
+                    "heading": "Republic of Korea – Working Holiday",
+                    "anchor": (
+                        "Korean citizens can now participate in IEC twice "
+                        "for up to 24 months per participation..."
+                    ),
+                    "transform": "duration-months",
+                    "unit": "months",
+                },
+                24,
+            ),
+            (
+                english,
+                {
+                    "heading": "Republic of Korea – Working Holiday",
+                    "anchor": (
+                        "be between the ages of 18 and 35 (inclusive)"
+                    ),
+                    "transform": "inclusive-range",
+                    "unit": "age",
+                },
+                "18-35",
+            ),
+            (
+                french,
+                {
+                    "heading": "République de Corée — Vacances-travail",
+                    "anchor": (
+                        "être âgé de 18 à 35 ans, inclusivement"
+                    ),
+                    "transform": "inclusive-range",
+                    "unit": "age",
+                },
+                "18-35",
+            ),
+            (
+                french,
+                {
+                    "heading": "République de Corée — Vacances-travail",
+                    "anchor": (
+                        "Description : les citoyens peuvent participer "
+                        "(jusqu’à 24 mois par participation)."
+                    ),
+                    "transform": "duration-months",
+                    "unit": "months",
+                },
+                24,
+            ),
+        ]
+        for body, params, expected in cases:
+            with self.subTest(params=params):
+                unit, value = verifier._extract_html_section_text(
+                    body, params
+                )
+                self.assertEqual(unit, params["unit"])
+                self.assertEqual(value, expected)
+        duplicate = english.replace(
+            b"</ul>", b"<li>be between the ages of 18 and 35 (inclusive)</li></ul>"
+        )
+        age_params = {
+            "heading": "Republic of Korea – Working Holiday",
+            "anchor": "be between the ages of 18 and 35 (inclusive)",
+            "transform": "inclusive-range",
+            "unit": "age",
+        }
+        with self.assertRaises(verifier.ChangedExtraction):
+            verifier._extract_html_section_text(duplicate, age_params)
+        with self.assertRaises(verifier.ChangedExtraction):
+            verifier._extract_html_section_text(
+                english.replace(b"<h3>Republic", b"<h2>Republic"), age_params
+            )
+        for malformed in (
+            "be between the ages of 18 and 35",
+            "be between the ages of 35 and 18 (inclusive)",
+            "be between the ages of 18 and 35 (inclusive) and 36 to 40",
+            "Description : jusqu’à 24 mois et 12 mois.",
+            "Description : jusqu’à vingt-quatre mois.",
+        ):
+            transform = (
+                "inclusive-range"
+                if malformed.startswith("be between")
+                else "duration-months"
+            )
+            with self.subTest(malformed=malformed), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._transform_html_value(malformed, transform)
+
+    def test_fixture_only_manual_review_due_is_inclusive_and_independent(self) -> None:
+        registry = deepcopy(self.registry)
+        attestation = registry["attestations"][0]
+        attestation["verifiedAt"] = "2024-02-29"
+        attestation["reviewAfterDays"] = 1000
+        attestation["livePolicy"] = {
+            "mode": "fixture-only",
+            "reason": "Compressed reviewed evidence.",
+            "manualReviewDays": 1,
+        }
+        self.write_json("attestations.json", registry)
+        on_due = verifier.verify_source_attestations(
+            self.root,
+            attestations_path="attestations.json",
+            claims_path="claims.json",
+            today=date(2024, 3, 1),
+        )
+        result = next(item for item in on_due.results if item.id == "nz-wage-source")
+        self.assertEqual(result.status, "match")
+        self.assertEqual(result.manualReview["dueDate"], "2024-03-01")
+        next_day = verifier.verify_source_attestations(
+            self.root,
+            attestations_path="attestations.json",
+            claims_path="claims.json",
+            today=date(2024, 3, 2),
+        )
+        result = next(item for item in next_day.results if item.id == "nz-wage-source")
+        self.assertEqual(result.status, "unsupported")
+        self.assertEqual(result.manualReview["daysOverdue"], 1)
+        self.assertEqual(
+            result.manualReview["evidenceFingerprint"],
+            attestation["fixture"]["sha256"],
+        )
+
+    @staticmethod
+    def compressed_pdf(content: bytes, *, filter_name: str = "FlateDecode") -> bytes:
+        stream = zlib.compress(content)
+        header = b"%PDF-1.4\n"
+        first = b"1 0 obj\n<< /Type /Catalog >>\nendobj\n"
+        second = (
+            b"2 0 obj\n<< /Length "
+            + str(len(stream)).encode("ascii")
+            + b" /Filter /"
+            + filter_name.encode("ascii")
+            + b" >>\nstream\n"
+            + stream
+            + b"\nendstream\nendobj\n"
+        )
+        prefix = header + first + second
+        xref_offset = len(prefix)
+        xref = (
+            b"xref\n0 3\n0000000000 65535 f \n"
+            b"0000000009 00000 n \n0000000048 00000 n \n"
+            b"trailer\n<< /Size 3 /Root 1 0 R >>\nstartxref\n"
+            + str(xref_offset).encode("ascii")
+            + b"\n%%EOF\n"
+        )
+        return prefix + xref
+
+    @staticmethod
+    def multi_stream_pdf(contents: list[bytes]) -> bytes:
+        prefix = bytearray(b"%PDF-1.4\n")
+        for index, content in enumerate(contents, 1):
+            stream = zlib.compress(content)
+            prefix.extend(
+                f"{index} 0 obj\n<< /Length {len(stream)} "
+                "/Filter /FlateDecode >>\nstream\n".encode("ascii")
+            )
+            prefix.extend(stream)
+            prefix.extend(b"\nendstream\nendobj\n")
+        xref_offset = len(prefix)
+        prefix.extend(
+            b"xref\n0 1\n0000000000 65535 f \n"
+            b"trailer\n<< /Size 1 >>\nstartxref\n"
+            + str(xref_offset).encode("ascii")
+            + b"\n%%EOF\n"
+        )
+        return bytes(prefix)
+
+    def test_bounded_flate_pdf_and_adversarial_features(self) -> None:
+        content = (
+            b"BT\n(Reviewed rates) Tj\n(Unit|ratio) Tj\n"
+            b"(Lower|Upper) Tj\n(0.1|0.2) Tj\nET"
+        )
+        unit, value = verifier._extract_pdf_table(
+            self.compressed_pdf(content),
+            self.pdf_attestation()["extractor"]["params"],
+        )
+        self.assertEqual((unit, value), ("ratio", [[0.1, 0.2]]))
+        tj_array = (
+            b"BT\n[(Reviewed ) 20 (rates)] TJ\n"
+            b"[(Unit|) -5 (ratio)] TJ\n"
+            b"[(Lower|Upper)] TJ\n[(0.1|0.2)] TJ\nET"
+        )
+        self.assertEqual(
+            verifier._extract_pdf_table(
+                self.compressed_pdf(tj_array),
+                self.pdf_attestation()["extractor"]["params"],
+            ),
+            ("ratio", [[0.1, 0.2]]),
+        )
+        cases = [
+            self.compressed_pdf(content, filter_name="LZWDecode"),
+            self.compressed_pdf(content) + b"\ntruncated",
+            self.compressed_pdf(content).replace(
+                b"/Type /Catalog", b"/Type /Catalog /Encrypt true"
+            ),
+            self.compressed_pdf(content).replace(
+                b"/Type /Catalog", b"/Type /Catalog /ToUnicode 3 0 R"
+            ),
+            self.compressed_pdf(content + b"\n(Reviewed rates) Tj"),
+            self.compressed_pdf(
+                b"BT\n(Reviewed rates) Tj\n(Unit|ratio) Tj\n"
+                b"(Lower|Upper) Tj\nET"
+            ),
+            self.compressed_pdf(
+                b"BT\n<5265766965776564207261746573> Tj\nET"
+            ),
+            self.compressed_pdf(
+                b"BT\n[(Reviewed ) <7261746573>] TJ\nET"
+            ),
+            self.compressed_pdf(
+                b"(Reviewed rates) Tj\nBT\n(Unit|ratio) Tj\nET"
+            ),
+            b"%PDF-1.4\nBT\n(Reviewed rates) Tj\nET\n%%EOF\n",
+            self.compressed_pdf(content).replace(
+                b"/Type /Catalog", b"/Type/XRef"
+            ),
+            self.compressed_pdf(content).replace(
+                b"/Type /Catalog", b"/Type /Catalog /DecodeParms <<>>"
+            ),
+        ]
+        for body in cases:
+            with self.subTest(), self.assertRaises(
+                (verifier.UnsupportedExtraction, verifier.ChangedExtraction)
+            ):
+                verifier._extract_pdf_table(
+                    body, self.pdf_attestation()["extractor"]["params"]
+                )
+        with self.assertRaises(verifier.UnsupportedExtraction):
+            verifier._bounded_flate(zlib.compress(b"A" * 100_000))
+        block = b"".join(
+            hashlib.sha256(str(index).encode()).digest()
+            for index in range(512)
+        )
+        aggregate = self.multi_stream_pdf(
+            [block * 132, block * 132]
+        )
+        self.assertLess(len(aggregate), verifier.MAX_BODY_BYTES)
+        with self.assertRaises(verifier.UnsupportedExtraction):
+            verifier._pdf_literal_lines(aggregate)
+
+    def test_ato_law_lito_current_table_ignores_hidden_history(self) -> None:
+        params = {
+            "actTitle": "Income Tax Assessment Act 1997",
+            "section": "SECTION 61-115",
+            "sectionTitle": "Amount of the Low Income tax offset",
+            "tableTitle": "Amount of your tax offset",
+        }
+        current = """
+        <h1>Income Tax Assessment Act 1997</h1>
+        <p><strong>SECTION 61-115</strong>&nbsp;<strong>Amount of the Low Income tax offset</strong>&nbsp;</p>
+        <div id="lawBody"><table>
+        <tr><th>Amount of your tax offset</th></tr>
+        <tr><th>Item</th><th>If your relevant income:</th><th>The amount of your tax offset is:</th></tr>
+        <tr><td>1</td><td>does not exceed $ 37,500</td><td>$ 700</td></tr>
+        <tr><td>2</td><td>exceeds $ 37,500 but is not more than $ 45,000</td><td>$ 700, less an amount equal to 5% of the excess</td></tr>
+        <tr><td>3</td><td>exceeds $ 45,000 but is not more than $ 66,667</td><td>$ 325, less an amount equal to 1.5% of the excess</td></tr>
+        </table></div>
+        """
+        hidden = """
+        <div id="History_old"><div class="panel-info" style="display:none"><blockquote><table>
+        <tr><th>Amount of your tax offset</th></tr>
+        <tr><th>Item</th><th>If your relevant income:</th><th>The amount of your tax offset is:</th></tr>
+        <tr><td>1</td><td>does not exceed $ 37,000</td><td>$ 645</td></tr>
+        </table></blockquote></div></div>
+        """
+        unit, value = verifier._extract_ato_law_lito(
+            (current + hidden).encode("utf-8"), params
+        )
+        self.assertEqual(unit, verifier.ATO_LITO_UNIT)
+        self.assertEqual(
+            value,
+            {
+                "maxOffset": 700,
+                "fullTo": 37500,
+                "taper1To": 45000,
+                "taper1Rate": 0.05,
+                "cutOut": 66667,
+                "taper2Rate": 0.015,
+            },
+        )
+        mutations = [
+            current.replace("Amount of your tax offset</th>", "Wrong</th>", 1),
+            current.replace("<th>Item</th>", "<th>Items</th>"),
+            current.replace("<td>2</td>", "<td>4</td>"),
+            current.replace("does not exceed", "is at most"),
+            current.replace("$ 700", "$ 701", 1),
+            current.replace("1.5%", "1.6%"),
+            current.replace("</table></div>", "</table></div>" + current),
+            current.replace(
+                '<div id="lawBody"><table>',
+                '<div id="other"><table>',
+            ),
+            current.replace(
+                "<p><strong>SECTION 61-115</strong>&nbsp;<strong>"
+                "Amount of the Low Income tax offset</strong>&nbsp;</p>",
+                "<h2>SECTION 61-115</h2>"
+                "<h3>Amount of the Low Income tax offset</h3>",
+            ),
+            current.replace(
+                "<strong>Amount of the Low Income tax offset</strong>",
+                "",
+            ),
+            current.replace(
+                "</p>",
+                "</p><p><strong>SECTION 61-115</strong>&nbsp;<strong>"
+                "Amount of the Low Income tax offset</strong></p>",
+                1,
+            ),
+        ]
+        for mutation in mutations:
+            with self.subTest(), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._extract_ato_law_lito(
+                    (mutation + hidden).encode("utf-8"), params
+                )
+
+    def test_ato_resident_law_and_tax_free_band_are_exact(self) -> None:
+        title = "Tax rates for resident taxpayers for the 2026-27 year of income"
+        table = f"""
+        <div id="LawBody"><table>
+        <tr><th>{title}</th><th></th><th></th></tr>
+        <tr><th>Item</th><th>For the part of the ordinary taxable income of the taxpayer that:</th><th>The rate is:</th></tr>
+        <tr><td>1</td><td>exceeds the tax-free threshold but does not exceed $45,000</td><td>15%</td></tr>
+        <tr><td>2</td><td>exceeds $45,000 but does not exceed $135,000</td><td>30%</td></tr>
+        <tr><td>3</td><td>exceeds $135,000 but does not exceed $190,000</td><td>37%</td></tr>
+        <tr><td>4</td><td>exceeds $190,000</td><td>45%</td></tr>
+        </table>
+        <table><tr><th>Tax rates for resident taxpayers for the 2027-28 year of income</th></tr>
+        <tr><th>Item</th><th>For the part of the ordinary taxable income of the taxpayer that:</th><th>The rate is:</th></tr>
+        <tr><td>1</td><td>exceeds the tax-free threshold but does not exceed $45,000</td><td>14%</td></tr>
+        </table></div>
+        """
+        unit, value = verifier._extract_ato_law_resident_brackets(
+            table.encode("utf-8"), {"tableTitle": title}
+        )
+        self.assertEqual(unit, "AUD/rate")
+        self.assertEqual(
+            value,
+            [[45000, .15], [135000, .3], [190000, .37], [None, .45]],
+        )
+        self.assertEqual(
+            verifier._extract_ato_law_resident_brackets(
+                table.replace('id="LawBody"', 'id="lawBody"').encode(
+                    "utf-8"
+                ),
+                {"tableTitle": title},
+            )[1],
+            value,
+        )
+        for mutation in (
+            table.replace("2026-27", "2025-26", 1),
+            table.replace("<th>Item</th>", "<th>Items</th>", 1),
+            table.replace("<td>3</td>", "<td>5</td>"),
+            table.replace("does not exceed $45,000", "is below $45,000", 1),
+            table.replace("$135,000", "$134,000", 1),
+            table.replace('id="LawBody"', 'id="lawbody"'),
+        ):
+            with self.subTest(), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._extract_ato_law_resident_brackets(
+                    mutation.encode("utf-8"), {"tableTitle": title}
+                )
+        _unit, changed_rates = verifier._extract_ato_law_resident_brackets(
+            table.replace("30%", "31%", 1).encode("utf-8"),
+            {"tableTitle": title},
+        )
+        self.assertNotEqual(changed_rates, value)
+
+        heading = "What is the tax-free threshold"
+        anchor = (
+            "The tax-free threshold is the amount of income you can earn "
+            "before you pay tax. Most Australian residents can claim "
+            "tax-free threshold on the first $18,200 of the income they "
+            "earn in the income year."
+        )
+        body = f"<h2>{heading}</h2><p>{anchor}</p>".encode("utf-8")
+        self.assertEqual(
+            verifier._extract_ato_tax_free_band(
+                body, {"heading": heading, "anchor": anchor}
+            ),
+            ("AUD/rate", [18200, 0]),
+        )
+        for mutation in (
+            body.replace(b"<h2>", b"<h3>"),
+            body.replace(b"before you pay tax", b"before tax applies"),
+            body.replace(b"the first", b"an initial"),
+            body.replace(b"$18,200", b"$19,200"),
+            body + body,
+        ):
+            with self.subTest(), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._extract_ato_tax_free_band(
+                    mutation, {"heading": heading, "anchor": anchor}
+                )
+
+    def test_target_expected_path_maps_expected_subtree(self) -> None:
+        record_path = self.fixture_dir / "nested-policy.json"
+        record_path.write_text(
+            json.dumps({
+                "record": {
+                    "unit": {"item": "ratio"},
+                    "value": {"item": 0.25},
+                }
+            }),
+            encoding="utf-8",
+        )
+        registry = deepcopy(self.registry)
+        attestation = registry["attestations"][2]
+        attestation["expected"] = {
+            "type": "object",
+            "unit": {"item": "ratio"},
+            "value": {"item": 0.25},
+        }
+        attestation["extractor"]["params"]["pointer"] = "/record"
+        attestation["fixture"] = self.fixture(
+            "nested-policy.json",
+            "application/json",
+            attestation["sourceUrl"],
+        )
+        attestation["targets"][0]["expectedPath"] = "/item"
+        attestation["claims"][0]["expectedPath"] = "/item"
+        report = self.run_verify(registry)
+        self.assertTrue(report.ok, [item.render() for item in report.results])
+        broken = deepcopy(registry)
+        broken["attestations"][2]["targets"][0]["expectedPath"] = "/missing"
+        self.assert_status(self.run_verify(broken), "unsupported")
+
+    def test_cra_t4127_en_fr_normalize_to_one_version(self) -> None:
+        cases = [
+            (
+                b"<h1>T4127-JUL Payroll Deductions Formulas - 123rd Edition - Effective July 1, 2026</h1>",
+                {"language": "en"},
+            ),
+            (
+                "<h1>T4127-JUL Formules pour le calcul des retenues sur la paie - 123e édition - En vigueur le 1er juillet 2026</h1>".encode(
+                    "utf-8"
+                ),
+                {"language": "fr"},
+            ),
+        ]
+        for body, params in cases:
+            with self.subTest(params=params):
+                self.assertEqual(
+                    verifier._extract_cra_t4127_version(body, params),
+                    ("table version", "T4127-123rd-2026-07"),
+                )
+        mutations = [
+            cases[0][0].replace(b"123rd", b"123th"),
+            cases[0][0] + cases[0][0],
+            cases[1][0].replace(
+                "123e édition".encode(), "123rd Edition".encode()
+            ),
+        ]
+        for body in mutations:
+            with self.subTest(), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._extract_cra_t4127_version(
+                    body, {"language": "en"}
+                )
+        self.assertNotEqual(
+            verifier._extract_cra_t4127_version(
+                cases[0][0].replace(b"July", b"June"),
+                {"language": "en"},
+            )[1],
+            "T4127-123rd-2026-07",
+        )
 
 
 if __name__ == "__main__":

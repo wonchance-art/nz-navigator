@@ -12,6 +12,7 @@ import re
 import ssl
 import sys
 import time
+import zlib
 from dataclasses import asdict, dataclass, field, replace
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -32,6 +33,12 @@ MAX_RETRY_ATTEMPTS = 4
 MAX_RETRY_BACKOFF_MS = 2_000
 MAX_ATTESTATIONS = 256
 MAX_TARGETS_PER_ATTESTATION = 16
+MAX_REQUEST_CANDIDATES = 3
+MAX_PDF_OBJECTS = 256
+MAX_PDF_STREAMS = 64
+MAX_PDF_OBJECT_BYTES = 500_000
+MAX_PDF_DECOMPRESSED_BYTES = 4_000_000
+MAX_PDF_COMPRESSION_RATIO = 100
 MAX_PARAMETER_TEXT = 200
 MAX_ANCHOR_TEXT = 2_000
 MAX_POINTER_DEPTH = 24
@@ -55,11 +62,16 @@ EXTRACTOR_MODES = frozenset(
         "html-table-record",
         "html-labelled-values",
         "html-text-anchor",
+        "html-section-text",
         "pdf-table",
         "json-pointer",
         "api-json-pointer",
         "api-json-record",
         "ato-lito",
+        "ato-law-lito",
+        "ato-law-resident-brackets",
+        "ato-tax-free-band",
+        "cra-t4127-version",
     }
 )
 OFFICIAL_DOMAINS = {
@@ -102,11 +114,19 @@ REQUIRED_ATTESTATION_FIELDS = frozenset(
     }
 )
 OPTIONAL_ATTESTATION_FIELDS = frozenset(
-    {"effectiveTo", "targets", "claims", "livePolicy"}
+    {
+        "effectiveTo",
+        "targets",
+        "claims",
+        "livePolicy",
+        "requestCandidates",
+        "candidatePolicy",
+    }
 )
 LIVE_POLICY_FIELDS = frozenset({"mode", "reason", "manualReviewDays"})
 LIVE_POLICY_MODES = frozenset({"extract", "fixture-only"})
-TARGET_FIELDS = frozenset({"targetId", "reviewedPath"})
+REQUIRED_TARGET_FIELDS = frozenset({"targetId", "reviewedPath"})
+OPTIONAL_TARGET_FIELDS = frozenset({"expectedPath"})
 REQUIRED_CLAIM_MAPPING_FIELDS = frozenset({"claimId"})
 OPTIONAL_CLAIM_MAPPING_FIELDS = frozenset({"expectedPath"})
 EXTRACTOR_FIELDS = frozenset({"mode", "params"})
@@ -164,7 +184,40 @@ HTML_LABELLED_FIELD_FIELDS = frozenset(
     {"key", "label", "transform", "unit"}
 )
 HTML_TEXT_PARAMETER_FIELDS = frozenset({"anchor", "transform", "unit"})
+HTML_SECTION_TEXT_PARAMETER_FIELDS = frozenset(
+    {"heading", "anchor", "transform", "unit"}
+)
+HTML_SECTION_TEXT_TRANSFORMS = frozenset(
+    {"inclusive-range", "duration-months"}
+)
 ATO_LITO_PARAMETER_FIELDS = frozenset({"anchor", "items"})
+ATO_LAW_LITO_PARAMETER_FIELDS = frozenset(
+    {"actTitle", "section", "sectionTitle", "tableTitle"}
+)
+ATO_LAW_RESIDENT_PARAMETER_FIELDS = frozenset({"tableTitle"})
+ATO_TAX_FREE_PARAMETER_FIELDS = frozenset({"heading", "anchor"})
+CRA_T4127_PARAMETER_FIELDS = frozenset({"language"})
+ATO_LAW_RESIDENT_HEADERS = [
+    "Item",
+    "For the part of the ordinary taxable income of the taxpayer that:",
+    "The rate is:",
+]
+ATO_LAW_LITO_HEADERS = [
+    "Item",
+    "If your relevant income:",
+    "The amount of your tax offset is:",
+]
+REQUEST_CANDIDATE_REQUIRED_FIELDS = frozenset(
+    {"id", "sourceRelation", "request", "mediaType", "fixture"}
+)
+REQUEST_CANDIDATE_OPTIONAL_FIELDS = frozenset({"extractor"})
+CANDIDATE_RELATIONS = frozenset(
+    {"citation", "same-host", "jurisdiction-official"}
+)
+CANDIDATE_POLICY_FIELDS = frozenset({"mode"})
+CANDIDATE_POLICY_MODES = frozenset(
+    {"first-match", "available-parity"}
+)
 ATO_FIRST_BAND_UNIT = {"cap": "AUD", "rate": "decimal rate"}
 ATO_LAW_FIRST_BAND_TITLE = (
     "Tax rates for working holiday makers for the 2024-25 year of "
@@ -211,6 +264,9 @@ PDF_MEDIA_TYPES = frozenset({"application/pdf"})
 JSON_MEDIA_TYPES = frozenset(
     {"application/json", "application/problem+json"}
 )
+SUPPORTED_CANDIDATE_MEDIA = (
+    HTML_MEDIA_TYPES | PDF_MEDIA_TYPES | JSON_MEDIA_TYPES
+)
 class RegistryError(ValueError):
     pass
 
@@ -245,6 +301,10 @@ class AttestationResult:
     attemptCount: int = 1
     requestFinalStatus: str = "ready"
     latencyBucket: str = "offline"
+    selectedCandidate: str | None = None
+    candidatePolicy: str = "first-match"
+    candidateChain: tuple[dict[str, Any], ...] = ()
+    manualReview: dict[str, Any] | None = None
 
     def render(self) -> str:
         return (
@@ -379,6 +439,24 @@ def _automatic_observation_id(report: AttestationReport) -> str:
                     "fix": item.fix,
                     "requestKey": item.requestKey,
                     "requestFinalStatus": item.requestFinalStatus,
+                    "selectedCandidate": item.selectedCandidate,
+                    "candidatePolicy": item.candidatePolicy,
+                    "candidateChain": [
+                        {
+                            "candidateId": candidate.get("candidateId"),
+                            "requestKey": candidate.get("requestKey"),
+                            "outcome": candidate.get("outcome"),
+                            "reason": candidate.get("reason"),
+                            "attemptCount": candidate.get("attemptCount"),
+                            "attemptStatuses": [
+                                attempt.get("status")
+                                for attempt in candidate.get("attempts", [])
+                                if isinstance(attempt, dict)
+                            ],
+                        }
+                        for candidate in item.candidateChain
+                    ],
+                    "manualReview": item.manualReview,
                 }
                 for item in report.results
             ),
@@ -733,7 +811,12 @@ def _validate_value_types(value: Any, expected_length: int) -> list[str]:
 
 
 def _validate_request(
-    value: Any, source_url: str, jurisdiction: str
+    value: Any,
+    source_url: str,
+    jurisdiction: str,
+    *,
+    source_relation: str = "same-host",
+    candidate: bool = False,
 ) -> None:
     if not isinstance(value, dict) or value.get("method") not in {
         "GET",
@@ -752,14 +835,15 @@ def _validate_request(
             raise RegistryError("GET request.url must be at most 2048 characters")
         _validate_official_url(request_url, jurisdiction)
         parsed_request = urllib_parse.urlsplit(request_url)
-        if parsed_request.query or parsed_request.fragment:
+        if parsed_request.fragment:
+            raise RegistryError("GET request.url may not contain a fragment")
+        if not candidate and parsed_request.query:
             raise RegistryError(
                 "GET request.url override may not contain query or fragment"
             )
-        if _canonical_hostname(source_url) != _canonical_hostname(request_url):
-            raise RegistryError(
-                "GET request.url host must exactly match citation sourceUrl host"
-            )
+        _validate_source_relation(
+            request_url, source_url, source_relation, jurisdiction
+        )
         return
     if set(value) != REQUEST_POST_FIELDS:
         raise RegistryError(
@@ -769,10 +853,9 @@ def _validate_request(
     if not isinstance(request_url, str) or len(request_url) > 2048:
         raise RegistryError("POST request.url must be at most 2048 characters")
     _validate_official_url(request_url, jurisdiction)
-    if _canonical_hostname(source_url) != _canonical_hostname(request_url):
-        raise RegistryError(
-            "POST request.url host must exactly match citation sourceUrl host"
-        )
+    _validate_source_relation(
+        request_url, source_url, source_relation, jurisdiction
+    )
     body = value["jsonBody"]
     if (
         not isinstance(body, dict)
@@ -800,6 +883,30 @@ def _validate_request(
     ).encode("utf-8")
     if len(serialized) > 4096:
         raise RegistryError("POST jsonBody exceeds 4096 canonical bytes")
+
+
+def _validate_source_relation(
+    request_url: str,
+    source_url: str,
+    source_relation: str,
+    jurisdiction: str,
+) -> None:
+    if source_relation not in CANDIDATE_RELATIONS:
+        raise RegistryError("sourceRelation is unsupported")
+    if source_relation == "citation" and request_url != source_url:
+        raise RegistryError(
+            "citation candidate request URL must exactly equal sourceUrl"
+        )
+    if (
+        source_relation == "same-host"
+        and _canonical_hostname(source_url)
+        != _canonical_hostname(request_url)
+    ):
+        raise RegistryError(
+            "same-host candidate must use the citation canonical hostname"
+        )
+    if source_relation == "jurisdiction-official":
+        _validate_official_url(request_url, jurisdiction)
 
 
 def _validate_live_policy(value: Any) -> dict[str, Any]:
@@ -831,6 +938,24 @@ def _live_policy(attestation: dict[str, Any]) -> dict[str, Any]:
             "manualReviewDays": 30,
         },
     )
+
+
+def _manual_review_status(
+    attestation: dict[str, Any], today: date
+) -> dict[str, Any] | None:
+    policy = _live_policy(attestation)
+    if policy["mode"] != "fixture-only":
+        return None
+    verified = _parse_date(attestation["verifiedAt"], "verifiedAt")
+    due = verified + timedelta(days=policy["manualReviewDays"])
+    return {
+        "verifiedAt": verified.isoformat(),
+        "dueDate": due.isoformat(),
+        "daysOverdue": max(0, (today - due).days),
+        "evidenceFingerprint": attestation["fixture"]["sha256"],
+        "reason": policy["reason"],
+        "manualReviewDays": policy["manualReviewDays"],
+    }
 
 
 def _validate_extractor(extractor: Any) -> None:
@@ -1022,6 +1147,20 @@ def _validate_extractor(extractor: Any) -> None:
             raise RegistryError("text anchor transform is unsupported")
         _validate_text(params["unit"], "unit")
         return
+    if mode == "html-section-text":
+        if not _exact_fields(params, HTML_SECTION_TEXT_PARAMETER_FIELDS):
+            raise RegistryError(
+                "html-section-text requires heading, anchor, transform, and unit"
+            )
+        _validate_anchor_text(params["heading"], "heading")
+        _validate_anchor_text(params["anchor"], "anchor")
+        if params["transform"] not in HTML_SECTION_TEXT_TRANSFORMS:
+            raise RegistryError(
+                "html-section-text transform must be inclusive-range or "
+                "duration-months"
+            )
+        _validate_text(params["unit"], "unit")
+        return
     if mode == "ato-lito":
         if not _exact_fields(params, ATO_LITO_PARAMETER_FIELDS):
             raise RegistryError("ato-lito params require anchor and items")
@@ -1037,6 +1176,38 @@ def _validate_extractor(extractor: Any) -> None:
             )
         ):
             raise RegistryError("ato-lito items require 3 unique exact texts")
+        return
+    if mode == "ato-law-lito":
+        if not _exact_fields(params, ATO_LAW_LITO_PARAMETER_FIELDS):
+            raise RegistryError(
+                "ato-law-lito requires actTitle, section, sectionTitle, and tableTitle"
+            )
+        for key in ATO_LAW_LITO_PARAMETER_FIELDS:
+            _validate_anchor_text(params[key], f"ato-law-lito {key}")
+        return
+    if mode == "ato-law-resident-brackets":
+        if not _exact_fields(params, ATO_LAW_RESIDENT_PARAMETER_FIELDS):
+            raise RegistryError(
+                "ato-law-resident-brackets requires exact tableTitle"
+            )
+        _validate_anchor_text(params["tableTitle"], "resident tableTitle")
+        return
+    if mode == "ato-tax-free-band":
+        if not _exact_fields(params, ATO_TAX_FREE_PARAMETER_FIELDS):
+            raise RegistryError(
+                "ato-tax-free-band requires exact heading and anchor"
+            )
+        _validate_anchor_text(params["heading"], "tax-free heading")
+        _validate_anchor_text(params["anchor"], "tax-free anchor")
+        return
+    if mode == "cra-t4127-version":
+        if (
+            not _exact_fields(params, CRA_T4127_PARAMETER_FIELDS)
+            or params["language"] not in {"en", "fr"}
+        ):
+            raise RegistryError(
+                "cra-t4127-version requires exact language en or fr"
+            )
         return
     if mode == "pdf-table":
         if not _exact_fields(params, PDF_PARAMETER_FIELDS):
@@ -1114,6 +1285,172 @@ def _validate_fixture(root: Path, fixture: Any, jurisdiction: str) -> None:
     ):
         raise RegistryError("fixture.httpStatus must be an integer HTTP status")
     _validate_official_url(fixture["finalUrl"], jurisdiction)
+
+
+def _candidate_policy(attestation: dict[str, Any]) -> str:
+    policy = attestation.get("candidatePolicy", {"mode": "first-match"})
+    return policy["mode"]
+
+
+def _candidate_contexts(
+    attestation: dict[str, Any],
+) -> list[tuple[str, dict[str, Any], str]]:
+    candidates = attestation.get("requestCandidates")
+    if candidates is None:
+        return [
+            (
+                "primary",
+                attestation,
+                attestation["fixture"]["mediaType"],
+            )
+        ]
+    contexts: list[tuple[str, dict[str, Any], str]] = []
+    for candidate in candidates:
+        context = dict(attestation)
+        context["request"] = candidate["request"]
+        context["fixture"] = candidate["fixture"]
+        context["extractor"] = candidate.get(
+            "extractor", attestation["extractor"]
+        )
+        context["_sourceRelation"] = candidate["sourceRelation"]
+        context["_candidateMediaType"] = candidate["mediaType"]
+        contexts.append((candidate["id"], context, candidate["mediaType"]))
+    return contexts
+
+
+def _validate_request_candidates(
+    root: Path,
+    attestation: dict[str, Any],
+    jurisdiction: str,
+    source_fixtures: dict[str, tuple[Any, ...]],
+) -> None:
+    raw_policy = attestation.get("candidatePolicy")
+    if raw_policy is not None and (
+        not _exact_fields(raw_policy, CANDIDATE_POLICY_FIELDS)
+        or raw_policy["mode"] not in CANDIDATE_POLICY_MODES
+    ):
+        raise RegistryError(
+            "candidatePolicy requires exact mode first-match or available-parity"
+        )
+    candidates = attestation.get("requestCandidates")
+    if candidates is None:
+        if raw_policy is not None:
+            raise RegistryError(
+                "candidatePolicy requires requestCandidates"
+            )
+        candidates = [
+            {
+                "id": "primary",
+                "sourceRelation": (
+                    "citation"
+                    if _request_url(attestation) == attestation["sourceUrl"]
+                    else "same-host"
+                ),
+                "request": attestation["request"],
+                "mediaType": attestation["fixture"]["mediaType"],
+                "extractor": attestation["extractor"],
+                "fixture": attestation["fixture"],
+            }
+        ]
+    if (
+        not isinstance(candidates, list)
+        or not 1 <= len(candidates) <= MAX_REQUEST_CANDIDATES
+    ):
+        raise RegistryError(
+            f"requestCandidates must contain 1-{MAX_REQUEST_CANDIDATES} items"
+        )
+    seen_ids: set[str] = set()
+    seen_requests: set[str] = set()
+    for index, candidate_spec in enumerate(candidates):
+        if (
+            not isinstance(candidate_spec, dict)
+            or not REQUEST_CANDIDATE_REQUIRED_FIELDS
+            <= set(candidate_spec)
+            or not set(candidate_spec)
+            <= (
+                REQUEST_CANDIDATE_REQUIRED_FIELDS
+                | REQUEST_CANDIDATE_OPTIONAL_FIELDS
+            )
+        ):
+            raise RegistryError(
+                "candidate requires id, sourceRelation, request, mediaType, "
+                "fixture, and optional extractor"
+            )
+        candidate_id = candidate_spec["id"]
+        if (
+            not isinstance(candidate_id, str)
+            or not re.fullmatch(
+                r"[a-z0-9][a-z0-9._-]{1,39}", candidate_id
+            )
+            or candidate_id in seen_ids
+        ):
+            raise RegistryError(
+                "candidate id must be a unique 2-40 character slug"
+            )
+        seen_ids.add(candidate_id)
+        relation = candidate_spec["sourceRelation"]
+        _validate_request(
+            candidate_spec["request"],
+            attestation["sourceUrl"],
+            jurisdiction,
+            source_relation=relation,
+            candidate=True,
+        )
+        media_type = candidate_spec["mediaType"]
+        if media_type not in SUPPORTED_CANDIDATE_MEDIA:
+            raise RegistryError(
+                "candidate mediaType must be a supported exact media type"
+            )
+        extractor = candidate_spec.get(
+            "extractor", attestation["extractor"]
+        )
+        _validate_extractor(extractor)
+        if not _expected_media(extractor["mode"], media_type):
+            raise RegistryError(
+                "candidate mediaType is incompatible with its extractor"
+            )
+        fixture = candidate_spec["fixture"]
+        _validate_fixture(root, fixture, jurisdiction)
+        candidate_context = dict(attestation)
+        candidate_context["request"] = candidate_spec["request"]
+        candidate_context["extractor"] = extractor
+        candidate_context["fixture"] = fixture
+        if fixture["finalUrl"] != _request_url(candidate_context):
+            raise RegistryError(
+                "candidate fixture.finalUrl must equal its request URL"
+            )
+        if fixture["mediaType"] != media_type:
+            raise RegistryError(
+                "candidate fixture.mediaType must equal candidate mediaType"
+            )
+        if index == 0 and (
+            candidate_spec["request"] != attestation["request"]
+            or extractor != attestation["extractor"]
+            or fixture != attestation["fixture"]
+        ):
+            raise RegistryError(
+                "first candidate must exactly mirror root request/extractor/fixture"
+            )
+        request_key = _request_key(candidate_context)
+        if request_key in seen_requests:
+            raise RegistryError(
+                "one attestation may not repeat a canonical candidate request"
+            )
+        seen_requests.add(request_key)
+        fixture_key = (
+            fixture["path"],
+            fixture["mediaType"],
+            fixture["sha256"],
+            fixture["httpStatus"],
+            fixture["finalUrl"],
+        )
+        previous_fixture = source_fixtures.setdefault(
+            request_key, fixture_key
+        )
+        if previous_fixture != fixture_key:
+            raise RegistryError(
+                "one canonical candidate request must use one fixture response"
+            )
 
 
 def _target_map(boundary_data: Any) -> dict[str, dict[str, Any]]:
@@ -1343,21 +1680,9 @@ def _validate_registry(
                 raise RegistryError(
                     "fixture.finalUrl must equal the deterministic request URL"
                 )
-            fixture_key = (
-                raw["fixture"]["path"],
-                raw["fixture"]["mediaType"],
-                raw["fixture"]["sha256"],
-                raw["fixture"]["httpStatus"],
-                raw["fixture"]["finalUrl"],
+            _validate_request_candidates(
+                root, raw, jurisdiction, source_fixtures
             )
-            request_key = _request_key(raw)
-            previous_fixture = source_fixtures.setdefault(
-                request_key, fixture_key
-            )
-            if previous_fixture != fixture_key:
-                raise RegistryError(
-                    "one source request must use one deterministic fixture response"
-                )
 
             target_mappings = raw.get("targets", [])
             claim_mappings = raw.get("claims", [])
@@ -1381,25 +1706,38 @@ def _validate_registry(
             local_target_pairs: list[tuple[str, str]] = []
             seen_local_targets: set[tuple[str, str]] = set()
             for mapping in target_mappings:
-                if not _exact_fields(mapping, TARGET_FIELDS):
+                if (
+                    not isinstance(mapping, dict)
+                    or not REQUIRED_TARGET_FIELDS <= set(mapping)
+                    or not set(mapping) <= (
+                        REQUIRED_TARGET_FIELDS | OPTIONAL_TARGET_FIELDS
+                    )
+                ):
                     raise RegistryError(
-                        "target mapping must contain targetId and reviewedPath"
+                        "target mapping requires targetId, reviewedPath, and "
+                        "optional expectedPath"
                     )
                 target_id = mapping["targetId"]
                 reviewed_path = mapping["reviewedPath"]
+                expected_path = mapping.get("expectedPath", "/")
                 if target_id not in targets:
                     raise RegistryError(f"unknown boundary target {target_id!r}")
                 _pointer_parts(reviewed_path)
+                _pointer_parts(expected_path)
                 resolved = _resolve_pointer(
                     targets[target_id]["reviewed"], reviewed_path
+                )
+                expected_resolved = _resolve_pointer(
+                    expected["value"], expected_path
                 )
                 pair = (target_id, reviewed_path)
                 if pair in seen_local_targets:
                     raise RegistryError("duplicate target mapping in attestation")
                 seen_local_targets.add(pair)
-                if resolved != expected["value"]:
+                if resolved != expected_resolved:
                     raise RegistryError(
-                        f"{target_id}{reviewed_path} differs from expected.value"
+                        f"{target_id}{reviewed_path} differs from "
+                        f"expected.value{expected_path}"
                     )
                 for other_path, other_id in mapped_paths[target_id]:
                     if _path_covers(other_path, reviewed_path) or _path_covers(
@@ -1568,11 +1906,14 @@ class _HtmlSourceParser(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.tables: list[dict[str, Any]] = []
         self.headings: list[str] = []
+        self.heading_records: list[tuple[int, str]] = []
         self.definitions: list[tuple[str, str, str]] = []
         self.block_texts: list[str] = []
         self.loose_texts: list[str] = []
         self.labelled_values: list[tuple[str, str, str]] = []
         self.list_items: list[tuple[str, str]] = []
+        self.section_blocks: list[tuple[str, str, str]] = []
+        self.heading_blocks: list[tuple[str, str, str]] = []
         self._recent_anchors: list[str] = []
         self._table: dict[str, Any] | None = None
         self._row: list[str] | None = None
@@ -1581,6 +1922,7 @@ class _HtmlSourceParser(HTMLParser):
         self._heading_parts: list[str] | None = None
         self._heading_level = 0
         self._current_heading = ""
+        self._current_h3 = ""
         self._outer_heading = ""
         self._pending_label: tuple[str, str] | None = None
         self._block_stack: list[dict[str, Any]] = []
@@ -1588,18 +1930,38 @@ class _HtmlSourceParser(HTMLParser):
         self._dd_parts: list[str] | None = None
         self._pending_dt: str | None = None
         self._ignored_depth = 0
+        self._tag_stack: list[tuple[str, dict[str, str]]] = []
 
     def handle_starttag(
         self, tag: str, attrs: list[tuple[str, str | None]]
     ) -> None:
         lowered = tag.lower()
+        normalized_attrs = {
+            key.lower(): (value or "") for key, value in attrs
+        }
         if lowered in {"script", "style", "template", "noscript"}:
             self._ignored_depth += 1
         if lowered == "table":
+            hidden = any(
+                item_attrs.get("id", "").startswith("History_")
+                or re.sub(
+                    r"\s+", "", item_attrs.get("style", "").lower()
+                )
+                == "display:none"
+                for _item_tag, item_attrs in self._tag_stack
+            )
+            direct_law_body = bool(
+                self._tag_stack
+                and self._tag_stack[-1][0] == "div"
+                and self._tag_stack[-1][1].get("id")
+                in {"lawBody", "LawBody"}
+            )
             self._table = {
                 "caption": "",
                 "rows": [],
                 "anchors": list(self._recent_anchors),
+                "hidden": hidden,
+                "directLawBody": direct_law_body,
                 "section": (
                     self._recent_anchors[-1] if self._recent_anchors else ""
                 ),
@@ -1623,6 +1985,11 @@ class _HtmlSourceParser(HTMLParser):
             self._dt_parts = []
         elif lowered == "dd":
             self._dd_parts = []
+        if lowered not in {
+            "area", "base", "br", "col", "embed", "hr", "img", "input",
+            "link", "meta", "param", "source", "track", "wbr",
+        }:
+            self._tag_stack.append((lowered, normalized_attrs))
 
     def handle_endtag(self, tag: str) -> None:
         lowered = tag.lower()
@@ -1651,6 +2018,9 @@ class _HtmlSourceParser(HTMLParser):
             heading = _normalize_text("".join(self._heading_parts))
             self._current_heading = heading
             self.headings.append(heading)
+            self.heading_records.append((self._heading_level, heading))
+            if self._heading_level == 3:
+                self._current_h3 = heading
             self._remember_anchor(heading)
             if self._heading_level <= 3:
                 self._outer_heading = heading
@@ -1667,6 +2037,12 @@ class _HtmlSourceParser(HTMLParser):
             block = _normalize_text("".join(current["parts"]))
             if block and not current["hasChildBlock"]:
                 self.block_texts.append(block)
+                self.section_blocks.append(
+                    (self._current_h3, lowered, block)
+                )
+                self.heading_blocks.append(
+                    (self._current_heading, lowered, block)
+                )
                 self._remember_anchor(block)
                 if lowered == "li":
                     self.list_items.append((self._current_heading, block))
@@ -1684,6 +2060,10 @@ class _HtmlSourceParser(HTMLParser):
                 )
             self._pending_dt = None
             self._dd_parts = None
+        for index in range(len(self._tag_stack) - 1, -1, -1):
+            if self._tag_stack[index][0] == lowered:
+                del self._tag_stack[index:]
+                break
 
     def handle_data(self, data: str) -> None:
         tracked = any(
@@ -1984,7 +2364,11 @@ def _transform_html_value(value: str, transform: str) -> Any:
             )
         return float(percent) / 100
     if transform in {"duration-months", "duration-weeks"}:
-        word = "months?" if transform == "duration-months" else "weeks?"
+        word = (
+            r"(?:months?|mois)"
+            if transform == "duration-months"
+            else "weeks?"
+        )
         match = _single_numeric_match(
             normalized,
             rf"(?<![A-Za-z0-9])([0-9][0-9,]*(?:\.[0-9]+)?)\s+{word}\b",
@@ -1992,10 +2376,34 @@ def _transform_html_value(value: str, transform: str) -> Any:
         )
         return _finite_number(match.group(1))
     if transform == "inclusive-range":
+        english_age = re.fullmatch(
+            r"be between the ages of ([0-9][0-9,]*) and "
+            r"([0-9][0-9,]*) \(inclusive\)",
+            normalized,
+            flags=re.IGNORECASE,
+        )
+        if english_age is not None:
+            lower = _finite_number(english_age.group(1))
+            upper = _finite_number(english_age.group(2))
+            if (
+                not isinstance(lower, int)
+                or not isinstance(upper, int)
+                or lower > upper
+            ):
+                raise ChangedExtraction(
+                    "English inclusive age bounds must be ascending integers"
+                )
+            return f"{lower}-{upper}"
+        if re.search(
+            r"\bbetween the ages of\b", normalized, flags=re.IGNORECASE
+        ):
+            raise ChangedExtraction(
+                "English inclusive age prose does not match the fixed grammar"
+            )
         matches = list(
             re.finditer(
                 r"(?<![A-Za-z0-9])([0-9][0-9,]*(?:\.[0-9]+)?)"
-                r"\s*(?:[\-\u2013\u2014]|\bto\b)\s*"
+                r"\s*(?:[\-\u2013\u2014]|\bto\b|\bà\b)\s*"
                 r"([0-9][0-9,]*(?:\.[0-9]+)?)(?![A-Za-z0-9])",
                 normalized,
                 flags=re.IGNORECASE,
@@ -2380,58 +2788,647 @@ def _extract_ato_lito(
     }
 
 
+def _extract_html_section_text(
+    body: bytes, params: dict[str, Any]
+) -> tuple[str, Any]:
+    parser = _parse_html(body)
+    heading = params["heading"]
+    heading_count = sum(
+        level == 3 and text == heading
+        for level, text in parser.heading_records
+    )
+    if heading_count != 1:
+        raise ChangedExtraction(
+            f"H3 section {heading!r} matched {heading_count} times"
+        )
+    matches = [
+        text
+        for current_heading, tag, text in parser.section_blocks
+        if current_heading == heading
+        and tag in {"p", "li"}
+        and text == params["anchor"]
+    ]
+    if len(matches) != 1:
+        raise ChangedExtraction(
+            f"section leaf anchor matched {len(matches)} times"
+        )
+    return (
+        params["unit"],
+        _transform_html_value(matches[0], params["transform"]),
+    )
+
+
+def _extract_ato_law_lito(
+    body: bytes, params: dict[str, Any]
+) -> tuple[dict[str, str], dict[str, int | float]]:
+    parser = _parse_html(body)
+    title_count = sum(
+        level == 1 and text == params["actTitle"]
+        for level, text in parser.heading_records
+    )
+    if title_count != 1:
+        raise ChangedExtraction(
+            f"ATO Act H1 matched {title_count} times"
+        )
+    section_block = f"{params['section']} {params['sectionTitle']}"
+    section_count = parser.block_texts.count(section_block)
+    if section_count != 1:
+        raise ChangedExtraction(
+            "ATO LITO requires exactly one reviewed strong-pair section "
+            f"paragraph; found {section_count}"
+        )
+
+    candidates: list[tuple[list[list[str]], int]] = []
+    expected_title_row = [params["tableTitle"]]
+    for table in parser.tables:
+        if table["hidden"] or not table["directLawBody"]:
+            continue
+        rows = table["rows"]
+        header_indexes = [
+            index
+            for index, row in enumerate(rows)
+            if row == ATO_LAW_LITO_HEADERS
+        ]
+        title_indexes = [
+            index
+            for index, row in enumerate(rows)
+            if row == expected_title_row
+        ]
+        caption_match = table["caption"] == params["tableTitle"]
+        title_count_for_table = len(title_indexes) + int(caption_match)
+        if (
+            len(header_indexes) == 1
+            and title_count_for_table == 1
+            and (
+                caption_match
+                or title_indexes[0] < header_indexes[0]
+            )
+        ):
+            candidates.append((rows, header_indexes[0]))
+    if len(candidates) != 1:
+        raise ChangedExtraction(
+            "ATO LITO law table requires one exact title before exact headers"
+        )
+    rows, header_index = candidates[0]
+    data_rows = rows[header_index + 1 :]
+    if len(data_rows) != 3 or any(len(row) != 3 for row in data_rows):
+        raise ChangedExtraction(
+            "ATO LITO law table requires exactly three complete rows"
+        )
+    expected_items = ["1", "2", "3"]
+    if [row[0] for row in data_rows] != expected_items:
+        raise ChangedExtraction("ATO LITO law items must be exactly 1, 2, 3")
+
+    first_band = re.fullmatch(
+        r"does not exceed \$ ([0-9][0-9,]*)", data_rows[0][1]
+    )
+    first_value = re.fullmatch(
+        r"\$ ([0-9][0-9,]*)", data_rows[0][2]
+    )
+    second_band = re.fullmatch(
+        r"exceeds \$ ([0-9][0-9,]*) but is not more than "
+        r"\$ ([0-9][0-9,]*)",
+        data_rows[1][1],
+    )
+    second_value = re.fullmatch(
+        r"\$ ([0-9][0-9,]*), less an amount equal to "
+        r"([0-9]+(?:\.[0-9]+)?)% of the excess",
+        data_rows[1][2],
+    )
+    third_band = re.fullmatch(
+        r"exceeds \$ ([0-9][0-9,]*) but is not more than "
+        r"\$ ([0-9][0-9,]*)",
+        data_rows[2][1],
+    )
+    third_value = re.fullmatch(
+        r"\$ ([0-9][0-9,]*), less an amount equal to "
+        r"([0-9]+(?:\.[0-9]+)?)% of the excess",
+        data_rows[2][2],
+    )
+    if any(item is None for item in (
+        first_band,
+        first_value,
+        second_band,
+        second_value,
+        third_band,
+        third_value,
+    )):
+        raise ChangedExtraction(
+            "ATO LITO law rows do not match the reviewed exact grammar"
+        )
+    full_to = _ato_lito_amount(first_band.group(1))
+    max_offset = _ato_lito_amount(first_value.group(1))
+    taper1_from = _ato_lito_amount(second_band.group(1))
+    taper1_to = _ato_lito_amount(second_band.group(2))
+    taper1_offset = _ato_lito_amount(second_value.group(1))
+    taper1_rate = float(_finite_number(second_value.group(2))) / 100
+    taper2_from = _ato_lito_amount(third_band.group(1))
+    cut_out = _ato_lito_amount(third_band.group(2))
+    taper2_offset = _ato_lito_amount(third_value.group(1))
+    taper2_rate = float(_finite_number(third_value.group(2))) / 100
+    if (
+        taper1_from != full_to
+        or taper1_offset != max_offset
+        or taper2_from != taper1_to
+    ):
+        raise ChangedExtraction(
+            "ATO LITO law thresholds/bases are not boundary-contiguous"
+        )
+    expected_taper2 = max_offset - taper1_rate * (
+        taper1_to - full_to
+    )
+    if abs(expected_taper2 - taper2_offset) > 1e-9:
+        raise ChangedExtraction(
+            "ATO LITO law second taper base is arithmetically inconsistent"
+        )
+    residual = taper2_offset - taper2_rate * (cut_out - taper1_to)
+    if abs(residual) > 0.01:
+        raise ChangedExtraction(
+            "ATO LITO law cut-out does not reduce offset to zero"
+        )
+    return ATO_LITO_UNIT, {
+        "maxOffset": max_offset,
+        "fullTo": full_to,
+        "taper1To": taper1_to,
+        "taper1Rate": taper1_rate,
+        "cutOut": cut_out,
+        "taper2Rate": taper2_rate,
+    }
+
+
+def _extract_ato_law_resident_brackets(
+    body: bytes, params: dict[str, Any]
+) -> tuple[str, list[list[int | float | None]]]:
+    parser = _parse_html(body)
+    candidates: list[tuple[list[list[str]], int]] = []
+    for table in parser.tables:
+        if table["hidden"] or not table["directLawBody"]:
+            continue
+        rows = table["rows"]
+        header_indexes = [
+            index
+            for index, row in enumerate(rows)
+            if row == ATO_LAW_RESIDENT_HEADERS
+        ]
+        title_rows = [
+            index
+            for index, row in enumerate(rows)
+            if row in (
+                [params["tableTitle"]],
+                [params["tableTitle"], "", ""],
+            )
+        ]
+        title_count = len(title_rows) + int(
+            table["caption"] == params["tableTitle"]
+        )
+        if (
+            len(header_indexes) == 1
+            and title_count == 1
+            and (
+                table["caption"] == params["tableTitle"]
+                or title_rows[0] < header_indexes[0]
+            )
+        ):
+            candidates.append((rows, header_indexes[0]))
+    if len(candidates) != 1:
+        raise ChangedExtraction(
+            "ATO resident law table requires one exact current title/header"
+        )
+    rows, header_index = candidates[0]
+    data_rows = rows[header_index + 1 :]
+    if (
+        len(data_rows) != 4
+        or any(len(row) != 3 for row in data_rows)
+        or [row[0] for row in data_rows] != ["1", "2", "3", "4"]
+    ):
+        raise ChangedExtraction(
+            "ATO resident law table requires exact complete items 1-4"
+        )
+    phrases = [
+        r"exceeds the tax-free threshold but does not exceed \$([0-9][0-9,]*)",
+        r"exceeds \$([0-9][0-9,]*) but does not exceed \$([0-9][0-9,]*)",
+        r"exceeds \$([0-9][0-9,]*) but does not exceed \$([0-9][0-9,]*)",
+        r"exceeds \$([0-9][0-9,]*)",
+    ]
+    matches = [
+        re.fullmatch(pattern, row[1])
+        for pattern, row in zip(phrases, data_rows)
+    ]
+    rate_matches = [
+        re.fullmatch(r"([0-9]+(?:\.[0-9]+)?)%", row[2])
+        for row in data_rows
+    ]
+    if any(match is None for match in matches + rate_matches):
+        raise ChangedExtraction(
+            "ATO resident law bands/rates do not match the fixed grammar"
+        )
+    caps = [
+        _ato_lito_amount(matches[0].group(1)),
+        _ato_lito_amount(matches[1].group(2)),
+        _ato_lito_amount(matches[2].group(2)),
+    ]
+    if (
+        _ato_lito_amount(matches[1].group(1)) != caps[0]
+        or _ato_lito_amount(matches[2].group(1)) != caps[1]
+        or _ato_lito_amount(matches[3].group(1)) != caps[2]
+        or not caps[0] < caps[1] < caps[2]
+    ):
+        raise ChangedExtraction(
+            "ATO resident law bands are not strictly contiguous"
+        )
+    rates = [
+        float(_finite_number(match.group(1))) / 100
+        for match in rate_matches
+    ]
+    if any(not 0 <= rate <= 1 for rate in rates):
+        raise ChangedExtraction("ATO resident rate is outside 0..1")
+    return "AUD/rate", [
+        [caps[0], rates[0]],
+        [caps[1], rates[1]],
+        [caps[2], rates[2]],
+        [None, rates[3]],
+    ]
+
+
+def _extract_ato_tax_free_band(
+    body: bytes, params: dict[str, Any]
+) -> tuple[str, list[int | float]]:
+    parser = _parse_html(body)
+    heading_count = sum(
+        level == 2 and text == params["heading"]
+        for level, text in parser.heading_records
+    )
+    if heading_count != 1:
+        raise ChangedExtraction(
+            f"ATO tax-free H2 matched {heading_count} times"
+        )
+    matches = [
+        text
+        for heading, tag, text in parser.heading_blocks
+        if heading == params["heading"]
+        and tag == "p"
+        and text == params["anchor"]
+    ]
+    if len(matches) != 1:
+        raise ChangedExtraction(
+            f"ATO tax-free paragraph matched {len(matches)} times"
+        )
+    grammar = re.fullmatch(
+        r"The tax-free threshold is the amount of income you can earn "
+        r"before you pay tax\. Most Australian residents can claim "
+        r"tax-free threshold on the first \$([0-9][0-9,]*) of the "
+        r"income they earn in the income year\.",
+        matches[0],
+    )
+    if grammar is None:
+        raise ChangedExtraction(
+            "ATO tax-free paragraph does not match the fixed zero-band grammar"
+        )
+    threshold = _ato_lito_amount(grammar.group(1))
+    if threshold <= 0:
+        raise ChangedExtraction("ATO tax-free threshold must be positive")
+    return "AUD/rate", [threshold, 0]
+
+
+def _english_ordinal(number: int) -> str:
+    if 10 <= number % 100 <= 20:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(number % 10, "th")
+    return f"{number}{suffix}"
+
+
+def _extract_cra_t4127_version(
+    body: bytes, params: dict[str, Any]
+) -> tuple[str, str]:
+    parser = _parse_html(body)
+    h1_values = [
+        text for level, text in parser.heading_records if level == 1
+    ]
+    if len(h1_values) != 1:
+        raise ChangedExtraction(
+            f"CRA T4127 requires exactly one H1, found {len(h1_values)}"
+        )
+    heading = h1_values[0]
+    language = params["language"]
+    if language == "en":
+        match = re.fullmatch(
+            r"T4127-JUL Payroll Deductions Formulas - "
+            r"([1-9][0-9]*)(st|nd|rd|th) "
+            r"Edition - Effective "
+            r"(January|February|March|April|May|June|July|August|"
+            r"September|October|November|December) ([1-9]|[12][0-9]|3[01]), "
+            r"([0-9]{4})",
+            heading,
+        )
+        if match is None:
+            raise ChangedExtraction(
+                "CRA English T4127 H1 does not match the fixed version grammar"
+            )
+        edition = int(match.group(1))
+        if match.group(1) + match.group(2) != _english_ordinal(edition):
+            raise ChangedExtraction("CRA English edition ordinal is inconsistent")
+        month_names = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December",
+        ]
+        month = month_names.index(match.group(3)) + 1
+        year = int(match.group(5))
+        day = int(match.group(4))
+    else:
+        match = re.fullmatch(
+            r"T4127-JUL Formules pour le calcul des retenues sur la paie - "
+            r"([1-9][0-9]*)e édition - En vigueur le "
+            r"(1er|[2-9]|[12][0-9]|3[01]) "
+            r"(janvier|février|mars|avril|mai|juin|juillet|août|"
+            r"septembre|octobre|novembre|décembre) ([0-9]{4})",
+            heading,
+        )
+        if match is None:
+            raise ChangedExtraction(
+                "CRA French T4127 H1 does not match the fixed version grammar"
+            )
+        edition = int(match.group(1))
+        day = int(match.group(2).removesuffix("er"))
+        month_names = [
+            "janvier", "février", "mars", "avril", "mai", "juin",
+            "juillet", "août", "septembre", "octobre", "novembre", "décembre",
+        ]
+        month = month_names.index(match.group(3)) + 1
+        year = int(match.group(4))
+    try:
+        date(year, month, day)
+    except ValueError as exc:
+        raise ChangedExtraction("CRA T4127 effective date is invalid") from exc
+    return (
+        "table version",
+        f"T4127-{_english_ordinal(edition)}-{year:04d}-{month:02d}",
+    )
+
+
+def _pdf_literal_at(text: str, index: int) -> tuple[str, int]:
+    if index >= len(text) or text[index] != "(":
+        raise ChangedExtraction("PDF literal does not start with '('")
+    index += 1
+    depth = 1
+    chars: list[str] = []
+    while index < len(text) and depth:
+        char = text[index]
+        index += 1
+        if char == "\\":
+            if index >= len(text):
+                raise ChangedExtraction("unterminated PDF string escape")
+            escaped = text[index]
+            index += 1
+            chars.append(
+                {
+                    "n": "\n",
+                    "r": "\r",
+                    "t": "\t",
+                    "b": "\b",
+                    "f": "\f",
+                }.get(escaped, escaped)
+            )
+        elif char == "(":
+            depth += 1
+            if depth > 32:
+                raise UnsupportedExtraction(
+                    "PDF literal nesting exceeds safe depth"
+                )
+            chars.append(char)
+        elif char == ")":
+            depth -= 1
+            if depth:
+                chars.append(char)
+        else:
+            chars.append(char)
+    if depth:
+        raise ChangedExtraction("unterminated PDF literal string")
+    return "".join(chars), index
+
+
+def _pdf_operator_at(text: str, index: int, operator: str) -> bool:
+    end = index + len(operator)
+    return (
+        text.startswith(operator, index)
+        and (index == 0 or not text[index - 1].isalpha())
+        and (end == len(text) or not text[end].isalpha())
+    )
+
+
+def _pdf_literal_lines_from_bytes(content: bytes) -> list[str]:
+    text = content.decode("latin-1")
+    tokens = list(re.finditer(r"(?<![A-Za-z])(?:BT|ET)(?![A-Za-z])", text))
+    regions: list[tuple[int, int]] = []
+    start: int | None = None
+    for token in tokens:
+        if token.group(0) == "BT":
+            if start is not None:
+                raise ChangedExtraction("PDF text objects may not nest")
+            start = token.end()
+        else:
+            if start is None:
+                raise ChangedExtraction("PDF ET has no matching BT")
+            regions.append((start, token.start()))
+            start = None
+    if start is not None:
+        raise ChangedExtraction("PDF BT has no matching ET")
+    for outside_match in re.finditer(
+        r"(?:\)|\]|>)\s*(?:Tj|TJ)(?![A-Za-z])", text
+    ):
+        operator_position = outside_match.end() - 2
+        if not any(
+            region_start <= operator_position < region_end
+            for region_start, region_end in regions
+        ):
+            raise ChangedExtraction(
+                "PDF text operator appears outside a balanced BT/ET object"
+            )
+
+    lines: list[str] = []
+    number_token = re.compile(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)")
+    for region_start, region_end in regions:
+        region = text[region_start:region_end]
+        index = 0
+        while index < len(region):
+            if region[index] == "(":
+                literal, after = _pdf_literal_at(region, index)
+                probe = after
+                while probe < len(region) and region[probe].isspace():
+                    probe += 1
+                if _pdf_operator_at(region, probe, "Tj"):
+                    normalized = _normalize_text(literal)
+                    if normalized:
+                        lines.append(normalized)
+                    index = probe + 2
+                    continue
+                index = after
+                continue
+            if region[index] == "[":
+                close = region.find("]", index + 1)
+                if close < 0:
+                    raise ChangedExtraction("unterminated PDF TJ array")
+                if "[" in region[index + 1 : close]:
+                    raise UnsupportedExtraction("nested PDF TJ arrays are unsupported")
+                probe = close + 1
+                while probe < len(region) and region[probe].isspace():
+                    probe += 1
+                if not _pdf_operator_at(region, probe, "TJ"):
+                    index = close + 1
+                    continue
+                cursor = index + 1
+                pieces: list[str] = []
+                token_count = 0
+                while cursor < close:
+                    while cursor < close and region[cursor].isspace():
+                        cursor += 1
+                    if cursor >= close:
+                        break
+                    token_count += 1
+                    if token_count > 256:
+                        raise UnsupportedExtraction(
+                            "PDF TJ array exceeds safe token count"
+                        )
+                    if region[cursor] == "(":
+                        literal, cursor = _pdf_literal_at(region, cursor)
+                        if cursor > close:
+                            raise ChangedExtraction(
+                                "PDF TJ literal crosses array boundary"
+                            )
+                        pieces.append(literal)
+                        continue
+                    if region[cursor] == "<":
+                        raise UnsupportedExtraction(
+                            "hex-string PDF TJ text is unsupported"
+                        )
+                    number = number_token.match(region, cursor)
+                    if number is None or number.end() > close:
+                        raise ChangedExtraction(
+                            "PDF TJ array contains a non-literal/non-number token"
+                        )
+                    cursor = number.end()
+                if not pieces:
+                    raise ChangedExtraction("PDF TJ array has no literal text")
+                normalized = _normalize_text("".join(pieces))
+                if normalized:
+                    lines.append(normalized)
+                index = probe + 2
+                continue
+            if region[index] == "<":
+                hex_match = re.match(r"<[0-9A-Fa-f\s]*>\s*Tj\b", region[index:])
+                if hex_match:
+                    raise UnsupportedExtraction(
+                        "hex-string PDF Tj text is unsupported"
+                    )
+            index += 1
+    return lines
+
+
+def _pdf_classic_xref_is_valid(body: bytes) -> bool:
+    matches = list(re.finditer(rb"startxref\s+([0-9]+)\s+%%EOF\s*$", body))
+    if len(matches) != 1:
+        return False
+    offset = int(matches[0].group(1))
+    return 0 <= offset < len(body) and body[offset : offset + 4] == b"xref"
+
+
+def _bounded_flate(data: bytes) -> bytes:
+    decompressor = zlib.decompressobj()
+    try:
+        output = decompressor.decompress(
+            data, MAX_PDF_DECOMPRESSED_BYTES + 1
+        )
+        if len(output) <= MAX_PDF_DECOMPRESSED_BYTES:
+            output += decompressor.flush(
+                MAX_PDF_DECOMPRESSED_BYTES + 1 - len(output)
+            )
+    except zlib.error as exc:
+        raise ChangedExtraction(f"invalid PDF Flate stream: {exc}") from exc
+    if not decompressor.eof or decompressor.unused_data:
+        raise ChangedExtraction("PDF Flate stream is truncated or has trailing data")
+    if len(output) > MAX_PDF_DECOMPRESSED_BYTES:
+        raise UnsupportedExtraction("PDF decompressed stream exceeds safe limit")
+    if len(data) == 0 or len(output) > len(data) * MAX_PDF_COMPRESSION_RATIO:
+        raise UnsupportedExtraction("PDF Flate compression ratio exceeds safe limit")
+    return output
+
+
 def _pdf_literal_lines(body: bytes) -> list[str]:
     if not body.startswith(b"%PDF-"):
         raise UnsupportedExtraction("body is not a PDF")
-    for marker in (b"/Encrypt", b"/FlateDecode", b"/ObjStm"):
+    if len(body) > MAX_BODY_BYTES:
+        raise UnsupportedExtraction("PDF body exceeds safe limit")
+    if not body.rstrip().endswith(b"%%EOF"):
+        raise ChangedExtraction("PDF is truncated before %%EOF")
+    for marker in (b"/Encrypt", b"/ObjStm", b"/ToUnicode", b"/DecodeParms"):
         if marker in body:
             raise UnsupportedExtraction(
                 f"PDF feature {marker.decode('ascii')} is not safely supported"
             )
-    text = body.decode("latin-1")
-    lines: list[str] = []
-    index = 0
-    while index < len(text):
-        if text[index] != "(":
-            index += 1
+    if re.search(rb"/Type\s*/XRef\b", body):
+        raise UnsupportedExtraction("PDF xref streams are unsupported")
+    if re.search(rb"/Subtype\s*/(?:Type0|CIDFontType[02]|Type3)\b", body):
+        raise UnsupportedExtraction("PDF uses an unsupported font encoding")
+    if not _pdf_classic_xref_is_valid(body):
+        raise ChangedExtraction(
+            "PDF requires exactly one valid classic xref/startxref"
+        )
+    object_matches = list(
+        re.finditer(
+            rb"(?ms)([1-9][0-9]*)\s+([0-9]+)\s+obj\b(.*?)\bendobj\b",
+            body,
+        )
+    )
+    if len(object_matches) > MAX_PDF_OBJECTS:
+        raise UnsupportedExtraction("PDF object count exceeds safe limit")
+    if any(len(match.group(3)) > MAX_PDF_OBJECT_BYTES for match in object_matches):
+        raise UnsupportedExtraction("PDF object exceeds safe size limit")
+
+    contents: list[bytes] = []
+    total_content_bytes = 0
+    stream_count = 0
+    for match in object_matches:
+        object_body = match.group(3)
+        stream_match = re.fullmatch(
+            rb"(?s)(.*?)\bstream\r?\n(.*?)\r?\nendstream\s*",
+            object_body.strip(),
+        )
+        if stream_match is None:
             continue
-        index += 1
-        depth = 1
-        chars: list[str] = []
-        while index < len(text) and depth:
-            char = text[index]
-            index += 1
-            if char == "\\":
-                if index >= len(text):
-                    raise ChangedExtraction("unterminated PDF string escape")
-                escaped = text[index]
-                index += 1
-                chars.append(
-                    {
-                        "n": "\n",
-                        "r": "\r",
-                        "t": "\t",
-                        "b": "\b",
-                        "f": "\f",
-                    }.get(escaped, escaped)
+        stream_count += 1
+        if stream_count > MAX_PDF_STREAMS:
+            raise UnsupportedExtraction("PDF stream count exceeds safe limit")
+        dictionary = stream_match.group(1)
+        stream = stream_match.group(2)
+        filters = re.findall(rb"/Filter\s*/([A-Za-z0-9]+)", dictionary)
+        array_filter = re.search(rb"/Filter\s*\[", dictionary)
+        if array_filter or len(filters) > 1:
+            raise UnsupportedExtraction("PDF filter chains are unsupported")
+        if filters:
+            if filters[0] != b"FlateDecode":
+                raise UnsupportedExtraction(
+                    "PDF stream filter is not safely supported"
                 )
-            elif char == "(":
-                depth += 1
-                chars.append(char)
-            elif char == ")":
-                depth -= 1
-                if depth:
-                    chars.append(char)
-            else:
-                chars.append(char)
-        if depth:
-            raise ChangedExtraction("unterminated PDF literal string")
-        probe = index
-        while probe < len(text) and text[probe].isspace():
-            probe += 1
-        if text.startswith("Tj", probe):
-            lines.append(_normalize_text("".join(chars)))
-        index = probe
+            content = _bounded_flate(stream)
+        else:
+            content = stream
+        total_content_bytes += len(content)
+        if total_content_bytes > MAX_PDF_DECOMPRESSED_BYTES:
+            raise UnsupportedExtraction(
+                "PDF aggregate text stream bytes exceed safe limit"
+            )
+        contents.append(content)
+    if b"stream" in body and stream_count == 0:
+        raise ChangedExtraction("PDF stream/object boundaries are malformed")
+    if not contents:
+        if len(body) > MAX_PDF_DECOMPRESSED_BYTES:
+            raise UnsupportedExtraction(
+                "PDF aggregate literal content exceeds safe limit"
+            )
+        contents = [body]
+    lines: list[str] = []
+    for content in contents:
+        lines.extend(_pdf_literal_lines_from_bytes(content))
     if not lines:
         raise UnsupportedExtraction("PDF has no supported literal text operators")
     return lines
@@ -2551,17 +3548,26 @@ EXTRACTORS: dict[
     "html-table-record": _extract_html_table_record,
     "html-labelled-values": _extract_html_labelled_values,
     "html-text-anchor": _extract_html_text_anchor,
+    "html-section-text": _extract_html_section_text,
     "pdf-table": _extract_pdf_table,
     "json-pointer": _extract_json_record,
     "api-json-pointer": _extract_json_record,
     "api-json-record": _extract_api_json_record,
     "ato-lito": _extract_ato_lito,
+    "ato-law-lito": _extract_ato_law_lito,
+    "ato-law-resident-brackets": _extract_ato_law_resident_brackets,
+    "ato-tax-free-band": _extract_ato_tax_free_band,
+    "cra-t4127-version": _extract_cra_t4127_version,
 }
 
 
 def _expected_media(mode: str, media_type: str) -> bool:
     normalized = _media_type(media_type)
-    if mode.startswith("html-") or mode == "ato-lito":
+    if (
+        mode.startswith("html-")
+        or mode.startswith("ato-")
+        or mode == "cra-t4127-version"
+    ):
         return normalized in HTML_MEDIA_TYPES
     if mode == "pdf-table":
         return normalized in PDF_MEDIA_TYPES
@@ -2620,6 +3626,14 @@ def _evaluate_response(
         )
     try:
         _validate_official_url(response.final_url, attestation["jurisdiction"])
+        relation = attestation.get("_sourceRelation")
+        if relation in {"citation", "same-host"} and (
+            _canonical_hostname(response.final_url)
+            != _canonical_hostname(attestation["sourceUrl"])
+        ):
+            raise RegistryError(
+                "candidate redirect left its citation canonical hostname"
+            )
     except RegistryError as exc:
         return _result(
             attestation_id,
@@ -2696,6 +3710,22 @@ def _evaluate_response(
             request_url=request_url,
         )
     mode = attestation["extractor"]["mode"]
+    candidate_media = attestation.get("_candidateMediaType")
+    if (
+        candidate_media is not None
+        and _media_type(response.media_type) != candidate_media
+    ):
+        return _result(
+            attestation_id,
+            source,
+            target_path,
+            "unsupported",
+            response.media_type,
+            candidate_media,
+            "Restore the candidate's reviewed exact response media type.",
+            context=context,
+            request_url=request_url,
+        )
     if not _expected_media(mode, response.media_type):
         return _result(
             attestation_id,
@@ -2824,6 +3854,12 @@ def _classify_request_response(
         _validate_official_url(
             response.final_url, attestation["jurisdiction"]
         )
+        relation = attestation.get("_sourceRelation")
+        if relation in {"citation", "same-host"} and (
+            _canonical_hostname(response.final_url)
+            != _canonical_hostname(attestation["sourceUrl"])
+        ):
+            raise RegistryError("candidate redirect host changed")
     except RegistryError:
         return "unsupported"
     status = response.status or 0
@@ -3031,6 +4067,40 @@ def _attach_request_execution(
     )
 
 
+def _candidate_chain_item(
+    candidate_id: str,
+    execution: RequestExecution,
+    outcome: str,
+    reason: Any,
+) -> dict[str, Any]:
+    return {
+        "candidateId": candidate_id,
+        "requestKey": execution.requestKey,
+        "requestUrl": execution.requestUrl,
+        "method": execution.method,
+        "outcome": outcome,
+        "reason": reason,
+        "attemptCount": execution.attemptCount,
+        "latencyBucket": execution.latencyBucket,
+        "attempts": [asdict(attempt) for attempt in execution.attempts],
+    }
+
+
+def _with_candidate_chain(
+    result: AttestationResult,
+    *,
+    selected: str | None,
+    policy: str,
+    chain: list[dict[str, Any]],
+) -> AttestationResult:
+    return replace(
+        result,
+        selectedCandidate=selected,
+        candidatePolicy=policy,
+        candidateChain=tuple(chain),
+    )
+
+
 def verify_source_attestations(
     root: Path | str,
     *,
@@ -3131,7 +4201,12 @@ def verify_source_attestations(
     cache: dict[str, RequestExecution] = {}
     for attestation in valid:
         policy = _live_policy(attestation)
+        manual_review = _manual_review_status(attestation, today_value)
+        candidate_policy = _candidate_policy(attestation)
+        candidate_contexts = _candidate_contexts(attestation)
+        emit_candidate_telemetry = "requestCandidates" in attestation
         if mode == "live" and policy["mode"] == "fixture-only":
+            primary_id, primary_context, _media = candidate_contexts[0]
             report.results.append(
                 replace(
                     _result(
@@ -3145,6 +4220,12 @@ def verify_source_attestations(
                             "manualReviewDays": policy[
                                 "manualReviewDays"
                             ],
+                            "verifiedAt": manual_review["verifiedAt"],
+                            "dueDate": manual_review["dueDate"],
+                            "daysOverdue": manual_review["daysOverdue"],
+                            "evidenceFingerprint": manual_review[
+                                "evidenceFingerprint"
+                            ],
                         },
                         "reviewed live extraction",
                         (
@@ -3154,43 +4235,131 @@ def verify_source_attestations(
                             "the live representation."
                         ),
                         context=policy,
-                        request_url=_request_url(attestation),
+                        request_url=_request_url(primary_context),
                     ),
-                    requestKey=_public_request_key(attestation),
+                    requestKey=_public_request_key(primary_context),
                     attemptCount=0,
                     requestFinalStatus="unsupported",
                     latencyBucket="offline",
+                    selectedCandidate=None,
+                    candidatePolicy=candidate_policy,
+                    candidateChain=((
+                        {
+                            "candidateId": primary_id,
+                            "requestKey": _public_request_key(primary_context),
+                            "requestUrl": _request_url(primary_context),
+                            "method": primary_context["request"]["method"],
+                            "outcome": "unsupported",
+                            "reason": policy["reason"],
+                            "attemptCount": 0,
+                            "latencyBucket": "offline",
+                            "attempts": [],
+                        },
+                    ) if emit_candidate_telemetry else ()),
+                    manualReview=manual_review,
                 )
             )
             continue
-        request_key = _request_key(attestation)
-        if request_key not in cache:
-            if mode == "offline":
-                cache[request_key] = _offline_execution(
-                    root_path, attestation
-                )
-            else:
-                cache[request_key] = _live_execution(
-                    attestation,
-                    max_attempts=max_attempts,
-                    retry_backoff_ms=retry_backoff_ms,
-                    timeout=timeout,
-                    urlopen=urlopen,
-                    clock=clock,
-                    sleeper=sleeper,
-                )
-        execution = cache[request_key]
-        report.results.append(
-            _attach_request_execution(
+        chain: list[dict[str, Any]] = []
+        selected: str | None = None
+        final_result: AttestationResult | None = None
+        first_result: AttestationResult | None = None
+        first_match_result: AttestationResult | None = None
+        for candidate_id, candidate, _media in candidate_contexts:
+            request_key = _request_key(candidate)
+            if request_key not in cache:
+                if mode == "offline":
+                    cache[request_key] = _offline_execution(
+                        root_path, candidate
+                    )
+                else:
+                    cache[request_key] = _live_execution(
+                        candidate,
+                        max_attempts=max_attempts,
+                        retry_backoff_ms=retry_backoff_ms,
+                        timeout=timeout,
+                        urlopen=urlopen,
+                        clock=clock,
+                        sleeper=sleeper,
+                    )
+            execution = cache[request_key]
+            candidate_result = _attach_request_execution(
                 _evaluate_response(
-                    attestation,
+                    candidate,
                     execution.response,
                     offline=mode == "offline",
                     root=root_path,
                 ),
                 execution,
             )
+            if first_result is None:
+                first_result = candidate_result
+            chain.append(
+                _candidate_chain_item(
+                    candidate_id,
+                    execution,
+                    candidate_result.status,
+                    candidate_result.actual,
+                )
+            )
+            final_result = candidate_result
+            if candidate_result.status == "changed":
+                final_result = candidate_result
+                break
+            if candidate_policy == "first-match":
+                if candidate_result.status == "match":
+                    selected = candidate_id
+                    break
+                continue
+            if candidate_result.status == "match" and selected is None:
+                selected = candidate_id
+                first_match_result = candidate_result
+        if final_result is None:
+            raise AssertionError("candidate chain produced no result")
+        if candidate_policy == "available-parity" and final_result.status != "changed":
+            if first_match_result is not None:
+                final_result = first_match_result
+            elif first_result is not None:
+                final_result = first_result
+        if (
+            candidate_policy == "available-parity"
+            and len(chain) == len(candidate_contexts)
+            and all(item["outcome"] == "match" for item in chain)
+        ):
+            final_result = replace(
+                final_result,
+                fix="All reviewed candidate representations match.",
+            )
+        elif final_result.status == "match" and selected is None:
+            selected = chain[-1]["candidateId"]
+        final_result = _with_candidate_chain(
+            final_result,
+            selected=selected if emit_candidate_telemetry else None,
+            policy=candidate_policy,
+            chain=chain if emit_candidate_telemetry else [],
         )
+        if manual_review is not None:
+            final_result = replace(
+                final_result, manualReview=manual_review
+            )
+            if (
+                mode == "offline"
+                and final_result.status == "match"
+                and manual_review["daysOverdue"] > 0
+            ):
+                final_result = replace(
+                    final_result,
+                    status="unsupported",
+                    actual=manual_review,
+                    expected={
+                        "manualReviewDueOnOrAfter": today_value.isoformat()
+                    },
+                    fix=(
+                        "Re-review the official evidence, update verifiedAt "
+                        "and the raw fixture SHA, then rerun offline verification."
+                    ),
+                )
+        report.results.append(final_result)
     report.fetchedUrls = len(cache)
     report.requests = sorted(
         cache.values(), key=lambda item: item.requestKey

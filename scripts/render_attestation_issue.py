@@ -454,6 +454,10 @@ def report_body_fingerprint(
         "expected",
         "fix",
         "contextFingerprint",
+        "selectedCandidate",
+        "candidatePolicy",
+        "candidateChain",
+        "manualReview",
     )
     for result in results:
         if not isinstance(result, dict):
@@ -461,6 +465,24 @@ def report_body_fingerprint(
         normalized = {field: result.get(field) for field in fields}
         if normalized["status"] == "match":
             normalized["contextFingerprint"] = None
+        chain = normalized.get("candidateChain")
+        if isinstance(chain, (list, tuple)):
+            normalized["candidateChain"] = [
+                {
+                    "candidateId": item.get("candidateId"),
+                    "requestKey": item.get("requestKey"),
+                    "outcome": item.get("outcome"),
+                    "reason": item.get("reason"),
+                    "attemptCount": item.get("attemptCount"),
+                    "attemptStatuses": [
+                        attempt.get("status")
+                        for attempt in item.get("attempts", [])
+                        if isinstance(attempt, dict)
+                    ],
+                }
+                for item in chain
+                if isinstance(item, dict)
+            ]
         normalized_results.append(normalized)
     normalized_results.sort(
         key=lambda item: (
@@ -565,9 +587,68 @@ def render_issue_body(
                     f"  - Actual: `{_display(item.get('actual'))}`",
                     f"  - Expected: `{_display(item.get('expected'))}`",
                     f"  - Context: `{item.get('contextFingerprint', '<none>')}`",
+                    (
+                        "  - Manual review: `"
+                        + _display(item.get("manualReview"))
+                        + "`"
+                        if item.get("manualReview") is not None
+                        else "  - Manual review: `not applicable`"
+                    ),
                     f"  - Fix: {item.get('fix', 'Review the source.')}",
                 ]
             )
+    candidate_results = [
+        item
+        for item in results
+        if isinstance(item, dict) and item.get("candidateChain")
+    ]
+    candidate_non_matches = [
+        candidate
+        for result in candidate_results
+        for candidate in result.get("candidateChain", [])
+        if isinstance(candidate, dict)
+        and candidate.get("outcome") in NON_MATCH_STATUSES
+    ]
+    if candidate_results:
+        lines.extend(
+            [
+                "",
+                "## Representation candidate chains",
+                "",
+                "| Attestation | Policy | Selected | Candidate | Endpoint | Outcome | Reason | Attempts | Latency |",
+                "| --- | --- | --- | --- | --- | --- | --- | ---: | --- |",
+            ]
+        )
+        for result in sorted(
+            candidate_results, key=lambda item: str(item.get("id", ""))
+        ):
+            chain = result.get("candidateChain")
+            if not isinstance(chain, (list, tuple)):
+                continue
+            for candidate in chain:
+                if not isinstance(candidate, dict):
+                    continue
+                lines.append(
+                    f"| {_markdown_code(result.get('id', '<unknown>'))} | "
+                    f"{_markdown_code(result.get('candidatePolicy', 'first-match'))} | "
+                    f"{_markdown_code(result.get('selectedCandidate') or 'none')} | "
+                    f"{_markdown_code(candidate.get('candidateId', '<unknown>'))} | "
+                    f"{_markdown_code(str(candidate.get('method', '?')) + ' ' + str(candidate.get('requestUrl', '<none>')))} | "
+                    f"{_markdown_code(candidate.get('outcome', '<unknown>'))} | "
+                    f"{_markdown_code(_display(candidate.get('reason')))} | "
+                    f"{candidate.get('attemptCount', 0)} | "
+                    f"{_markdown_code(candidate.get('latencyBucket', 'offline'))} |"
+                )
+    if candidate_non_matches:
+        lines.extend(
+            [
+                "",
+                "Candidate availability is degraded even when another reviewed "
+                "representation matches. Transient candidates follow the "
+                "request streak SLA; blocked candidates require access review; "
+                "unsupported candidates require representation/extractor review.",
+            ]
+        )
     _observation, _observed_at, current_requests = _request_observations(
         report
     )
@@ -642,7 +723,11 @@ def render_issue_body(
                 f"`{item['recoveredAt']}`, final={item['lastStatus']}"
                 f"{endpoint_suffix(request_key)}."
             )
-    if not any(grouped.values()):
+    if (
+        not any(grouped.values())
+        and not active
+        and not candidate_non_matches
+    ):
         lines.extend(
             [
                 "",
@@ -690,6 +775,18 @@ def reduce_issue(
     has_non_match = any(
         isinstance(result, dict)
         and result.get("status") in NON_MATCH_STATUSES
+        for result in report.get("results", [])
+    ) or any(
+        item["consecutiveTransient"] > 0
+        for item in trend_state["requests"].values()
+    ) or any(
+        isinstance(result, dict)
+        and isinstance(result.get("candidateChain"), (list, tuple))
+        and any(
+            isinstance(candidate, dict)
+            and candidate.get("outcome") in NON_MATCH_STATUSES
+            for candidate in result["candidateChain"]
+        )
         for result in report.get("results", [])
     )
     if has_non_match:
