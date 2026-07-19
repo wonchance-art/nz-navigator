@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "suites": {
+    "tabs": ["nz", "ja", "ca", "au"],
+    "diagnosis": [
+      "nz-student",
+      "ja-student",
+      "nz-none",
+      "ja-none",
+      "ca-cec",
+      "ca-work",
+      "au-sid"
+    ],
+    "calculators": [
+      "nz-netpay",
+      "ca-netpay-on",
+      "ca-crs",
+      "au-netpay-whm",
+      "au-netpay-resident"
+    ],
+    "verification": ["trust-v8"]
+  }
+}

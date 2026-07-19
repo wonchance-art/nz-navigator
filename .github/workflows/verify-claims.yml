@@ -135,3 +135,22 @@ jobs:
           else
             echo "data/source-attestations.json not migrated yet; fixture units passed."
           fi
+
+  browser-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Verify browser gate failure boundaries
+        run: node --test tests/test_verify_browser_e2e.mjs
+
+      - name: Run network-free Chrome browser gate
+        run: node scripts/verify_browser_e2e.mjs
