@@ -53,6 +53,8 @@ jobs:
           --timeout 15
           --max-attempts 3
           --retry-backoff-ms 500
+          --request-budget-seconds 30
+          --attestation-budget-seconds 60
           --observation-id "${{ github.run_id }}.${{ github.run_attempt }}"
           --output source-attestation-report.json
           --no-fail

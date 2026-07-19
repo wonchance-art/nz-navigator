@@ -267,7 +267,8 @@ def _normalized_request_audit(
     }
     if not isinstance(request_audit, dict) or set(request_audit) != expected_root:
         raise IssueContractError("requestAudit root is malformed")
-    if request_audit["schemaVersion"] != 1:
+    audit_version = request_audit["schemaVersion"]
+    if audit_version not in {1, 2}:
         raise IssueContractError("requestAudit version is unsupported")
     requests = request_audit["requests"]
     if not isinstance(requests, list) or len(requests) > MAX_TREND_REQUESTS:
@@ -287,6 +288,8 @@ def _normalized_request_audit(
         "latencyBucket",
         "attempts",
     }
+    if audit_version == 2:
+        expected_fields |= {"budgetSeconds", "budgetExhausted"}
     seen: set[str] = set()
     normalized: list[dict[str, Any]] = []
     total_attempts = 0
@@ -311,6 +314,15 @@ def _normalized_request_audit(
             or item["latencyBucket"] not in LATENCY_BUCKETS
         ):
             raise IssueContractError("requestAudit transport fields are malformed")
+        budget_seconds = item.get("budgetSeconds")
+        budget_exhausted = item.get("budgetExhausted", False)
+        if audit_version == 2 and (
+            isinstance(budget_seconds, bool)
+            or not isinstance(budget_seconds, (int, float))
+            or not 0 < budget_seconds <= 60
+            or not isinstance(budget_exhausted, bool)
+        ):
+            raise IssueContractError("requestAudit budget fields are malformed")
         attempts = item["attempts"]
         attempt_count = item["attemptCount"]
         if (
@@ -347,6 +359,8 @@ def _normalized_request_audit(
                 "finalStatus": item["finalStatus"],
                 "attemptCount": attempt_count,
                 "latencyBucket": item["latencyBucket"],
+                "budgetSeconds": budget_seconds,
+                "budgetExhausted": budget_exhausted,
                 "attempts": attempts,
             }
         )
@@ -386,6 +400,11 @@ def _advance_trend_state(
     if observation_id is None:
         return state
     requests = state["requests"]
+    current_keys = {
+        observation["requestKey"] for observation in observations
+    }
+    for retired_key in set(requests) - current_keys:
+        del requests[retired_key]
     for observation in observations:
         request_key = observation["requestKey"]
         status = observation["finalStatus"]
@@ -474,6 +493,7 @@ def report_body_fingerprint(
                     "outcome": item.get("outcome"),
                     "reason": item.get("reason"),
                     "attemptCount": item.get("attemptCount"),
+                    "budgetExhausted": item.get("budgetExhausted", False),
                     "attemptStatuses": [
                         attempt.get("status")
                         for attempt in item.get("attempts", [])
@@ -503,6 +523,7 @@ def report_body_fingerprint(
                 "requestKey": item["requestKey"],
                 "finalStatus": item["finalStatus"],
                 "attemptCount": item["attemptCount"],
+                "budgetExhausted": item["budgetExhausted"],
                 "attemptStatuses": [
                     attempt["status"] for attempt in item["attempts"]
                 ],
@@ -615,8 +636,8 @@ def render_issue_body(
                 "",
                 "## Representation candidate chains",
                 "",
-                "| Attestation | Policy | Selected | Candidate | Endpoint | Outcome | Reason | Attempts | Latency |",
-                "| --- | --- | --- | --- | --- | --- | --- | ---: | --- |",
+                "| Attestation | Policy | Selected | Candidate | Endpoint | Outcome | Reason | Attempts | Budget | Latency |",
+                "| --- | --- | --- | --- | --- | --- | --- | ---: | --- | --- |",
             ]
         )
         for result in sorted(
@@ -637,6 +658,7 @@ def render_issue_body(
                     f"{_markdown_code(candidate.get('outcome', '<unknown>'))} | "
                     f"{_markdown_code(_display(candidate.get('reason')))} | "
                     f"{candidate.get('attemptCount', 0)} | "
+                    f"{_markdown_code(str(candidate.get('budgetSeconds', 'legacy')) + (' exhausted' if candidate.get('budgetExhausted') else ''))} | "
                     f"{_markdown_code(candidate.get('latencyBucket', 'offline'))} |"
                 )
     if candidate_non_matches:
@@ -658,8 +680,8 @@ def render_issue_body(
                 "",
                 "## Current request telemetry",
                 "",
-                "| Request | Endpoint | Final | Attempts | Latency | Attempt statuses |",
-                "| --- | --- | --- | ---: | --- | --- |",
+                "| Request | Endpoint | Final | Attempts | Budget | Latency | Attempt statuses |",
+                "| --- | --- | --- | ---: | --- | --- | --- |",
             ]
         )
         for item in current_requests:
@@ -671,7 +693,10 @@ def render_issue_body(
                 f"| `{item['requestKey'][:19]}…` | "
                 f"{_markdown_code(item['method'] + ' ' + item['requestUrl'])} | "
                 f"{item['finalStatus']} | "
-                f"{item['attemptCount']} | {item['latencyBucket']} | "
+                f"{item['attemptCount']} | "
+                f"{_markdown_code(str(item['budgetSeconds']) if item['budgetSeconds'] is not None else 'legacy')}"
+                f"{' (exhausted)' if item['budgetExhausted'] else ''} | "
+                f"{item['latencyBucket']} | "
                 f"{statuses} |"
             )
     current_by_key = {
