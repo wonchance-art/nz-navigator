@@ -2314,6 +2314,11 @@
       "verifiedAt": "2026-07-19",
       "effectiveFrom": "2026-07-01",
       "reviewAfterDays": 45,
+      "livePolicy": {
+        "mode": "fixture-only",
+        "reason": "Owner NZ1: ATO resident-rate law, PDF and content URLs repeatedly return Akamai 403 to bounded requests. Keep the browser-reviewed exact table and recheck manually every 30 days.",
+        "manualReviewDays": 30
+      },
       "extractor": {
         "mode": "ato-law-resident-brackets",
         "params": {
@@ -2347,6 +2352,11 @@
       "verifiedAt": "2026-07-19",
       "effectiveFrom": "2026-07-01",
       "reviewAfterDays": 45,
+      "livePolicy": {
+        "mode": "fixture-only",
+        "reason": "Owner NZ1: ATO Medicare law and content URLs repeatedly return Akamai 403 to bounded requests. Keep the browser-reviewed exact section and recheck manually every 30 days.",
+        "manualReviewDays": 30
+      },
       "extractor": {
         "mode": "html-text-anchor",
         "params": {
@@ -2414,6 +2424,11 @@
       "verifiedAt": "2026-07-19",
       "effectiveFrom": "2022-07-01",
       "reviewAfterDays": 45,
+      "livePolicy": {
+        "mode": "fixture-only",
+        "reason": "Owner NZ1: ATO section 61-115 and content URLs repeatedly return Akamai 403 to bounded requests. Keep the browser-reviewed LITO table and recheck manually every 30 days.",
+        "manualReviewDays": 30
+      },
       "extractor": {
         "mode": "ato-law-lito",
         "params": {
@@ -3854,6 +3869,11 @@
       "effectiveFrom": "2026-07-01",
       "effectiveTo": "2027-06-30",
       "reviewAfterDays": 45,
+      "livePolicy": {
+        "mode": "fixture-only",
+        "reason": "Owner NZ1: ATO section 61-115 and content URLs repeatedly return Akamai 403 to bounded requests. Keep the browser-reviewed LITO serialization and recheck manually every 30 days.",
+        "manualReviewDays": 30
+      },
       "extractor": {
         "mode": "ato-law-lito-serialization",
         "params": {
