@@ -112,6 +112,7 @@ BOUNDING_BOXES = {
     "AU": (-44.5, -10.0, 112.0, 154.5),
 }
 INDUSTRY_HOSTS = frozenset({
+    "ausveg.com.au",
     "nzkgi.org.nz",
     "freshproduce.org.au",
     "ntfarmers.org.au",

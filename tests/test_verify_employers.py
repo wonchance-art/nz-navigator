@@ -169,6 +169,29 @@ class EmployerVerifierTests(unittest.TestCase):
         result = self.verify()
         self.assertIn("source.url/contact.url", self.fields(result))
 
+    def test_ausveg_industry_host_accepts_subdomain_but_rejects_typosquat(
+        self,
+    ) -> None:
+        row = self.raw["employers"][3]
+        row["source"]["kind"] = "industry-association"
+        row["source"]["url"] = (
+            "https://www.ausveg.com.au/articles/"
+            "australia-japan-horticulture-showcase/"
+        )
+        self.raw["audit"]["linkUrlCount"] = 9
+        result = self.verify()
+        self.assertTrue(result.ok, [item.render() for item in result.problems])
+
+        self.setUp()
+        row = self.raw["employers"][3]
+        row["source"]["kind"] = "industry-association"
+        row["source"]["url"] = (
+            "https://ausveg.com.au.example/"
+            "australia-japan-horticulture-showcase/"
+        )
+        result = self.verify()
+        self.assertIn("source.url", self.fields(result))
+
     def test_malformed_nested_types_fail_closed_without_exception(self) -> None:
         row = self.raw["employers"][0]
         row["workTypes"] = [{"unexpected": "object"}]

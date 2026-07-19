@@ -116,7 +116,10 @@ machine enums.
 
 The URL is HTTPS only, without credentials or fragments. Government kinds
 require the matching `.govt.nz` or `.gov.au` host. Industry evidence is
-restricted to the reviewed association-host allowlist. A
+restricted to the reviewed association-host allowlist: `nzkgi.org.nz`,
+`freshproduce.org.au`, `ntfarmers.org.au`, and the national association
+`ausveg.com.au`. Exact hosts and their subdomains are accepted; suffix
+lookalikes such as `ausveg.com.au.example` are not. A
 `verified-local-producer` must be backed by a reviewed association or
 government source. An `employer-official` URL may not point to government or
 association evidence; company/email contacts, when present, must have the same
