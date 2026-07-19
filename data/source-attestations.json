@@ -409,7 +409,7 @@
       "sourceUrl": "https://www.immigration.govt.nz/visas/korea-working-holiday-visa/",
       "request": {"method": "GET"},
       "verifiedAt": "2026-07-19",
-      "effectiveFrom": "2026-07-19",
+      "effectiveFrom": "2026-05-14",
       "reviewAfterDays": 30,
       "extractor": {
         "mode": "html-labelled-values",

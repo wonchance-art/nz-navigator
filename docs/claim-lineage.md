@@ -102,7 +102,16 @@ Official scalar inputs require exactly one current source-attestation claim mapp
 
 ## Dates, DAG, and coverage
 
-Claims and evidence use strict ISO dates. Critical inputs older than 45 days, future verification, inverted effective windows, input evidence that starts after the output, and evidence outside `reviewAfterDays` fail. Cross-country/page inputs and NZ/JA output parity drift also fail.
+Claims and evidence use strict ISO dates. The normal contract is an exact
+`effectiveFrom` (and optional `effectiveTo`) range. When an official page states
+only that a rule is current and does not publish its commencement date, the
+exclusive alternative is `currentAsOf` plus a non-empty
+`effectiveFromUnknownReason`; mixing the two date modes, omitting the reason, or
+adding `effectiveTo` to the current-only mode fails. Critical inputs older than
+45 days, future verification, inverted effective windows, a `currentAsOf` later
+than verification, input evidence that starts after the output, and evidence
+outside `reviewAfterDays` fail. Cross-country/page inputs and NZ/JA output parity
+drift also fail.
 
 The deterministic audit is:
 

@@ -221,29 +221,29 @@ test("wrong calculator output and non-finite UI text fail closed", () => {
   );
 });
 
-test("verification audit or v9 history drift fails closed", () => {
-  const expected = REVIEWED_CONTRACT.verificationCases["trust-v9"];
+test("verification source and lineage audit or v10 history drift fails closed", () => {
+  const expected = REVIEWED_CONTRACT.verificationCases["trust-v10"];
   const snapshot = {
     audit: clone(expected.audit),
-    gateCount: 1,
+    gateCount: 2,
     gateText: Object.values(expected.audit).join(" "),
     historyMatches: 1,
   };
   assert.doesNotThrow(() =>
-    validateVerificationSnapshot("trust-v9", snapshot)
+    validateVerificationSnapshot("trust-v10", snapshot)
   );
   const drift = clone(snapshot);
   drift.audit.sourceAttestations = "51";
   assert.throws(
-    () => validateVerificationSnapshot("trust-v9", drift),
+    () => validateVerificationSnapshot("trust-v10", drift),
     /step=audit/,
   );
   assert.throws(
     () => validateVerificationSnapshot(
-      "trust-v9",
+      "trust-v10",
       { ...snapshot, historyMatches: 0 },
     ),
-    /v9-history/,
+    /v10-history/,
   );
 });
 

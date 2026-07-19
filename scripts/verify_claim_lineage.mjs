@@ -455,12 +455,22 @@ function attestationCoversOutput(attestation, outputClaim, today, report, contex
   const outputVerified = isoDate(outputClaim.verifiedAt);
   const effectiveFrom = isoDate(attestation.effectiveFrom);
   const outputFrom = isoDate(outputClaim.effectiveFrom);
+  const currentAsOf = isoDate(attestation.currentAsOf);
   const effectiveTo = attestation.effectiveTo === undefined
     ? null
     : isoDate(attestation.effectiveTo);
   const reviewAfterDays = attestation.reviewAfterDays;
+  const exactMode = Boolean(effectiveFrom) &&
+    attestation.currentAsOf === undefined &&
+    attestation.effectiveFromUnknownReason === undefined;
+  const currentMode = attestation.effectiveFrom === undefined &&
+    Boolean(currentAsOf) &&
+    typeof attestation.effectiveFromUnknownReason === 'string' &&
+    attestation.effectiveFromUnknownReason.trim().length > 0 &&
+    attestation.effectiveTo === undefined;
   if (
-    !verified || !outputVerified || !effectiveFrom || !outputFrom ||
+    !verified ||
+    !(exactMode || currentMode) ||
     (attestation.effectiveTo !== undefined && !effectiveTo) ||
     !Number.isInteger(reviewAfterDays) || reviewAfterDays < 1 || reviewAfterDays > 365
   ) {
@@ -472,19 +482,30 @@ function attestationCoversOutput(attestation, outputClaim, today, report, contex
         verifiedAt: attestation.verifiedAt,
         effectiveFrom: attestation.effectiveFrom,
         effectiveTo: attestation.effectiveTo,
+        currentAsOf: attestation.currentAsOf,
+        effectiveFromUnknownReason: attestation.effectiveFromUnknownReason,
         reviewAfterDays,
       },
-      expected: 'valid reviewed evidence dates and reviewAfterDays 1..365',
+      expected: 'valid reviewed evidence dates (effectiveFrom, or currentAsOf with an unknown-date reason) and reviewAfterDays 1..365',
       fix: 'Correct the source attestation date contract; do not bypass stale evidence.',
     });
     return false;
   }
   const problems = [];
-  if (verified < outputVerified) problems.push('evidence predates derived verification');
+  if (outputVerified && verified < outputVerified) {
+    problems.push('evidence predates derived verification');
+  }
   if (verified > today) problems.push('evidence is future-dated');
   if (daysBetween(verified, today) > reviewAfterDays) problems.push('evidence is stale');
-  if (effectiveFrom > outputFrom) problems.push('input becomes effective after derived output');
-  if (effectiveTo && effectiveTo < outputFrom) problems.push('input expired before derived output');
+  if (currentAsOf && currentAsOf > verified) {
+    problems.push('currentAsOf is later than evidence verification');
+  }
+  if (effectiveFrom && outputFrom && effectiveFrom > outputFrom) {
+    problems.push('input becomes effective after derived output');
+  }
+  if (effectiveTo && outputFrom && effectiveTo < outputFrom) {
+    problems.push('input expired before derived output');
+  }
   if (problems.length) {
     report.issue({
       code: 'EVIDENCE_WINDOW_MISMATCH',
@@ -502,14 +523,26 @@ function attestationCoversOutput(attestation, outputClaim, today, report, contex
 function claimDatesValid(claim, today, report, context) {
   const verified = isoDate(claim.verifiedAt);
   const effectiveFrom = isoDate(claim.effectiveFrom);
+  const currentAsOf = isoDate(claim.currentAsOf);
   const effectiveTo = claim.effectiveTo === undefined
     ? null
     : isoDate(claim.effectiveTo);
+  const exactMode = Boolean(effectiveFrom) &&
+    claim.currentAsOf === undefined &&
+    claim.effectiveFromUnknownReason === undefined;
+  const currentMode = claim.effectiveFrom === undefined &&
+    Boolean(currentAsOf) &&
+    typeof claim.effectiveFromUnknownReason === 'string' &&
+    claim.effectiveFromUnknownReason.trim().length > 0 &&
+    claim.effectiveTo === undefined;
   const problems = [];
   if (!verified) problems.push('verifiedAt');
-  if (!effectiveFrom) problems.push('effectiveFrom');
+  if (!(exactMode || currentMode)) problems.push('effective date mode');
   if (claim.effectiveTo !== undefined && !effectiveTo) problems.push('effectiveTo');
   if (verified && verified > today) problems.push('future verifiedAt');
+  if (currentAsOf && verified && currentAsOf > verified) {
+    problems.push('currentAsOf > verifiedAt');
+  }
   if (verified && daysBetween(verified, today) > (claim.severity === 'critical' ? 45 : 90)) {
     problems.push('stale verifiedAt');
   }
@@ -521,8 +554,15 @@ function claimDatesValid(claim, today, report, context) {
       code: 'CLAIM_DATE_INVALID',
       ...context,
       field: 'dates',
-      actual: { problems, verifiedAt: claim.verifiedAt, effectiveFrom: claim.effectiveFrom, effectiveTo: claim.effectiveTo },
-      expected: 'fresh ISO dates with a non-inverted effective range',
+      actual: {
+        problems,
+        verifiedAt: claim.verifiedAt,
+        effectiveFrom: claim.effectiveFrom,
+        effectiveTo: claim.effectiveTo,
+        currentAsOf: claim.currentAsOf,
+        effectiveFromUnknownReason: claim.effectiveFromUnknownReason,
+      },
+      expected: 'fresh ISO dates with either an exact effective range or a currentAsOf unknown-start contract',
       fix: 'Re-verify the claim and correct its effective date window.',
     });
     return false;
@@ -1642,6 +1682,11 @@ export function verifyClaimLineage({
     if (matches.length === 1) directCandidates.add(claim.id);
     if (requireCriticalCoverage) {
       const before = report.issues.length;
+      claimDatesValid(claim, today, report, {
+        claim: claim.id,
+        edition: claim.pages?.[0] || '<unknown>',
+        target: 'critical-coverage',
+      });
       validateOfficialEvidence({
         root,
         claim,

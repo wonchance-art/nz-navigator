@@ -225,16 +225,21 @@ const CALCULATOR_CASES = Object.freeze({
 });
 
 const VERIFICATION_CASES = Object.freeze({
-  "trust-v9": Object.freeze({
+  "trust-v10": Object.freeze({
     audit: Object.freeze({
-      sourceAttestations: "77",
-      attestedClaims: "93",
+      sourceAttestations: "101",
+      attestedClaims: "118",
       attestedLeaves: "136",
-      liveCapable: "77",
-      liveExtractable: "77",
-      fixtureOnly: "0",
+      liveCapable: "101",
+      liveExtractable: "98",
+      fixtureOnly: "3",
+      lineageDerived: "11",
+      lineageMapped: "11",
+      lineageExecuted: "11",
+      lineageInputs: "23",
+      criticalRemaining: "0",
     }),
-    historyIncludes: "2026-07-19 · 신뢰 기반 v9:",
+    historyIncludes: "2026-07-19 · 신뢰 기반 v10:",
   }),
 });
 
@@ -481,13 +486,13 @@ export function validateVerificationSnapshot(caseId, snapshot) {
   const spec = VERIFICATION_CASES[caseId];
   if (!spec) fail("verification", caseId, "case-enum", caseId, Object.keys(VERIFICATION_CASES), "Use a reviewed verification enum.");
   if (JSON.stringify(snapshot.audit) !== JSON.stringify(spec.audit)) {
-    fail("verification", caseId, "audit", snapshot.audit, spec.audit, "Restore the public v9 audit counters from claims.json.");
+    fail("verification", caseId, "audit", snapshot.audit, spec.audit, "Restore the public v10 source and lineage audit counters from claims.json.");
   }
-  if (snapshot.gateCount !== 1 || !Object.values(spec.audit).every((value) => snapshot.gateText.includes(value))) {
-    fail("verification", caseId, "attestation-gate", snapshot, "one gate containing all six audit values", "Restore the rendered source-attestation gate.");
+  if (snapshot.gateCount !== 2 || !Object.values(spec.audit).every((value) => snapshot.gateText.includes(value))) {
+    fail("verification", caseId, "trust-gates", snapshot, "source and lineage gates containing all eleven audit values", "Restore the rendered source-attestation and claim-lineage gates.");
   }
   if (snapshot.historyMatches !== 1) {
-    fail("verification", caseId, "v9-history", snapshot.historyMatches, 1, "Restore exactly one v9 trust history entry.");
+    fail("verification", caseId, "v10-history", snapshot.historyMatches, 1, "Restore exactly one v10 trust history entry.");
   }
 }
 
@@ -1227,17 +1232,22 @@ async function runVerification(page, baseUrl, caseId) {
       "liveCapable",
       "liveExtractable",
       "fixtureOnly",
+      "lineageDerived",
+      "lineageMapped",
+      "lineageExecuted",
+      "lineageInputs",
+      "criticalRemaining",
     ];
     const audit = Object.fromEntries(
       auditIds.map((id) => [id, document.getElementById(id)?.textContent.trim() || ""]),
     );
-    const gates = document.querySelectorAll("#attestationGate");
+    const gates = document.querySelectorAll("#attestationGate, #lineageGate");
     const history = [...document.querySelectorAll(".history li")]
       .map((item) => item.innerText.trim());
     return {
       audit,
       gateCount: gates.length,
-      gateText: gates[0]?.innerText || "",
+      gateText: [...gates].map((gate) => gate.innerText).join(" "),
       historyMatches: history.filter((text) => text.includes(expectedHistory)).length,
     };
   }, [spec.historyIncludes]);

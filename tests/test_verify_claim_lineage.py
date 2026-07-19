@@ -106,15 +106,17 @@ class ClaimLineageTests(unittest.TestCase):
             if item["status"] == "derived" and item["severity"] == "critical":
                 item["verifiedAt"] = "2026-07-19"
 
-        open_work = copy.deepcopy(by_id["ca-ko-work-permit-fee"])
-        open_work.update({
-            "id": "ca-ko-open-work-permit-holder-fee",
-            "label": "Open work permit holder fee component",
-            "value": 100,
-            "verifiedAt": "2026-07-19",
-            "effectiveFrom": "2025-12-01",
-        })
-        by_id[open_work["id"]] = open_work
+        open_work = by_id.get("ca-ko-open-work-permit-holder-fee")
+        if open_work is None:
+            open_work = copy.deepcopy(by_id["ca-ko-work-permit-fee"])
+            open_work.update({
+                "id": "ca-ko-open-work-permit-holder-fee",
+                "label": "Open work permit holder fee component",
+                "value": 100,
+                "verifiedAt": "2026-07-19",
+                "effectiveFrom": "2025-12-01",
+            })
+            by_id[open_work["id"]] = open_work
         crs_source = (
             "https://www.canada.ca/en/immigration-refugees-citizenship/"
             "services/immigrate-canada/express-entry/check-score/"
@@ -139,6 +141,8 @@ class ClaimLineageTests(unittest.TestCase):
             ),
         }
         for claim_id, (label, value, unit) in crs_components.items():
+            if claim_id in by_id:
+                continue
             component = copy.deepcopy(by_id["ca-ko-crs-core-maximum"])
             component.update({
                 "id": claim_id,
@@ -169,6 +173,24 @@ class ClaimLineageTests(unittest.TestCase):
             "sha256": f"sha256:{hashlib.sha256(fixture_bytes).hexdigest()}",
         }
         attestations = self.read_json(self.attestations_path)
+        fixture_claim_ids = {
+            "ca-ko-open-work-permit-holder-fee",
+            *crs_components.keys(),
+        }
+        retained_attestations = []
+        for attestation in attestations["attestations"]:
+            claim_mappings = attestation.get("claims", [])
+            retained_mappings = [
+                mapping
+                for mapping in claim_mappings
+                if mapping.get("claimId") not in fixture_claim_ids
+            ]
+            if claim_mappings and not retained_mappings and not attestation.get("targets"):
+                continue
+            if claim_mappings:
+                attestation["claims"] = retained_mappings
+            retained_attestations.append(attestation)
+        attestations["attestations"] = retained_attestations
         attestations["attestations"].extend([
             {
                 "id": "lineage-open-work-fee",
@@ -184,7 +206,9 @@ class ClaimLineageTests(unittest.TestCase):
                 "id": "lineage-crs-components",
                 "sourceUrl": crs_source,
                 "verifiedAt": "2026-07-19",
-                "effectiveFrom": "2026-07-19",
+                "effectiveFrom": by_id[
+                    "ca-ko-crs-age35-no-spouse"
+                ]["effectiveFrom"],
                 "reviewAfterDays": 45,
                 "expected": {
                     "value": fixture["crs"],
@@ -411,6 +435,36 @@ class ClaimLineageTests(unittest.TestCase):
         self.assertEqual(stale_result.returncode, 1)
         self.assertIn("CLAIM_DATE_INVALID", stale_result.stderr)
 
+    def test_current_as_of_date_mode_is_exclusive_and_reasoned(self) -> None:
+        baseline = self.run_runner(coverage=True)
+        self.assertEqual(baseline.returncode, 0, baseline.stderr)
+
+        claims = self.read_json(self.claims_path)
+        whv_duration = next(
+            item for item in claims["claims"] if item["id"] == "au-ko-whv-duration"
+        )
+        self.assertIn("currentAsOf", whv_duration)
+        whv_duration["effectiveFrom"] = "2026-07-19"
+        self.write_json(self.claims_path, claims)
+        mixed_claim_mode = self.run_runner(coverage=True)
+        self.assertEqual(mixed_claim_mode.returncode, 1)
+        self.assertIn("CLAIM_DATE_INVALID", mixed_claim_mode.stderr)
+
+        self.setUp()
+        attestations = self.read_json(self.attestations_path)
+        duration_source = next(
+            item for item in attestations["attestations"]
+            if any(
+                mapping.get("claimId") == "au-ko-whv-duration"
+                for mapping in item.get("claims", [])
+            )
+        )
+        duration_source.pop("effectiveFromUnknownReason")
+        self.write_json(self.attestations_path, attestations)
+        missing_source_reason = self.run_runner(coverage=True)
+        self.assertEqual(missing_source_reason.returncode, 1)
+        self.assertIn("EVIDENCE_DATE_INVALID", missing_source_reason.stderr)
+
     def test_unit_type_date_cross_edition_and_parity_fail(self) -> None:
         claims = self.read_json(self.claims_path)
         by_id = {item["id"]: item for item in claims["claims"]}
@@ -521,12 +575,18 @@ class ClaimLineageTests(unittest.TestCase):
                 "id": f"coverage-{claim['id']}",
                 "sourceUrl": claim["sourceUrl"],
                 "verifiedAt": "2026-07-19",
-                "effectiveFrom": claim["effectiveFrom"],
                 "reviewAfterDays": 45,
                 "expected": {"value": claim["value"], "unit": claim["unit"]},
                 "fixture": fixture,
                 "claims": [{"claimId": claim["id"]}],
             }
+            if "effectiveFrom" in claim:
+                item["effectiveFrom"] = claim["effectiveFrom"]
+            else:
+                item["currentAsOf"] = claim["currentAsOf"]
+                item["effectiveFromUnknownReason"] = claim[
+                    "effectiveFromUnknownReason"
+                ]
             if "effectiveTo" in claim:
                 item["effectiveTo"] = claim["effectiveTo"]
             attestations["attestations"].append(item)
