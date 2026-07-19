@@ -20,11 +20,19 @@ Every claim requires:
 
 - `id`, `country`, `locale`, `category`, `label`
 - `value`, `status`, `severity`
-- `verifiedAt`, `effectiveFrom`, `sourceUrl`, `pages`
+- `verifiedAt`, `sourceUrl`, `pages`
 
-Optional fields are `unit`, `effectiveTo`, `parityKey`, `notes`, and
-`parityExemptReason`. `value` is a finite JSON scalar. Dates use
-`YYYY-MM-DD`; `generatedAt` is an ISO 8601 timestamp with a timezone.
+Every claim must use exactly one effective-date mode:
+
+- Use `effectiveFrom` when the official source supplies a defensible start
+  date. `effectiveTo` may be added when the source also supplies an end date.
+- If the source only confirms that a value is current, use `currentAsOf` and a
+  non-empty `effectiveFromUnknownReason`. Do not copy the verification date
+  into `effectiveFrom`. `effectiveTo` is not allowed in this mode.
+
+Other optional fields are `unit`, `parityKey`, `notes`, and
+`parityExemptReason`. `value` is a finite JSON scalar. Dates use `YYYY-MM-DD`;
+`generatedAt` is an ISO 8601 timestamp with a timezone.
 
 Allowed `status` values are `official`, `derived`, `estimated`, and
 `unverified`. Allowed `severity` values are `critical`, `medium`, and `minor`.
@@ -100,6 +108,7 @@ when the option is explicitly used.
 
 The verifier reports the claim id, failing field, reason, and a concrete fix.
 It exits with code 1 for malformed JSON, missing or mistyped fields, duplicate
-ids, invalid or future dates, reversed effective ranges, invalid enums,
+ids, invalid or future dates, ambiguous effective-date modes, reversed
+effective ranges, invalid enums,
 unapproved source hosts, stale claims, unsafe or missing page paths, missing
 `data-claim-id` markers, parity mismatches, and requested link-check failures.

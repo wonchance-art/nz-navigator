@@ -67,7 +67,6 @@ REQUIRED_CLAIM_FIELDS = (
     "value",
     "status",
     "verifiedAt",
-    "effectiveFrom",
     "sourceUrl",
     "pages",
     "severity",
@@ -80,13 +79,15 @@ STRING_FIELDS = (
     "label",
     "status",
     "verifiedAt",
-    "effectiveFrom",
     "sourceUrl",
     "severity",
 )
 OPTIONAL_STRING_FIELDS = (
     "unit",
+    "effectiveFrom",
     "effectiveTo",
+    "currentAsOf",
+    "effectiveFromUnknownReason",
     "parityKey",
     "notes",
     "parityExemptReason",
@@ -733,6 +734,63 @@ def validate_registry(
                     )
                 )
 
+        current_as_of_date: date | None = None
+        current_as_of = claim.get("currentAsOf")
+        if _is_nonempty_string(current_as_of):
+            current_as_of_date = _parse_iso_date(current_as_of)
+            if current_as_of_date is None:
+                report.issues.append(
+                    Issue(
+                        claim_id,
+                        "currentAsOf",
+                        "must be an ISO date in YYYY-MM-DD form",
+                        "Use the date on which the official source confirmed the "
+                        "current value.",
+                    )
+                )
+            elif current_as_of_date > today_value:
+                report.issues.append(
+                    Issue(
+                        claim_id,
+                        "currentAsOf",
+                        f"{current_as_of} is in the future relative to {today_value}",
+                        "Use the date on which the current official value was "
+                        "actually observed.",
+                    )
+                )
+            elif (
+                verified_date is not None
+                and current_as_of_date > verified_date
+            ):
+                report.issues.append(
+                    Issue(
+                        claim_id,
+                        "currentAsOf",
+                        "cannot be later than verifiedAt",
+                        "Set currentAsOf to the same date as, or an earlier date "
+                        "than, the source verification.",
+                    )
+                )
+
+        unknown_reason = claim.get("effectiveFromUnknownReason")
+        exact_effective_mode = _is_nonempty_string(effective_from)
+        current_only_mode = (
+            _is_nonempty_string(current_as_of)
+            and _is_nonempty_string(unknown_reason)
+        )
+        if exact_effective_mode == current_only_mode:
+            report.issues.append(
+                Issue(
+                    claim_id,
+                    "effectiveFrom",
+                    "must use exactly one date mode: effectiveFrom, or "
+                    "currentAsOf plus effectiveFromUnknownReason",
+                    "Use effectiveFrom only when the official effective date is "
+                    "known. Otherwise remove it and add currentAsOf with a "
+                    "specific non-empty reason.",
+                )
+            )
+
         effective_to_date: date | None = None
         effective_to = claim.get("effectiveTo")
         if _is_nonempty_string(effective_to):
@@ -744,6 +802,16 @@ def validate_registry(
                         "effectiveTo",
                         "must be an ISO date in YYYY-MM-DD form",
                         "Use a real calendar date or remove effectiveTo.",
+                    )
+                )
+            if current_only_mode:
+                report.issues.append(
+                    Issue(
+                        claim_id,
+                        "effectiveTo",
+                        "cannot be used when the effective start date is unknown",
+                        "Remove effectiveTo, or replace currentAsOf mode with an "
+                        "official effectiveFrom/effectiveTo range.",
                     )
                 )
 

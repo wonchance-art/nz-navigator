@@ -123,6 +123,9 @@ jobs:
           tests.test_render_attestation_issue
           -v
 
+      - name: Verify strict ATO extractor contract
+        run: python3 -m unittest tests.test_verify_ato_extractors -v
+
       - name: Verify production source attestations when present
         shell: bash
         run: |
@@ -154,3 +157,44 @@ jobs:
 
       - name: Run network-free Chrome browser gate
         run: node scripts/verify_browser_e2e.mjs
+
+  claim-lineage:
+    needs: source-attestation-offline
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      TZ: Asia/Seoul
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Verify four-edition claim lineage fixture and adversarial cases
+        run: python3 -m unittest tests.test_verify_claim_lineage -v
+
+      - name: Verify production critical lineage when migrated
+        shell: bash
+        run: |
+          if [[ -f data/claim-lineage.json ]]; then
+            node scripts/verify_claim_lineage.mjs \
+              --claims data/claims.json \
+              --attestations data/source-attestations.json \
+              --bindings data/runtime-bindings.json \
+              --boundaries data/boundary-executions.json \
+              --lineage data/claim-lineage.json \
+              --today "$(date +%F)" \
+              --require-critical-coverage
+          else
+            echo "data/claim-lineage.json not migrated yet; strict four-edition fixture passed."
+          fi

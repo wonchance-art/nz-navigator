@@ -34,7 +34,7 @@ only this exact versioned enum list:
       "au-netpay-whm",
       "au-netpay-resident"
     ],
-    "verification": ["trust-v9"]
+    "verification": ["trust-v10"]
   }
 }
 ```
@@ -106,9 +106,12 @@ Calculator cases open their real disclosure widgets and dispatch form events:
 - Australia resident 60,000 → 50,380.
 
 `verification.html` must fetch and render
-`77 / 93 / 136 / 77 / 77 / 0` for source attestations, claims, reviewed
-leaves, live-capable, live-extractable, and fixture-only. It must also contain
-exactly one visible v9 history entry.
+`101 / 118 / 136 / 101 / 98 / 3` for source attestations, claims, reviewed
+leaves, live-capable, live-extractable, and fixture-only. The separate lineage
+gate must render `11 / 11 / 11 / 23 / 0` for derived critical claims,
+mappings, executions, official/DAG inputs, and critical claims remaining. Both
+gates must be present and the page must contain exactly one visible v10 history
+entry.
 
 Failures use:
 

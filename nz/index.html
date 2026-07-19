@@ -1717,7 +1717,7 @@ details.fold:not([open]) > .fold-body { display: none; }
           <label>주 시간 <input type="number" id="npHours" value="40" min="1" max="80" inputmode="numeric"></label>
         </div>
         <div id="npResult"></div>
-        <p style="color: var(--muted); font-size: 0.78rem; margin-top: 0.7rem;">세율 2026-27 <a href="https://www.ird.govt.nz/income-tax/income-tax-for-individuals/tax-codes-and-tax-rates-for-individuals/tax-rates-for-individuals" target="_blank" class="source-link">IRD↗</a> <span class="badge official">[공식]</span> · ACC 부담금 <span data-claim-id="nz-ko-acc-rate-2026">1.75%</span> (GST 포함 · 상한 <span data-claim-id="nz-ko-acc-cap-2026">156,641</span>) · 세금코드 M·학자금 없음 기준 · 워홀 등 임시비자는 KiwiSaver 대상 아님</p>
+        <p style="color: var(--muted); font-size: 0.78rem; margin-top: 0.7rem;">현행 세율(2025-04-01~) <a href="https://www.ird.govt.nz/income-tax/income-tax-for-individuals/tax-codes-and-tax-rates-for-individuals/tax-rates-for-individuals" target="_blank" class="source-link">IRD↗</a> <span class="badge official">[공식]</span> · ACC 부담금 <span data-claim-id="nz-ko-acc-rate-2026">1.75%</span> (GST 포함 · 상한 <span data-claim-id="nz-ko-acc-cap-2026">156,641</span>) · 세금코드 M·학자금 없음 기준 · 워홀 등 임시비자는 KiwiSaver 대상 아님</p>
       </div>
     </details>
 
@@ -1871,7 +1871,7 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span data-claim-id="nz-ko-partner-work-fee">파트너 워크비자 NZD 1,630</span> ·
       <span data-claim-id="nz-ko-partner-resident-fee">NZ 시민·영주자 파트너 영주비자 NZD 5,360</span> ·
       <span data-claim-id="nz-ko-non-notified-tax">IR330 미제출 원천세율 45% + ACC levy</span> ·
-      <span data-claim-id="nz-ko-income-tax-brackets-2026">소득세 계산상수: 15,600/0.105 · 53,500/0.175 · 78,100/0.30 · 180,000/0.33 · 초과/0.39</span> ·
+      <span data-claim-id="nz-ko-income-tax-brackets-2026">현행 소득세 계산상수(2025-04-01~): 15,600/0.105 · 53,500/0.175 · 78,100/0.30 · 180,000/0.33 · 초과/0.39</span> ·
       <span data-claim-id="nz-ko-acc-rate-2026">ACC levy 1.75%</span> ·
       <span data-claim-id="nz-ko-acc-cap-2026">ACC levy 소득상한 NZD 156,641</span> ·
       <span data-claim-id="nz-ko-netpay-72800">연봉 72,800 표본 실수령 NZD 57,466</span>
@@ -4192,11 +4192,11 @@ function renderCourseEntry() {
     </div>`).join('');
 }
 
-// ===== v34 세후 실수령 계산기 (2026-27 IRD 세율 [공식]) =====
+// ===== v34 세후 실수령 계산기 (현행 2025-04-01~ IRD 세율 [공식]) =====
 const NP_BRACKETS = [[15600, 0.105], [53500, 0.175], [78100, 0.30], [180000, 0.33], [Infinity, 0.39]];
 const NP_ACC = { rate: 0.0175, cap: 156641 };
 const NP_META = {
-  brackets: { src: 'https://www.ird.govt.nz/tax-rates', asOf: '2026-07-18', effectiveFrom: '2026-04-01', effectiveTo: '2027-03-31' },
+  brackets: { src: 'https://www.ird.govt.nz/tax-rates', asOf: '2026-07-19', effectiveFrom: '2025-04-01' },
   acc: { src: 'https://www.ird.govt.nz/acclevy', asOf: '2026-07-18', effectiveFrom: '2026-04-01', effectiveTo: '2027-03-31' }
 };
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<temp>
+  <chancesdate><![CDATA[July 17, 2026]]></chancesdate>
+  <country location="Korea, Republic" category="coop" code="kr">
+    <quota><![CDATA[50]]></quota>
+  </country>
+  <country location="Korea, Republic" category="wh" code="kr">
+    <quota><![CDATA[10,239]]></quota>
+    <first><![CDATA[Week of January 19, 2026]]></first>
+  </country>
+  <country location="Korea, Republic" category="yp" code="kr">
+    <quota><![CDATA[200]]></quota>
+  </country>
+</temp>

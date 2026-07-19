@@ -180,6 +180,51 @@ class ClaimVerifierTests(unittest.TestCase):
         self.assertIn("future", future.message)
         self.assert_issue(report, "bad-dates", "effectiveTo")
 
+    def test_current_as_of_mode_preserves_unknown_effective_date(self) -> None:
+        claim = self.claim("current-only")
+        del claim["effectiveFrom"]
+        claim.update(
+            currentAsOf="2026-07-19",
+            effectiveFromUnknownReason=(
+                "The official page confirms the current value but gives no "
+                "original effective date."
+            ),
+        )
+        self.write_page(["current-only"])
+        self.write_registry([claim])
+
+        report = self.validate()
+
+        self.assertTrue(report.ok, [issue.render() for issue in report.issues])
+
+    def test_effective_date_modes_are_mutually_exclusive_and_complete(self) -> None:
+        both = self.claim(
+            "both-modes",
+            currentAsOf="2026-07-19",
+            effectiveFromUnknownReason="No original date is published.",
+        )
+        neither = self.claim("neither-mode")
+        del neither["effectiveFrom"]
+        incomplete = self.claim("incomplete-current")
+        del incomplete["effectiveFrom"]
+        incomplete["currentAsOf"] = "2026-07-19"
+        current_with_end = self.claim("current-with-end")
+        del current_with_end["effectiveFrom"]
+        current_with_end.update(
+            currentAsOf="2026-07-19",
+            effectiveFromUnknownReason="No original date is published.",
+            effectiveTo="2026-12-31",
+        )
+        claims = [both, neither, incomplete, current_with_end]
+        self.write_page([claim["id"] for claim in claims])
+        self.write_registry(claims)
+
+        report = self.validate()
+
+        for claim_id in ("both-modes", "neither-mode", "incomplete-current"):
+            self.assert_issue(report, claim_id, "effectiveFrom")
+        self.assert_issue(report, "current-with-end", "effectiveTo")
+
     def test_staleness_threshold_boundaries(self) -> None:
         claims = [
             self.claim(

@@ -152,6 +152,11 @@
       <div><strong id="liveCapable">—</strong><span>전송 계약 유효</span></div>
       <div><strong id="liveExtractable">—</strong><span>라이브 안전 추출</span></div>
       <div><strong id="fixtureOnly">—</strong><span>수동 검토 병행</span></div>
+      <div><strong id="lineageDerived">—</strong><span>치명 파생 주장</span></div>
+      <div><strong id="lineageMapped">—</strong><span>계보 mapping</span></div>
+      <div><strong id="lineageExecuted">—</strong><span>실행 검증 완료</span></div>
+      <div><strong id="lineageInputs">—</strong><span>공식·파생 입력</span></div>
+      <div><strong id="criticalRemaining">—</strong><span>치명 미결속</span></div>
     </div>
 
     <h2>커버리지</h2>
@@ -188,6 +193,12 @@
         <br>
         <a class="meta" href="https://github.com/wonchance-art/nz-navigator/issues?q=is%3Aissue+%22Source+attestation+drift%22" rel="noopener">최근 라이브 감시 결과 →</a>
       </div>
+      <div class="method">
+        <strong>공식 입력 → 파생 수치 계보</strong>
+        <div id="lineageGate" class="coverage-list"></div>
+        <p class="meta">합산 수수료·CRS 표본·실수령·무정원·별도 수수료 0처럼 한 정부 문장에 그대로 쓰이지 않은 값은 <code>derived-executed</code>로 분리합니다. 공식 입력의 원문 감시가 먼저 통과해야 하며, 고정 변환 또는 실제 계산기와 독립 검토 산식을 함께 실행합니다. 미등록·중복·고아 입력, 날짜·단위·판 불일치, 임의 계산식 주입, 경계 회귀는 배포를 막습니다.</p>
+        <a class="meta" href="./data/claim-lineage.json">machine-readable 파생 계보 원문 →</a>
+      </div>
     </section>
 
     <div class="nav" role="group" aria-label="국가 필터">
@@ -205,6 +216,7 @@
     <h2>변경이력</h2>
     <section class="history">
       <ul>
+        <li><strong>2026-07-19 · 신뢰 기반 v10:</strong> 모든 치명 official 주장을 공식 원문 감시에 직접 결속하고, 직접 발표값이 아닌 치명 derived 11개는 공식 입력 23개→고정 변환·실제 계산→공개값 계보로 분리. IEC·PGWP 합산비, CRS 305, NZ/JA·CA·AU 실수령, 일본 WHV 무정원, 801 별도 수수료 0, AU 거주자 세율 직렬화를 경계 실행과 함께 검증해 치명 미결속 0개를 CI에서 강제. ATO의 현재 WHM 15% 표와 no-TFN 45%는 자동 요청 차단을 숨기지 않고 실제 브라우저 검토·공식 fixture 지문·30일 수동 재검토로 공개.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v9:</strong> NZ 공식 비자·처리기간·IVL·고용주·IRD, CA 연방·주정부 임금·IRCC, AU Fair Work 페이지 25개 감시를 추가해 비용·자금·쿼터·처리기간·연령·세율·임금 50개 주장을 원문 구조와 직접 결속. PSWV 80% 처리기간을 5주→3주로 정정하고, 하나의 4개월 값으로 합쳐져 있던 SMC·Straight to Residence·Work to Residence를 각각 4.5·4·3개월로 분리했으며, 고용주 인증비·2026 중위임금·SMC 1.5/2/3배, CA 연방·ON·BC·AB, FSW 정착자금·IEC 56일 및 AU 일반·캐주얼 최저임금까지 원장과 직접 대조.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v8:</strong> 캐나다 세금 상수 92개를 단일 수동 구조화 파일에서 CRA 공식 CSV·HTML 16개 구성요소로 분해. Federal·ON·AB·BC 누진구간, BPA·CEA·surtax, CPP·CPP2·EI, Ontario 건강보험료·감면식을 원문 구조와 직접 결속하고, BC 연간 5.60%와 2026년 하반기 급여 보정 6.14%를 구분. 요청별·감시 묶음별 총 시간 예산과 더 이상 존재하지 않는 장애 요청의 자동 정리도 추가.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v7:</strong> 한국 IEC 18–35세·24개월을 최신 국가별 영문·불문 원문 교차검증으로 전환. ATO LITO는 자격 조문이 아닌 실제 산식 표 61-115에, 2026–27 거주자 세율은 법률 HTML과 AUD 18,200 공식 안내에 직접 결속. CRA 전체 세금 상수의 수동 검토 기한과 근거 지문을 강제하고, 공식 표현 후보·제한 PDF의 실패를 값 변경과 분리.</li>
@@ -233,7 +245,7 @@
         <li><strong>경계 실행</strong>은 독립 검토 상수로 기대값을 계산하고 실제 계산기 함수에 각 구간·상한의 직전·정확히·직후 값을 주입한다는 뜻입니다. 선언됐지만 실행 manifest에 연결되지 않은 경계는 배포되지 않습니다.</li>
         <li><strong>공식 원문 감시</strong>는 허용된 정부 도메인의 정확한 표·라벨·문장·API 레코드만 고정 변환기로 읽습니다. 임의 CSS·XPath·원격 정규식·코드는 실행하지 않습니다.</li>
         <li>영문·불문처럼 같은 정책의 공식 표현 후보는 검토 지문을 각각 보관하고, 접근 가능한 후보 값이 서로 다르거나 하나라도 실제 변경되면 실패합니다. 모든 후보의 전송이 막히면 값을 확인한 것으로 승격하지 않습니다.</li>
-        <li>CRA 세금 상수는 공식 CSV·HTML의 구성요소별 표 제목·효력일·행·단위·값을 직접 읽고, 92개 계산 경계의 소유권을 정확히 한 번씩 강제합니다. 안전하게 구조화할 수 없는 근거만 <strong>fixture-only</strong>와 다음 수동 검토일을 공개하며, 현재 그런 잔여 묶음은 없습니다. 공식 페이지가 403을 반환하면 정책 변경이 아니라 <strong>blocked</strong>로 분리합니다.</li>
+        <li>CRA 세금 상수는 공식 CSV·HTML의 구성요소별 표 제목·효력일·행·단위·값을 직접 읽고, 92개 계산 경계의 소유권을 정확히 한 번씩 강제합니다. 안전하게 자동 추출할 수 없는 근거만 <strong>fixture-only</strong>와 다음 수동 검토일을 공개합니다. 현재 ATO WHM 계산구간·15%와 no-TFN 45%의 3개 결속은 실제 브라우저 확인 뒤 지문을 고정하고 30일 수동 검토를 병행하며, 403은 정책 변경이 아니라 <strong>blocked</strong>로 분리합니다.</li>
         <li>치명 항목은 45일, 나머지는 90일이 지나면 자동검사가 실패합니다. 정책 변경을 발견하면 날짜와 값을 먼저 갱신해야 배포할 수 있습니다.</li>
         <li>공식 링크의 생존 여부는 정기 네트워크 검사에서 확인하고, 기본 빌드는 외부 장애 때문에 막히지 않도록 구조 검증만 수행합니다.</li>
         <li>개인별 자격·세금 거주성·부양가족·과거 이력에 따라 결과가 달라질 수 있으므로 신청 직전 정부 도구와 등록 전문가를 함께 확인하세요.</li>
@@ -242,7 +254,14 @@
   </main>
   <footer>NZ Navigator · 공개 검증 원장은 사람이 읽는 화면과 기계 검사를 같은 JSON에서 생성합니다.</footer>
   <script>
-    const state = { claims: [], runtimeByClaim: new Map(), attestedClaims: new Set(), country: 'ALL' };
+    const state = {
+      claims: [],
+      runtimeByClaim: new Map(),
+      attestedClaims: new Set(),
+      fixtureOnlyClaims: new Map(),
+      lineagedClaims: new Set(),
+      country: 'ALL'
+    };
     const countryNames = { NZ: '뉴질랜드', CA: '캐나다', AU: '호주' };
     const fmt = value => typeof value === 'number' ? value.toLocaleString('en-US') : value;
     const pageHref = page => `./${page}`;
@@ -261,6 +280,10 @@
         const runtimePath = runtime
           ? (Array.isArray(runtime.runtimePath) ? runtime.runtimePath.join(' + ') : runtime.runtimePath)
           : '';
+        const effectiveLabel = claim.effectiveFrom
+          ? `효력 ${claim.effectiveFrom}${claim.effectiveTo ? `–${claim.effectiveTo}` : ''}`
+          : `현행 확인 ${claim.currentAsOf} · 최초 효력일 미확인`;
+        const fixtureDue = state.fixtureOnlyClaims.get(claim.id);
         return `
         <article class="claim" id="${claim.id}">
           <div class="claim-head">
@@ -271,11 +294,13 @@
           <div class="meta">
             ${countryNames[claim.country] || claim.country} · ${claim.locale} ·
             <span class="${claim.severity === 'critical' ? 'critical' : ''}">${claim.severity}</span><br>
-            효력 ${claim.effectiveFrom}${claim.effectiveTo ? `–${claim.effectiveTo}` : ''} · 확인 ${claim.verifiedAt}
+            ${effectiveLabel} · 확인 ${claim.verifiedAt}
           </div>
           ${claim.notes ? `<p class="meta">${claim.notes}</p>` : ''}
           ${runtime ? `<div class="runtime">✓ 실행값·공식 URL·날짜 일치 · ${runtime.edition} · <code>${runtimePath}</code></div>` : ''}
-          ${state.attestedClaims.has(claim.id) ? '<div class="source-attested">✓ 검토 표본 일치 · 정기 공식 원문 변경 감시 대상</div>' : ''}
+          ${fixtureDue ? `<div class="source-attested">✓ 공식 fixture 일치 · 자동 원문 추출 불가 · 30일 수동 재검토 · 다음 ${fixtureDue}</div>` : ''}
+          ${state.attestedClaims.has(claim.id) ? '<div class="source-attested">✓ 검토 표본 일치 · 정기 공식 원문 자동 변경 감시 대상</div>' : ''}
+          ${state.lineagedClaims.has(claim.id) ? '<div class="source-attested">✓ 공식 입력 → 고정 변환·실제 계산 계보 실행 완료</div>' : ''}
           <div class="claim-links">
             <a href="${claim.sourceUrl}" target="_blank" rel="noopener">정부 원문 ↗</a>
             ${claim.pages.map(page => `<a href="${pageHref(page)}">표시 페이지 →</a>`).join('')}
@@ -300,20 +325,37 @@
       fetch('./data/claim-coverage-exemptions.json', { cache: 'no-store' }),
       fetch('./data/runtime-bindings.json', { cache: 'no-store' }),
       fetch('./data/boundary-executions.json', { cache: 'no-store' }),
-      fetch('./data/source-attestations.json', { cache: 'no-store' })
+      fetch('./data/source-attestations.json', { cache: 'no-store' }),
+      fetch('./data/claim-lineage.json', { cache: 'no-store' })
     ])
-      .then(async ([claimsResponse, exemptionsResponse, runtimeResponse, boundaryResponse, attestationResponse]) => {
+      .then(async ([claimsResponse, exemptionsResponse, runtimeResponse, boundaryResponse, attestationResponse, lineageResponse]) => {
         if (!claimsResponse.ok) throw new Error(`claims HTTP ${claimsResponse.status}`);
         if (!exemptionsResponse.ok) throw new Error(`exemptions HTTP ${exemptionsResponse.status}`);
         if (!runtimeResponse.ok) throw new Error(`runtime bindings HTTP ${runtimeResponse.status}`);
         if (!boundaryResponse.ok) throw new Error(`boundary executions HTTP ${boundaryResponse.status}`);
         if (!attestationResponse.ok) throw new Error(`source attestations HTTP ${attestationResponse.status}`);
-        return [await claimsResponse.json(), await exemptionsResponse.json(), await runtimeResponse.json(), await boundaryResponse.json(), await attestationResponse.json()];
+        if (!lineageResponse.ok) throw new Error(`claim lineage HTTP ${lineageResponse.status}`);
+        return [await claimsResponse.json(), await exemptionsResponse.json(), await runtimeResponse.json(), await boundaryResponse.json(), await attestationResponse.json(), await lineageResponse.json()];
       })
-      .then(([registry, exemptionRegistry, runtimeRegistry, boundaryRegistry, attestationRegistry]) => {
+      .then(([registry, exemptionRegistry, runtimeRegistry, boundaryRegistry, attestationRegistry, lineageRegistry]) => {
         state.claims = registry.claims;
         state.runtimeByClaim = new Map(runtimeRegistry.bindings.map(binding => [binding.claimId, binding]));
-        state.attestedClaims = new Set((attestationRegistry.attestations || []).flatMap(attestation => (attestation.claims || []).map(mapping => mapping.claimId)));
+        const sourceAttestations = attestationRegistry.attestations || [];
+        const addDays = (isoDate, days) => {
+          const date = new Date(`${isoDate}T00:00:00Z`);
+          date.setUTCDate(date.getUTCDate() + days);
+          return date.toISOString().slice(0, 10);
+        };
+        state.fixtureOnlyClaims = new Map(sourceAttestations
+          .filter(attestation => attestation.livePolicy?.mode === 'fixture-only')
+          .flatMap(attestation => (attestation.claims || []).map(mapping => [
+            mapping.claimId,
+            addDays(attestation.verifiedAt, attestation.livePolicy.manualReviewDays)
+          ])));
+        state.attestedClaims = new Set(sourceAttestations
+          .filter(attestation => attestation.livePolicy?.mode !== 'fixture-only')
+          .flatMap(attestation => (attestation.claims || []).map(mapping => mapping.claimId)));
+        state.lineagedClaims = new Set((lineageRegistry.mappings || []).map(mapping => mapping.claimId));
         const exemptions = exemptionRegistry.exemptions || [];
         const runtimeBindings = runtimeRegistry.bindings || [];
         const runtimeClaims = new Set(runtimeBindings.map(binding => binding.claimId));
@@ -323,13 +365,10 @@
         const provenanceDates = registry.audit?.runtimeBindings?.provenanceDateCheckCount ?? '—';
         const boundaryProbes = registry.audit?.runtimeBindings?.boundaryProbeCount ?? '—';
         const sourceAudit = registry.audit?.sourceAttestations || {};
-        const manualDueDates = (attestationRegistry.attestations || [])
+        const lineageAudit = registry.audit?.claimLineage || {};
+        const manualDueDates = sourceAttestations
           .filter(item => item.livePolicy?.mode === 'fixture-only')
-          .map(item => {
-            const verified = new Date(`${item.verifiedAt}T00:00:00Z`);
-            verified.setUTCDate(verified.getUTCDate() + item.livePolicy.manualReviewDays);
-            return verified.toISOString().slice(0, 10);
-          })
+          .map(item => addDays(item.verifiedAt, item.livePolicy.manualReviewDays))
           .sort();
         const nearestManualDue = manualDueDates[0] || '없음';
         const executionTargets = boundaryRegistry.targets || [];
@@ -363,6 +402,11 @@
         document.getElementById('liveCapable').textContent = sourceAudit.liveCapableCount ?? '—';
         document.getElementById('liveExtractable').textContent = sourceAudit.liveExtractableCount ?? '—';
         document.getElementById('fixtureOnly').textContent = sourceAudit.fixtureOnlyCount ?? '—';
+        document.getElementById('lineageDerived').textContent = lineageAudit.derivedCriticalCount ?? '—';
+        document.getElementById('lineageMapped').textContent = lineageAudit.mappedCount ?? '—';
+        document.getElementById('lineageExecuted').textContent = lineageAudit.executedCount ?? '—';
+        document.getElementById('lineageInputs').textContent = lineageAudit.inputClaimCount ?? '—';
+        document.getElementById('criticalRemaining').textContent = lineageAudit.remainingCriticalCount ?? '—';
         document.getElementById('scope').innerHTML = (registry.audit?.scope || []).map(item => `<span>${item}</span>`).join('');
         document.getElementById('coveragePolicy').textContent = registry.audit?.coveragePolicy || '';
         const countryCounts = Object.entries(registry.claims.reduce((acc, claim) => {
@@ -412,6 +456,13 @@
           `<span>다음 수동 검토 ${nearestManualDue}</span>`,
           '<span>검토 표본 CI: match</span>',
           '<span>라이브 non-match: 이슈 보고</span>'
+        ].join('');
+        document.getElementById('lineageGate').innerHTML = [
+          `<span>치명 파생 ${lineageAudit.derivedCriticalCount ?? '—'}</span>`,
+          `<span>mapping ${lineageAudit.mappedCount ?? '—'}</span>`,
+          `<span>실행 완료 ${lineageAudit.executedCount ?? '—'}</span>`,
+          `<span>입력 ${lineageAudit.inputClaimCount ?? '—'}</span>`,
+          `<span>치명 미결속 ${lineageAudit.remainingCriticalCount ?? '—'}</span>`
         ].join('');
         render();
       })

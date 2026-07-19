@@ -1709,7 +1709,7 @@ details.fold:not([open]) > .fold-body { display: none; }
           <label>週時間 <input type="number" id="npHours" value="40" min="1" max="80" inputmode="numeric"></label>
         </div>
         <div id="npResult"></div>
-        <p style="color: var(--muted); font-size: 0.78rem; margin-top: 0.7rem;">税率 2026-27 <a href="https://www.ird.govt.nz/income-tax/income-tax-for-individuals/tax-codes-and-tax-rates-for-individuals/tax-rates-for-individuals" target="_blank" class="source-link">IRD↗</a> <span class="badge official">[公式]</span> ・ ACC保険料 <span data-claim-id="nz-ja-acc-rate-2026">1.75%</span> (GST込・上限 <span data-claim-id="nz-ja-acc-cap-2026">156,641</span>) ・ 税コードM・学生ローンなし基準 ・ ワーホリ等の一時ビザはKiwiSaver対象外</p>
+        <p style="color: var(--muted); font-size: 0.78rem; margin-top: 0.7rem;">現行税率（2025-04-01～） <a href="https://www.ird.govt.nz/income-tax/income-tax-for-individuals/tax-codes-and-tax-rates-for-individuals/tax-rates-for-individuals" target="_blank" class="source-link">IRD↗</a> <span class="badge official">[公式]</span> ・ ACC保険料 <span data-claim-id="nz-ja-acc-rate-2026">1.75%</span> (GST込・上限 <span data-claim-id="nz-ja-acc-cap-2026">156,641</span>) ・ 税コードM・学生ローンなし基準 ・ ワーホリ等の一時ビザはKiwiSaver対象外</p>
       </div>
     </details>
 
@@ -1858,7 +1858,7 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span data-claim-id="nz-ja-partner-work-fee">パートナー就労ビザNZD 1,630</span> ・
       <span data-claim-id="nz-ja-partner-resident-fee">NZ市民・永住者パートナー永住ビザNZD 5,360</span> ・
       <span data-claim-id="nz-ja-non-notified-tax">IR330未提出の源泉税率45% + ACC levy</span> ・
-      <span data-claim-id="nz-ja-income-tax-brackets-2026">所得税計算定数: 15,600/0.105・53,500/0.175・78,100/0.30・180,000/0.33・超過/0.39</span> ・
+      <span data-claim-id="nz-ja-income-tax-brackets-2026">現行所得税計算定数（2025-04-01～）: 15,600/0.105・53,500/0.175・78,100/0.30・180,000/0.33・超過/0.39</span> ・
       <span data-claim-id="nz-ja-acc-rate-2026">ACC levy 1.75%</span> ・
       <span data-claim-id="nz-ja-acc-cap-2026">ACC levy所得上限NZD 156,641</span> ・
       <span data-claim-id="nz-ja-netpay-72800">年収72,800の手取り例 NZD 57,466</span>
@@ -4090,11 +4090,11 @@ function renderCourseEntry() {
     </div>`).join('');
 }
 
-// ===== v34 手取り計算機 (2026-27 IRD税率 [公式]) =====
+// ===== v34 手取り計算機 (現行2025-04-01～ IRD税率 [公式]) =====
 const NP_BRACKETS = [[15600, 0.105], [53500, 0.175], [78100, 0.30], [180000, 0.33], [Infinity, 0.39]];
 const NP_ACC = { rate: 0.0175, cap: 156641 };
 const NP_META = {
-  brackets: { src: 'https://www.ird.govt.nz/tax-rates', asOf: '2026-07-18', effectiveFrom: '2026-04-01', effectiveTo: '2027-03-31' },
+  brackets: { src: 'https://www.ird.govt.nz/tax-rates', asOf: '2026-07-19', effectiveFrom: '2025-04-01' },
   acc: { src: 'https://www.ird.govt.nz/acclevy', asOf: '2026-07-18', effectiveFrom: '2026-04-01', effectiveTo: '2027-03-31' }
 };
 

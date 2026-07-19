@@ -166,6 +166,51 @@ def _normalized_text(text: str) -> str:
     return re.sub(r"\s+", " ", unicodedata.normalize("NFKC", text)).strip()
 
 
+def _mask_js_strings_and_comments(source: str) -> str:
+    """Preserve code positions while removing non-code numeric noise."""
+
+    chars = list(source)
+    state = "code"
+    quote = ""
+    index = 0
+    while index < len(source):
+        char = source[index]
+        next_char = source[index + 1] if index + 1 < len(source) else ""
+        if state == "line":
+            if char == "\n":
+                state = "code"
+            else:
+                chars[index] = " "
+        elif state == "block":
+            chars[index] = " "
+            if char == "*" and next_char == "/":
+                chars[index + 1] = " "
+                index += 1
+                state = "code"
+        elif state == "string":
+            if char != "\n":
+                chars[index] = " "
+            if char == "\\" and index + 1 < len(source):
+                chars[index + 1] = " "
+                index += 1
+            elif char == quote:
+                state = "code"
+        elif char == "/" and next_char == "/":
+            chars[index] = chars[index + 1] = " "
+            index += 1
+            state = "line"
+        elif char == "/" and next_char == "*":
+            chars[index] = chars[index + 1] = " "
+            index += 1
+            state = "block"
+        elif char in {"'", '"', "`"}:
+            chars[index] = " "
+            quote = char
+            state = "string"
+        index += 1
+    return "".join(chars)
+
+
 def _fingerprint(category: str, text: str) -> str:
     payload = f"{category}|{_normalized_text(text)}".encode("utf-8")
     return "sha256:" + hashlib.sha256(payload).hexdigest()[:20]
@@ -562,7 +607,9 @@ def _structured_script_candidates(page: str, script: str) -> list[Candidate]:
             continue
         text = _normalized_text(match.group(0))
         numbers = _numbers_for_category(
-            text, "tax", require_keyword=False
+            _mask_js_strings_and_comments(match.group(0)),
+            "tax",
+            require_keyword=False,
         )
         if numbers:
             candidates.append(
