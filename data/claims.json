@@ -23,8 +23,8 @@
       "claimCount": 118,
       "reviewedLeafCount": 136,
       "liveCapableCount": 101,
-      "liveExtractableCount": 98,
-      "fixtureOnlyCount": 3
+      "liveExtractableCount": 94,
+      "fixtureOnlyCount": 7
     },
     "claimLineage": {
       "derivedCriticalCount": 11,

@@ -106,7 +106,7 @@ Calculator cases open their real disclosure widgets and dispatch form events:
 - Australia resident 60,000 → 50,380.
 
 `verification.html` must fetch and render
-`101 / 118 / 136 / 101 / 98 / 3` for source attestations, claims, reviewed
+`101 / 118 / 136 / 101 / 94 / 7` for source attestations, claims, reviewed
 leaves, live-capable, live-extractable, and fixture-only. The separate lineage
 gate must render `11 / 11 / 11 / 23 / 0` for derived critical claims,
 mappings, executions, official/DAG inputs, and critical claims remaining. Both
