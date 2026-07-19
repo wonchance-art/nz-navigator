@@ -243,6 +243,32 @@ const VERIFICATION_CASES = Object.freeze({
   }),
 });
 
+const MAP_CASES = Object.freeze({
+  "nz-employers-map": Object.freeze({
+    edition: "nz-map",
+    country: "NZ",
+    page: "nz/seasonal-map.html",
+    assetPath: "nz/employers.js",
+    assetGlobal: "NZ_EMPLOYERS",
+    metaGlobal: "NZ_EMPLOYER_REGISTRY_META",
+    count: 187,
+    sourceFilter: "industry-association",
+    sourceCount: 20,
+  }),
+  "au-employers-map": Object.freeze({
+    edition: "au-map",
+    country: "AU",
+    page: "au/whv-map.html",
+    assetPath: "au/employers.js",
+    assetGlobal: "AU_EMPLOYERS",
+    metaGlobal: "AU_EMPLOYER_REGISTRY_META",
+    count: 113,
+    sourceFilter: "government-job-gateway",
+    sourceCount: 12,
+    gatewayCount: 12,
+  }),
+});
+
 export class E2EFailure extends Error {
   constructor(edition, fixture, step, actual, expected, fix) {
     const show = (value) => {
@@ -294,6 +320,7 @@ export function validateFixtureRegistry(registry) {
       "tabs",
       "diagnosis",
       "calculators",
+      "maps",
       "verification",
     ])
   ) {
@@ -310,6 +337,7 @@ export function validateFixtureRegistry(registry) {
     ["tabs", Object.keys(EDITIONS)],
     ["diagnosis", Object.keys(DIAGNOSIS_CASES)],
     ["calculators", Object.keys(CALCULATOR_CASES)],
+    ["maps", Object.keys(MAP_CASES)],
     ["verification", Object.keys(VERIFICATION_CASES)],
   ];
   for (const [name, allowed] of contracts) {
@@ -494,6 +522,247 @@ export function validateVerificationSnapshot(caseId, snapshot) {
   if (snapshot.historyMatches !== 1) {
     fail("verification", caseId, "v10-history", snapshot.historyMatches, 1, "Restore exactly one v10 trust history entry.");
   }
+}
+
+export function validateMapAssets(caseId, registry, assetRows, meta) {
+  const spec = MAP_CASES[caseId];
+  if (!spec) {
+    fail("<map>", caseId, "case-enum", caseId, Object.keys(MAP_CASES), "Use a reviewed map enum.");
+  }
+  if (
+    registry === null ||
+    typeof registry !== "object" ||
+    !Array.isArray(registry.employers) ||
+    typeof registry.generatedAt !== "string"
+  ) {
+    fail(spec.edition, caseId, "registry", registry, "employer schema root", "Restore data/employers.json before enabling map E2E.");
+  }
+  const expectedRows = registry.employers.filter((row) => row?.country === spec.country);
+  if (
+    !Array.isArray(assetRows) ||
+    assetRows.length !== spec.count ||
+    expectedRows.length !== spec.count ||
+    new Set(assetRows.map((row) => row?.id)).size !== spec.count ||
+    assetRows.some((row) =>
+      row?.country !== spec.country ||
+      row?.vacancyStatus !== "directory-only"
+    )
+  ) {
+    fail(
+      spec.edition,
+      caseId,
+      "asset-count",
+      {
+        asset: Array.isArray(assetRows) ? assetRows.length : null,
+        registry: expectedRows.length,
+        uniqueIds: Array.isArray(assetRows)
+          ? new Set(assetRows.map((row) => row?.id)).size
+          : null,
+      },
+      { count: spec.count, country: spec.country, vacancyStatus: "directory-only" },
+      "Regenerate the normalized country asset from the reviewed employer registry.",
+    );
+  }
+  if (JSON.stringify(assetRows) !== JSON.stringify(expectedRows)) {
+    fail(
+      spec.edition,
+      caseId,
+      "asset-parity",
+      "country asset differs from registry",
+      "byte-ordered JSON value parity",
+      "Regenerate employers.js from data/employers.json without manual edits.",
+    );
+  }
+  if (
+    !exactKeys(meta, ["schemaVersion", "generatedAt", "count"]) ||
+    meta.schemaVersion !== 1 ||
+    meta.generatedAt !== registry.generatedAt ||
+    meta.count !== spec.count
+  ) {
+    fail(
+      spec.edition,
+      caseId,
+      "asset-meta",
+      meta,
+      { schemaVersion: 1, generatedAt: registry.generatedAt, count: spec.count },
+      "Regenerate the exact asset metadata from the registry root.",
+    );
+  }
+}
+
+export function validateMapSnapshot(caseId, snapshot) {
+  const spec = MAP_CASES[caseId];
+  if (!spec) {
+    fail("<map>", caseId, "case-enum", caseId, Object.keys(MAP_CASES), "Use a reviewed map enum.");
+  }
+  if (
+    snapshot.assetCount !== spec.count ||
+    snapshot.uniqueIds !== spec.count ||
+    snapshot.countryCount !== spec.count ||
+    snapshot.directoryOnlyCount !== spec.count
+  ) {
+    fail(
+      spec.edition,
+      caseId,
+      "asset-runtime",
+      snapshot,
+      { count: spec.count, country: spec.country, directoryOnly: spec.count },
+      "Restore the normalized reviewed asset and directory-only safety contract.",
+    );
+  }
+  if (
+    snapshot.innerWidth !== VIEWPORT.width ||
+    snapshot.scrollWidth > VIEWPORT.width
+  ) {
+    fail(
+      spec.edition,
+      caseId,
+      "viewport-overflow",
+      { innerWidth: snapshot.innerWidth, scrollWidth: snapshot.scrollWidth },
+      { innerWidth: VIEWPORT.width, maxScrollWidth: VIEWPORT.width },
+      "Constrain the map directory to the 375px viewport.",
+    );
+  }
+  if (
+    snapshot.sourceFilterCount !== 1 ||
+    snapshot.statusFilterCount !== 1 ||
+    snapshot.precisionFilterCount !== 1 ||
+    snapshot.sourceOptionCount < 2 ||
+    snapshot.statusOptionCount < 2 ||
+    snapshot.precisionOptionCount < 2
+  ) {
+    fail(
+      spec.edition,
+      caseId,
+      "directory-filters",
+      snapshot,
+      "one populated source/status/precision select",
+      "Restore all three reviewed evidence filters and their normalized options.",
+    );
+  }
+  if (
+    snapshot.listCount !== 1 ||
+    snapshot.listRole !== "list" ||
+    snapshot.listItemCount < 1 ||
+    !snapshot.warning.includes("실시간 공고가 아닌") ||
+    !snapshot.warning.includes("디렉터리")
+  ) {
+    fail(
+      spec.edition,
+      caseId,
+      "directory-dom",
+      snapshot,
+      "one nonempty list and explicit directory-only warning",
+      "Restore list semantics and the no-vacancy/no-automatic-eligibility warning.",
+    );
+  }
+  if (
+    snapshot.filteredSource !== spec.sourceFilter ||
+    snapshot.filteredListItems !== spec.sourceCount
+  ) {
+    fail(
+      spec.edition,
+      caseId,
+      "source-filter-event",
+      {
+        value: snapshot.filteredSource,
+        listItems: snapshot.filteredListItems,
+      },
+      { value: spec.sourceFilter, listItems: spec.sourceCount },
+      "Restore the source filter event wiring and deterministic result count.",
+    );
+  }
+  if (spec.country === "AU") {
+    if (
+      snapshot.monthButtonCount !== 13 ||
+      snapshot.monthPressedCount !== 1 ||
+      snapshot.pressedMonth !== "1" ||
+      snapshot.exampleButtonCount !== 6 ||
+      snapshot.examplePostcode !== "4670" ||
+      snapshot.exampleState !== "QLD" ||
+      snapshot.exampleResultCount !== 1 ||
+      snapshot.gatewayNoneCount !== spec.gatewayCount ||
+      snapshot.gatewayBadgeCount !== spec.gatewayCount
+    ) {
+      fail(
+        spec.edition,
+        caseId,
+        "au-interactions",
+        snapshot,
+        {
+          monthButtons: 13,
+          pressedMonth: "1",
+          exampleButtons: 6,
+          example: ["QLD", "4670"],
+          gatewayNone: spec.gatewayCount,
+          gatewayBadges: spec.gatewayCount,
+        },
+        "Restore real AU month/example buttons and keep job gateways at eligibility=none with per-ad warning.",
+      );
+    }
+  }
+}
+
+export function parseMapAsset(caseId, source) {
+  const spec = MAP_CASES[caseId];
+  if (!spec || typeof source !== "string" || source.length > 2_000_000) {
+    fail(
+      spec?.edition || "<map>",
+      caseId,
+      "asset-literal",
+      typeof source === "string" ? source.length : typeof source,
+      "bounded generated employer asset",
+      "Use the code-owned generated asset format.",
+    );
+  }
+  const prefix = `window.${spec.assetGlobal}=Object.freeze(`;
+  const separator = `);\nwindow.${spec.metaGlobal}=Object.freeze(`;
+  const start = source.indexOf(prefix);
+  const middle = source.indexOf(separator, start + prefix.length);
+  const metaStart = middle + separator.length;
+  const end = source.indexOf(");", metaStart);
+  if (
+    start < 0 ||
+    middle < 0 ||
+    end < 0 ||
+    source.indexOf(prefix, start + 1) >= 0 ||
+    source.indexOf(separator, middle + 1) >= 0 ||
+    source.slice(end + 2).trim() !== ""
+  ) {
+    fail(
+      spec.edition,
+      caseId,
+      "asset-literal",
+      "missing, duplicate, or trailing generated literal",
+      `${spec.assetGlobal} array plus one ${spec.metaGlobal} object`,
+      "Regenerate the asset; do not add executable code around the JSON literals.",
+    );
+  }
+  try {
+    return {
+      rows: JSON.parse(source.slice(start + prefix.length, middle)),
+      meta: JSON.parse(source.slice(metaStart, end)),
+    };
+  } catch (error) {
+    fail(
+      spec.edition,
+      caseId,
+      "asset-json",
+      error instanceof Error ? error.message : String(error),
+      "strict JSON data literals",
+      "Regenerate the employer asset without JavaScript expressions.",
+    );
+  }
+}
+
+async function validateMapFiles(root, registry, caseId) {
+  const spec = MAP_CASES[caseId];
+  const source = await fs.promises.readFile(
+    path.join(root, spec.assetPath),
+    "utf8",
+  );
+  const parsed = parseMapAsset(caseId, source);
+  validateMapAssets(caseId, registry, parsed.rows, parsed.meta);
 }
 
 export function assertNoConsoleErrors(errors, edition, fixture) {
@@ -867,6 +1136,50 @@ class PageSession {
           }
           return Promise.reject(new TypeError("External network disabled by browser E2E"));
         };
+        if (/\\/(?:seasonal-map|whv-map)\\.html$/.test(location.pathname)) {
+          const layer = (coordinates = [0, 0]) => ({
+            addTo(target) { target?.addLayer?.(this); return this; },
+            bindPopup() { return this; },
+            openPopup() { return this; },
+            setStyle() { return this; },
+            getLatLng() {
+              return { lat: Number(coordinates[0]), lng: Number(coordinates[1]) };
+            },
+          });
+          const map = () => {
+            const layers = new Set();
+            const panes = new Map();
+            return {
+              setView() { return this; },
+              addLayer(value) { layers.add(value); return this; },
+              removeLayer(value) { layers.delete(value); return this; },
+              hasLayer(value) { return layers.has(value); },
+              createPane(name) { panes.set(name, { style: {} }); },
+              getPane(name) {
+                if (!panes.has(name)) panes.set(name, { style: {} });
+                return panes.get(name);
+              },
+            };
+          };
+          const cluster = () => {
+            const layers = new Set();
+            return {
+              addLayer(value) { layers.add(value); return this; },
+              clearLayers() { layers.clear(); return this; },
+              addTo(target) { target?.addLayer?.(this); return this; },
+              zoomToShowLayer(_value, callback) { callback?.(); },
+            };
+          };
+          globalThis.L = {
+            map,
+            tileLayer: () => layer(),
+            circleMarker: (coordinates) => layer(coordinates),
+            marker: (coordinates) => layer(coordinates),
+            divIcon: (options) => options,
+            markerClusterGroup: cluster,
+            geoJSON: () => layer(),
+          };
+        }
       })();`,
     });
   }
@@ -1255,6 +1568,122 @@ async function runVerification(page, baseUrl, caseId) {
   assertNoConsoleErrors(page.consoleErrors, "verification", caseId);
 }
 
+async function runEmployerMap(page, baseUrl, caseId) {
+  const spec = MAP_CASES[caseId];
+  await page.navigate(new URL(spec.page, baseUrl).href);
+  await page.waitFor(
+    function (assetGlobal, expectedCount) {
+      return Array.isArray(globalThis[assetGlobal]) &&
+        globalThis[assetGlobal].length === expectedCount &&
+        document.querySelectorAll("#empList [role='listitem']").length > 0;
+    },
+    [spec.assetGlobal, spec.count],
+    `${caseId} directory`,
+  );
+  if (spec.country === "AU") {
+    await page.click(
+      "#months > button.mbtn[data-m='1']",
+      spec.edition,
+      caseId,
+      "month-button",
+    );
+    await page.waitFor(
+      function () {
+        const pressed = document.querySelectorAll(
+          "#months > button.mbtn[aria-pressed='true']",
+        );
+        return pressed.length === 1 && pressed[0].dataset.m === "1";
+      },
+      [],
+      "AU month aria-pressed",
+    );
+    await page.click(
+      "#pcChips > button[data-p='4670'][data-s='QLD']",
+      spec.edition,
+      caseId,
+      "example-button",
+    );
+    await page.waitFor(
+      function () {
+        return document.getElementById("pcInput")?.value === "4670" &&
+          document.getElementById("stateInput")?.value === "QLD" &&
+          document.getElementById("pcResult")?.classList.contains("show");
+      },
+      [],
+      "AU example result",
+    );
+  }
+  await page.setControl(
+    "#empSource",
+    spec.sourceFilter,
+    spec.edition,
+    caseId,
+    "source-filter",
+  );
+  await page.waitFor(
+    function (expectedCount) {
+      return document.querySelectorAll("#empList [role='listitem']").length === expectedCount;
+    },
+    [spec.sourceCount],
+    `${caseId} source filter`,
+  );
+  const snapshot = await page.call(
+    function (assetGlobal, country, sourceFilter) {
+      const employers = globalThis[assetGlobal] || [];
+      const source = document.getElementById("empSource");
+      const status = document.getElementById("empStatus");
+      const precision = document.getElementById("empPrecision");
+      const list = document.getElementById("empList");
+      const listItems = [...document.querySelectorAll("#empList [role='listitem']")];
+      const warning = document.getElementById("employerHeading")?.nextElementSibling;
+      const pressed = [...document.querySelectorAll(
+        "#months > button[aria-pressed='true']",
+      )];
+      return {
+        assetCount: employers.length,
+        uniqueIds: new Set(employers.map((row) => row.id)).size,
+        countryCount: employers.filter((row) => row.country === country).length,
+        directoryOnlyCount: employers.filter(
+          (row) => row.vacancyStatus === "directory-only",
+        ).length,
+        innerWidth: window.innerWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+        sourceFilterCount: document.querySelectorAll("#empSource").length,
+        statusFilterCount: document.querySelectorAll("#empStatus").length,
+        precisionFilterCount: document.querySelectorAll("#empPrecision").length,
+        sourceOptionCount: source?.options.length || 0,
+        statusOptionCount: status?.options.length || 0,
+        precisionOptionCount: precision?.options.length || 0,
+        listCount: document.querySelectorAll("#empList").length,
+        listRole: list?.getAttribute("role") || "",
+        listItemCount: listItems.length,
+        warning: warning?.innerText || "",
+        filteredSource: source?.value || "",
+        filteredListItems: listItems.length,
+        monthButtonCount: document.querySelectorAll("#months > button.mbtn").length,
+        monthPressedCount: pressed.length,
+        pressedMonth: pressed[0]?.dataset.m || "",
+        exampleButtonCount: document.querySelectorAll("#pcChips > button").length,
+        examplePostcode: document.getElementById("pcInput")?.value || "",
+        exampleState: document.getElementById("stateInput")?.value || "",
+        exampleResultCount: document.querySelectorAll("#pcResult.show").length,
+        gatewayNoneCount: employers.filter(
+          (row) =>
+            row.source.kind === sourceFilter &&
+            row.eligibility.scheme === "none" &&
+            row.eligibility.classification === "not-applicable",
+        ).length,
+        gatewayBadgeCount: listItems.filter(
+          (row) => row.innerText.includes("구직 경로 · 공고별 판정"),
+        ).length,
+      };
+    },
+    [spec.assetGlobal, spec.country, spec.sourceFilter],
+  );
+  validateMapSnapshot(caseId, snapshot);
+  assertNoConsoleErrors(page.consoleErrors, spec.edition, caseId);
+}
+
 function parseArgs(argv) {
   const options = {
     root: DEFAULT_ROOT,
@@ -1309,11 +1738,21 @@ export async function runBrowserE2E(options) {
     const registry = validateFixtureRegistry(
       JSON.parse(
         await fs.promises.readFile(
-          path.join(options.root, FIXTURE_PATH),
+          options.fixturePath || path.join(options.root, FIXTURE_PATH),
           "utf8",
         ),
       ),
     );
+    const employerRegistryPath = path.join(options.root, "data/employers.json");
+    let employerRegistry = null;
+    if (fs.existsSync(employerRegistryPath)) {
+      employerRegistry = JSON.parse(
+        await fs.promises.readFile(employerRegistryPath, "utf8"),
+      );
+      for (const caseId of registry.suites.maps) {
+        await validateMapFiles(options.root, employerRegistry, caseId);
+      }
+    }
     const browserPath = findBrowser(options.browser);
     let baseUrl = options.baseUrl;
     if (baseUrl === null) {
@@ -1386,6 +1825,19 @@ export async function runBrowserE2E(options) {
       );
       checks += 1;
       console.log(`PASS edition=${CALCULATOR_CASES[caseId].edition} fixture=${caseId}`);
+    }
+    if (employerRegistry === null) {
+      console.log("SKIP employer maps: data/employers.json is not migrated on this branch.");
+    } else {
+      for (const caseId of registry.suites.maps) {
+        await runReviewedStep(
+          MAP_CASES[caseId].edition,
+          caseId,
+          () => runEmployerMap(browser.page, baseUrl, caseId),
+        );
+        checks += 1;
+        console.log(`PASS edition=${MAP_CASES[caseId].edition} fixture=${caseId}`);
+      }
     }
     for (const caseId of registry.suites.verification) {
       await runReviewedStep(

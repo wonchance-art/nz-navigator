@@ -34,6 +34,7 @@ only this exact versioned enum list:
       "au-netpay-whm",
       "au-netpay-resident"
     ],
+    "maps": ["nz-employers-map", "au-employers-map"],
     "verification": ["trust-v10"]
   }
 }
@@ -68,6 +69,13 @@ pointer clicks with `Input.dispatchMouseEvent`; form values dispatch real
 allow only the tested base origin. Thus a pull-request run cannot fetch remote
 application data even if page code changes. Live mode permits only the exact
 reviewed Pages origin.
+
+The two map pages normally use remote Leaflet assets. For the network-free
+gate, a code-owned minimal map API is injected only on the two reviewed map
+paths. It implements no rendering or transport; it lets the local directory
+code initialize so DOM, filters, controls, and safety language can be tested
+independently of Leaflet/CDN availability. Asset parity and UI assertions do
+not rely on the stub's map geometry.
 
 The browser socket, browser process, temporary profile, and local server are
 cleaned in a `finally` path. Cleanup continues through all resources even if
@@ -104,6 +112,29 @@ Calculator cases open their real disclosure widgets and dispatch form events:
 - Canada CRS → core 305;
 - Australia WHM 52,115 → 43,231;
 - Australia resident 60,000 → 50,380.
+
+When `data/employers.json` is present, the NZ/AU map gate becomes mandatory.
+Before Chrome starts, it accepts only the generated
+`window.NZ_EMPLOYERS=Object.freeze(<JSON>)` and AU equivalent plus their exact
+metadata literals, rejects trailing executable code, and requires ordered
+value parity with the country rows in the registry. Browser assertions then
+require:
+
+- normalized asset cardinality NZ 187 and AU 113, unique IDs, matching country,
+  and `vacancyStatus="directory-only"` on every row;
+- one populated source, status, and precision filter, a nonempty `role=list`
+  with `role=listitem` rows, and the explicit no-live-vacancy directory warning;
+- a real source-filter change event producing 20 NZ association rows and 12 AU
+  government gateway rows;
+- no horizontal overflow at 375×812;
+- 13 AU month buttons with exactly one `aria-pressed`, a real month click, and
+  six real postcode example buttons whose click runs the reviewed result;
+- every rendered AU government gateway retaining `eligibility.scheme="none"`
+  and the “구직 경로 · 공고별 판정” badge.
+
+Parallel migration branches without `data/employers.json` print an explicit map
+skip while all earlier browser checks remain mandatory. Once the production
+registry is integrated, missing/stale assets or map DOM can no longer skip.
 
 `verification.html` must fetch and render
 `101 / 118 / 136 / 101 / 94 / 7` for source attestations, claims, reviewed

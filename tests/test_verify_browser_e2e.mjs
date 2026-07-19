@@ -12,12 +12,15 @@ import {
   CleanupStack,
   E2EFailure,
   findBrowser,
+  parseMapAsset,
   REVIEWED_CONTRACT,
   startStaticServer,
   validateBaseUrl,
   validateCalculatorSnapshot,
   validateDiagnosisSnapshot,
   validateFixtureRegistry,
+  validateMapAssets,
+  validateMapSnapshot,
   validateTabSnapshot,
   validateVerificationSnapshot,
   waitForDevTools,
@@ -53,6 +56,39 @@ function validTabSnapshot(edition = "nz", clicked = "home") {
       })),
     innerWidth: 375,
     scrollWidth: 375,
+  };
+}
+
+function validMapSnapshot(country = "NZ") {
+  const au = country === "AU";
+  return {
+    assetCount: au ? 113 : 187,
+    uniqueIds: au ? 113 : 187,
+    countryCount: au ? 113 : 187,
+    directoryOnlyCount: au ? 113 : 187,
+    innerWidth: 375,
+    scrollWidth: 375,
+    sourceFilterCount: 1,
+    statusFilterCount: 1,
+    precisionFilterCount: 1,
+    sourceOptionCount: 3,
+    statusOptionCount: 4,
+    precisionOptionCount: 4,
+    listCount: 1,
+    listRole: "list",
+    listItemCount: au ? 12 : 20,
+    warning: "실시간 공고가 아닌 사업체 디렉터리",
+    filteredSource: au ? "government-job-gateway" : "industry-association",
+    filteredListItems: au ? 12 : 20,
+    monthButtonCount: au ? 13 : 0,
+    monthPressedCount: au ? 1 : 0,
+    pressedMonth: au ? "1" : "",
+    exampleButtonCount: au ? 6 : 0,
+    examplePostcode: au ? "4670" : "",
+    exampleState: au ? "QLD" : "",
+    exampleResultCount: au ? 1 : 0,
+    gatewayNoneCount: au ? 12 : 0,
+    gatewayBadgeCount: au ? 12 : 0,
   };
 }
 
@@ -162,6 +198,86 @@ test("mobile horizontal overflow fails closed", () => {
     () => validateTabSnapshot("nz", "tabs-nz", snapshot),
     /viewport-overflow/,
   );
+});
+
+test("map asset literals and registry parity fail closed", () => {
+  const rows = Array.from({ length: 187 }, (_, index) => ({
+    id: `nz-reviewed-${index}`,
+    country: "NZ",
+    vacancyStatus: "directory-only",
+  }));
+  const registry = {
+    generatedAt: "2026-07-19",
+    employers: rows,
+  };
+  const meta = {
+    schemaVersion: 1,
+    generatedAt: "2026-07-19",
+    count: 187,
+  };
+  assert.doesNotThrow(() =>
+    validateMapAssets("nz-employers-map", registry, rows, meta)
+  );
+  const source =
+    "/* generated */\n" +
+    `window.NZ_EMPLOYERS=Object.freeze(${JSON.stringify(rows)});\n` +
+    `window.NZ_EMPLOYER_REGISTRY_META=Object.freeze(${JSON.stringify(meta)});`;
+  assert.deepEqual(parseMapAsset("nz-employers-map", source), { rows, meta });
+
+  const duplicate = clone(rows);
+  duplicate[1].id = duplicate[0].id;
+  assert.throws(
+    () => validateMapAssets("nz-employers-map", registry, duplicate, meta),
+    /asset-count/,
+  );
+  assert.throws(
+    () => parseMapAsset("nz-employers-map", `${source}\nalert(1);`),
+    /asset-literal/,
+  );
+  assert.throws(
+    () => parseMapAsset(
+      "nz-employers-map",
+      source.replace('"directory-only"', "(() => 'directory-only')()"),
+    ),
+    /asset-json/,
+  );
+});
+
+test("map DOM contract covers filters, overflow, buttons, and gateway safety", () => {
+  assert.doesNotThrow(() =>
+    validateMapSnapshot("nz-employers-map", validMapSnapshot("NZ"))
+  );
+  assert.doesNotThrow(() =>
+    validateMapSnapshot("au-employers-map", validMapSnapshot("AU"))
+  );
+
+  for (const mutate of [
+    (snapshot) => { snapshot.scrollWidth = 376; },
+    (snapshot) => { snapshot.sourceFilterCount = 0; },
+    (snapshot) => { snapshot.listRole = ""; },
+    (snapshot) => { snapshot.warning = "current vacancies"; },
+  ]) {
+    const snapshot = validMapSnapshot("NZ");
+    mutate(snapshot);
+    assert.throws(
+      () => validateMapSnapshot("nz-employers-map", snapshot),
+      E2EFailure,
+    );
+  }
+  for (const mutate of [
+    (snapshot) => { snapshot.monthButtonCount = 12; },
+    (snapshot) => { snapshot.monthPressedCount = 2; },
+    (snapshot) => { snapshot.exampleButtonCount = 0; },
+    (snapshot) => { snapshot.gatewayNoneCount = 11; },
+    (snapshot) => { snapshot.gatewayBadgeCount = 0; },
+  ]) {
+    const snapshot = validMapSnapshot("AU");
+    mutate(snapshot);
+    assert.throws(
+      () => validateMapSnapshot("au-employers-map", snapshot),
+      /au-interactions/,
+    );
+  }
 });
 
 test("stale or duplicate diagnosis selectors fail closed", () => {

@@ -1,0 +1,126 @@
+name: Employer directory link drift
+
+on:
+  schedule:
+    - cron: "41 17 * * 2"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: employer-directory-link-drift
+  cancel-in-progress: false
+
+jobs:
+  live-employer-links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      TZ: Asia/Seoul
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Detect production registry
+        id: registry
+        shell: bash
+        run: |
+          if [[ -f data/employers.json ]]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "Production employer registry is not migrated yet."
+          fi
+
+      - name: Run bounded URL-once live audit
+        if: steps.registry.outputs.present == 'true'
+        run: >-
+          python3 scripts/verify_employers.py
+          data/employers.json
+          --today "$(date +%F)"
+          --check-links
+          --timeout 10
+          --output employer-link-report.json
+          --no-fail
+
+      - name: Read exact-title issue state
+        if: steps.registry.outputs.present == 'true'
+        run: >-
+          gh issue list
+          --repo "$GITHUB_REPOSITORY"
+          --state all
+          --limit 1000
+          --json number,title,state,body
+          > employer-link-existing.json
+
+      - name: Reduce idempotent issue payload
+        if: steps.registry.outputs.present == 'true'
+        run: |
+          python3 scripts/render_employer_issue.py \
+            --report employer-link-report.json \
+            --issues employer-link-existing.json \
+            --output employer-link-issue.json
+          python3 -c \
+            'import json; p=json.load(open("employer-link-issue.json")); open("employer-link-body.md","w").write(p["body"])'
+
+      - name: Apply exact single issue
+        if: steps.registry.outputs.present == 'true'
+        shell: bash
+        run: |
+          action="$(python3 -c 'import json; print(json.load(open("employer-link-issue.json"))["action"])')"
+          number="$(python3 -c 'import json; print(json.load(open("employer-link-issue.json"))["issueNumber"] or "")')"
+          case "$action" in
+            create)
+              gh issue create \
+                --repo "$GITHUB_REPOSITORY" \
+                --title "Employer directory link drift" \
+                --body-file employer-link-body.md
+              ;;
+            update)
+              gh issue edit "$number" \
+                --repo "$GITHUB_REPOSITORY" \
+                --body-file employer-link-body.md
+              ;;
+            reopen)
+              gh issue reopen "$number" --repo "$GITHUB_REPOSITORY"
+              gh issue edit "$number" \
+                --repo "$GITHUB_REPOSITORY" \
+                --body-file employer-link-body.md
+              ;;
+            close)
+              gh issue edit "$number" \
+                --repo "$GITHUB_REPOSITORY" \
+                --body-file employer-link-body.md
+              gh issue close "$number" \
+                --repo "$GITHUB_REPOSITORY" \
+                --comment "All reviewed employer directory links match."
+              ;;
+            noop)
+              echo "Employer link issue state is already current."
+              ;;
+            *)
+              echo "Unknown reducer action: $action" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Fail scheduled audit on any non-match
+        if: steps.registry.outputs.present == 'true'
+        run: |
+          python3 -c '
+          import json
+          report = json.load(open("employer-link-report.json"))
+          bad = [item for item in report["results"] if item["status"] != "match"]
+          if bad:
+              raise SystemExit(f"{len(bad)} non-match employer link result(s)")
+          '

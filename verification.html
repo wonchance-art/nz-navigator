@@ -199,6 +199,12 @@
         <p class="meta">합산 수수료·CRS 표본·실수령·무정원·별도 수수료 0처럼 한 정부 문장에 그대로 쓰이지 않은 값은 <code>derived-executed</code>로 분리합니다. 공식 입력의 원문 감시가 먼저 통과해야 하며, 고정 변환 또는 실제 계산기와 독립 검토 산식을 함께 실행합니다. 미등록·중복·고아 입력, 날짜·단위·판 불일치, 임의 계산식 주입, 경계 회귀는 배포를 막습니다.</p>
         <a class="meta" href="./data/claim-lineage.json">machine-readable 파생 계보 원문 →</a>
       </div>
+      <div class="method">
+        <strong>구직 디렉터리 신뢰 경계</strong>
+        <div id="employerGate" class="coverage-list"></div>
+        <p class="meta">NZ·AU 지도 항목은 실시간 공고가 아닌 사업체 지점·운영지·구직 경로 디렉터리입니다. 사업체명 중복과 다지점을 고유 ID로 분리하고, 공식 등록부·산업협회·사업체 공식·정부 구직·미검증 후보를 구별합니다. 주소·도시·지역 대표 좌표, 연락 링크 유형, 만료·재검토일을 공개하며, NZ WHE는 실제 원예·포도 직무를, AU 417은 실제 직무·근무지 postcode·작업일을 별도로 확인해야 합니다.</p>
+        <a class="meta" href="./data/employers.json">machine-readable 사업체·지점 원장 →</a>
+      </div>
     </section>
 
     <div class="nav" role="group" aria-label="국가 필터">
@@ -216,6 +222,7 @@
     <h2>변경이력</h2>
     <section class="history">
       <ul>
+        <li><strong>2026-07-19 · 구직 연결 v11:</strong> NZ 187개·AU 113개 사업체/지점/구직 경로를 고유 ID가 있는 공개 원장으로 정규화. 실제 주소·postcode·도시·지역 대표 좌표를 구별하고, 채용 페이지·회사 홈·이메일·연락처 없음 및 공식 등록부·산업협회·사업체 공식·정부 구직·미검증 후보를 분리. 만료 27건과 재확인 필요 항목을 필터링하며, 디렉터리 등재가 현재 공고나 NZ WHE·AU 417 적격성을 보장하지 않음을 각 카드에 표시.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v10:</strong> 모든 치명 official 주장을 공식 원문 감시에 직접 결속하고, 직접 발표값이 아닌 치명 derived 11개는 공식 입력 23개→고정 변환·실제 계산→공개값 계보로 분리. IEC·PGWP 합산비, CRS 305, NZ/JA·CA·AU 실수령, 일본 WHV 무정원, 801 별도 수수료 0, AU 거주자 세율 직렬화를 경계 실행과 함께 검증해 치명 미결속 0개를 CI에서 강제. ATO의 WHM 세율·no-TFN·2026–27 거주자 세율·Medicare·LITO 결속 7개는 반복 403을 성공으로 숨기지 않고 실제 브라우저 검토·공식 fixture 지문·30일 수동 재검토로 공개.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v9:</strong> NZ 공식 비자·처리기간·IVL·고용주·IRD, CA 연방·주정부 임금·IRCC, AU Fair Work 페이지 25개 감시를 추가해 비용·자금·쿼터·처리기간·연령·세율·임금 50개 주장을 원문 구조와 직접 결속. PSWV 80% 처리기간을 5주→3주로 정정하고, 하나의 4개월 값으로 합쳐져 있던 SMC·Straight to Residence·Work to Residence를 각각 4.5·4·3개월로 분리했으며, 고용주 인증비·2026 중위임금·SMC 1.5/2/3배, CA 연방·ON·BC·AB, FSW 정착자금·IEC 56일 및 AU 일반·캐주얼 최저임금까지 원장과 직접 대조.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v8:</strong> 캐나다 세금 상수 92개를 단일 수동 구조화 파일에서 CRA 공식 CSV·HTML 16개 구성요소로 분해. Federal·ON·AB·BC 누진구간, BPA·CEA·surtax, CPP·CPP2·EI, Ontario 건강보험료·감면식을 원문 구조와 직접 결속하고, BC 연간 5.60%와 2026년 하반기 급여 보정 6.14%를 구분. 요청별·감시 묶음별 총 시간 예산과 더 이상 존재하지 않는 장애 요청의 자동 정리도 추가.</li>
@@ -326,18 +333,20 @@
       fetch('./data/runtime-bindings.json', { cache: 'no-store' }),
       fetch('./data/boundary-executions.json', { cache: 'no-store' }),
       fetch('./data/source-attestations.json', { cache: 'no-store' }),
-      fetch('./data/claim-lineage.json', { cache: 'no-store' })
+      fetch('./data/claim-lineage.json', { cache: 'no-store' }),
+      fetch('./data/employers.json', { cache: 'no-store' })
     ])
-      .then(async ([claimsResponse, exemptionsResponse, runtimeResponse, boundaryResponse, attestationResponse, lineageResponse]) => {
+      .then(async ([claimsResponse, exemptionsResponse, runtimeResponse, boundaryResponse, attestationResponse, lineageResponse, employerResponse]) => {
         if (!claimsResponse.ok) throw new Error(`claims HTTP ${claimsResponse.status}`);
         if (!exemptionsResponse.ok) throw new Error(`exemptions HTTP ${exemptionsResponse.status}`);
         if (!runtimeResponse.ok) throw new Error(`runtime bindings HTTP ${runtimeResponse.status}`);
         if (!boundaryResponse.ok) throw new Error(`boundary executions HTTP ${boundaryResponse.status}`);
         if (!attestationResponse.ok) throw new Error(`source attestations HTTP ${attestationResponse.status}`);
         if (!lineageResponse.ok) throw new Error(`claim lineage HTTP ${lineageResponse.status}`);
-        return [await claimsResponse.json(), await exemptionsResponse.json(), await runtimeResponse.json(), await boundaryResponse.json(), await attestationResponse.json(), await lineageResponse.json()];
+        if (!employerResponse.ok) throw new Error(`employers HTTP ${employerResponse.status}`);
+        return [await claimsResponse.json(), await exemptionsResponse.json(), await runtimeResponse.json(), await boundaryResponse.json(), await attestationResponse.json(), await lineageResponse.json(), await employerResponse.json()];
       })
-      .then(([registry, exemptionRegistry, runtimeRegistry, boundaryRegistry, attestationRegistry, lineageRegistry]) => {
+      .then(([registry, exemptionRegistry, runtimeRegistry, boundaryRegistry, attestationRegistry, lineageRegistry, employerRegistry]) => {
         state.claims = registry.claims;
         state.runtimeByClaim = new Map(runtimeRegistry.bindings.map(binding => [binding.claimId, binding]));
         const sourceAttestations = attestationRegistry.attestations || [];
@@ -463,6 +472,18 @@
           `<span>실행 완료 ${lineageAudit.executedCount ?? '—'}</span>`,
           `<span>입력 ${lineageAudit.inputClaimCount ?? '—'}</span>`,
           `<span>치명 미결속 ${lineageAudit.remainingCriticalCount ?? '—'}</span>`
+        ].join('');
+        const employerAudit = employerRegistry.audit || {};
+        document.getElementById('employerGate').innerHTML = [
+          `<span>전체 ${employerAudit.employerCount ?? '—'}</span>`,
+          `<span>NZ ${employerAudit.countryCounts?.NZ ?? '—'}</span>`,
+          `<span>AU ${employerAudit.countryCounts?.AU ?? '—'}</span>`,
+          `<span>현재 확인 ${employerAudit.statusCounts?.active ?? '—'}</span>`,
+          `<span>재확인 ${employerAudit.statusCounts?.uncertain ?? '—'}</span>`,
+          `<span>표시 만료 ${employerAudit.statusCounts?.expired ?? '—'}</span>`,
+          `<span>직접 연락 ${employerAudit.contactableCount ?? '—'}</span>`,
+          `<span>고유 링크 ${employerAudit.linkUrlCount ?? '—'}</span>`,
+          `<span>근접 중복 후보 ${employerAudit.nearDuplicateCandidateCount ?? '—'}</span>`
         ].join('');
         render();
       })

@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-19",
+  "audit": {
+    "employerCount": 8,
+    "countryCounts": {
+      "NZ": 3,
+      "AU": 5
+    },
+    "statusCounts": {
+      "active": 6,
+      "uncertain": 1,
+      "expired": 1
+    },
+    "contactableCount": 4,
+    "expiredCount": 1,
+    "nearDuplicateCandidateCount": 0,
+    "linkUrlCount": 8
+  },
+  "employers": [
+    {
+      "id": "nz-rse-apata-te-puke",
+      "country": "NZ",
+      "name": "Apata Group Limited",
+      "location": {
+        "label": "Te Puke",
+        "address": "15 Mends Lane, Te Puke 3189",
+        "region": "Bay of Plenty",
+        "postcode": "3189",
+        "lat": -37.80523,
+        "lng": 176.43871,
+        "precision": "exact"
+      },
+      "workTypes": [
+        "horticulture",
+        "packhouse"
+      ],
+      "source": {
+        "kind": "government-register",
+        "url": "https://www.immigration.govt.nz/work/requirements-for-work-visas/approved-employers/recognised-seasonal-employers-list/",
+        "checkedAt": "2026-07-14",
+        "effectiveTo": "2027-11-12"
+      },
+      "contact": {
+        "kind": "none"
+      },
+      "status": "active",
+      "nextReviewAt": "2026-08-14",
+      "vacancyStatus": "directory-only",
+      "eligibility": {
+        "scheme": "nz-whv-extension",
+        "classification": "conditional",
+        "requiresRoleCheck": true,
+        "requiresLocationCheck": false
+      }
+    },
+    {
+      "id": "nz-rse-expired-richmond",
+      "country": "NZ",
+      "name": "Archived Orchard Limited",
+      "location": {
+        "label": "Richmond",
+        "address": "29 Sunview Heights, Richmond 7081",
+        "region": "Tasman",
+        "postcode": "7081",
+        "lat": -41.36222,
+        "lng": 173.1751,
+        "precision": "exact"
+      },
+      "workTypes": [
+        "horticulture"
+      ],
+      "source": {
+        "kind": "government-register",
+        "url": "https://www.immigration.govt.nz/work/requirements-for-work-visas/approved-employers/recognised-seasonal-employers-list/",
+        "checkedAt": "2026-07-14",
+        "effectiveTo": "2026-06-30"
+      },
+      "contact": {
+        "kind": "none"
+      },
+      "status": "expired",
+      "nextReviewAt": "2026-07-14",
+      "vacancyStatus": "directory-only",
+      "eligibility": {
+        "scheme": "nz-whv-extension",
+        "classification": "conditional",
+        "requiresRoleCheck": true,
+        "requiresLocationCheck": false
+      }
+    },
+    {
+      "id": "nz-kgi-bay-kiwi-connections-te-puke",
+      "country": "NZ",
+      "name": "Bay Kiwi Connections Ltd",
+      "location": {
+        "label": "Te Puke",
+        "region": "Bay of Plenty",
+        "postcode": "3119",
+        "lat": -37.785,
+        "lng": 176.326,
+        "precision": "town"
+      },
+      "workTypes": [
+        "orchard-contracting"
+      ],
+      "source": {
+        "kind": "industry-association",
+        "url": "https://www.nzkgi.org.nz/resource/orchard-and-contractors-employer-lists/",
+        "checkedAt": "2026-07-14"
+      },
+      "contact": {
+        "kind": "email",
+        "url": "mailto:baykiwiconnections@gmail.com"
+      },
+      "status": "active",
+      "nextReviewAt": "2026-08-14",
+      "vacancyStatus": "directory-only",
+      "eligibility": {
+        "scheme": "nz-whv-extension",
+        "classification": "conditional",
+        "requiresRoleCheck": true,
+        "requiresLocationCheck": false
+      }
+    },
+    {
+      "id": "au-southern-orchards-bundaberg",
+      "country": "AU",
+      "name": "Southern Orchards",
+      "location": {
+        "label": "Bundaberg",
+        "address": "10 Orchard Road, Bundaberg QLD 4670",
+        "region": "Wide Bay",
+        "state": "QLD",
+        "postcode": "4670",
+        "lat": -24.866,
+        "lng": 152.349,
+        "precision": "exact"
+      },
+      "workTypes": [
+        "farm-packing"
+      ],
+      "source": {
+        "kind": "employer-official",
+        "url": "https://www.southern-orchards.com.au/about",
+        "checkedAt": "2026-07-14"
+      },
+      "contact": {
+        "kind": "company",
+        "url": "https://www.southern-orchards.com.au/careers"
+      },
+      "status": "active",
+      "nextReviewAt": "2026-08-14",
+      "vacancyStatus": "directory-only",
+      "eligibility": {
+        "scheme": "au-417-specified-work",
+        "classification": "conditional",
+        "requiresRoleCheck": true,
+        "requiresLocationCheck": true
+      }
+    },
+    {
+      "id": "au-southern-orchards-mildura",
+      "country": "AU",
+      "name": "Southern Orchards",
+      "location": {
+        "label": "Mildura",
+        "address": "20 Packing Lane, Mildura VIC 3500",
+        "region": "Sunraysia",
+        "state": "VIC",
+        "postcode": "3500",
+        "lat": -34.188,
+        "lng": 142.159,
+        "precision": "exact"
+      },
+      "workTypes": [
+        "farm-packing"
+      ],
+      "source": {
+        "kind": "employer-official",
+        "url": "https://www.southern-orchards.com.au/about",
+        "checkedAt": "2026-07-14"
+      },
+      "contact": {
+        "kind": "company",
+        "url": "https://www.southern-orchards.com.au/careers"
+      },
+      "status": "active",
+      "nextReviewAt": "2026-08-14",
+      "vacancyStatus": "directory-only",
+      "eligibility": {
+        "scheme": "au-417-specified-work",
+        "classification": "conditional",
+        "requiresRoleCheck": true,
+        "requiresLocationCheck": true
+      }
+    },
+    {
+      "id": "au-workforce-harvest-gateway-nsw",
+      "country": "AU",
+      "name": "Workforce Australia Harvest gateway",
+      "location": {
+        "label": "Regional NSW search",
+        "region": "New South Wales",
+        "state": "NSW",
+        "postcode": "2830",
+        "lat": -32.257,
+        "lng": 148.601,
+        "precision": "region"
+      },
+      "workTypes": [
+        "job-gateway"
+      ],
+      "source": {
+        "kind": "government-job-gateway",
+        "url": "https://www.workforceaustralia.gov.au/individuals/jobs/search",
+        "checkedAt": "2026-07-14"
+      },
+      "contact": {
+        "kind": "recruitment",
+        "url": "https://www.workforceaustralia.gov.au/individuals/jobs/search"
+      },
+      "status": "active",
+      "nextReviewAt": "2026-08-14",
+      "vacancyStatus": "directory-only",
+      "eligibility": {
+        "scheme": "none",
+        "classification": "not-applicable",
+        "requiresRoleCheck": true,
+        "requiresLocationCheck": false
+      }
+    },
+    {
+      "id": "au-local-producer-gatton",
+      "country": "AU",
+      "name": "Reviewed Local Producer",
+      "location": {
+        "label": "Gatton district",
+        "region": "Lockyer Valley",
+        "state": "QLD",
+        "postcode": "4343",
+        "lat": -27.558,
+        "lng": 152.277,
+        "precision": "region"
+      },
+      "workTypes": [
+        "horticulture"
+      ],
+      "source": {
+        "kind": "verified-local-producer",
+        "url": "https://freshproduce.org.au/about/",
+        "checkedAt": "2026-07-14"
+      },
+      "contact": {
+        "kind": "none"
+      },
+      "status": "uncertain",
+      "nextReviewAt": "2026-07-25",
+      "vacancyStatus": "directory-only",
+      "eligibility": {
+        "scheme": "au-417-specified-work",
+        "classification": "conditional",
+        "requiresRoleCheck": true,
+        "requiresLocationCheck": true
+      }
+    },
+    {
+      "id": "au-harvest-moon-north-west-tasmania",
+      "country": "AU",
+      "name": "Harvest Moon",
+      "location": {
+        "label": "North-west Tasmania",
+        "region": "North West",
+        "state": "TAS",
+        "postcode": "7310",
+        "lat": -41.19,
+        "lng": 146.25,
+        "precision": "region"
+      },
+      "workTypes": [
+        "farm-packing"
+      ],
+      "source": {
+        "kind": "employer-official",
+        "url": "https://harvestmoon.com.au/",
+        "checkedAt": "2026-07-14"
+      },
+      "contact": {
+        "kind": "none"
+      },
+      "status": "active",
+      "nextReviewAt": "2026-08-14",
+      "vacancyStatus": "directory-only",
+      "eligibility": {
+        "scheme": "au-417-specified-work",
+        "classification": "conditional",
+        "requiresRoleCheck": true,
+        "requiresLocationCheck": true
+      }
+    }
+  ]
+}

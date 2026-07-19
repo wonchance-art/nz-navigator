@@ -18,6 +18,10 @@
       "au-netpay-whm",
       "au-netpay-resident"
     ],
+    "maps": [
+      "nz-employers-map",
+      "au-employers-map"
+    ],
     "verification": ["trust-v10"]
   }
 }

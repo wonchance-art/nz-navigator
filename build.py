@@ -1,128 +1,52 @@
 #!/usr/bin/env python3
-"""볼트 원본(Artifact 규격: doctype/head/body 없음)을 정식 HTML 문서로 래핑.
-구조: / = 통합 홈(허브) · /nz/ = NZ ko · /ja/ = NZ ja · /ca/ = CA · /au/ = AU."""
+"""Validate tracked Pages documents and build registry-derived assets.
+
+The Git repository is the canonical deploy source. Older vault fragments are
+deliberately not copied here: doing so could silently restore stale visa facts
+after the reviewed HTML and its trust registries had already passed CI.
+"""
+from __future__ import annotations
+
 import pathlib
-import shutil
+import subprocess
 
-VAULT = pathlib.Path.home() / 'Library/Mobile Documents/iCloud~md~obsidian/Documents/nz'
-ROOT = pathlib.Path(__file__).parent
 
-PAGES = [
-    {
-        'src': VAULT / 'index.hub.html',
-        'out': ROOT / 'index.html',
-        'lang': 'ko',
-        'title': 'NAVI — 어느 나라로 워홀·영주권?',
-        'meta': '''<meta name="description" content="뉴질랜드·캐나다·호주 중 내 영주권에 유리한 나라·경로를 3분 진단. 나이·워홀 사용 이력·경력·직군으로 국가별 유리도를 산출합니다.">
-<meta property="og:title" content="NAVI — 어느 나라로 워홀·영주권?">
-<meta property="og:description" content="뉴질랜드·캐나다·호주 — 내 영주권에 유리한 나라와 경로를 순서로.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/">
-<meta property="og:image" content="https://wonchance-art.github.io/nz-navigator/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">''',
-    },
-    {
-        'src': VAULT / 'index.html',
-        'out': ROOT / 'nz' / 'index.html',
-        'lang': 'ko',
-        'title': 'NZ NAVI',
-        'meta': '''<meta name="description" content="뉴질랜드 체류 설계도 — 비자·영주권 로드맵, 시나리오, 직군·도시 가이드, 비용 계산기. 2026-07 공식 검증 데이터.">
-<meta property="og:title" content="NZ NAVI — 뉴질랜드 영주권 내비게이터">
-<meta property="og:description" content="어떤 비자로 오든 — 영주권까지의 조건·비용·타임라인을 설계합니다.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/nz/">
-<meta property="og:image" content="https://wonchance-art.github.io/nz-navigator/nz/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">''',
-    },
-    {
-        'src': VAULT / 'index.ca.html',
-        'out': ROOT / 'ca' / 'index.html',
-        'lang': 'ko',
-        'title': 'CA NAVI',
-        'meta': '''<meta name="description" content="캐나다 체류 설계도 — 워홀(IEC)·영주권(Express Entry·PNP) 로드맵, 직군·도시 가이드, CRS·실수령 계산기.">
-<meta property="og:title" content="CA NAVI — 캐나다 영주권 내비게이터">
-<meta property="og:description" content="어떤 비자로 가든 — 영주권까지의 조건·비용·타임라인을 설계합니다.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/ca/">
-<meta property="og:image" content="https://wonchance-art.github.io/nz-navigator/ca/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">''',
-    },
-    {
-        'src': VAULT / 'index.au.html',
-        'out': ROOT / 'au' / 'index.html',
-        'lang': 'ko',
-        'title': 'AU NAVI',
-        'meta': '''<meta name="description" content="호주 체류 설계도 — 워홀(417)·영주권(포인트 테스트·고용주 스폰서) 로드맵, 직군·도시 가이드, 실수령 계산기.">
-<meta property="og:title" content="AU NAVI — 호주 영주권 내비게이터">
-<meta property="og:description" content="어떤 비자로 가든 — 영주권까지의 조건·비용·타임라인을 설계합니다.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/au/">
-<meta property="og:image" content="https://wonchance-art.github.io/nz-navigator/au/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">''',
-    },
-    {
-        'src': VAULT / 'index.ja.html',
-        'out': ROOT / 'ja' / 'index.html',
-        'lang': 'ja',
-        'title': 'NZ NAVI',
-        'meta': '''<meta name="description" content="ニュージーランド滞在設計図 — ビザ・永住権ロードマップ、シナリオ、職種・都市ガイド、費用計算機。2026-07公式検証データ。">
-<meta property="og:title" content="NZ NAVI — NZ永住権ナビ">
-<meta property="og:description" content="どのビザで来ても — 永住権までの条件・費用・タイムラインを設計。">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://wonchance-art.github.io/nz-navigator/ja/">
-<meta property="og:image" content="https://wonchance-art.github.io/nz-navigator/ja/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">''',
-    },
-]
+ROOT = pathlib.Path(__file__).resolve().parent
 
-for p in PAGES:
-    if not p['src'].exists():
-        print(f"skip — {p['src']} 없음")
-        continue
-    content = p['src'].read_text(encoding='utf-8')
-    cut = content.index('</style>') + len('</style>')
-    head_part = content[:cut]
-    body_part = content[cut:].lstrip('\n')
+PAGES = {
+    'index.html': ('ko', 'NAVI — 어느 나라로 워홀·영주권?'),
+    'nz/index.html': ('ko', 'NZ NAVI'),
+    'ja/index.html': ('ja', 'NZ NAVI'),
+    'ca/index.html': ('ko', 'CA NAVI'),
+    'au/index.html': ('ko', 'AU NAVI'),
+    'nz/seasonal-map.html': ('ko', '뉴질랜드 워홀 +3개월 연장 적격작업·시즌 지도'),
+    'au/whv-map.html': ('ko', '호주 417 세컨·서드 지정작업 지도'),
+    'verification.html': ('ko', '검증 원장 · NZ Navigator'),
+}
 
-    title_tag = f"<title>{p['title']}</title>"
-    assert title_tag in head_part, f"{p['src'].name}: title 불일치 — '{p['title']}'"
-    head_part = head_part.replace(title_tag, title_tag + '\n' + p['meta'], 1)
 
-    doc = f'''<!DOCTYPE html>
-<html lang="{p['lang']}">
-<head>
-{head_part}
-</head>
-<body>
-{body_part}
-</body>
-</html>
-'''
-    p['out'].parent.mkdir(exist_ok=True)
-    p['out'].write_text(doc, encoding='utf-8')
-    print(f"OK — wrapped {len(doc):,} bytes -> {p['out']}")
+for relative, (language, title) in PAGES.items():
+    page = ROOT / relative
+    if not page.is_file():
+        raise FileNotFoundError(f'tracked page missing: {relative}')
+    text = page.read_text(encoding='utf-8')
+    if '<!doctype html>' not in text[:100].lower():
+        raise ValueError(f'{relative}: complete HTML document required')
+    if f'<html lang="{language}">' not in text[:300]:
+        raise ValueError(f'{relative}: expected lang={language}')
+    if f'<title>{title}</title>' not in text:
+        raise ValueError(f'{relative}: expected title {title!r}')
+    print(f'OK — tracked page {relative} ({len(text):,} bytes)')
 
-STATIC_PAGES = [
-    (VAULT / 'au-whv-map.html', ROOT / 'au' / 'whv-map.html'),
-    (VAULT / 'au-employers.js', ROOT / 'au' / 'employers.js'),
-    (VAULT / 'nz-whv-map.html', ROOT / 'nz' / 'seasonal-map.html'),
-    (VAULT / 'nz-employers.js', ROOT / 'nz' / 'employers.js'),
-]
 
-for src, out in STATIC_PAGES:
-    if not src.exists():
-        print(f"skip — {src} 없음")
-        continue
-    out.parent.mkdir(exist_ok=True)
-    shutil.copy2(src, out)
-    print(f"OK — copied {src.name} -> {out}")
+subprocess.run(
+    ['node', str(ROOT / 'scripts' / 'build_employer_assets.mjs')],
+    cwd=ROOT,
+    check=True,
+)
+subprocess.run(
+    ['node', str(ROOT / 'scripts' / 'build_employer_assets.mjs'), '--check'],
+    cwd=ROOT,
+    check=True,
+)
+print('OK — employer registry compatibility assets are current')
