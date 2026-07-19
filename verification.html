@@ -183,7 +183,7 @@
       <div class="method">
         <strong>공식 원문 변경 감시</strong>
         <div id="attestationGate" class="coverage-list"></div>
-        <p class="meta">체크인한 정부 원문 표본은 모든 배포에서 구조·값·단위·지문을 다시 검사합니다. 동일 정책의 검토된 영문·불문 표현은 접근 가능한 후보를 모두 읽고 값·단위를 교차검증하며, 어느 표현에서든 실제 값 변경이 보이면 대체 표현으로 숨기지 않습니다. 구조화할 수 없는 전체 표 묶음은 수동 검토일을 넘기면 자동 실패합니다. 정기 라이브 검사는 <code>match</code>, 실제 변경 <code>changed</code>, 접근 차단 <code>blocked</code>, 일시 장애 <code>transient</code>, 안전 추출 불가 <code>unsupported</code>를 구분합니다.</p>
+        <p class="meta">체크인한 정부 원문 표본은 모든 배포에서 구조·값·단위·지문을 다시 검사합니다. 동일 정책의 검토된 영문·불문 표현은 접근 가능한 후보를 모두 읽고 값·단위를 교차검증하며, 어느 표현에서든 실제 값 변경이 보이면 대체 표현으로 숨기지 않습니다. 캐나다 세금표는 연방·주·CPP·CPP2·EI·Ontario 산식을 공식 CSV·HTML 구성요소로 나눠 92개 경계값을 실시간 추출하며, 한 값의 중복·누락·구판 표를 배포 전에 차단합니다. 정기 라이브 검사는 <code>match</code>, 실제 변경 <code>changed</code>, 접근 차단 <code>blocked</code>, 일시 장애 <code>transient</code>, 안전 추출 불가 <code>unsupported</code>를 구분합니다.</p>
         <a class="meta" href="./data/source-attestations.json">machine-readable 공식 원문 감시 원장 →</a>
         <br>
         <a class="meta" href="https://github.com/wonchance-art/nz-navigator/issues?q=is%3Aissue+%22Source+attestation+drift%22" rel="noopener">최근 라이브 감시 결과 →</a>
@@ -205,6 +205,7 @@
     <h2>변경이력</h2>
     <section class="history">
       <ul>
+        <li><strong>2026-07-19 · 신뢰 기반 v8:</strong> 캐나다 세금 상수 92개를 단일 수동 구조화 파일에서 CRA 공식 CSV·HTML 16개 구성요소로 분해. Federal·ON·AB·BC 누진구간, BPA·CEA·surtax, CPP·CPP2·EI, Ontario 건강보험료·감면식을 원문 구조와 직접 결속하고, BC 연간 5.60%와 2026년 하반기 급여 보정 6.14%를 구분. 요청별·감시 묶음별 총 시간 예산과 더 이상 존재하지 않는 장애 요청의 자동 정리도 추가.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v7:</strong> 한국 IEC 18–35세·24개월을 최신 국가별 영문·불문 원문 교차검증으로 전환. ATO LITO는 자격 조문이 아닌 실제 산식 표 61-115에, 2026–27 거주자 세율은 법률 HTML과 AUD 18,200 공식 안내에 직접 결속. CRA 전체 세금 상수의 수동 검토 기한과 근거 지문을 강제하고, 공식 표현 후보·제한 PDF의 실패를 값 변경과 분리.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v6:</strong> Canada·IRCC 공식 원문 요청에 한정 재시도와 시도 이력을 추가하고, 같은 GitHub 이슈에서 연속 장애·최초/최근 관측·회복을 누적. ATO WHM·Medicare·Super는 실제 HTML 고정 추출로 승격하고, 압축된 2026–27 거주자 세율 PDF와 콘텐츠 협상형 LITO 근거는 7일 수동 검토 SLA가 있는 fixture-only로 분리.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v5:</strong> 공식 원문 35개 감시 묶음으로 핵심 주장 42개와 세금·보험 경계 상수 136개를 출처 구조·값·단위까지 결속. PR은 검토된 원문 표본을 재현하고, 매주 라이브 검사는 변경·차단·일시 장애·안전 추출 한계를 서로 구분해 단일 GitHub 이슈로 보고.</li>
@@ -231,7 +232,7 @@
         <li><strong>경계 실행</strong>은 독립 검토 상수로 기대값을 계산하고 실제 계산기 함수에 각 구간·상한의 직전·정확히·직후 값을 주입한다는 뜻입니다. 선언됐지만 실행 manifest에 연결되지 않은 경계는 배포되지 않습니다.</li>
         <li><strong>공식 원문 감시</strong>는 허용된 정부 도메인의 정확한 표·라벨·문장·API 레코드만 고정 변환기로 읽습니다. 임의 CSS·XPath·원격 정규식·코드는 실행하지 않습니다.</li>
         <li>영문·불문처럼 같은 정책의 공식 표현 후보는 검토 지문을 각각 보관하고, 접근 가능한 후보 값이 서로 다르거나 하나라도 실제 변경되면 실패합니다. 모든 후보의 전송이 막히면 값을 확인한 것으로 승격하지 않습니다.</li>
-        <li>CRA 전체 세금 상수처럼 여러 표를 사람이 구조화한 근거는 <strong>fixture-only</strong>와 정확한 다음 검토일·근거 지문을 공개하고, 기한을 하루라도 넘기면 실패합니다. ATO 법률 HTML이 403을 반환하면 정책 변경이 아니라 <strong>blocked</strong>로 분리합니다.</li>
+        <li>CRA 세금 상수는 공식 CSV·HTML의 구성요소별 표 제목·효력일·행·단위·값을 직접 읽고, 92개 계산 경계의 소유권을 정확히 한 번씩 강제합니다. 안전하게 구조화할 수 없는 근거만 <strong>fixture-only</strong>와 다음 수동 검토일을 공개하며, 현재 그런 잔여 묶음은 없습니다. 공식 페이지가 403을 반환하면 정책 변경이 아니라 <strong>blocked</strong>로 분리합니다.</li>
         <li>치명 항목은 45일, 나머지는 90일이 지나면 자동검사가 실패합니다. 정책 변경을 발견하면 날짜와 값을 먼저 갱신해야 배포할 수 있습니다.</li>
         <li>공식 링크의 생존 여부는 정기 네트워크 검사에서 확인하고, 기본 빌드는 외부 장애 때문에 막히지 않도록 구조 검증만 수행합니다.</li>
         <li>개인별 자격·세금 거주성·부양가족·과거 이력에 따라 결과가 달라질 수 있으므로 신청 직전 정부 도구와 등록 전문가를 함께 확인하세요.</li>

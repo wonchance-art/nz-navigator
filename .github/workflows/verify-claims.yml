@@ -116,7 +116,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Verify source candidates, review due dates, PDF bounds, and issue reducer
+      - name: Verify source components, CSV cohorts, budgets, PDF bounds, and issue reducer
         run: >-
           python3 -m unittest
           tests.test_verify_source_attestations

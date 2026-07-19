@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 from html.parser import HTMLParser
+import io
 import json
 import math
 import re
@@ -24,13 +26,31 @@ from urllib import request as urllib_request
 
 SCHEMA_VERSION = 1
 REPORT_SCHEMA_VERSION = 2
-REQUEST_AUDIT_SCHEMA_VERSION = 1
+REQUEST_AUDIT_SCHEMA_VERSION = 2
 MAX_BODY_BYTES = 2_000_000
 DEFAULT_TIMEOUT = 12.0
 DEFAULT_MAX_ATTEMPTS = 1
 DEFAULT_RETRY_BACKOFF_MS = 500
+DEFAULT_REQUEST_BUDGET_SECONDS = 30.0
+DEFAULT_ATTESTATION_BUDGET_SECONDS = 60.0
 MAX_RETRY_ATTEMPTS = 4
 MAX_RETRY_BACKOFF_MS = 2_000
+MAX_REQUEST_BUDGET_SECONDS = 60.0
+MAX_ATTESTATION_BUDGET_SECONDS = 120.0
+DEFAULT_LIVE_REQUEST_HEADERS = {
+    "User-Agent": "nz-navigator-source-attestation/1.0",
+    "Accept": (
+        "text/html,application/xhtml+xml,application/pdf,"
+        "application/json;q=0.9,*/*;q=0.1"
+    ),
+    "Connection": "close",
+}
+CANADA_CURL_COMPAT_HOSTS = frozenset(
+    {"canada.ca", "www.canada.ca", "ircc.canada.ca"}
+)
+CANADA_CURL_COMPAT_USER_AGENT = (
+    "curl/8.7.1 NZ-Navigator-Source-Attestation/1.0"
+)
 MAX_ATTESTATIONS = 256
 MAX_TARGETS_PER_ATTESTATION = 16
 MAX_REQUEST_CANDIDATES = 3
@@ -72,6 +92,9 @@ EXTRACTOR_MODES = frozenset(
         "ato-law-resident-brackets",
         "ato-tax-free-band",
         "cra-t4127-version",
+        "cra-t4127-csv",
+        "cra-t4127-bc-annual-rate",
+        "cra-t4032-on",
     }
 )
 OFFICIAL_DOMAINS = {
@@ -98,7 +121,7 @@ OFFICIAL_DOMAINS = {
 REQUIRED_ROOT_FIELDS = frozenset(
     {"schemaVersion", "boundaryManifest", "attestations"}
 )
-OPTIONAL_ROOT_FIELDS = frozenset({"claimScope"})
+OPTIONAL_ROOT_FIELDS = frozenset({"claimScope", "targetComponents"})
 REQUIRED_ATTESTATION_FIELDS = frozenset(
     {
         "id",
@@ -126,7 +149,7 @@ OPTIONAL_ATTESTATION_FIELDS = frozenset(
 LIVE_POLICY_FIELDS = frozenset({"mode", "reason", "manualReviewDays"})
 LIVE_POLICY_MODES = frozenset({"extract", "fixture-only"})
 REQUIRED_TARGET_FIELDS = frozenset({"targetId", "reviewedPath"})
-OPTIONAL_TARGET_FIELDS = frozenset({"expectedPath"})
+OPTIONAL_TARGET_FIELDS = frozenset({"expectedPath", "componentId"})
 REQUIRED_CLAIM_MAPPING_FIELDS = frozenset({"claimId"})
 OPTIONAL_CLAIM_MAPPING_FIELDS = frozenset({"expectedPath"})
 EXTRACTOR_FIELDS = frozenset({"mode", "params"})
@@ -197,6 +220,13 @@ ATO_LAW_LITO_PARAMETER_FIELDS = frozenset(
 ATO_LAW_RESIDENT_PARAMETER_FIELDS = frozenset({"tableTitle"})
 ATO_TAX_FREE_PARAMETER_FIELDS = frozenset({"heading", "anchor"})
 CRA_T4127_PARAMETER_FIELDS = frozenset({"language"})
+CRA_T4127_CSV_PARAMETER_FIELDS = frozenset(
+    {"publication", "effectiveDate", "encoding", "cohort"}
+)
+CRA_T4127_BC_PARAMETER_FIELDS = frozenset({"effectiveYear"})
+CRA_T4032_ON_PARAMETER_FIELDS = frozenset({"effectiveDate"})
+TARGET_COMPONENT_SCOPE_FIELDS = frozenset({"targetId", "components"})
+TARGET_COMPONENT_FIELDS = frozenset({"id", "reviewedPaths"})
 ATO_LAW_RESIDENT_HEADERS = [
     "Item",
     "For the part of the ordinary taxable income of the taxpayer that:",
@@ -264,8 +294,117 @@ PDF_MEDIA_TYPES = frozenset({"application/pdf"})
 JSON_MEDIA_TYPES = frozenset(
     {"application/json", "application/problem+json"}
 )
+CSV_MEDIA_TYPES = frozenset({"text/csv", "application/csv"})
 SUPPORTED_CANDIDATE_MEDIA = (
-    HTML_MEDIA_TYPES | PDF_MEDIA_TYPES | JSON_MEDIA_TYPES
+    HTML_MEDIA_TYPES | PDF_MEDIA_TYPES | JSON_MEDIA_TYPES | CSV_MEDIA_TYPES
+)
+
+CRA_T4127_CSV_SPECS = {
+    "table-8.1-federal-rates": {
+        "publication": "T4127-123rd",
+        "effectiveDate": "2026-07-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jul/"
+        "rates-income-thresholds-constants-26e.csv",
+        "table": "rates",
+        "region": "Federal",
+    },
+    "table-8.1-ab-rates": {
+        "publication": "T4127-123rd",
+        "effectiveDate": "2026-07-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jul/"
+        "rates-income-thresholds-constants-26e.csv",
+        "table": "rates",
+        "region": "AB",
+    },
+    "table-8.1-bc-thresholds-tail-rates": {
+        "publication": "T4127-123rd",
+        "effectiveDate": "2026-07-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jul/"
+        "rates-income-thresholds-constants-26e.csv",
+        "table": "rates-bc-split",
+        "region": "BC",
+    },
+    "table-8.1-on-rates": {
+        "publication": "T4127-123rd",
+        "effectiveDate": "2026-07-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jul/"
+        "rates-income-thresholds-constants-26e.csv",
+        "table": "rates",
+        "region": "ON",
+    },
+    "table-8.2-federal-amounts": {
+        "publication": "T4127-123rd",
+        "effectiveDate": "2026-07-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jul/"
+        "other-rates-amounts-26e.csv",
+        "table": "amounts-federal",
+    },
+    "table-8.2-ab-amounts": {
+        "publication": "T4127-123rd",
+        "effectiveDate": "2026-07-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jul/"
+        "other-rates-amounts-26e.csv",
+        "table": "amounts-bpa",
+        "region": "AB",
+    },
+    "table-8.2-bc-amounts": {
+        "publication": "T4127-123rd",
+        "effectiveDate": "2026-07-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jul/"
+        "other-rates-amounts-26e.csv",
+        "table": "amounts-bpa",
+        "region": "BC",
+    },
+    "table-8.2-on-amounts": {
+        "publication": "T4127-123rd",
+        "effectiveDate": "2026-07-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jul/"
+        "other-rates-amounts-26e.csv",
+        "table": "amounts-on",
+    },
+    "table-8.3-cpp-total": {
+        "publication": "T4127-122nd",
+        "effectiveDate": "2026-01-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jan/"
+        "cpp-qpp-ttl-01-26e.csv",
+        "table": "cpp-total",
+    },
+    "table-8.4-cpp-base": {
+        "publication": "T4127-122nd",
+        "effectiveDate": "2026-01-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jan/"
+        "cpp-qpp-br-01-26e.csv",
+        "table": "cpp-base",
+    },
+    "table-8.5-cpp-first-additional": {
+        "publication": "T4127-122nd",
+        "effectiveDate": "2026-01-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jan/"
+        "cpp-qpp-addntl-01-26e.csv",
+        "table": "cpp-first",
+    },
+    "table-8.6-cpp-second-additional": {
+        "publication": "T4127-122nd",
+        "effectiveDate": "2026-01-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jan/"
+        "cpp-qpp-scnd-addntl-01-26e.csv",
+        "table": "cpp-second",
+    },
+    "table-8.7-ei": {
+        "publication": "T4127-122nd",
+        "effectiveDate": "2026-01-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jan/ei-01-26e.csv",
+        "table": "ei",
+    },
+    "table-8.9-federal-bpa": {
+        "publication": "T4127-122nd",
+        "effectiveDate": "2026-01-01",
+        "path": "/content/dam/cra-arc/formspubs/pub/t4127-jan/cc-fd-01-26e.csv",
+        "table": "federal-bpa",
+    },
+}
+CRA_T4127_CSV_ENCODINGS = frozenset(
+    {"utf-8", "utf-8-bom", "windows-1252"}
 )
 class RegistryError(ValueError):
     pass
@@ -326,6 +465,8 @@ class AttestationReport:
             "maxAttempts": DEFAULT_MAX_ATTEMPTS,
             "backoffMs": DEFAULT_RETRY_BACKOFF_MS,
             "timeoutSeconds": DEFAULT_TIMEOUT,
+            "requestBudgetSeconds": DEFAULT_REQUEST_BUDGET_SECONDS,
+            "attestationBudgetSeconds": DEFAULT_ATTESTATION_BUDGET_SECONDS,
         }
     )
     results: list[AttestationResult] = field(default_factory=list)
@@ -401,6 +542,9 @@ class RequestExecution:
     finalStatus: str
     latencyBucket: str
     response: SourceResponse
+    budgetSeconds: float = DEFAULT_REQUEST_BUDGET_SECONDS
+    budgetExhausted: bool = False
+    elapsedSeconds: float = 0.0
 
     @property
     def attemptCount(self) -> int:
@@ -414,6 +558,8 @@ class RequestExecution:
             "attemptCount": self.attemptCount,
             "finalStatus": self.finalStatus,
             "latencyBucket": self.latencyBucket,
+            "budgetSeconds": self.budgetSeconds,
+            "budgetExhausted": self.budgetExhausted,
             "attempts": [asdict(attempt) for attempt in self.attempts],
         }
 
@@ -448,6 +594,9 @@ def _automatic_observation_id(report: AttestationReport) -> str:
                             "outcome": candidate.get("outcome"),
                             "reason": candidate.get("reason"),
                             "attemptCount": candidate.get("attemptCount"),
+                            "budgetExhausted": candidate.get(
+                                "budgetExhausted"
+                            ),
                             "attemptStatuses": [
                                 attempt.get("status")
                                 for attempt in candidate.get("attempts", [])
@@ -478,6 +627,7 @@ def _automatic_observation_id(report: AttestationReport) -> str:
                     "attemptStatuses": [
                         attempt.status for attempt in item.attempts
                     ],
+                    "budgetExhausted": item.budgetExhausted,
                 }
                 for item in report.requests
             ),
@@ -1209,6 +1359,46 @@ def _validate_extractor(extractor: Any) -> None:
                 "cra-t4127-version requires exact language en or fr"
             )
         return
+    if mode == "cra-t4127-csv":
+        if not _exact_fields(params, CRA_T4127_CSV_PARAMETER_FIELDS):
+            raise RegistryError(
+                "cra-t4127-csv requires publication, effectiveDate, "
+                "encoding, and cohort"
+            )
+        spec = CRA_T4127_CSV_SPECS.get(params["cohort"])
+        if spec is None:
+            raise RegistryError("cra-t4127-csv cohort is unsupported")
+        if params["encoding"] not in CRA_T4127_CSV_ENCODINGS:
+            raise RegistryError("cra-t4127-csv encoding is unsupported")
+        _parse_date(params["effectiveDate"], "csv effectiveDate")
+        if (
+            params["publication"] != spec["publication"]
+            or params["effectiveDate"] != spec["effectiveDate"]
+        ):
+            raise RegistryError(
+                "cra-t4127-csv publication/effectiveDate differs from its "
+                "reviewed cohort"
+            )
+        return
+    if mode == "cra-t4127-bc-annual-rate":
+        if (
+            not _exact_fields(params, CRA_T4127_BC_PARAMETER_FIELDS)
+            or params["effectiveYear"] != 2026
+        ):
+            raise RegistryError(
+                "cra-t4127-bc-annual-rate requires effectiveYear 2026"
+            )
+        return
+    if mode == "cra-t4032-on":
+        if not _exact_fields(params, CRA_T4032_ON_PARAMETER_FIELDS):
+            raise RegistryError(
+                "cra-t4032-on requires exact effectiveDate"
+            )
+        if params["effectiveDate"] != "2026-01-01":
+            raise RegistryError(
+                "cra-t4032-on currently supports effectiveDate 2026-01-01"
+            )
+        return
     if mode == "pdf-table":
         if not _exact_fields(params, PDF_PARAMETER_FIELDS):
             raise RegistryError("pdf-table params do not match the strict schema")
@@ -1415,6 +1605,7 @@ def _validate_request_candidates(
         candidate_context["request"] = candidate_spec["request"]
         candidate_context["extractor"] = extractor
         candidate_context["fixture"] = fixture
+        _validate_cra_csv_context(candidate_context, media_type)
         if fixture["finalUrl"] != _request_url(candidate_context):
             raise RegistryError(
                 "candidate fixture.finalUrl must equal its request URL"
@@ -1472,6 +1663,107 @@ def _target_map(boundary_data: Any) -> dict[str, dict[str, Any]]:
     return targets
 
 
+def _target_component_map(
+    registry: dict[str, Any],
+    targets: dict[str, dict[str, Any]],
+    target_leaf_paths: dict[str, set[str]],
+) -> dict[str, dict[str, set[str]]]:
+    raw_scopes = registry.get("targetComponents")
+    if raw_scopes is None:
+        return {}
+    if (
+        not isinstance(raw_scopes, list)
+        or not 1 <= len(raw_scopes) <= len(targets)
+    ):
+        raise RegistryError(
+            "targetComponents must contain 1..target-count scopes"
+        )
+    scoped: dict[str, dict[str, set[str]]] = {}
+    for raw_scope in raw_scopes:
+        if not _exact_fields(raw_scope, TARGET_COMPONENT_SCOPE_FIELDS):
+            raise RegistryError(
+                "targetComponents entry requires targetId and components"
+            )
+        target_id = raw_scope["targetId"]
+        if target_id not in targets:
+            raise RegistryError(
+                f"targetComponents contains unknown target {target_id!r}"
+            )
+        if target_id in scoped:
+            raise RegistryError(
+                f"targetComponents repeats target {target_id!r}"
+            )
+        raw_components = raw_scope["components"]
+        if (
+            not isinstance(raw_components, list)
+            or not 2 <= len(raw_components) <= 64
+        ):
+            raise RegistryError(
+                "component target requires 2-64 reviewed components"
+            )
+        components: dict[str, set[str]] = {}
+        declared: list[tuple[str, str]] = []
+        for raw_component in raw_components:
+            if not _exact_fields(raw_component, TARGET_COMPONENT_FIELDS):
+                raise RegistryError(
+                    "component requires exactly id and reviewedPaths"
+                )
+            component_id = raw_component["id"]
+            if (
+                not isinstance(component_id, str)
+                or not re.fullmatch(
+                    r"[a-z0-9][a-z0-9._-]{2,79}", component_id
+                )
+                or component_id in components
+            ):
+                raise RegistryError(
+                    "component id must be a unique 3-80 character slug"
+                )
+            raw_paths = raw_component["reviewedPaths"]
+            if (
+                not isinstance(raw_paths, list)
+                or not 1 <= len(raw_paths) <= 64
+                or len(set(raw_paths)) != len(raw_paths)
+            ):
+                raise RegistryError(
+                    "component reviewedPaths requires 1-64 unique pointers"
+                )
+            paths: set[str] = set()
+            for reviewed_path in raw_paths:
+                _pointer_parts(reviewed_path)
+                if reviewed_path == "/":
+                    raise RegistryError(
+                        "component coverage forbids a monolithic root mapping"
+                    )
+                _resolve_pointer(
+                    targets[target_id]["reviewed"], reviewed_path
+                )
+                for other_path, other_component in declared:
+                    if _path_covers(
+                        other_path, reviewed_path
+                    ) or _path_covers(reviewed_path, other_path):
+                        raise RegistryError(
+                            "component path overlaps "
+                            f"{other_component}:{target_id}{other_path}"
+                        )
+                declared.append((reviewed_path, component_id))
+                paths.add(reviewed_path)
+            components[component_id] = paths
+        for leaf in target_leaf_paths[target_id]:
+            owners = [
+                component_id
+                for reviewed_path, component_id in declared
+                if _path_covers(reviewed_path, leaf)
+            ]
+            if len(owners) != 1:
+                raise RegistryError(
+                    f"component declaration covers {target_id}{leaf} "
+                    f"{len(owners)} times"
+                )
+        scoped[target_id] = components
+    return scoped
+
+
 def _request_key(attestation: dict[str, Any]) -> str:
     request = attestation["request"]
     body = (
@@ -1495,6 +1787,30 @@ def _public_request_key(attestation: dict[str, Any]) -> str:
 def _request_url(attestation: dict[str, Any]) -> str:
     request = attestation["request"]
     return request.get("url", attestation["sourceUrl"])
+
+
+def _validate_cra_csv_context(
+    attestation: dict[str, Any], media_type: str
+) -> None:
+    extractor = attestation["extractor"]
+    if extractor["mode"] != "cra-t4127-csv":
+        return
+    spec = CRA_T4127_CSV_SPECS[extractor["params"]["cohort"]]
+    request_url = _request_url(attestation)
+    parsed = urllib_parse.urlsplit(request_url)
+    if (
+        attestation["request"]["method"] != "GET"
+        or _canonical_hostname(request_url) != "www.canada.ca"
+        or parsed.path != spec["path"]
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise RegistryError(
+            "cra-t4127-csv request must use its exact reviewed www.canada.ca "
+            "CSV path without query or fragment"
+        )
+    if _media_type(media_type) not in CSV_MEDIA_TYPES:
+        raise RegistryError("cra-t4127-csv requires exact CSV media")
 
 
 def _validate_registry(
@@ -1586,6 +1902,9 @@ def _validate_registry(
         target_id: set(_leaf_paths(target["reviewed"]))
         for target_id, target in targets.items()
     }
+    target_components = _target_component_map(
+        registry, targets, target_leaf_paths
+    )
     seen_ids: set[str] = set()
     mapped_paths: dict[str, list[tuple[str, str]]] = {
         target_id: [] for target_id in targets
@@ -1720,8 +2039,29 @@ def _validate_registry(
                 target_id = mapping["targetId"]
                 reviewed_path = mapping["reviewedPath"]
                 expected_path = mapping.get("expectedPath", "/")
+                component_id = mapping.get("componentId")
                 if target_id not in targets:
                     raise RegistryError(f"unknown boundary target {target_id!r}")
+                if target_id in target_components:
+                    if not isinstance(component_id, str):
+                        raise RegistryError(
+                            f"component target {target_id!r} requires componentId"
+                        )
+                    component_paths = target_components[target_id].get(
+                        component_id
+                    )
+                    if (
+                        component_paths is None
+                        or reviewed_path not in component_paths
+                    ):
+                        raise RegistryError(
+                            f"{target_id}{reviewed_path} is not declared for "
+                            f"component {component_id!r}"
+                        )
+                elif component_id is not None:
+                    raise RegistryError(
+                        f"unscoped target {target_id!r} may not use componentId"
+                    )
                 _pointer_parts(reviewed_path)
                 _pointer_parts(expected_path)
                 resolved = _resolve_pointer(
@@ -3199,6 +3539,497 @@ def _extract_cra_t4127_version(
     )
 
 
+def _decode_reviewed_csv(body: bytes, encoding: str) -> str:
+    bom = body.startswith(b"\xef\xbb\xbf")
+    try:
+        if encoding == "utf-8":
+            if bom:
+                raise ChangedExtraction(
+                    "CSV has a BOM but encoding requires BOM-free UTF-8"
+                )
+            return body.decode("utf-8")
+        if encoding == "utf-8-bom":
+            if not bom:
+                raise ChangedExtraction(
+                    "CSV is missing the required UTF-8 BOM"
+                )
+            return body.decode("utf-8-sig")
+        if bom:
+            raise ChangedExtraction(
+                "Windows-1252 CSV may not contain a UTF-8 BOM"
+            )
+        return body.decode("cp1252")
+    except UnicodeDecodeError as exc:
+        raise UnsupportedExtraction(
+            f"CSV cannot be decoded as reviewed {encoding}: {exc}"
+        ) from exc
+
+
+def _reviewed_csv_rows(body: bytes, encoding: str) -> list[list[str]]:
+    text = _decode_reviewed_csv(body, encoding)
+    if "\x00" in text:
+        raise UnsupportedExtraction("CSV contains a NUL byte")
+    try:
+        rows = list(
+            csv.reader(
+                io.StringIO(text, newline=""),
+                dialect="excel",
+                strict=True,
+            )
+        )
+    except csv.Error as exc:
+        raise ChangedExtraction(f"CSV syntax is invalid: {exc}") from exc
+    if not 2 <= len(rows) <= 256:
+        raise UnsupportedExtraction("CSV row count exceeds safe bounds")
+    if any(
+        len(row) > 16
+        or any(len(cell) > 500 for cell in row)
+        for row in rows
+    ):
+        raise UnsupportedExtraction("CSV column or field size exceeds safe bounds")
+    return [row for row in rows if any(cell != "" for cell in row)]
+
+
+def _csv_number(value: str, field: str) -> int | float:
+    if not re.fullmatch(
+        r"(?:0|[1-9][0-9]{0,2}(?:,[0-9]{3})*)(?:\.[0-9]+)?",
+        value,
+    ):
+        raise ChangedExtraction(
+            f"CRA CSV {field} is not one exact finite number: {value!r}"
+        )
+    number = float(value.replace(",", ""))
+    if not math.isfinite(number):
+        raise ChangedExtraction(f"CRA CSV {field} is non-finite")
+    return int(number) if number.is_integer() else number
+
+
+def _csv_values_until_blank(
+    row: list[str], start: int, field: str
+) -> list[int | float]:
+    values: list[int | float] = []
+    saw_blank = False
+    for index, cell in enumerate(row[start:], start):
+        if cell == "":
+            saw_blank = True
+            continue
+        if saw_blank:
+            raise ChangedExtraction(
+                f"CRA CSV {field} has a value after an empty trailing cell"
+            )
+        values.append(_csv_number(cell, f"{field}[{index - start}]"))
+    if not values:
+        raise ChangedExtraction(f"CRA CSV {field} has no numeric values")
+    return values
+
+
+def _one_csv_row(
+    rows: list[list[str]], predicate: Callable[[list[str]], bool], label: str
+) -> tuple[int, list[str]]:
+    matches = [
+        (index, row) for index, row in enumerate(rows) if predicate(row)
+    ]
+    if len(matches) != 1:
+        raise ChangedExtraction(
+            f"CRA CSV {label} matched {len(matches)} rows; expected exactly one"
+        )
+    return matches[0]
+
+
+def _extract_cra_rates_csv(
+    rows: list[list[str]], spec: dict[str, Any]
+) -> tuple[Any, Any]:
+    title = (
+        "Table 8.1 Rates (R, V), income thresholds (A), and constants "
+        "(K, KP) effective July 1, 2026"
+    )
+    if rows[0] != [title] + [""] * 9:
+        raise ChangedExtraction("CRA Table 8.1 title/date row changed")
+    if rows[1] != ["", "", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"]:
+        raise ChangedExtraction("CRA Table 8.1 ordinal header changed")
+    region = spec["region"]
+    index, threshold_row = _one_csv_row(
+        rows,
+        lambda row: len(row) == 10 and row[:2] == [region, "A"],
+        f"Table 8.1 {region} A",
+    )
+    rate_label = "R" if region == "Federal" else "V"
+    constant_label = "K" if region == "Federal" else "KP"
+    if index + 2 >= len(rows):
+        raise ChangedExtraction(f"CRA Table 8.1 {region} component is partial")
+    rate_row, constant_row = rows[index + 1 : index + 3]
+    if (
+        len(rate_row) != 10
+        or rate_row[:2] != ["", rate_label]
+        or len(constant_row) != 10
+        or constant_row[:2] != ["", constant_label]
+    ):
+        raise ChangedExtraction(
+            f"CRA Table 8.1 {region} rate/constant rows changed or are partial"
+        )
+    thresholds = _csv_values_until_blank(
+        threshold_row, 2, f"{region}.thresholds"
+    )
+    rates = _csv_values_until_blank(rate_row, 2, f"{region}.rates")
+    constants = _csv_values_until_blank(
+        constant_row, 2, f"{region}.constants"
+    )
+    if (
+        thresholds[0] != 0
+        or constants[0] != 0
+        or len(thresholds) != len(rates)
+        or len(constants) != len(rates)
+    ):
+        raise ChangedExtraction(
+            f"CRA Table 8.1 {region} component cardinality/base changed"
+        )
+    if spec["table"] == "rates-bc-split":
+        if rates[0] != 0.0614:
+            raise ChangedExtraction(
+                "CRA Table 8.1 BC H2 payroll rate no longer equals reviewed 0.0614"
+            )
+        return (
+            {
+                "thresholds": "CAD",
+                "ratesAfterFirst": "decimal rate",
+            },
+            {
+                "thresholds": thresholds[1:] + [None],
+                "ratesAfterFirst": rates[1:],
+            },
+        )
+    brackets = [
+        [thresholds[position + 1], rates[position]]
+        for position in range(len(rates) - 1)
+    ] + [[None, rates[-1]]]
+    return {"brackets": "CAD/rate"}, {"brackets": brackets}
+
+
+def _extract_cra_amounts_csv(
+    rows: list[list[str]], spec: dict[str, Any]
+) -> tuple[Any, Any]:
+    title = "Table 8.2 Other rates and amounts effective July 1, 2026"
+    if rows[0] != [title] + [""] * 10:
+        raise ChangedExtraction("CRA Table 8.2 title/date row changed")
+    header = [
+        "", "Basic amount", "Index rate", "LCP rate", "LCP amount",
+        "CEA", "S2", "T4 to V1", "V1 rate", "Abatement", "Surtax",
+    ]
+    if rows[1] != header:
+        raise ChangedExtraction("CRA Table 8.2 header changed")
+    table = spec["table"]
+    if table == "amounts-federal":
+        _index, row = _one_csv_row(
+            rows,
+            lambda item: len(item) == 11 and item[0] == "Federal",
+            "Table 8.2 Federal",
+        )
+        if row[1] != "BPAF":
+            raise ChangedExtraction("CRA Table 8.2 Federal BPAF marker changed")
+        value = _csv_number(row[5], "Federal.CEA")
+        return {"employmentAmount": "CAD"}, {"employmentAmount": value}
+    if table == "amounts-bpa":
+        region = spec["region"]
+        _index, row = _one_csv_row(
+            rows,
+            lambda item: len(item) == 11 and item[0] == region,
+            f"Table 8.2 {region}",
+        )
+        return {"bpa": "CAD"}, {"bpa": _csv_number(row[1], f"{region}.bpa")}
+    index, row = _one_csv_row(
+        rows,
+        lambda item: len(item) == 11 and item[0] == "ON",
+        "Table 8.2 ON",
+    )
+    if index + 2 >= len(rows):
+        raise ChangedExtraction("CRA Table 8.2 ON surtax component is partial")
+    lower, upper = rows[index + 1 : index + 3]
+    if (
+        len(lower) != 11
+        or len(upper) != 11
+        or any(lower[position] for position in range(7))
+        or any(upper[position] for position in range(7))
+        or any(lower[position] for position in range(9, 11))
+        or any(upper[position] for position in range(9, 11))
+    ):
+        raise ChangedExtraction("CRA Table 8.2 ON continuation rows changed")
+    value = {
+        "bpa": _csv_number(row[1], "ON.bpa"),
+        "surtaxLower": _csv_number(lower[7], "ON.surtaxLower"),
+        "surtaxLowerRate": _csv_number(lower[8], "ON.surtaxLowerRate"),
+        "surtaxUpper": _csv_number(upper[7], "ON.surtaxUpper"),
+        "surtaxUpperRate": _csv_number(upper[8], "ON.surtaxUpperRate"),
+    }
+    unit = {
+        "bpa": "CAD",
+        "surtaxLower": "CAD",
+        "surtaxLowerRate": "decimal rate",
+        "surtaxUpper": "CAD",
+        "surtaxUpperRate": "decimal rate",
+    }
+    return unit, value
+
+
+def _extract_cra_contribution_csv(
+    rows: list[list[str]], spec: dict[str, Any]
+) -> tuple[Any, Any]:
+    table = spec["table"]
+    if table == "federal-bpa":
+        title = "Table 8.9 Federal claim codes (using maximum BPAF)"
+        headers = [
+            "Claim code", "Total claim amount ($) from",
+            "Total claim amount ($) to", "Option 1, TC ($)",
+            "Option 1, K1 ($)",
+        ]
+        if rows[0] != [title] + [""] * 4 or rows[1] != headers:
+            raise ChangedExtraction(
+                "CRA Table 8.9 title/header or maximum-BPA marker changed"
+            )
+        _index, row = _one_csv_row(
+            rows,
+            lambda item: len(item) == 5 and item[0] == "1",
+            "Table 8.9 claim code 1",
+        )
+        if row[1] != "0":
+            raise ChangedExtraction(
+                "CRA Table 8.9 claim code 1 lower bound changed"
+            )
+        for position in range(1, 5):
+            _csv_number(row[position], f"claimCode1[{position}]")
+        upper = _csv_number(row[2], "claimCode1.maximumBpa")
+        if _csv_number(row[3], "claimCode1.option1Tc") != upper:
+            raise ChangedExtraction(
+                "CRA Table 8.9 claim code 1 BPA and TC differ"
+            )
+        return {"bpa": "CAD"}, {"bpa": upper}
+    definitions: dict[str, tuple[str, list[str], str, dict[str, tuple[int, str]]]] = {
+        "cpp-total": (
+            "Table 8.3 Canada Pension Plan / Quebec Pension Plan 2026 contribution rates and amounts",
+            [
+                "CPP/QPP", "Year’s Maximum Pensionable Earnings (YMPE)",
+                "Basic Exemption", "Year’s Maximum Contributory Earnings",
+                "Employee  and Employer Total Contribution Rate",
+                "Maximum Employee and Employer Total Contribution*",
+                "YMPE Before Rounding",
+            ],
+            "CPP (Canada except QC)",
+            {"ympe": (1, "CAD"), "exempt": (2, "CAD"), "rate": (4, "decimal rate")},
+        ),
+        "cpp-base": (
+            "Table 8.4 Base Canada Pension Plan / Quebec Pension Plan 2026 rates and amounts",
+            [
+                "CPP/QPP", "Year’s Maximum Pensionable Earnings (YMPE)",
+                "Base Employee and Employer Contribution Rate",
+                "Maximum Base Employee and Employer Contribution*",
+            ],
+            "CPP (Canada except QC)",
+            {"baseRate": (2, "decimal rate")},
+        ),
+        "cpp-first": (
+            "Table 8.5 First additional Canada Pension Plan / Quebec Pension Plan 2026 rates and amounts",
+            [
+                "CPP/QPP", "Year’s Maximum Pensionable Earnings (YMPE)",
+                "First Additional Employee and Employer Contribution Rate",
+                "Maximum First Additional Employee and Employer Contribution*",
+            ],
+            "CPP (Canada except QC)",
+            {"additionalRate": (2, "decimal rate")},
+        ),
+        "cpp-second": (
+            "Table 8.6 Second additional Canada Pension Plan / Quebec Pension Plan 2026 rates and amounts",
+            [
+                "CPP/QPP", "Year’s Maximum Pensionable Earnings (YMPE)",
+                "Year’s Additional Maximum Pensionable Earnings (YAMPE)",
+                "Pensionable earnings subject to Second Additional Contribution",
+                "Second Additional Employee and Employer Contribution Rate",
+                "Maximum Second Additional Employee and Employer Contribution*",
+            ],
+            "CPP (Canada except QC)",
+            {
+                "cpp2Min": (1, "CAD"), "cpp2Max": (2, "CAD"),
+                "cpp2Rate": (4, "decimal rate"),
+            },
+        ),
+        "ei": (
+            "Table 8.7 Employment Insurance 2026 rates and amounts",
+            [
+                "EI", "Maximum Annual Insurable Earnings",
+                "Employee Contribution Rate", "Employer Contribution Rate",
+                "Maximum Annual Employee Premium", "Maximum Annual Employer Premium",
+            ],
+            "Canada except QC",
+            {"maxInsurable": (1, "CAD"), "rate": (2, "decimal rate")},
+        ),
+    }
+    title, headers, label, selected = definitions[table]
+    if rows[0] != [title] + [""] * (len(headers) - 1):
+        raise ChangedExtraction(f"CRA {title.split()[1]} title/year row changed")
+    if table == "cpp-total":
+        if len(rows) < 4 or rows[2] != ["", "", "", "(YMCE)", "", "", ""]:
+            raise ChangedExtraction("CRA Table 8.3 secondary header changed")
+    if rows[1] != headers:
+        raise ChangedExtraction("CRA contribution table header changed")
+    _index, row = _one_csv_row(
+        rows,
+        lambda item: len(item) == len(headers) and item[0] == label,
+        f"CRA contribution row {label}",
+    )
+    for position, cell in enumerate(row[1:], 1):
+        _csv_number(cell, f"{label}[{position}]")
+    value = {
+        key: _csv_number(row[position], key)
+        for key, (position, _unit) in selected.items()
+    }
+    unit = {key: unit_name for key, (_position, unit_name) in selected.items()}
+    return unit, value
+
+
+def _extract_cra_t4127_csv(
+    body: bytes, params: dict[str, Any]
+) -> tuple[Any, Any]:
+    rows = _reviewed_csv_rows(body, params["encoding"])
+    spec = CRA_T4127_CSV_SPECS[params["cohort"]]
+    if spec["table"].startswith("rates"):
+        return _extract_cra_rates_csv(rows, spec)
+    if spec["table"].startswith("amounts"):
+        return _extract_cra_amounts_csv(rows, spec)
+    return _extract_cra_contribution_csv(rows, spec)
+
+
+def _extract_cra_t4127_bc_annual_rate(
+    body: bytes, params: dict[str, Any]
+) -> tuple[Any, Any]:
+    parser = _parse_html(body)
+    annual_pattern = re.compile(
+        r"On February 17, 2026, the Government of British Columbia "
+        r"announced a change to the lowest personal income tax rate and "
+        r"the BC tax reduction\. For 2026 and subsequent years, the lowest "
+        r"personal tax rate is increased from 5\.06% to 5\.60%\."
+    )
+    prorated_pattern = re.compile(
+        r"Since the employers have used a lower tax rate for the first six "
+        r"months of the year, a prorated lowest personal income tax rate of "
+        r"6\.14% will apply for the remaining six months commencing with "
+        r"the first payroll in July\. The tax rates and brackets are as follows:"
+    )
+    option_pattern = re.compile(
+        r"See Table 8\.1 for rates, income thresholds, and constants and "
+        r"Table 8\.2 for other rates and amounts\. The Option 2 rates will "
+        r"not be prorated\."
+    )
+    groups = [
+        [block for block in parser.block_texts if pattern.fullmatch(block)]
+        for pattern in (annual_pattern, prorated_pattern, option_pattern)
+    ]
+    if [len(group) for group in groups] != [1, 1, 1]:
+        raise ChangedExtraction(
+            "CRA BC annual/prorated/Option 2 evidence cardinality changed"
+        )
+    return {"rate": "decimal rate"}, {"rate": 0.056}
+
+
+CRA_T4032_ON_HEALTH_BLOCKS = (
+    "when taxable income is less than or equal to $20,000, the premium is $0",
+    "when taxable income is greater than $20,000 and less than or equal to "
+    "$36,000, the premium is equal to the lesser of (i) $300 and (ii) 6% "
+    "of taxable income greater than $20,000",
+    "when taxable income is greater than $36,000 and less than or equal to "
+    "$48,000, the premium is equal to the lesser of (i) $450 and (ii) $300 "
+    "plus 6% of taxable income greater than $36,000",
+    "when taxable income is greater than $48,000 and less than or equal to "
+    "$72,000, the premium is equal to the lesser of (i) $600 and (ii) $450 "
+    "plus 25% of taxable income greater than $48,000",
+    "when taxable income is greater than $72,000 and less than or equal to "
+    "$200,000, the premium is equal to the lesser of (i) $750 and (ii) $600 "
+    "plus 25% of taxable income greater than $72,000",
+    "when taxable income is greater than $200,000, the premium is equal to "
+    "the lesser of (i) $900 and (ii) $750 plus 25% of taxable income greater "
+    "than $200,000",
+)
+CRA_T4032_ON_REVISION = "T4032-ON(E) Rev. 26"
+CRA_T4032_ON_EFFECTIVE_HEADING = "What's new as of January 1, 2026"
+CRA_T4032_ON_HEALTH_LEAD = "For 2026, the Ontario health premium is:"
+CRA_T4032_ON_REDUCTION_LEAD = (
+    "For 2026, Ontario's tax reduction amounts are:"
+)
+CRA_T4032_ON_REDUCTION_SENTENCE = (
+    "The reduction is equal to twice the individual's personal amounts minus "
+    "the provincial tax payable before reduction. The reduction cannot be "
+    "more than the provincial tax payable before reduction. The reduction is "
+    "nil when the provincial tax payable before reduction is more than twice "
+    "the personal amounts. Because of the way the reduction for dependants "
+    "with disabilities is determined, we include only the basic personal "
+    "amount in the provincial tax tables."
+)
+
+
+def _extract_cra_t4032_on(
+    body: bytes, params: dict[str, Any]
+) -> tuple[Any, Any]:
+    parser = _parse_html(body)
+    h1 = "Payroll Deductions Tables - CPP, EI, and income tax deductions - Ontario"
+    if parser.heading_records.count((1, h1)) != 1:
+        raise ChangedExtraction("CRA T4032ON exact H1 cardinality changed")
+    if parser.block_texts.count(CRA_T4032_ON_REVISION) != 1:
+        raise ChangedExtraction("CRA T4032ON Rev. 26 evidence changed")
+    if parser.headings.count(CRA_T4032_ON_EFFECTIVE_HEADING) != 1:
+        raise ChangedExtraction(
+            "CRA T4032ON January 1, 2026 heading cardinality changed"
+        )
+    if parser.block_texts.count(CRA_T4032_ON_HEALTH_LEAD) != 1:
+        raise ChangedExtraction(
+            "CRA T4032ON 2026 health lead cardinality changed"
+        )
+    if parser.block_texts.count(CRA_T4032_ON_REDUCTION_LEAD) != 1:
+        raise ChangedExtraction(
+            "CRA T4032ON 2026 tax-reduction lead cardinality changed"
+        )
+    if parser.headings.count("Ontario health premium") != 1:
+        raise ChangedExtraction("CRA T4032ON health section cardinality changed")
+    health_items = [
+        block
+        for heading, block in parser.list_items
+        if heading == "Ontario health premium"
+    ]
+    if health_items != list(CRA_T4032_ON_HEALTH_BLOCKS):
+        raise ChangedExtraction(
+            "CRA T4032ON health bullets are missing, reordered, duplicated, or changed"
+        )
+    if parser.headings.count("Tax reduction") != 1:
+        raise ChangedExtraction("CRA T4032ON tax reduction section changed")
+    reduction_blocks = [
+        block
+        for heading, tag, block in parser.heading_blocks
+        if heading == "Tax reduction" and tag == "p"
+    ]
+    basic_matches = [
+        block for block in reduction_blocks
+        if re.fullmatch(r"Basic personal amount\.{3,} \$300", block)
+    ]
+    sentence_matches = [
+        block for block in reduction_blocks
+        if block == CRA_T4032_ON_REDUCTION_SENTENCE
+    ]
+    if len(basic_matches) != 1 or len(sentence_matches) != 1:
+        raise ChangedExtraction(
+            "CRA T4032ON $300/twice-personal-amount evidence changed"
+        )
+    health = {
+        "zeroTo": 20000,
+        "tiers": [
+            {"to": 36000, "base": 0, "offset": 20000, "rate": 0.06, "cap": 300},
+            {"to": 48000, "base": 300, "offset": 36000, "rate": 0.06, "cap": 450},
+            {"to": 72000, "base": 450, "offset": 48000, "rate": 0.25, "cap": 600},
+            {"to": 200000, "base": 600, "offset": 72000, "rate": 0.25, "cap": 750},
+        ],
+        "above": {"base": 750, "offset": 200000, "rate": 0.25, "cap": 900},
+    }
+    return (
+        {"taxReduction": "CAD", "health": "CAD/rate"},
+        {"taxReduction": 600, "health": health},
+    )
+
+
 def _pdf_literal_at(text: str, index: int) -> tuple[str, int]:
     if index >= len(text) or text[index] != "(":
         raise ChangedExtraction("PDF literal does not start with '('")
@@ -3574,7 +4405,7 @@ def _extract_api_json_record(
 
 
 EXTRACTORS: dict[
-    str, Callable[[bytes, dict[str, Any]], tuple[str, Any]]
+    str, Callable[[bytes, dict[str, Any]], tuple[Any, Any]]
 ] = {
     "html-table": _extract_html_table,
     "html-definition": _extract_html_definition,
@@ -3591,6 +4422,9 @@ EXTRACTORS: dict[
     "ato-law-resident-brackets": _extract_ato_law_resident_brackets,
     "ato-tax-free-band": _extract_ato_tax_free_band,
     "cra-t4127-version": _extract_cra_t4127_version,
+    "cra-t4127-csv": _extract_cra_t4127_csv,
+    "cra-t4127-bc-annual-rate": _extract_cra_t4127_bc_annual_rate,
+    "cra-t4032-on": _extract_cra_t4032_on,
 }
 
 
@@ -3599,9 +4433,15 @@ def _expected_media(mode: str, media_type: str) -> bool:
     if (
         mode.startswith("html-")
         or mode.startswith("ato-")
-        or mode == "cra-t4127-version"
+        or mode in {
+            "cra-t4127-version",
+            "cra-t4127-bc-annual-rate",
+            "cra-t4032-on",
+        }
     ):
         return normalized in HTML_MEDIA_TYPES
+    if mode == "cra-t4127-csv":
+        return normalized in CSV_MEDIA_TYPES
     if mode == "pdf-table":
         return normalized in PDF_MEDIA_TYPES
     return normalized in JSON_MEDIA_TYPES or normalized.endswith("+json")
@@ -3863,6 +4703,23 @@ def _ssl_context() -> ssl.SSLContext:
     return ssl.create_default_context()
 
 
+def _transport_error_message(exc: Exception) -> str:
+    reason = exc.reason if isinstance(exc, urllib_error.URLError) else exc
+    if isinstance(reason, ssl.SSLCertVerificationError) or (
+        "CERTIFICATE_VERIFY_FAILED" in str(reason).upper()
+    ):
+        return f"TLS certificate verification failed: {reason}"
+    return f"{type(exc).__name__}: {exc}"
+
+
+def _live_request_headers(url: str) -> dict[str, str]:
+    headers = dict(DEFAULT_LIVE_REQUEST_HEADERS)
+    if _canonical_hostname(url) in CANADA_CURL_COMPAT_HOSTS:
+        headers["User-Agent"] = CANADA_CURL_COMPAT_USER_AGENT
+        headers["Accept-Encoding"] = "identity"
+    return headers
+
+
 def _latency_bucket(seconds: float) -> str:
     if not isinstance(seconds, (int, float)) or not math.isfinite(seconds):
         raise ValueError("latency must be finite")
@@ -3915,7 +4772,9 @@ def _validate_execution_settings(
     max_attempts: int,
     retry_backoff_ms: int,
     timeout: float,
-    observation_id: str | None,
+    request_budget_seconds: float = DEFAULT_REQUEST_BUDGET_SECONDS,
+    attestation_budget_seconds: float = DEFAULT_ATTESTATION_BUDGET_SECONDS,
+    observation_id: str | None = None,
 ) -> str | None:
     if (
         not isinstance(max_attempts, int)
@@ -3942,6 +4801,28 @@ def _validate_execution_settings(
         or timeout > 60
     ):
         raise ValueError("timeoutSeconds must be finite, >0, and <=60")
+    if (
+        isinstance(request_budget_seconds, bool)
+        or not isinstance(request_budget_seconds, (int, float))
+        or not math.isfinite(request_budget_seconds)
+        or request_budget_seconds <= 0
+        or request_budget_seconds > MAX_REQUEST_BUDGET_SECONDS
+    ):
+        raise ValueError(
+            "requestBudgetSeconds must be finite, >0, and <=60"
+        )
+    if (
+        isinstance(attestation_budget_seconds, bool)
+        or not isinstance(attestation_budget_seconds, (int, float))
+        or not math.isfinite(attestation_budget_seconds)
+        or attestation_budget_seconds <= 0
+        or attestation_budget_seconds > MAX_ATTESTATION_BUDGET_SECONDS
+        or attestation_budget_seconds < request_budget_seconds
+    ):
+        raise ValueError(
+            "attestationBudgetSeconds must be finite, >= request budget, "
+            "and <=120"
+        )
     if mode == "offline" and max_attempts != 1:
         raise ValueError("offline mode requires maxAttempts=1")
     resolved = observation_id or ("offline" if mode == "offline" else None)
@@ -3964,14 +4845,7 @@ def _live_response(
     request_spec = attestation["request"]
     url = _request_url(attestation)
     data = None
-    headers = {
-        "User-Agent": "nz-navigator-source-attestation/1.0",
-        "Accept": (
-            "text/html,application/xhtml+xml,application/pdf,"
-            "application/json;q=0.9,*/*;q=0.1"
-        ),
-        "Connection": "close",
-    }
+    headers = _live_request_headers(url)
     if request_spec["method"] == "POST":
         data = json.dumps(
             request_spec["jsonBody"],
@@ -4026,7 +4900,7 @@ def _live_response(
             url,
             "application/octet-stream",
             b"",
-            error=f"{type(exc).__name__}: {exc}",
+            error=_transport_error_message(exc),
         )
 
 
@@ -4055,26 +4929,50 @@ def _live_execution(
     urlopen: Callable[..., Any],
     clock: Callable[[], float],
     sleeper: Callable[[float], None],
+    request_budget_seconds: float = DEFAULT_REQUEST_BUDGET_SECONDS,
 ) -> RequestExecution:
     attempts: list[AttemptAudit] = []
     response: SourceResponse | None = None
     final_status = "transient"
     total_latency = 0.0
+    budget_exhausted = False
     for number in range(1, max_attempts + 1):
+        remaining = request_budget_seconds - total_latency
+        if remaining <= 0:
+            budget_exhausted = True
+            break
         started = clock()
         response = _live_response(
-            attestation, timeout, urlopen=urlopen
+            attestation, min(timeout, remaining), urlopen=urlopen
         )
         elapsed = max(0.0, clock() - started)
         total_latency += elapsed
-        final_status = _classify_request_response(attestation, response)
+        if total_latency > request_budget_seconds + 0.001:
+            budget_exhausted = True
+            transport_error = (
+                f"{response.error}; " if response.error is not None else ""
+            )
+            response = SourceResponse(
+                None,
+                _request_url(attestation),
+                "application/octet-stream",
+                b"",
+                error=transport_error + "request time budget exhausted",
+            )
+            final_status = "transient"
+        else:
+            final_status = _classify_request_response(attestation, response)
         attempts.append(
             AttemptAudit(number, final_status, _latency_bucket(elapsed))
         )
         if final_status != "transient" or number == max_attempts:
             break
-        delay_ms = retry_backoff_ms * (2 ** (number - 1))
-        sleeper(delay_ms / 1_000)
+        delay_seconds = retry_backoff_ms * (2 ** (number - 1)) / 1_000
+        if total_latency + delay_seconds >= request_budget_seconds:
+            budget_exhausted = True
+            break
+        sleeper(delay_seconds)
+        total_latency += delay_seconds
     if response is None:
         raise AssertionError("live execution produced no response")
     return RequestExecution(
@@ -4085,6 +4983,9 @@ def _live_execution(
         final_status,
         _latency_bucket(total_latency),
         response,
+        request_budget_seconds,
+        budget_exhausted,
+        total_latency,
     )
 
 
@@ -4114,6 +5015,8 @@ def _candidate_chain_item(
         "outcome": outcome,
         "reason": reason,
         "attemptCount": execution.attemptCount,
+        "budgetSeconds": execution.budgetSeconds,
+        "budgetExhausted": execution.budgetExhausted,
         "latencyBucket": execution.latencyBucket,
         "attempts": [asdict(attempt) for attempt in execution.attempts],
     }
@@ -4145,6 +5048,8 @@ def verify_source_attestations(
     timeout: float = DEFAULT_TIMEOUT,
     max_attempts: int = DEFAULT_MAX_ATTEMPTS,
     retry_backoff_ms: int = DEFAULT_RETRY_BACKOFF_MS,
+    request_budget_seconds: float = DEFAULT_REQUEST_BUDGET_SECONDS,
+    attestation_budget_seconds: float = DEFAULT_ATTESTATION_BUDGET_SECONDS,
     observation_id: str | None = None,
     urlopen: Callable[..., Any] = urllib_request.urlopen,
     clock: Callable[[], float] = time.monotonic,
@@ -4157,6 +5062,8 @@ def verify_source_attestations(
         max_attempts=max_attempts,
         retry_backoff_ms=retry_backoff_ms,
         timeout=timeout,
+        request_budget_seconds=request_budget_seconds,
+        attestation_budget_seconds=attestation_budget_seconds,
         observation_id=observation_id,
     )
     root_path = Path(root).resolve()
@@ -4171,6 +5078,8 @@ def verify_source_attestations(
             "maxAttempts": max_attempts,
             "backoffMs": retry_backoff_ms,
             "timeoutSeconds": timeout,
+            "requestBudgetSeconds": request_budget_seconds,
+            "attestationBudgetSeconds": attestation_budget_seconds,
         },
     )
     today_value = today or datetime.now(timezone.utc).date()
@@ -4233,6 +5142,7 @@ def verify_source_attestations(
 
     cache: dict[str, RequestExecution] = {}
     for attestation in valid:
+        reserved_attestation_budget = 0.0
         policy = _live_policy(attestation)
         manual_review = _manual_review_status(attestation, today_value)
         candidate_policy = _candidate_policy(attestation)
@@ -4301,16 +5211,64 @@ def verify_source_attestations(
         for candidate_id, candidate, _media in candidate_contexts:
             request_key = _request_key(candidate)
             if request_key not in cache:
+                if (
+                    mode == "live"
+                    and reserved_attestation_budget
+                    + request_budget_seconds
+                    > attestation_budget_seconds
+                ):
+                    budget_actual = {
+                        "reason": "attestation time budget exhausted",
+                        "requestBudgetSeconds": request_budget_seconds,
+                        "attestationBudgetSeconds": attestation_budget_seconds,
+                        "reservedSeconds": reserved_attestation_budget,
+                    }
+                    candidate_result = replace(
+                        _result(
+                            attestation["id"],
+                            attestation["sourceUrl"],
+                            "/requestCandidates/budget",
+                            "transient",
+                            budget_actual,
+                            "a candidate evaluated within the reviewed budget",
+                            "Reduce retry/candidate cost or explicitly review a larger bounded budget.",
+                            context=budget_actual,
+                            request_url=_request_url(candidate),
+                        ),
+                        requestKey=_public_request_key(candidate),
+                        attemptCount=0,
+                        requestFinalStatus="transient",
+                        latencyBucket="offline",
+                    )
+                    if first_result is None:
+                        first_result = candidate_result
+                    chain.append({
+                        "candidateId": candidate_id,
+                        "requestKey": _public_request_key(candidate),
+                        "requestUrl": _request_url(candidate),
+                        "method": candidate["request"]["method"],
+                        "outcome": "transient",
+                        "reason": budget_actual,
+                        "attemptCount": 0,
+                        "budgetSeconds": request_budget_seconds,
+                        "budgetExhausted": True,
+                        "latencyBucket": "offline",
+                        "attempts": [],
+                    })
+                    final_result = candidate_result
+                    continue
                 if mode == "offline":
                     cache[request_key] = _offline_execution(
                         root_path, candidate
                     )
                 else:
+                    reserved_attestation_budget += request_budget_seconds
                     cache[request_key] = _live_execution(
                         candidate,
                         max_attempts=max_attempts,
                         retry_backoff_ms=retry_backoff_ms,
                         timeout=timeout,
+                        request_budget_seconds=request_budget_seconds,
                         urlopen=urlopen,
                         clock=clock,
                         sleeper=sleeper,
@@ -4454,6 +5412,18 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--request-budget-seconds",
+        type=float,
+        default=DEFAULT_REQUEST_BUDGET_SECONDS,
+        help="total retry+backoff budget per canonical request (0,60]",
+    )
+    parser.add_argument(
+        "--attestation-budget-seconds",
+        type=float,
+        default=DEFAULT_ATTESTATION_BUDGET_SECONDS,
+        help="reserved fresh-request budget per attestation (0,120]",
+    )
+    parser.add_argument(
         "--observation-id",
         default=None,
         help="stable workflow observation id for trend replay protection",
@@ -4480,6 +5450,8 @@ def main(argv: list[str] | None = None) -> int:
             max_attempts=args.max_attempts,
             retry_backoff_ms=args.retry_backoff_ms,
             timeout=args.timeout,
+            request_budget_seconds=args.request_budget_seconds,
+            attestation_budget_seconds=args.attestation_budget_seconds,
             observation_id=args.observation_id,
         )
     except ValueError as exc:
@@ -4495,6 +5467,8 @@ def main(argv: list[str] | None = None) -> int:
         timeout=args.timeout,
         max_attempts=args.max_attempts,
         retry_backoff_ms=args.retry_backoff_ms,
+        request_budget_seconds=args.request_budget_seconds,
+        attestation_budget_seconds=args.attestation_budget_seconds,
         observation_id=args.observation_id,
     )
     payload = report.to_json()

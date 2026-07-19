@@ -6,9 +6,11 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import ssl
 import sys
 import tempfile
 import unittest
+from urllib import error as urllib_error
 import zlib
 
 
@@ -905,7 +907,7 @@ class SourceAttestationTests(unittest.TestCase):
         self.write_json("attestations.json", self.registry)
 
         outcomes = iter([503, 200])
-        calls: list[str] = []
+        calls: list[tuple[str, str]] = []
 
         class Response:
             headers = {"Content-Type": "text/html"}
@@ -931,7 +933,10 @@ class SourceAttestationTests(unittest.TestCase):
                 return self.status
 
         def opener(request, **_kwargs):
-            calls.append(request.full_url)
+            calls.append((
+                request.full_url,
+                request.get_header("User-agent"),
+            ))
             return Response(next(outcomes))
 
         clocks = iter([0.0, 0.1, 1.0, 1.4])
@@ -952,6 +957,10 @@ class SourceAttestationTests(unittest.TestCase):
         )
         self.assertTrue(report.ok, [item.render() for item in report.results])
         self.assertEqual(len(calls), 2)
+        self.assertEqual(
+            {user_agent for _url, user_agent in calls},
+            {"nz-navigator-source-attestation/1.0"},
+        )
         self.assertEqual(sleeps, [0.01])
         self.assertEqual(report.fetchedUrls, 1)
         self.assertEqual(report.requests[0].attemptCount, 2)
@@ -2242,6 +2251,514 @@ class SourceAttestationTests(unittest.TestCase):
             )[1],
             "T4127-123rd-2026-07",
         )
+
+    def test_component_target_scope_is_an_exact_nonoverlapping_partition(self) -> None:
+        self.boundary["targets"].append({
+            "id": "ca-components",
+            "reviewed": {"left": 0.25, "right": 0.25},
+        })
+        registry = deepcopy(self.registry)
+        registry["targetComponents"] = [{
+            "targetId": "ca-components",
+            "components": [
+                {"id": "left-source", "reviewedPaths": ["/left"]},
+                {"id": "right-source", "reviewedPaths": ["/right"]},
+            ],
+        }]
+        for name in ("left", "right"):
+            attestation = deepcopy(self.json_attestation())
+            attestation["id"] = f"component-{name}"
+            attestation.pop("claims")
+            attestation["targets"] = [{
+                "targetId": "ca-components",
+                "componentId": f"{name}-source",
+                "reviewedPath": f"/{name}",
+            }]
+            registry["attestations"].append(attestation)
+        self.write_json("boundary.json", self.boundary)
+        report = self.run_verify(registry)
+        self.assertTrue(report.ok, [item.render() for item in report.results])
+
+        mutations = []
+        overlap = deepcopy(registry)
+        overlap["targetComponents"][0]["components"][1][
+            "reviewedPaths"
+        ] = ["/left"]
+        mutations.append(overlap)
+        missing = deepcopy(registry)
+        missing["targetComponents"][0]["components"][1][
+            "reviewedPaths"
+        ] = ["/left"]
+        mutations.append(missing)
+        root = deepcopy(registry)
+        root["targetComponents"][0]["components"][0][
+            "reviewedPaths"
+        ] = ["/"]
+        mutations.append(root)
+        wrong_owner = deepcopy(registry)
+        wrong_owner["attestations"][-1]["targets"][0][
+            "componentId"
+        ] = "left-source"
+        mutations.append(wrong_owner)
+        duplicate_mapping = deepcopy(registry)
+        duplicate_mapping["attestations"].append(
+            deepcopy(duplicate_mapping["attestations"][-1])
+        )
+        duplicate_mapping["attestations"][-1]["id"] = "component-right-two"
+        mutations.append(duplicate_mapping)
+        for mutation in mutations:
+            with self.subTest():
+                self.assert_status(self.run_verify(mutation), "unsupported")
+
+    def test_cra_t4127_csv_fixed_cohorts_and_adversarial_mutations(self) -> None:
+        rates = (
+            '"Table 8.1 Rates (R, V), income thresholds (A), and constants (K, KP) effective July 1, 2026",,,,,,,,,\r\n'
+            ',,1st,2nd,3rd,4th,5th,6th,7th,8th\r\n'
+            'Federal,A,0,"58,523","117,045","181,440","258,482",,,\r\n'
+            ',R,0.14,0.205,0.26,0.29,0.33,,,\r\n'
+            ',K,0,"3,804","10,241","15,685","26,024",,,\r\n'
+            'BC,A,0,"50,363","100,728","115,648","140,430","190,405","265,545",\r\n'
+            ',V,0.0614,0.077,0.105,0.1229,0.147,0.168,0.205,\r\n'
+            ',KP,0,786,"3,606","5,676","9,061","13,059","22,884",\r\n'
+        ).encode("cp1252")
+        base = {
+            "publication": "T4127-123rd",
+            "effectiveDate": "2026-07-01",
+            "encoding": "windows-1252",
+        }
+        unit, value = verifier._extract_cra_t4127_csv(
+            rates, {**base, "cohort": "table-8.1-federal-rates"}
+        )
+        self.assertEqual(unit, {"brackets": "CAD/rate"})
+        self.assertEqual(value["brackets"][0], [58523, 0.14])
+        self.assertEqual(value["brackets"][-1], [None, 0.33])
+        bc_unit, bc_value = verifier._extract_cra_t4127_csv(
+            rates,
+            {**base, "cohort": "table-8.1-bc-thresholds-tail-rates"},
+        )
+        self.assertEqual(
+            bc_unit,
+            {"thresholds": "CAD", "ratesAfterFirst": "decimal rate"},
+        )
+        self.assertEqual(len(bc_value["thresholds"]), 7)
+        self.assertIsNone(bc_value["thresholds"][-1])
+        self.assertEqual(len(bc_value["ratesAfterFirst"]), 6)
+
+        for mutation in (
+            rates.replace(b"July 1, 2026", b"July 1, 2025", 1),
+            rates.replace(b",V,0.0614", b",V,NaN", 1),
+            rates.replace(b",V,0.0614", b",X,0.0614", 1),
+            rates + rates.splitlines(keepends=True)[5],
+            rates.replace(b"0.0614", b"0.056", 1),
+        ):
+            with self.subTest(), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._extract_cra_t4127_csv(
+                    mutation,
+                    {**base, "cohort": "table-8.1-bc-thresholds-tail-rates"},
+                )
+
+        cpp = (
+            "Table 8.3 Canada Pension Plan / Quebec Pension Plan 2026 contribution rates and amounts,,,,,,\r\n"
+            "CPP/QPP,Year’s Maximum Pensionable Earnings (YMPE),Basic Exemption,Year’s Maximum Contributory Earnings,Employee  and Employer Total Contribution Rate,Maximum Employee and Employer Total Contribution*,YMPE Before Rounding\r\n"
+            ",,,(YMCE),,,\r\n"
+            'CPP (Canada except QC),"74,600.00","3,500.00","71,100.00",0.0595,"4,230.45","74,696.54"\r\n'
+            'QPP (QC),"74,600.00","3,500.00","71,100.00",0.063,"4,479.30","74,696.54"\r\n'
+        ).encode("cp1252")
+        cpp_params = {
+            "publication": "T4127-122nd",
+            "effectiveDate": "2026-01-01",
+            "encoding": "windows-1252",
+            "cohort": "table-8.3-cpp-total",
+        }
+        self.assertEqual(
+            verifier._extract_cra_t4127_csv(cpp, cpp_params),
+            (
+                {"ympe": "CAD", "exempt": "CAD", "rate": "decimal rate"},
+                {"ympe": 74600, "exempt": 3500, "rate": 0.0595},
+            ),
+        )
+        with self.assertRaises(verifier.UnsupportedExtraction):
+            verifier._extract_cra_t4127_csv(
+                cpp, {**cpp_params, "encoding": "utf-8"}
+            )
+
+        bpa = (
+            "Table 8.9 Federal claim codes (using maximum BPAF),,,,\r\n"
+            'Claim code,Total claim amount ($) from,Total claim amount ($) to,"Option 1, TC ($)","Option 1, K1 ($)"\r\n'
+            "0,No claim amount,No claim amount,0,0\r\n"
+            '1,0,"16,452.00","16,452.00","2,303.28"\r\n'
+        ).encode("cp1252")
+        bpa_params = {
+            "publication": "T4127-122nd",
+            "effectiveDate": "2026-01-01",
+            "encoding": "windows-1252",
+            "cohort": "table-8.9-federal-bpa",
+        }
+        self.assertEqual(
+            verifier._extract_cra_t4127_csv(bpa, bpa_params),
+            ({"bpa": "CAD"}, {"bpa": 16452}),
+        )
+        for mutation in (
+            bpa.replace(b"16,452.00", b"16,451.00", 1),
+            bpa + b'1,0,"16,452.00","16,452.00","2,303.28"\r\n',
+        ):
+            with self.subTest(), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._extract_cra_t4127_csv(mutation, bpa_params)
+
+    def test_cra_csv_registry_binds_url_date_unit_and_value(self) -> None:
+        body = (
+            '"Table 8.1 Rates (R, V), income thresholds (A), and constants (K, KP) effective July 1, 2026",,,,,,,,,\r\n'
+            ',,1st,2nd,3rd,4th,5th,6th,7th,8th\r\n'
+            'Federal,A,0,"58,523","117,045","181,440","258,482",,,\r\n'
+            ',R,0.14,0.205,0.26,0.29,0.33,,,\r\n'
+            ',K,0,"3,804","10,241","15,685","26,024",,,\r\n'
+        ).encode("cp1252")
+        path = self.fixture_dir / "cra-rates.csv"
+        path.write_bytes(body)
+        value = {
+            "brackets": [
+                [58523, 0.14], [117045, 0.205], [181440, 0.26],
+                [258482, 0.29], [None, 0.33],
+            ]
+        }
+        self.boundary["targets"].append({"id": "ca-csv", "reviewed": value})
+        self.write_json("boundary.json", self.boundary)
+        registry = deepcopy(self.registry)
+        citation = (
+            "https://www.canada.ca/en/revenue-agency/services/forms-publications/"
+            "payroll/t4127-payroll-deductions-formulas/t4127-jul/"
+            "t4127-jul-payroll-deductions-formulas.html"
+        )
+        request_url = (
+            "https://www.canada.ca/content/dam/cra-arc/formspubs/pub/"
+            "t4127-jul/rates-income-thresholds-constants-26e.csv"
+        )
+        attestation = {
+            "id": "cra-rates-federal",
+            "jurisdiction": "CA",
+            "sourceUrl": citation,
+            "request": {"method": "GET", "url": request_url},
+            "verifiedAt": "2026-07-19",
+            "effectiveFrom": "2026-07-01",
+            "reviewAfterDays": 90,
+            "extractor": {
+                "mode": "cra-t4127-csv",
+                "params": {
+                    "publication": "T4127-123rd",
+                    "effectiveDate": "2026-07-01",
+                    "encoding": "windows-1252",
+                    "cohort": "table-8.1-federal-rates",
+                },
+            },
+            "expected": {
+                "type": "object",
+                "unit": {"brackets": "CAD/rate"},
+                "value": value,
+            },
+            "fixture": self.fixture("cra-rates.csv", "text/csv", request_url),
+            "targets": [{"targetId": "ca-csv", "reviewedPath": "/"}],
+        }
+        registry["attestations"].append(attestation)
+        report = self.run_verify(registry)
+        self.assertTrue(report.ok, [item.render() for item in report.results])
+
+        wrong_url = deepcopy(registry)
+        wrong_url["attestations"][-1]["request"]["url"] = request_url.replace(
+            "26e.csv", "25e.csv"
+        )
+        wrong_url["attestations"][-1]["fixture"]["finalUrl"] = wrong_url[
+            "attestations"
+        ][-1]["request"]["url"]
+        self.assert_status(self.run_verify(wrong_url), "unsupported")
+
+        old_date = deepcopy(registry)
+        old_date["attestations"][-1]["extractor"]["params"][
+            "effectiveDate"
+        ] = "2025-07-01"
+        self.assert_status(self.run_verify(old_date), "unsupported")
+
+        wrong_unit = deepcopy(registry)
+        wrong_unit["attestations"][-1]["expected"]["unit"] = {
+            "brackets": "CAD"
+        }
+        self.assert_status(self.run_verify(wrong_unit), "changed")
+
+        wrong_expected = deepcopy(registry)
+        wrong_expected["attestations"][-1]["expected"]["value"][
+            "brackets"
+        ][0][0] = 58524
+        self.assert_status(self.run_verify(wrong_expected), "unsupported")
+
+        path.write_bytes(body.replace(b"0.205", b"0.206", 1))
+        changed_source = deepcopy(registry)
+        changed_source["attestations"][-1]["fixture"]["sha256"] = fingerprint(path)
+        self.assert_status(self.run_verify(changed_source), "changed")
+
+    def test_cra_bc_and_ontario_fixed_html_components(self) -> None:
+        bc = (
+            "<h4>British Columbia</h4>"
+            "<p>On February 17, 2026, the Government of British Columbia announced a change to the lowest personal income tax rate and the BC tax reduction. For 2026 and subsequent years, the lowest personal tax rate is increased from 5.06% to 5.60%.</p>"
+            "<p>Since the employers have used a lower tax rate for the first six months of the year, a prorated lowest personal income tax rate of 6.14% will apply for the remaining six months commencing with the first payroll in July. The tax rates and brackets are as follows:</p>"
+            "<p>See Table 8.1 for rates, income thresholds, and constants and Table 8.2 for other rates and amounts. The Option 2 rates will not be prorated.</p>"
+        )
+        self.assertEqual(
+            verifier._extract_cra_t4127_bc_annual_rate(
+                bc.encode(), {"effectiveYear": 2026}
+            ),
+            ({"rate": "decimal rate"}, {"rate": 0.056}),
+        )
+        for mutation in (
+            bc.replace("5.60%", "6.14%", 1),
+            bc.replace("not be prorated", "be prorated"),
+            bc + bc,
+        ):
+            with self.subTest(), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._extract_cra_t4127_bc_annual_rate(
+                    mutation.encode(), {"effectiveYear": 2026}
+                )
+
+        health_items = "".join(
+            f"<li>{item}</li>" for item in verifier.CRA_T4032_ON_HEALTH_BLOCKS
+        )
+        ontario = (
+            "<h1>Payroll Deductions Tables - CPP, EI, and income tax deductions - Ontario</h1>"
+            f"<p>{verifier.CRA_T4032_ON_REVISION}</p>"
+            f"<h2>{verifier.CRA_T4032_ON_EFFECTIVE_HEADING}</h2>"
+            "<h3>Ontario health premium</h3>"
+            f"<p>{verifier.CRA_T4032_ON_HEALTH_LEAD}</p>"
+            f"<ul>{health_items}</ul>"
+            "<h3>Tax reduction</h3>"
+            f"<p>{verifier.CRA_T4032_ON_REDUCTION_LEAD}</p>"
+            "<p>Basic personal amount........................................ $300</p>"
+            f"<p>{verifier.CRA_T4032_ON_REDUCTION_SENTENCE}</p>"
+        )
+        unit, value = verifier._extract_cra_t4032_on(
+            ontario.encode(), {"effectiveDate": "2026-01-01"}
+        )
+        self.assertEqual(unit, {"taxReduction": "CAD", "health": "CAD/rate"})
+        self.assertEqual(value["taxReduction"], 600)
+        self.assertEqual(value["health"]["above"]["cap"], 900)
+        for mutation in (
+            ontario.replace("Rev. 26", "Rev. 25", 1),
+            ontario.replace("January 1, 2026", "January 1, 2025", 1),
+            ontario.replace(
+                "For 2026, the Ontario health premium is:",
+                "For 2025, the Ontario health premium is:",
+                1,
+            ),
+            ontario.replace(
+                "For 2026, Ontario's tax reduction amounts are:",
+                "For 2025, Ontario's tax reduction amounts are:",
+                1,
+            ),
+            ontario.replace("$36,000", "$36,001", 1),
+            ontario.replace("$300</p>", "$301</p>"),
+            ontario + ontario,
+        ):
+            with self.subTest(), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._extract_cra_t4032_on(
+                    mutation.encode(), {"effectiveDate": "2026-01-01"}
+                )
+
+    def test_request_and_attestation_budgets_are_bounded(self) -> None:
+        attestation = self.html_attestation()
+
+        class Response:
+            status = 503
+            headers = {"Content-Type": "text/html"}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, _limit):
+                return b"temporary"
+
+            def geturl(self):
+                return attestation["sourceUrl"]
+
+            def getcode(self):
+                return self.status
+
+        clocks = iter([0.0, 0.1])
+        execution = verifier._live_execution(
+            attestation,
+            max_attempts=4,
+            retry_backoff_ms=100,
+            timeout=15,
+            request_budget_seconds=0.15,
+            urlopen=lambda *_args, **_kwargs: Response(),
+            clock=lambda: next(clocks),
+            sleeper=lambda _delay: self.fail("budget must stop backoff"),
+        )
+        self.assertEqual(execution.finalStatus, "transient")
+        self.assertEqual(execution.attemptCount, 1)
+        self.assertTrue(execution.budgetExhausted)
+        self.assertLessEqual(execution.elapsedSeconds, 0.15)
+
+        alt_url = "https://www.employment.govt.nz/minimum-wage/alternate"
+        alt_path = self.fixture_dir / "budget-alt.html"
+        alt_path.write_bytes((FIXTURES / "employment-wage.html").read_bytes())
+        registry = deepcopy(self.registry)
+        live_attestation = registry["attestations"][0]
+        live_attestation["candidatePolicy"] = {"mode": "available-parity"}
+        live_attestation["requestCandidates"] = [
+            {
+                "id": "primary", "sourceRelation": "citation",
+                "request": {"method": "GET"}, "mediaType": "text/html",
+                "fixture": deepcopy(live_attestation["fixture"]),
+            },
+            {
+                "id": "alternate", "sourceRelation": "same-host",
+                "request": {"method": "GET", "url": alt_url},
+                "mediaType": "text/html",
+                "fixture": self.fixture("budget-alt.html", "text/html", alt_url),
+            },
+        ]
+        registry["attestations"] = [live_attestation]
+        registry["claimScope"] = ["claim-wage"]
+        self.boundary = {
+            "schemaVersion": 1,
+            "targets": [{"id": "nz-wage", "reviewed": {"value": 23.95}}],
+        }
+        self.claims = {
+            "schemaVersion": 1,
+            "audit": {},
+            "claims": [self.claim(
+                "claim-wage", 23.95, "NZD/hour", live_attestation["sourceUrl"]
+            )],
+        }
+        self.write_json("boundary.json", self.boundary)
+        self.write_json("claims.json", self.claims)
+        self.write_json("attestations.json", registry)
+        calls: list[str] = []
+        clocks = iter([0.0, 0.1])
+
+        def opener(request, **_kwargs):
+            calls.append(request.full_url)
+            return Response()
+
+        report = verifier.verify_source_attestations(
+            self.root,
+            attestations_path="attestations.json",
+            boundary_manifest_path="boundary.json",
+            claims_path="claims.json",
+            mode="live",
+            today=TODAY,
+            max_attempts=1,
+            timeout=1,
+            request_budget_seconds=1,
+            attestation_budget_seconds=1,
+            observation_id="budget.1",
+            urlopen=opener,
+            clock=lambda: next(clocks),
+            sleeper=lambda _delay: None,
+        )
+        result = next(item for item in report.results if item.id == "nz-wage-source")
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(
+            [item["attemptCount"] for item in result.candidateChain], [1, 0]
+        )
+        self.assertTrue(result.candidateChain[1]["budgetExhausted"])
+
+    def test_live_transport_headers_and_certificate_error_are_explicit(
+        self,
+    ) -> None:
+        captured: list[dict[str, str]] = []
+
+        def certificate_failure(request, **_kwargs):
+            captured.append({
+                key.lower(): value
+                for key, value in request.header_items()
+            })
+            reason = ssl.SSLCertVerificationError(
+                1, "certificate verify failed: reviewed test"
+            )
+            raise urllib_error.URLError(reason)
+
+        attestation = self.html_attestation()
+        attestation["sourceUrl"] = "https://www.canada.ca/reviewed-source"
+        attestation["request"] = {"method": "GET"}
+        clocks = iter([0.0, 1.1])
+        execution = verifier._live_execution(
+            attestation,
+            max_attempts=1,
+            retry_backoff_ms=1,
+            timeout=1,
+            request_budget_seconds=1,
+            urlopen=certificate_failure,
+            clock=lambda: next(clocks),
+            sleeper=lambda _delay: self.fail("unexpected retry"),
+        )
+        self.assertEqual(captured, [{
+            "user-agent": (
+                "curl/8.7.1 NZ-Navigator-Source-Attestation/1.0"
+            ),
+            "accept": (
+                "text/html,application/xhtml+xml,application/pdf,"
+                "application/json;q=0.9,*/*;q=0.1"
+            ),
+            "connection": "close",
+            "accept-encoding": "identity",
+        }])
+        self.assertEqual(execution.finalStatus, "transient")
+        self.assertTrue(execution.budgetExhausted)
+        self.assertIn(
+            "TLS certificate verification failed",
+            execution.response.error,
+        )
+        self.assertIn(
+            "request time budget exhausted", execution.response.error
+        )
+        result = verifier._evaluate_response(
+            attestation,
+            execution.response,
+            offline=False,
+            root=self.root,
+        )
+        self.assertEqual(result.status, "transient")
+        self.assertIn("TLS certificate verification failed", result.actual)
+
+        profiles: list[dict[str, str]] = []
+
+        def capture_and_timeout(request, **_kwargs):
+            profiles.append({
+                key.lower(): value
+                for key, value in request.header_items()
+            })
+            raise TimeoutError("reviewed header capture")
+
+        for url in (
+            "https://ircc.canada.ca/representation",
+            "https://www.ato.gov.au/representation",
+            "https://www.immigration.govt.nz/representation",
+        ):
+            verifier._live_response(
+                {"sourceUrl": url, "request": {"method": "GET"}},
+                1,
+                urlopen=capture_and_timeout,
+            )
+        self.assertEqual(
+            profiles[0]["user-agent"],
+            "curl/8.7.1 NZ-Navigator-Source-Attestation/1.0",
+        )
+        self.assertEqual(profiles[0]["accept-encoding"], "identity")
+        for profile in profiles[1:]:
+            self.assertEqual(
+                profile["user-agent"],
+                "nz-navigator-source-attestation/1.0",
+            )
+            self.assertNotIn("accept-encoding", profile)
 
 
 if __name__ == "__main__":

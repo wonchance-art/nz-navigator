@@ -728,6 +728,75 @@ class AttestationIssueTests(unittest.TestCase):
             report_body_fingerprint(changed),
         )
 
+    def test_retired_request_keys_are_removed_without_hash_only_rows(self) -> None:
+        first = report_v2(
+            "transient", "retire.1", "2026-07-19T00:00:00Z"
+        )
+        created = reduce_issue(first, [])
+        old_key = request_key()
+        self.assertIn(old_key, created["trendState"]["requests"])
+        existing = [{
+            "number": 31,
+            "title": ISSUE_TITLE,
+            "state": "open",
+            "body": created["body"],
+        }]
+
+        replacement = report_v2(
+            "match", "retire.2", "2026-07-26T00:00:00Z",
+            final_status="ready",
+        )
+        new_key = request_key("replacement")
+        replacement["requestAudit"]["requests"][0].update({
+            "requestKey": new_key,
+            "requestUrl": "https://www.canada.ca/new-current-source",
+        })
+        replacement["results"][0].update({
+            "requestKey": new_key,
+            "requestUrl": "https://www.canada.ca/new-current-source",
+        })
+        reduced = reduce_issue(replacement, existing)
+        self.assertEqual(reduced["action"], "close")
+        self.assertNotIn(old_key, reduced["trendState"]["requests"])
+        self.assertNotIn(old_key[:19], reduced["body"])
+        self.assertIn("new-current-source", reduced["body"])
+
+        replay_existing = [{
+            "number": 31,
+            "title": ISSUE_TITLE,
+            "state": "closed",
+            "body": reduced["body"],
+        }]
+        replay = reduce_issue(replacement, replay_existing)
+        self.assertEqual(replay["action"], "noop")
+        self.assertEqual(replay["trendState"], reduced["trendState"])
+
+    def test_request_audit_v2_budget_fields_are_strict_and_rendered(self) -> None:
+        budgeted = report_v2(
+            "transient", "budget.1", "2026-07-19T00:00:00Z"
+        )
+        budgeted["requestAudit"]["schemaVersion"] = 2
+        budgeted["requestAudit"]["requests"][0].update({
+            "budgetSeconds": 30,
+            "budgetExhausted": True,
+        })
+        body = render_issue_body(budgeted)
+        self.assertIn("Budget", body)
+        self.assertIn("exhausted", body)
+        self.assertIn("canada.ca/citation", body)
+
+        for field, value in (
+            ("budgetSeconds", 0),
+            ("budgetSeconds", 61),
+            ("budgetExhausted", "yes"),
+        ):
+            mutation = deepcopy(budgeted)
+            mutation["requestAudit"]["requests"][0][field] = value
+            with self.subTest(field=field, value=value), self.assertRaises(
+                IssueContractError
+            ):
+                render_issue_body(mutation)
+
 
 if __name__ == "__main__":
     unittest.main()

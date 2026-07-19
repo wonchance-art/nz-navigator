@@ -57,11 +57,12 @@ exact root keys:
 }
 ```
 
-`effectiveTo`, `livePolicy`, `requestCandidates`, and `candidatePolicy` are
-optional. `targets` and `claims` are individually optional, but at least one
+`effectiveTo`, `livePolicy`, `requestCandidates`, `candidatePolicy`, and root
+`targetComponents` are optional. `targets` and `claims` are individually optional, but at least one
 must be a non-empty array. All other entry keys above are required. A target
 mapping is `{targetId,reviewedPath}` or
-`{targetId,reviewedPath,expectedPath}`; `/` is the default expected path and
+`{targetId,reviewedPath,expectedPath}`; component-scoped mappings additionally
+require `componentId`. `/` is the default expected path and
 the selected expected subtree must exactly equal the reviewed subtree. A claim
 mapping is `{claimId}` or
 `{claimId,expectedPath}`; `/` is the default expected path.
@@ -91,6 +92,34 @@ scope fail. The selected expected value and unit must exactly equal the claim's
 `value` and `unit`; its `sourceUrl` must exactly equal the attestation citation
 URL. One attestation may therefore cover multiple NZ/JA claims with the same
 official source, value, and unit.
+
+### Component target coverage
+
+Large reviewed objects can opt into an explicit source-component partition:
+
+```json
+{
+  "targetComponents": [{
+    "targetId": "ca-tax",
+    "components": [
+      {"id": "cra-8.1-federal", "reviewedPaths": ["/federal/brackets", "/federal/creditRate"]},
+      {"id": "cra-t4032-on-derived", "reviewedPaths": ["/ontario/taxReduction", "/ontario/health"]}
+    ]
+  }]
+}
+```
+
+A scoped target requires 2–64 components. Each component ID is a stable slug
+and owns 1–64 exact RFC 6901 reviewed paths. Root `/` ownership is forbidden.
+Declared paths may not overlap as parent/child and, together, must cover every
+reviewed scalar leaf exactly once. Every attestation target mapping must name
+the declared `componentId` and an exact path owned by it; undeclared paths,
+wrong owners, duplicate mappings, partial components, and missing leaves fail
+closed. Targets without `targetComponents` retain the v7 mapping contract.
+
+This is the production migration boundary for `ca-tax.reviewed`: it permits
+the former 92-leaf root fixture to be replaced by independently reviewed CRA
+cohorts without changing the boundary manifest itself.
 
 `expected.type` is `number`, `string`, `array`, or `object`. Values must be
 finite. `unit` may be one non-empty string or a string-leaf object/array tree
@@ -274,6 +303,32 @@ code. Only these code-reviewed modes and bounded parameters run:
   `{"language":"fr"}`. It requires one language-specific `T4127-JUL` H1,
   validates edition ordinal and effective date, and normalizes both pages to
   `T4127-123rd-2026-07` with unit `table version`.
+- `cra-t4127-csv`: params are exactly
+  `{publication,effectiveDate,encoding,cohort}`. `encoding` is one of
+  `utf-8`, `utf-8-bom`, or `windows-1252`; BOM presence must agree exactly.
+  Production CRA files use BOM-free `windows-1252`. The code binds each
+  cohort to one reviewed `www.canada.ca` path, publication/date pair, table
+  title, header, row labels, cardinality, and finite numeric grammar. Supported
+  cohorts are Table 8.1 Federal/AB/ON rates, BC thresholds plus rates after
+  the first band, Table 8.2 Federal/AB/BC/ON amounts, Tables 8.3–8.7 CPP/EI,
+  and Table 8.9 federal maximum BPA. Registry data supplies no row selector.
+  The BC CSV cohort deliberately returns
+  `thresholds=[50363,100728,115648,140430,190405,265545,null]` and
+  `ratesAfterFirst=[0.077,0.105,0.1229,0.147,0.168,0.205]`; it does not return
+  the H2 payroll catch-up rate 6.14% as the annual statutory first rate.
+- `cra-t4127-bc-annual-rate`: params are exactly `{"effectiveYear":2026}`.
+  It requires the three reviewed CRA prose blocks establishing 5.60% for 2026
+  and subsequent years, the separate 6.14% H2 payroll catch-up rate, and that
+  Option 2 is not prorated. It returns only `{rate:0.056}`.
+- `cra-t4032-on`: params are exactly `{"effectiveDate":"2026-01-01"}`.
+  It requires the exact T4032ON H1, `T4032-ON(E) Rev. 26`, the
+  `What's new as of January 1, 2026` heading, both exact `For 2026` health and
+  tax-reduction lead paragraphs, all six ordered Ontario health-premium
+  bullets, basic personal reduction amount `$300`, and the sentence that the
+  reduction is twice personal amounts. Every year/revision anchor has
+  cardinality one. It returns only
+  `{taxReduction:600,health:{...}}`; Ontario brackets, BPA, and surtax remain
+  separate CSV-owned components and cannot overlap this cohort.
 - `api-json-record`: `arrayPointer`, 1–3 exact string `match` fields,
   `valuePointer`, and optional fixed transform. Zero or multiple matching
   records is drift. `currency-to-number` requires an actual `AUD`, `CAD`, or
@@ -392,8 +447,29 @@ DNS, TLS, timeout, HTTP 429, or HTTP 5xx. `changed`, `blocked`,
 `--max-attempts` is the total attempt count (`1..4`),
 `--retry-backoff-ms` is the deterministic exponential base (`1..2000`), and
 `--timeout` is finite, greater than zero, and no more than 60 seconds. There
-is no jitter or registry-supplied code. Offline mode requires one attempt and
-never sleeps or fetches.
+is no jitter or registry-supplied code. `--request-budget-seconds` is finite
+in `(0,60]` and caps one canonical request's total attempts plus deterministic
+backoff. Each attempt receives the smaller of `--timeout` and the remaining
+request budget. `--attestation-budget-seconds` is finite, at least the request
+budget, and at most 120 seconds. Before a fresh canonical request begins, its
+full request budget is reserved against this attestation total; a candidate
+that would exceed the total is recorded as `transient` with zero attempts.
+Cached canonical executions are shared across all attestations/candidates and
+consume no second reservation or fetch. Budget exhaustion never becomes
+`match`. Offline mode requires one attempt and never sleeps or fetches.
+
+Live requests use a code-owned, exact-host compatibility map. The default
+profile retains `User-Agent: nz-navigator-source-attestation/1.0`,
+`Accept: text/html,application/xhtml+xml,application/pdf,application/json;q=0.9,*/*;q=0.1`,
+and `Connection: close`. Only exact canonical hosts `canada.ca`,
+`www.canada.ca`, and `ircc.canada.ca` use
+`User-Agent: curl/8.7.1 NZ-Navigator-Source-Attestation/1.0` plus
+`Accept-Encoding: identity`. Registry entries cannot add or override headers,
+and the selected profile is not part of the canonical request key, so shared
+requests still execute once. Media-type validation remains extractor-specific
+after the response arrives. TLS certificate verification errors remain
+`transient` non-matches and are reported explicitly, including when the same
+attempt also exhausts its request budget.
 
 Report schema version 2 adds `observationId`, `retryPolicy`, and
 `requestAudit`. Each result includes `requestKey`, `attemptCount`,
@@ -409,6 +485,8 @@ SHA-256 digest of canonical URL/method/body; request bodies are not reported.
   "attemptCount": 2,
   "finalStatus": "ready",
   "latencyBucket": "250ms-999ms",
+  "budgetSeconds": 30,
+  "budgetExhausted": false,
   "attempts": [
     {"number": 1, "status": "transient", "latencyBucket": "lt250ms"},
     {"number": 2, "status": "ready", "latencyBucket": "lt250ms"}
@@ -417,6 +495,8 @@ SHA-256 digest of canonical URL/method/body; request bodies are not reported.
 ```
 
 Request final states are `ready|transient|blocked|changed|unsupported`.
+Request-audit schema v2 adds the bounded `budgetSeconds` and boolean
+`budgetExhausted`; the issue reducer continues to accept schema v1 reports.
 Latency is content-free and bucketed as
 `offline|lt250ms|250ms-999ms|1s-4.999s|5s-14.999s|15s-plus`.
 Latency is visible in the current-run table but excluded from substantive
@@ -457,6 +537,8 @@ python3 scripts/verify_source_attestations.py \
   --timeout 15 \
   --max-attempts 3 \
   --retry-backoff-ms 500 \
+  --request-budget-seconds 30 \
+  --attestation-budget-seconds 60 \
   --observation-id "WORKFLOW_RUN_ID.WORKFLOW_ATTEMPT" \
   --output source-attestation-report.json
 ```
@@ -491,6 +573,14 @@ investigation, and three or more require manual official-source review.
 Recovery is recorded explicitly. `changed`, `blocked`, and `unsupported`
 retain their distinct immediate-review wording.
 
+On every report that contains `requestAudit`, the reducer treats its request
+keys as the current request universe. Trend entries absent from that universe
+are retired immediately before the observation is reduced. This prevents a
+removed candidate or source from remaining forever as an endpoint-less hash.
+Reports without `requestAudit` retain legacy behavior and cannot erase or
+increment transport history. Replaying an identical observation after
+retirement is still a no-op.
+
 Marker validation also enforces `firstSeen <= lastSeen`, chronological events,
 last event status/observation/timestamp equality with the request state,
 `recoveredAt == lastSeen` for recovered entries, and no `recoveredAt` on an
@@ -511,11 +601,13 @@ as legacy observations but never invent or increment a transient streak.
 
 To migrate a cohort:
 
-1. Capture the smallest faithful official HTML/PDF/JSON response or a
+1. Capture the smallest faithful official HTML/PDF/JSON/CSV response or a
    human-reviewed structured extract when the safe parser cannot consume the
    official representation.
 2. Record its raw SHA-256 and request final URL.
-3. Add non-overlapping target pointers and scoped claim mappings.
+3. Add non-overlapping target pointers and scoped claim mappings. For a large
+   object, first declare its exact `targetComponents` partition, then add the
+   matching `componentId` to every target mapping.
 4. Choose only a reviewed extractor enum and exact bounded parameters.
 5. Declare `livePolicy`; use `fixture-only` for a representation the bounded
    parser cannot safely verify live.
@@ -530,6 +622,15 @@ when reachable representations must prove the same value. For split boundary
 evidence, map each source's expected subtree with target `expectedPath`; never
 inject a constant into one extractor merely to recreate a leaf proved by
 another source.
+
+For the CA 92-leaf migration, official T4127 CSV cohorts directly cover 65
+leaves. Federal 14% may map both `/federal/brackets/0/1` and
+`/federal/creditRate` to the same `/brackets/0/1` expected path. The BC split
+CSV covers 13 non-first-rate leaves; the annual 5.60% prose cohort owns only
+`/provinces/bc/brackets/0/1`. Table 8.9 owns federal BPA. T4032ON's fixed
+derived cohort owns only `/ontario/taxReduction` and `/ontario/health`.
+Ontario brackets/BPA/surtax remain CSV cohorts. No CSV S2=300 mapping may
+directly claim the derived runtime tax reduction 600.
 
 Known limits: the HTML parser intentionally ignores styling and client-side
 rendering; the bounded PDF parser is not a general PDF engine and deliberately
