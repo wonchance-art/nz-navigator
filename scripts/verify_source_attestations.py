@@ -279,10 +279,14 @@ HTML_VALUE_TRANSFORMS = frozenset(
         "tax-brackets-serialization",
         "duration-months",
         "duration-weeks",
+        "identical-duration-days",
         "inclusive-range",
         "embedded-percent",
         "embedded-percent-to-decimal",
         "leading-currency-to-number",
+        "single-iso-currency-to-number",
+        "single-dollar-amount-to-number",
+        "single-hourly-dollar-amount-to-number",
         "final-inclusive-range",
         "ato-first-tax-band",
         "ato-law-first-tax-band",
@@ -2650,6 +2654,64 @@ def _plain_number(value: int | float) -> str:
 
 def _transform_html_value(value: str, transform: str) -> Any:
     normalized = _normalize_text(value)
+    if transform == "single-dollar-amount-to-number":
+        matches = list(
+            re.finditer(
+                r"(?<![A-Za-z0-9$])\$"
+                r"([0-9][0-9,]*(?:\.[0-9]+)?)(?![A-Za-z0-9])",
+                normalized,
+            )
+        )
+        if len(matches) != 1:
+            raise ChangedExtraction(
+                f"{value!r} contains {len(matches)} exact dollar amounts; "
+                "exactly 1 required"
+            )
+        return _finite_number(matches[0].group(1))
+    if transform == "single-hourly-dollar-amount-to-number":
+        matches = list(
+            re.finditer(
+                r"(?<![A-Za-z0-9$])\$"
+                r"([0-9][0-9,]*(?:\.[0-9]+)?)\s+(?:per|an)\s+hour"
+                r"(?![A-Za-z0-9])",
+                normalized,
+                flags=re.IGNORECASE,
+            )
+        )
+        if len(matches) != 1:
+            raise ChangedExtraction(
+                f"{value!r} contains {len(matches)} exact hourly dollar "
+                "amounts; exactly 1 required"
+            )
+        return _finite_number(matches[0].group(1))
+    if transform == "identical-duration-days":
+        matches = [
+            _finite_number(match.group(1))
+            for match in re.finditer(
+                r"(?<![A-Za-z0-9])([0-9][0-9,]*)\s+days?\b",
+                normalized,
+                flags=re.IGNORECASE,
+            )
+        ]
+        if len(matches) < 2 or len(set(matches)) != 1:
+            raise ChangedExtraction(
+                f"{value!r} must contain at least 2 identical day durations"
+            )
+        return matches[0]
+    if transform == "single-iso-currency-to-number":
+        matches = list(
+            re.finditer(
+                r"(?<![A-Za-z0-9])(NZD|CAD|AUD)\s+\$"
+                r"([0-9][0-9,]*(?:\.[0-9]+)?)(?![A-Za-z0-9])",
+                normalized,
+            )
+        )
+        if len(matches) != 1:
+            raise ChangedExtraction(
+                f"{value!r} contains {len(matches)} exact ISO currency amounts; "
+                "exactly 1 required"
+            )
+        return _finite_number(matches[0].group(2))
     if transform == "leading-currency-to-number":
         currency_tokens = list(
             re.finditer(

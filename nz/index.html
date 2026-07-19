@@ -1858,11 +1858,13 @@ details.fold:not([open]) > .fold-body { display: none; }
       <span data-claim-id="nz-ko-median-20-2026">2배 기준 NZD 70/h</span> ·
       <span data-claim-id="nz-ko-median-30-2026">3배 기준 NZD 105/h</span> ·
       <span data-claim-id="nz-ko-pswv-fee">PSWV NZD 1,670</span> ·
-      <span data-claim-id="nz-ko-pswv-processing">PSWV 80% 5주</span> ·
+      <span data-claim-id="nz-ko-pswv-processing">PSWV 80% 3주</span> ·
       <span data-claim-id="nz-ko-aewv-fee">AEWV NZD 1,540</span> ·
       <span data-claim-id="nz-ko-aewv-processing">AEWV 80% 6.5주</span> ·
       <span data-claim-id="nz-ko-residence-fee">SMC·숙련영주 NZD 6,450</span> ·
-      <span data-claim-id="nz-ko-resident-processing">SMC·StR·WTR 80% 4개월</span> ·
+      <span data-claim-id="nz-ko-resident-processing">SMC 80% 4.5개월</span> ·
+      <span data-claim-id="nz-ko-straight-resident-processing">StR 80% 4개월</span> ·
+      <span data-claim-id="nz-ko-work-resident-processing">WTR 80% 3개월</span> ·
       <span data-claim-id="nz-ko-skilled-residence-age">숙련영주 연령 55세 이하</span> ·
       <span data-claim-id="nz-ko-accreditation-fee">표준 고용주 인증 NZD 775</span> ·
       <span data-claim-id="nz-ko-job-check-fee">Job Check NZD 735</span> ·
@@ -1950,22 +1952,22 @@ details.fold:not([open]) > .fold-body { display: none; }
 const DB = {
   wages: {
     minWage: { v: 23.95, src: 'https://www.employment.govt.nz/pay-and-hours/pay-and-wages/minimum-wage/minimum-wage-rates-and-types', asOf: '2026-07-18', effectiveFrom: '2026-04-01' },
-    medianWage: { v: 35.00, src: 'https://www.immigration.govt.nz/about-us/news-centre/new-occupations-recognised-under-the-national-occupation-list-and-annual-median-wage-increase/', asOf: '2026-07-18', effectiveFrom: '2026-03-09' },
-    median15: { v: 52.50, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-18', effectiveFrom: '2026-03-09' },
-    median20: { v: 70.00, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-18', effectiveFrom: '2026-03-09' },
-    median30: { v: 105.00, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-18', effectiveFrom: '2026-03-09' }
+    medianWage: { v: 35.00, src: 'https://www.immigration.govt.nz/about-us/news-centre/new-occupations-recognised-under-the-national-occupation-list-and-annual-median-wage-increase/', asOf: '2026-07-19', effectiveFrom: '2026-03-09' },
+    median15: { v: 52.50, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-19', effectiveFrom: '2026-03-09' },
+    median20: { v: 70.00, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-19', effectiveFrom: '2026-03-09' },
+    median30: { v: 105.00, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-19', effectiveFrom: '2026-03-09' }
   },
   fees: {
     whv: { v: 770, src: 'https://www.immigration.govt.nz/visas/korea-working-holiday-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
-    ivl: { v: 100, src: 'https://www.immigration.govt.nz/new-zealand-visas/preparing-a-visa-application/your-journey-to-new-zealand/before-you-travel-to-new-zealand/paying-ivl/', asOf: '2026-07-18', effectiveFrom: '2024-10-01' },
+    ivl: { v: 100, src: 'https://www.immigration.govt.nz/new-zealand-visas/preparing-a-visa-application/your-journey-to-new-zealand/before-you-travel-to-new-zealand/paying-ivl/', asOf: '2026-07-19', effectiveFrom: '2024-10-01' },
     student: { v: 850, src: 'https://www.immigration.govt.nz/visas/fee-paying-student-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
-    pswv: { v: 1670, src: 'https://www.immigration.govt.nz/visas/post-study-work-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
-    aewv: { v: 1540, src: 'https://www.immigration.govt.nz/visas/accredited-employer-work-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
-    residence: { v: 6450, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
-    accreditation: { v: 775, src: 'https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/paying-for-aewv-employer-accreditation-and-job-checks/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
-    jobCheck: { v: 735, src: 'https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/paying-for-aewv-employer-accreditation-and-job-checks/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
-    partnerWork: { v: 1630, src: 'https://www.immigration.govt.nz/visas/partner-of-a-new-zealander-work-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' },
-    partnerRes: { v: 5360, src: 'https://www.immigration.govt.nz/visas/partner-of-a-new-zealander-resident-visa/', asOf: '2026-07-18', effectiveFrom: '2026-07-19' }
+    pswv: { v: 1670, src: 'https://www.immigration.govt.nz/visas/post-study-work-visa/', asOf: '2026-07-19', effectiveFrom: '2026-07-19' },
+    aewv: { v: 1540, src: 'https://www.immigration.govt.nz/visas/accredited-employer-work-visa/', asOf: '2026-07-19', effectiveFrom: '2026-07-19' },
+    residence: { v: 6450, src: 'https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/', asOf: '2026-07-19', effectiveFrom: '2026-07-19' },
+    accreditation: { v: 775, src: 'https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/paying-for-aewv-employer-accreditation-and-job-checks/', asOf: '2026-07-19', effectiveFrom: '2026-07-19' },
+    jobCheck: { v: 735, src: 'https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/paying-for-aewv-employer-accreditation-and-job-checks/', asOf: '2026-07-19', effectiveFrom: '2026-07-19' },
+    partnerWork: { v: 1630, src: 'https://www.immigration.govt.nz/visas/partner-of-a-new-zealander-work-visa/', asOf: '2026-07-19', effectiveFrom: '2026-07-19' },
+    partnerRes: { v: 5360, src: 'https://www.immigration.govt.nz/visas/partner-of-a-new-zealander-resident-visa/', asOf: '2026-07-19', effectiveFrom: '2026-07-19' }
   },
   estimates: {
     insurance: { v: [600, 800], src: '', asOf: '2026-07-06', est: true },
@@ -2359,7 +2361,7 @@ const DB = {
       details: {
         requirements: ['잡오퍼 (인증 고용주, 주 30h+)', '시급 35/h 이상', 'IELTS 6.5 (또는 영어권 학사+)'],
         costs: ['WHV 비자: 770 (IVL 포함)', '의료보험: ~700/년', 'AEWV: 1,540', '정착비: 2,500–3,500', 'SMC: 6,450'],
-        processing: ['WHV: 3주(80%)', 'AEWV: 6.5주(80%)', 'SMC: 4개월(80%)']
+        processing: ['WHV: 3주(80%)', 'AEWV: 6.5주(80%)', 'SMC: 4.5개월(80%)']
       }
     },
     {
@@ -2399,7 +2401,7 @@ const DB = {
       details: {
         requirements: ['학교 입학', '자금증명: 20,000/년', 'L7+ 학위(PSWV 자격)'],
         costs: ['학비: 22,000–58,000/년', '생활비: 20,000/년', 'PSWV: 1,670', 'AEWV: 1,540', 'SMC: 6,450'],
-        processing: ['학생비자: 8주(80%)', 'PSWV: 5주(80%)', 'AEWV: 6.5주(80%)', 'SMC: 4개월(80%)']
+        processing: ['학생비자: 8주(80%)', 'PSWV: 3주(80%)', 'AEWV: 6.5주(80%)', 'SMC: 4.5개월(80%)']
       }
     },
     {
@@ -2433,7 +2435,7 @@ const DB = {
       details: {
         requirements: ['GL T2 직종(전기공, 용접 등)', '24개월 근무 (지정 고용주)', '자격 인정'],
         costs: ['WHV: 770 (IVL 포함)', 'AEWV: 1,540', 'Work to Residence: 6,450'],
-        processing: ['AEWV: 6.5주(80%)', 'WTR: 4개월(80%)']
+        processing: ['AEWV: 6.5주(80%)', 'WTR: 3개월(80%)']
       }
     },
     {
@@ -2450,7 +2452,7 @@ const DB = {
       details: {
         requirements: ['승인 직종 (요양, 간호보조, 장애지원)', '중위임금 이상 유지', '24개월 근무 (첫 12개월 직종 변경 불가)'],
         costs: ['WHV: 770 (IVL 포함)', 'AEWV: 1,540', 'Care Residence: 6,450'],
-        processing: ['AEWV: 6.5주(80%)', 'Care WTR: 4개월(80%)']
+        processing: ['AEWV: 6.5주(80%)', 'Care WTR: 3개월(80%)']
       }
     }
   ],
@@ -3450,13 +3452,13 @@ function moneyPlanRows(pathwayId, input) {
       push('12–24개월', '학생비자', 'GD(L7) 1년 수학 — 학기 중 25h/주 근로(세전 ~599/주)로 생활비 일부 상쇄', '학비 −25,000~−40,000 · 비자 −850 · 생활 순지출', -850 - 40000 - 12 * 1500, -850 - 25000 - 12 * 300);
       push('24–27개월', 'PSWV', '졸업 → PSWV 신청(−1,670) → 전공 직군 풀타임 구직', '비자비 + 구직기 수입 변동', -1670 - 3 * 500, -1670 + 3 * 800);
       push('27–51개월', 'AEWV', '스킬드 근무 — 시급 35/h 목표 협상 + SMC 점수 적립', tierTxt + ' · AEWV −1,540', -1540 + 24 * tier[0], -1540 + 24 * tier[1]);
-      push('51–55개월', 'AEWV→영주권', 'SMC 신청(−6,450) → 처리 80% 4개월', '영주권 비자비', -6450 + 4 * tier[0], -6450 + 4 * tier[1]);
+      push('51–55.5개월', 'AEWV→영주권', 'SMC 신청(−6,450) → 처리 80% 4.5개월', '영주권 비자비', -6450 + 4.5 * tier[0], -6450 + 4.5 * tier[1]);
     } else {
       push('1–12개월', 'WHV', '풀타임 임시직으로 학비 저축 + 학교 리서치·입학 지원' + ieltsTxt, '저축 +800~1,800/월', 11 * WHV_SAVE[0] - ieltsCost, 11 * WHV_SAVE[1]);
       push('12–48개월', '학생비자', '학사(L7) 3년 수학 — 학기 중 25h/주 근로(세전 ~599/주)로 생활비 일부 상쇄', '학비 −66,000~−174,000 · 비자 −850 · 생활 순지출', -850 - 174000 - 36 * 1500, -850 - 66000 - 36 * 300);
       push('48–51개월', 'PSWV', '졸업 → PSWV 신청(−1,670) — 학사는 최대 3년 오픈워크', '비자비 + 구직기 수입 변동', -1670 - 3 * 500, -1670 + 3 * 800);
       push('51–75개월', 'PSWV/AEWV', '스킬드 근무 — 시급 35/h 목표 + SMC 점수 적립(학사 4점+근무 2년)', tierTxt + ' · AEWV −1,540', -1540 + 24 * tier[0], -1540 + 24 * tier[1]);
-      push('75–79개월', 'AEWV→영주권', 'SMC 신청(−6,450) → 처리 80% 4개월', '영주권 비자비', -6450 + 4 * tier[0], -6450 + 4 * tier[1]);
+      push('75–79.5개월', 'AEWV→영주권', 'SMC 신청(−6,450) → 처리 80% 4.5개월', '영주권 비자비', -6450 + 4.5 * tier[0], -6450 + 4.5 * tier[1]);
     }
   } else if (pathwayId === 'C-T1') {
     push('1–9개월', 'WHV', 'GL 직군 잡오퍼 공략 — 경력 증명·포트폴리오 정리, 인증 고용주 직접 접촉' + ieltsTxt, '저축 +800~1,800/월', 8 * WHV_SAVE[0] - ieltsCost, 8 * WHV_SAVE[1]);
@@ -3474,7 +3476,7 @@ function moneyPlanRows(pathwayId, input) {
     push('1–9개월', 'WHV', '풀타임 임시직 → 타깃 직군으로 이동, 경력 서류·추천인 확보' + ieltsTxt, '저축 +800~1,800/월', 8 * WHV_SAVE[0] - ieltsCost, 8 * WHV_SAVE[1]);
     push('9–12개월', 'WHV→interim', '잡오퍼 확정 → Job Check(고용주) → AEWV 신청(−1,540, 만료 6주+ 여유)', '비자비 지출', -1540 + 3 * WHV_SAVE[0], -1540 + 3 * WHV_SAVE[1]);
     push('12–36개월', 'AEWV', '스킬드 근무 — 시급 35/h 도달 협상 + NZ 근무 SMC 점수 적립(1점/년)', tierTxt, 24 * tier[0], 24 * tier[1]);
-    push('36–40개월', 'AEWV→영주권', 'SMC 6점 충족 → 신청(−6,450) → 처리 80% 4개월', '영주권 비자비', -6450 + 4 * tier[0], -6450 + 4 * tier[1]);
+    push('36–40.5개월', 'AEWV→영주권', 'SMC 6점 충족 → 신청(−6,450) → 처리 80% 4.5개월', '영주권 비자비', -6450 + 4.5 * tier[0], -6450 + 4.5 * tier[1]);
   }
   return rows;
 }
@@ -4051,7 +4053,7 @@ const JOURNEYS = {
       { m: '0–12개월', t: '입국 → 자격 인정·등록', type: 'var', d: '전기 등 규제 직종은 NZ 등록(EWRB 등) + 수습 기간 필요.', why: '규제 직종은 등록 없이 단독 작업 불가 — 인정 절차 속도가 개인차.', risk: '자격 불인정 시: 갭 과정 이수 필요 — 기간 +6–12개월.' },
       { m: '+1개월', t: 'AEWV (GL 우대)', type: 'proc', d: '인증 고용주 잡오퍼 — 트레이드 구인 상시.', why: 'GL 직종은 처리 평균 3주.' },
       { m: '+24개월', t: 'GL T2 지정 직무로 24개월 근무', type: 'rule', d: '전기공·용접 등 Tier 2 — 중위임금 이상 유지.', why: 'Work to Residence 규정이 정한 최소 근무 기간 — 줄일 수 없음.' },
-      { m: '+4개월', t: 'WTR 영주권 신청', type: 'proc', d: '서류: 24개월 근무 증명 + 자격.', why: '심사 대기.' }
+      { m: '+3개월', t: 'WTR 영주권 신청', type: 'proc', d: '서류: 24개월 근무 증명 + 자격.', why: '80% 처리기간 기준.' }
     ],
     sum: '규정 24개월 + 변수(등록) 6–12개월 + 처리 ~5개월 = <strong>36–42개월</strong>'
   },
