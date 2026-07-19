@@ -11,7 +11,8 @@ import math
 import re
 import ssl
 import sys
-from dataclasses import asdict, dataclass, field
+import time
+from dataclasses import asdict, dataclass, field, replace
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
@@ -21,8 +22,14 @@ from urllib import request as urllib_request
 
 
 SCHEMA_VERSION = 1
+REPORT_SCHEMA_VERSION = 2
+REQUEST_AUDIT_SCHEMA_VERSION = 1
 MAX_BODY_BYTES = 2_000_000
 DEFAULT_TIMEOUT = 12.0
+DEFAULT_MAX_ATTEMPTS = 1
+DEFAULT_RETRY_BACKOFF_MS = 500
+MAX_RETRY_ATTEMPTS = 4
+MAX_RETRY_BACKOFF_MS = 2_000
 MAX_ATTESTATIONS = 256
 MAX_TARGETS_PER_ATTESTATION = 16
 MAX_PARAMETER_TEXT = 200
@@ -52,6 +59,7 @@ EXTRACTOR_MODES = frozenset(
         "json-pointer",
         "api-json-pointer",
         "api-json-record",
+        "ato-lito",
     }
 )
 OFFICIAL_DOMAINS = {
@@ -94,8 +102,10 @@ REQUIRED_ATTESTATION_FIELDS = frozenset(
     }
 )
 OPTIONAL_ATTESTATION_FIELDS = frozenset(
-    {"effectiveTo", "targets", "claims"}
+    {"effectiveTo", "targets", "claims", "livePolicy"}
 )
+LIVE_POLICY_FIELDS = frozenset({"mode", "reason", "manualReviewDays"})
+LIVE_POLICY_MODES = frozenset({"extract", "fixture-only"})
 TARGET_FIELDS = frozenset({"targetId", "reviewedPath"})
 REQUIRED_CLAIM_MAPPING_FIELDS = frozenset({"claimId"})
 OPTIONAL_CLAIM_MAPPING_FIELDS = frozenset({"expectedPath"})
@@ -133,7 +143,12 @@ API_RECORD_REQUIRED_FIELDS = frozenset(
 )
 API_RECORD_OPTIONAL_FIELDS = frozenset({"transform"})
 REQUEST_GET_FIELDS = frozenset({"method"})
+REQUEST_GET_URL_FIELDS = frozenset({"method", "url"})
 REQUEST_POST_FIELDS = frozenset({"method", "url", "jsonBody"})
+REQUEST_FINAL_STATUSES = frozenset(
+    {"ready", "transient", "blocked", "changed", "unsupported"}
+)
+OBSERVATION_ID_PATTERN = re.compile(r"[A-Za-z0-9._:-]{1,128}")
 VALID_CLAIM_STATUSES = frozenset({"official", "derived"})
 API_RECORD_TRANSFORMS = frozenset({"identity", "currency-to-number"})
 HTML_RECORD_PARAMETER_FIELDS = frozenset(
@@ -149,6 +164,28 @@ HTML_LABELLED_FIELD_FIELDS = frozenset(
     {"key", "label", "transform", "unit"}
 )
 HTML_TEXT_PARAMETER_FIELDS = frozenset({"anchor", "transform", "unit"})
+ATO_LITO_PARAMETER_FIELDS = frozenset({"anchor", "items"})
+ATO_FIRST_BAND_UNIT = {"cap": "AUD", "rate": "decimal rate"}
+ATO_LAW_FIRST_BAND_TITLE = (
+    "Tax rates for working holiday makers for the 2024-25 year of "
+    "income or a later year of income"
+)
+ATO_LAW_FIRST_BAND_HEADERS = [
+    "Item",
+    (
+        "For the part of the taxpayer's working holiday taxable "
+        "income that:"
+    ),
+    "The rate is:",
+]
+ATO_LITO_UNIT = {
+    "maxOffset": "AUD",
+    "fullTo": "AUD",
+    "taper1To": "AUD",
+    "taper1Rate": "decimal rate",
+    "cutOut": "AUD",
+    "taper2Rate": "decimal rate",
+}
 HTML_VALUE_TRANSFORMS = frozenset(
     {
         "number",
@@ -164,6 +201,9 @@ HTML_VALUE_TRANSFORMS = frozenset(
         "embedded-percent-to-decimal",
         "leading-currency-to-number",
         "final-inclusive-range",
+        "ato-first-tax-band",
+        "ato-law-first-tax-band",
+        "percentage-number-to-decimal",
     }
 )
 HTML_MEDIA_TYPES = frozenset({"text/html", "application/xhtml+xml"})
@@ -184,6 +224,13 @@ class UnsupportedExtraction(ValueError):
 
 
 @dataclass(frozen=True)
+class AttemptAudit:
+    number: int
+    status: str
+    latencyBucket: str
+
+
+@dataclass(frozen=True)
 class AttestationResult:
     id: str
     source: str
@@ -194,6 +241,10 @@ class AttestationResult:
     expected: Any
     contextFingerprint: str
     fix: str
+    requestKey: str = ""
+    attemptCount: int = 1
+    requestFinalStatus: str = "ready"
+    latencyBucket: str = "offline"
 
     def render(self) -> str:
         return (
@@ -209,14 +260,25 @@ class AttestationResult:
 class AttestationReport:
     mode: str
     generatedAt: str
+    observationId: str | None = "offline"
+    retryPolicy: dict[str, Any] = field(
+        default_factory=lambda: {
+            "maxAttempts": DEFAULT_MAX_ATTEMPTS,
+            "backoffMs": DEFAULT_RETRY_BACKOFF_MS,
+            "timeoutSeconds": DEFAULT_TIMEOUT,
+        }
+    )
     results: list[AttestationResult] = field(default_factory=list)
     fetchedUrls: int = 0
+    requests: list[Any] = field(default_factory=list)
     audit: dict[str, int] = field(
         default_factory=lambda: {
             "attestationCount": 0,
             "claimCount": 0,
             "reviewedLeafCount": 0,
             "liveCapableCount": 0,
+            "liveExtractableCount": 0,
+            "fixtureOnlyCount": 0,
         }
     )
 
@@ -230,13 +292,32 @@ class AttestationReport:
         summary = {status: 0 for status in sorted(VALID_STATUSES)}
         for result in self.results:
             summary[result.status] += 1
+        request_items = [request.to_json() for request in self.requests]
+        observation_id = (
+            self.observationId
+            if self.observationId is not None
+            else _automatic_observation_id(self)
+        )
         return {
-            "schemaVersion": SCHEMA_VERSION,
+            "schemaVersion": REPORT_SCHEMA_VERSION,
             "mode": self.mode,
             "generatedAt": self.generatedAt,
+            "observationId": observation_id,
+            "retryPolicy": self.retryPolicy,
             "summary": summary,
             "fetchedUrls": self.fetchedUrls,
             "audit": self.audit,
+            "requestAudit": {
+                "schemaVersion": REQUEST_AUDIT_SCHEMA_VERSION,
+                "requestCount": len(request_items),
+                "totalAttemptCount": sum(
+                    item["attemptCount"] for item in request_items
+                ),
+                "retriedRequestCount": sum(
+                    item["attemptCount"] > 1 for item in request_items
+                ),
+                "requests": request_items,
+            },
             "results": [asdict(result) for result in self.results],
         }
 
@@ -249,6 +330,91 @@ class SourceResponse:
     body: bytes
     error: str | None = None
     too_large: bool = False
+
+
+@dataclass(frozen=True)
+class RequestExecution:
+    requestKey: str
+    requestUrl: str
+    method: str
+    attempts: tuple[AttemptAudit, ...]
+    finalStatus: str
+    latencyBucket: str
+    response: SourceResponse
+
+    @property
+    def attemptCount(self) -> int:
+        return len(self.attempts)
+
+    def to_json(self) -> dict[str, Any]:
+        return {
+            "requestKey": self.requestKey,
+            "requestUrl": self.requestUrl,
+            "method": self.method,
+            "attemptCount": self.attemptCount,
+            "finalStatus": self.finalStatus,
+            "latencyBucket": self.latencyBucket,
+            "attempts": [asdict(attempt) for attempt in self.attempts],
+        }
+
+
+def _automatic_observation_id(report: AttestationReport) -> str:
+    semantic = {
+        "audit": report.audit,
+        "results": sorted(
+            (
+                {
+                    "id": item.id,
+                    "source": item.source,
+                    "requestUrl": item.requestUrl,
+                    "path": item.path,
+                    "status": item.status,
+                    "actual": item.actual,
+                    "expected": item.expected,
+                    "contextFingerprint": (
+                        item.contextFingerprint
+                        if item.status != "match"
+                        else None
+                    ),
+                    "fix": item.fix,
+                    "requestKey": item.requestKey,
+                    "requestFinalStatus": item.requestFinalStatus,
+                }
+                for item in report.results
+            ),
+            key=lambda item: (
+                item["status"],
+                item["id"],
+                item["source"],
+                item["requestUrl"],
+                item["path"],
+                _display(item["actual"]),
+                _display(item["expected"]),
+            ),
+        ),
+        "requests": sorted(
+            (
+                {
+                    "requestKey": item.requestKey,
+                    "finalStatus": item.finalStatus,
+                    "attemptStatuses": [
+                        attempt.status for attempt in item.attempts
+                    ],
+                }
+                for item in report.requests
+            ),
+            key=lambda item: item["requestKey"],
+        ),
+    }
+    return hashlib.sha256(
+        json.dumps(
+            semantic,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
 
 
 def _display(value: Any) -> str:
@@ -456,6 +622,13 @@ def _validate_official_url(value: Any, jurisdiction: str) -> str:
     return value
 
 
+def _canonical_hostname(url: str) -> str:
+    hostname = urllib_parse.urlsplit(url).hostname
+    if hostname is None:
+        raise RegistryError("URL has no hostname")
+    return hostname.encode("idna").decode("ascii").lower().rstrip(".")
+
+
 def _pointer_parts(pointer: Any) -> list[str]:
     if pointer == "/":
         return []
@@ -568,8 +741,25 @@ def _validate_request(
     }:
         raise RegistryError("request.method must be GET or POST")
     if value["method"] == "GET":
-        if set(value) != REQUEST_GET_FIELDS:
-            raise RegistryError("GET request may contain only method")
+        if set(value) == REQUEST_GET_FIELDS:
+            return
+        if set(value) != REQUEST_GET_URL_FIELDS:
+            raise RegistryError(
+                "GET request supports exact {method} or {method,url}"
+            )
+        request_url = value["url"]
+        if not isinstance(request_url, str) or len(request_url) > 2048:
+            raise RegistryError("GET request.url must be at most 2048 characters")
+        _validate_official_url(request_url, jurisdiction)
+        parsed_request = urllib_parse.urlsplit(request_url)
+        if parsed_request.query or parsed_request.fragment:
+            raise RegistryError(
+                "GET request.url override may not contain query or fragment"
+            )
+        if _canonical_hostname(source_url) != _canonical_hostname(request_url):
+            raise RegistryError(
+                "GET request.url host must exactly match citation sourceUrl host"
+            )
         return
     if set(value) != REQUEST_POST_FIELDS:
         raise RegistryError(
@@ -579,14 +769,7 @@ def _validate_request(
     if not isinstance(request_url, str) or len(request_url) > 2048:
         raise RegistryError("POST request.url must be at most 2048 characters")
     _validate_official_url(request_url, jurisdiction)
-    source_host = urllib_parse.urlsplit(source_url).hostname
-    request_host = urllib_parse.urlsplit(request_url).hostname
-    if (
-        source_host is None
-        or request_host is None
-        or source_host.encode("idna").decode("ascii").lower().rstrip(".")
-        != request_host.encode("idna").decode("ascii").lower().rstrip(".")
-    ):
+    if _canonical_hostname(source_url) != _canonical_hostname(request_url):
         raise RegistryError(
             "POST request.url host must exactly match citation sourceUrl host"
         )
@@ -617,6 +800,37 @@ def _validate_request(
     ).encode("utf-8")
     if len(serialized) > 4096:
         raise RegistryError("POST jsonBody exceeds 4096 canonical bytes")
+
+
+def _validate_live_policy(value: Any) -> dict[str, Any]:
+    if not _exact_fields(value, LIVE_POLICY_FIELDS):
+        raise RegistryError(
+            "livePolicy must contain exactly mode, reason, and manualReviewDays"
+        )
+    if value["mode"] not in LIVE_POLICY_MODES:
+        raise RegistryError("livePolicy.mode must be extract or fixture-only")
+    _validate_text(value["reason"], "livePolicy.reason")
+    days = value["manualReviewDays"]
+    if (
+        not isinstance(days, int)
+        or isinstance(days, bool)
+        or not 1 <= days <= 30
+    ):
+        raise RegistryError(
+            "livePolicy.manualReviewDays must be an integer 1-30"
+        )
+    return value
+
+
+def _live_policy(attestation: dict[str, Any]) -> dict[str, Any]:
+    return attestation.get(
+        "livePolicy",
+        {
+            "mode": "extract",
+            "reason": "Safe reviewed extractor is available.",
+            "manualReviewDays": 30,
+        },
+    )
 
 
 def _validate_extractor(extractor: Any) -> None:
@@ -723,7 +937,8 @@ def _validate_extractor(extractor: Any) -> None:
                 raise RegistryError("valueHeader must occur in headers")
             if field_spec["transform"] not in HTML_VALUE_TRANSFORMS:
                 raise RegistryError("html table transform is unsupported")
-            _validate_text(field_spec["unit"], "field.unit")
+            if not _valid_unit_tree(field_spec["unit"]):
+                raise RegistryError("field.unit must be a non-empty safe unit tree")
             if (
                 field_spec["transform"] in {
                     "tax-brackets",
@@ -733,6 +948,26 @@ def _validate_extractor(extractor: Any) -> None:
             ):
                 raise RegistryError(
                     "tax-brackets requires at least two exact rows"
+                )
+            if field_spec["transform"] == "ato-first-tax-band" and (
+                len(labels) != 1
+                or field_spec["unit"] != ATO_FIRST_BAND_UNIT
+            ):
+                raise RegistryError(
+                    "ato-first-tax-band requires one row and its fixed unit tree"
+                )
+            if field_spec["transform"] == "ato-law-first-tax-band" and (
+                params["result"] != "scalar"
+                or len(fields) != 1
+                or headers != ATO_LAW_FIRST_BAND_HEADERS
+                or labels != ["1"]
+                or field_spec["valueHeader"] != "The rate is:"
+                or field_spec["unit"] != ATO_FIRST_BAND_UNIT
+            ):
+                raise RegistryError(
+                    "ato-law-first-tax-band requires its exact title-table "
+                    "headers, item 1, rate column, scalar result, and fixed "
+                    "unit tree"
                 )
         return
     if mode == "html-labelled-values":
@@ -786,6 +1021,22 @@ def _validate_extractor(extractor: Any) -> None:
         ):
             raise RegistryError("text anchor transform is unsupported")
         _validate_text(params["unit"], "unit")
+        return
+    if mode == "ato-lito":
+        if not _exact_fields(params, ATO_LITO_PARAMETER_FIELDS):
+            raise RegistryError("ato-lito params require anchor and items")
+        _validate_text(params["anchor"], "anchor")
+        items = params["items"]
+        if (
+            not isinstance(items, list)
+            or len(items) != 3
+            or len(set(items)) != 3
+            or any(
+                _validate_anchor_text(item, "ato-lito item") != item
+                for item in items
+            )
+        ):
+            raise RegistryError("ato-lito items require 3 unique exact texts")
         return
     if mode == "pdf-table":
         if not _exact_fields(params, PDF_PARAMETER_FIELDS):
@@ -900,13 +1151,13 @@ def _request_key(attestation: dict[str, Any]) -> str:
     return f"{_request_url(attestation)}\0{request['method']}\0{body}"
 
 
+def _public_request_key(attestation: dict[str, Any]) -> str:
+    return _fingerprint_bytes(_request_key(attestation).encode("utf-8"))
+
+
 def _request_url(attestation: dict[str, Any]) -> str:
     request = attestation["request"]
-    return (
-        request["url"]
-        if request["method"] == "POST"
-        else attestation["sourceUrl"]
-    )
+    return request.get("url", attestation["sourceUrl"])
 
 
 def _validate_registry(
@@ -1042,6 +1293,8 @@ def _validate_registry(
             _validate_request(
                 raw["request"], raw["sourceUrl"], jurisdiction
             )
+            if "livePolicy" in raw:
+                _validate_live_policy(raw["livePolicy"])
             verified_at = _parse_date(raw["verifiedAt"], "verifiedAt")
             effective_from = _parse_date(
                 raw["effectiveFrom"], "effectiveFrom"
@@ -1270,7 +1523,21 @@ def _validate_registry(
             len(leaves) for leaves in target_leaf_paths.values()
         ),
         "liveCapableCount": len(valid),
+        "liveExtractableCount": sum(
+            _live_policy(attestation)["mode"] == "extract"
+            for attestation in valid
+        ),
+        "fixtureOnlyCount": sum(
+            _live_policy(attestation)["mode"] == "fixture-only"
+            for attestation in valid
+        ),
     }
+    if (
+        report.audit["liveExtractableCount"]
+        + report.audit["fixtureOnlyCount"]
+        != report.audit["attestationCount"]
+    ):
+        raise RegistryError("live policy audit partition is inconsistent")
     declared_audit = (
         claims_data.get("audit", {}).get("sourceAttestations")
         if isinstance(claims_data.get("audit"), dict)
@@ -1303,7 +1570,9 @@ class _HtmlSourceParser(HTMLParser):
         self.headings: list[str] = []
         self.definitions: list[tuple[str, str, str]] = []
         self.block_texts: list[str] = []
+        self.loose_texts: list[str] = []
         self.labelled_values: list[tuple[str, str, str]] = []
+        self.list_items: list[tuple[str, str]] = []
         self._recent_anchors: list[str] = []
         self._table: dict[str, Any] | None = None
         self._row: list[str] | None = None
@@ -1318,11 +1587,14 @@ class _HtmlSourceParser(HTMLParser):
         self._dt_parts: list[str] | None = None
         self._dd_parts: list[str] | None = None
         self._pending_dt: str | None = None
+        self._ignored_depth = 0
 
     def handle_starttag(
         self, tag: str, attrs: list[tuple[str, str | None]]
     ) -> None:
         lowered = tag.lower()
+        if lowered in {"script", "style", "template", "noscript"}:
+            self._ignored_depth += 1
         if lowered == "table":
             self._table = {
                 "caption": "",
@@ -1354,6 +1626,8 @@ class _HtmlSourceParser(HTMLParser):
 
     def handle_endtag(self, tag: str) -> None:
         lowered = tag.lower()
+        if lowered in {"script", "style", "template", "noscript"}:
+            self._ignored_depth = max(0, self._ignored_depth - 1)
         if lowered == "caption" and self._caption_parts is not None:
             if self._table is not None:
                 self._table["caption"] = _normalize_text(
@@ -1394,6 +1668,8 @@ class _HtmlSourceParser(HTMLParser):
             if block and not current["hasChildBlock"]:
                 self.block_texts.append(block)
                 self._remember_anchor(block)
+                if lowered == "li":
+                    self.list_items.append((self._current_heading, block))
                 if lowered == "p" and self._pending_label is not None:
                     outer, label = self._pending_label
                     self.labelled_values.append((outer, label, block))
@@ -1410,6 +1686,21 @@ class _HtmlSourceParser(HTMLParser):
             self._dd_parts = None
 
     def handle_data(self, data: str) -> None:
+        tracked = any(
+            (
+                self._cell_parts is not None,
+                self._caption_parts is not None,
+                self._heading_parts is not None,
+                bool(self._block_stack),
+                self._dt_parts is not None,
+                self._dd_parts is not None,
+                self._table is not None,
+            )
+        )
+        if not tracked and self._ignored_depth == 0:
+            loose = _normalize_text(data)
+            if loose:
+                self.loose_texts.append(loose)
         if self._cell_parts is not None:
             self._cell_parts.append(data)
         if self._caption_parts is not None:
@@ -1681,6 +1972,17 @@ def _transform_html_value(value: str, transform: str) -> Any:
             "percentage",
         )
         return _finite_number(match.group(1)) / 100
+    if transform == "percentage-number-to-decimal":
+        if not re.fullmatch(r"[0-9]+(?:\.[0-9]+)?", normalized):
+            raise ChangedExtraction(
+                f"{value!r} is not one exact unsigned percentage number"
+            )
+        percent = _finite_number(normalized)
+        if not 0 <= percent <= 100:
+            raise ChangedExtraction(
+                f"percentage number {percent!r} is outside 0..100"
+            )
+        return float(percent) / 100
     if transform in {"duration-months", "duration-weeks"}:
         word = "months?" if transform == "duration-months" else "weeks?"
         match = _single_numeric_match(
@@ -1758,6 +2060,63 @@ def _parse_tax_bracket(
     return lower, upper, rate, serialized_rate
 
 
+def _parse_ato_first_tax_band(
+    label: str, rate_text: str
+) -> dict[str, int | float]:
+    label_match = re.fullmatch(
+        r"0 \u2013 \$([0-9][0-9,]*)", _normalize_text(label)
+    )
+    if not label_match:
+        raise ChangedExtraction(
+            f"ATO first-band label {label!r} is not exact '0 – $N'"
+        )
+    rate_match = re.fullmatch(
+        r"([0-9]+(?:\.[0-9]+)?)c for each \$1",
+        _normalize_text(rate_text),
+    )
+    if not rate_match:
+        raise ChangedExtraction(
+            f"ATO first-band cell {rate_text!r} is not exact 'Pc for each $1'"
+        )
+    cap = _finite_number(label_match.group(1))
+    cents = _finite_number(rate_match.group(1))
+    if not isinstance(cap, int) or cap <= 0:
+        raise ChangedExtraction("ATO first-band cap must be a positive integer")
+    if not 0 <= cents <= 100:
+        raise ChangedExtraction("ATO first-band cents rate is outside 0..100")
+    return {"cap": cap, "rate": float(cents) / 100}
+
+
+def _parse_ato_law_first_tax_band(
+    row: list[str],
+) -> dict[str, int | float]:
+    if len(row) != 3 or row[0] != "1":
+        raise ChangedExtraction(
+            "ATO law first-band row must be exact 3-column item 1"
+        )
+    band_match = re.fullmatch(
+        r"does not exceed \$([0-9][0-9,]*)", row[1]
+    )
+    if not band_match:
+        raise ChangedExtraction(
+            f"ATO law band {row[1]!r} is not exact 'does not exceed $N'"
+        )
+    rate_match = re.fullmatch(
+        r"([0-9]+(?:\.[0-9]+)?)%", row[2]
+    )
+    if not rate_match:
+        raise ChangedExtraction(
+            f"ATO law rate {row[2]!r} is not one exact percentage"
+        )
+    cap = _finite_number(band_match.group(1))
+    percent = _finite_number(rate_match.group(1))
+    if not isinstance(cap, int) or cap <= 0:
+        raise ChangedExtraction("ATO law first-band cap must be a positive integer")
+    if not 0 <= percent <= 100:
+        raise ChangedExtraction("ATO law first-band rate is outside 0..100")
+    return {"cap": cap, "rate": float(percent) / 100}
+
+
 def _extract_html_table_record(
     body: bytes, params: dict[str, Any]
 ) -> tuple[Any, Any]:
@@ -1777,12 +2136,33 @@ def _extract_html_table_record(
             f"section/header matched {len(candidates)} tables"
         )
     table, header_index = candidates[0]
+    if any(
+        field_spec["transform"] == "ato-law-first-tax-band"
+        for field_spec in params["fields"]
+    ):
+        expected_title_row = [ATO_LAW_FIRST_BAND_TITLE] + [""] * (
+            len(headers) - 1
+        )
+        title_rows = [
+            index
+            for index, row in enumerate(table["rows"])
+            if row == expected_title_row
+        ]
+        caption_match = table["caption"] == ATO_LAW_FIRST_BAND_TITLE
+        if (
+            len(title_rows) + int(caption_match) != 1
+            or (title_rows and title_rows[0] >= header_index)
+        ):
+            raise ChangedExtraction(
+                "ATO law table requires one exact reviewed caption or "
+                "header-width title row before headers"
+            )
     data_rows = table["rows"][header_index + 1 :]
     if not data_rows:
         raise ChangedExtraction("matched table has no data rows")
     header_positions = {label: index for index, label in enumerate(headers)}
     extracted: dict[str, Any] = {}
-    units: dict[str, str] = {}
+    units: dict[str, Any] = {}
     for field_spec in params["fields"]:
         row_values: list[Any] = []
         tax_rows: list[
@@ -1804,6 +2184,14 @@ def _extract_html_table_record(
                 "tax-brackets-serialization",
             }:
                 tax_rows.append(_parse_tax_bracket(label, value_text))
+            elif field_spec["transform"] == "ato-first-tax-band":
+                row_values.append(
+                    _parse_ato_first_tax_band(label, value_text)
+                )
+            elif field_spec["transform"] == "ato-law-first-tax-band":
+                row_values.append(
+                    _parse_ato_law_first_tax_band(row)
+                )
             else:
                 row_values.append(
                     _transform_html_value(value_text, field_spec["transform"])
@@ -1889,7 +2277,8 @@ def _extract_html_text_anchor(
 ) -> tuple[str, Any]:
     parser = _parse_html(body)
     matches = [
-        text for text in parser.block_texts + parser.headings
+        text
+        for text in parser.block_texts + parser.headings + parser.loose_texts
         if text == params["anchor"]
     ]
     if len(matches) != 1:
@@ -1899,6 +2288,96 @@ def _extract_html_text_anchor(
     return params["unit"], _transform_html_value(
         matches[0], params["transform"]
     )
+
+
+def _ato_lito_amount(raw: str) -> int:
+    value = _finite_number(raw)
+    if not isinstance(value, int) or value < 0:
+        raise ChangedExtraction("ATO LITO amount must be a non-negative integer")
+    return value
+
+
+def _extract_ato_lito(
+    body: bytes, params: dict[str, Any]
+) -> tuple[dict[str, str], dict[str, int | float]]:
+    parser = _parse_html(body)
+    if parser.headings.count(params["anchor"]) != 1:
+        raise ChangedExtraction(
+            f"ATO LITO anchor {params['anchor']!r} matched "
+            f"{parser.headings.count(params['anchor'])} headings"
+        )
+    items = [
+        text
+        for heading, text in parser.list_items
+        if heading == params["anchor"]
+    ]
+    if items != params["items"]:
+        raise ChangedExtraction(
+            "ATO LITO requires exactly the 3 reviewed leaf items in order"
+        )
+
+    normalized = [_normalize_text(item) for item in items]
+    first = re.fullmatch(
+        r"\$([0-9][0-9,]*) or less, you will get "
+        r"the maximum offset of \$([0-9][0-9,]*)",
+        normalized[0],
+    )
+    second = re.fullmatch(
+        r"between \$([0-9][0-9,]*) and \$([0-9][0-9,]*), "
+        r"you will get \$([0-9][0-9,]*) minus "
+        r"([0-9]+(?:\.[0-9]+)?) cents? for every \$1 above "
+        r"\$([0-9][0-9,]*)",
+        normalized[1],
+    )
+    third = re.fullmatch(
+        r"between \$([0-9][0-9,]*) and \$([0-9][0-9,]*), "
+        r"you will get \$([0-9][0-9,]*) minus "
+        r"([0-9]+(?:\.[0-9]+)?) cents? for every \$1 above "
+        r"\$([0-9][0-9,]*)\.",
+        normalized[2],
+    )
+    if first is None or second is None or third is None:
+        raise ChangedExtraction("ATO LITO items do not match the fixed rule grammar")
+    full_to = _ato_lito_amount(first.group(1))
+    max_offset = _ato_lito_amount(first.group(2))
+    taper1_from = _ato_lito_amount(second.group(1))
+    taper1_to = _ato_lito_amount(second.group(2))
+    taper1_offset = _ato_lito_amount(second.group(3))
+    taper1_rate = float(_finite_number(second.group(4))) / 100
+    taper1_base = _ato_lito_amount(second.group(5))
+    taper2_from = _ato_lito_amount(third.group(1))
+    cut_out = _ato_lito_amount(third.group(2))
+    taper2_offset = _ato_lito_amount(third.group(3))
+    taper2_rate = float(_finite_number(third.group(4))) / 100
+    taper2_base = _ato_lito_amount(third.group(5))
+    if (
+        taper1_from != full_to + 1
+        or taper1_base != full_to
+        or taper1_offset != max_offset
+        or taper2_from != taper1_to + 1
+        or taper2_base != taper1_to
+    ):
+        raise ChangedExtraction("ATO LITO boundaries are not integer-contiguous")
+    expected_taper2_offset = max_offset - taper1_rate * (
+        taper1_to - full_to
+    )
+    if abs(expected_taper2_offset - taper2_offset) > 1e-9:
+        raise ChangedExtraction(
+            "ATO LITO second taper offset is arithmetically inconsistent"
+        )
+    residual = taper2_offset - taper2_rate * (cut_out - taper1_to)
+    if abs(residual) > 0.01:
+        raise ChangedExtraction(
+            "ATO LITO cut-out does not reduce the offset to zero within one cent"
+        )
+    return ATO_LITO_UNIT, {
+        "maxOffset": max_offset,
+        "fullTo": full_to,
+        "taper1To": taper1_to,
+        "taper1Rate": taper1_rate,
+        "cutOut": cut_out,
+        "taper2Rate": taper2_rate,
+    }
 
 
 def _pdf_literal_lines(body: bytes) -> list[str]:
@@ -2076,12 +2555,13 @@ EXTRACTORS: dict[
     "json-pointer": _extract_json_record,
     "api-json-pointer": _extract_json_record,
     "api-json-record": _extract_api_json_record,
+    "ato-lito": _extract_ato_lito,
 }
 
 
 def _expected_media(mode: str, media_type: str) -> bool:
     normalized = _media_type(media_type)
-    if mode.startswith("html-"):
+    if mode.startswith("html-") or mode == "ato-lito":
         return normalized in HTML_MEDIA_TYPES
     if mode == "pdf-table":
         return normalized in PDF_MEDIA_TYPES
@@ -2320,6 +2800,92 @@ def _ssl_context() -> ssl.SSLContext:
     return ssl.create_default_context()
 
 
+def _latency_bucket(seconds: float) -> str:
+    if not isinstance(seconds, (int, float)) or not math.isfinite(seconds):
+        raise ValueError("latency must be finite")
+    milliseconds = max(0.0, float(seconds) * 1_000)
+    if milliseconds < 250:
+        return "lt250ms"
+    if milliseconds < 1_000:
+        return "250ms-999ms"
+    if milliseconds < 5_000:
+        return "1s-4.999s"
+    if milliseconds < 15_000:
+        return "5s-14.999s"
+    return "15s-plus"
+
+
+def _classify_request_response(
+    attestation: dict[str, Any], response: SourceResponse
+) -> str:
+    if response.error is not None:
+        return "transient"
+    try:
+        _validate_official_url(
+            response.final_url, attestation["jurisdiction"]
+        )
+    except RegistryError:
+        return "unsupported"
+    status = response.status or 0
+    if status == 429 or 500 <= status <= 599:
+        return "transient"
+    if status in {401, 403}:
+        return "blocked"
+    if status < 200 or status >= 300 or not response.body.strip():
+        return "changed"
+    if _blocked_body(response.media_type, response.body):
+        return "blocked"
+    if response.too_large:
+        return "unsupported"
+    return "ready"
+
+
+def _validate_execution_settings(
+    mode: str,
+    *,
+    max_attempts: int,
+    retry_backoff_ms: int,
+    timeout: float,
+    observation_id: str | None,
+) -> str | None:
+    if (
+        not isinstance(max_attempts, int)
+        or isinstance(max_attempts, bool)
+        or not 1 <= max_attempts <= MAX_RETRY_ATTEMPTS
+    ):
+        raise ValueError(
+            f"maxAttempts must be an integer 1-{MAX_RETRY_ATTEMPTS}"
+        )
+    if (
+        not isinstance(retry_backoff_ms, int)
+        or isinstance(retry_backoff_ms, bool)
+        or not 1 <= retry_backoff_ms <= MAX_RETRY_BACKOFF_MS
+    ):
+        raise ValueError(
+            "backoffMs must be an integer "
+            f"1-{MAX_RETRY_BACKOFF_MS}"
+        )
+    if (
+        isinstance(timeout, bool)
+        or not isinstance(timeout, (int, float))
+        or not math.isfinite(timeout)
+        or timeout <= 0
+        or timeout > 60
+    ):
+        raise ValueError("timeoutSeconds must be finite, >0, and <=60")
+    if mode == "offline" and max_attempts != 1:
+        raise ValueError("offline mode requires maxAttempts=1")
+    resolved = observation_id or ("offline" if mode == "offline" else None)
+    if resolved is not None and (
+        not isinstance(resolved, str)
+        or not OBSERVATION_ID_PATTERN.fullmatch(resolved)
+    ):
+        raise ValueError(
+            "observationId must match [A-Za-z0-9._:-]{1,128}"
+        )
+    return resolved
+
+
 def _live_response(
     attestation: dict[str, Any],
     timeout: float,
@@ -2395,6 +2961,76 @@ def _live_response(
         )
 
 
+def _offline_execution(
+    root: Path, attestation: dict[str, Any]
+) -> RequestExecution:
+    response = _offline_response(root, attestation)
+    status = _classify_request_response(attestation, response)
+    return RequestExecution(
+        _public_request_key(attestation),
+        _request_url(attestation),
+        attestation["request"]["method"],
+        (AttemptAudit(1, status, "offline"),),
+        status,
+        "offline",
+        response,
+    )
+
+
+def _live_execution(
+    attestation: dict[str, Any],
+    *,
+    max_attempts: int,
+    retry_backoff_ms: int,
+    timeout: float,
+    urlopen: Callable[..., Any],
+    clock: Callable[[], float],
+    sleeper: Callable[[float], None],
+) -> RequestExecution:
+    attempts: list[AttemptAudit] = []
+    response: SourceResponse | None = None
+    final_status = "transient"
+    total_latency = 0.0
+    for number in range(1, max_attempts + 1):
+        started = clock()
+        response = _live_response(
+            attestation, timeout, urlopen=urlopen
+        )
+        elapsed = max(0.0, clock() - started)
+        total_latency += elapsed
+        final_status = _classify_request_response(attestation, response)
+        attempts.append(
+            AttemptAudit(number, final_status, _latency_bucket(elapsed))
+        )
+        if final_status != "transient" or number == max_attempts:
+            break
+        delay_ms = retry_backoff_ms * (2 ** (number - 1))
+        sleeper(delay_ms / 1_000)
+    if response is None:
+        raise AssertionError("live execution produced no response")
+    return RequestExecution(
+        _public_request_key(attestation),
+        _request_url(attestation),
+        attestation["request"]["method"],
+        tuple(attempts),
+        final_status,
+        _latency_bucket(total_latency),
+        response,
+    )
+
+
+def _attach_request_execution(
+    result: AttestationResult, execution: RequestExecution
+) -> AttestationResult:
+    return replace(
+        result,
+        requestKey=execution.requestKey,
+        attemptCount=execution.attemptCount,
+        requestFinalStatus=execution.finalStatus,
+        latencyBucket=execution.latencyBucket,
+    )
+
+
 def verify_source_attestations(
     root: Path | str,
     *,
@@ -2404,15 +3040,36 @@ def verify_source_attestations(
     mode: str = "offline",
     today: date | None = None,
     timeout: float = DEFAULT_TIMEOUT,
+    max_attempts: int = DEFAULT_MAX_ATTEMPTS,
+    retry_backoff_ms: int = DEFAULT_RETRY_BACKOFF_MS,
+    observation_id: str | None = None,
     urlopen: Callable[..., Any] = urllib_request.urlopen,
+    clock: Callable[[], float] = time.monotonic,
+    sleeper: Callable[[float], None] = time.sleep,
 ) -> AttestationReport:
     if mode not in {"offline", "live"}:
         raise ValueError("mode must be offline or live")
+    resolved_observation_id = _validate_execution_settings(
+        mode,
+        max_attempts=max_attempts,
+        retry_backoff_ms=retry_backoff_ms,
+        timeout=timeout,
+        observation_id=observation_id,
+    )
     root_path = Path(root).resolve()
     generated_at = datetime.now(timezone.utc).replace(
         microsecond=0
     ).isoformat().replace("+00:00", "Z")
-    report = AttestationReport(mode, generated_at)
+    report = AttestationReport(
+        mode,
+        generated_at,
+        resolved_observation_id,
+        {
+            "maxAttempts": max_attempts,
+            "backoffMs": retry_backoff_ms,
+            "timeoutSeconds": timeout,
+        },
+    )
     today_value = today or datetime.now(timezone.utc).date()
     try:
         registry_file = Path(attestations_path)
@@ -2471,25 +3128,73 @@ def verify_source_attestations(
         )
         return report
 
-    cache: dict[str, SourceResponse] = {}
+    cache: dict[str, RequestExecution] = {}
     for attestation in valid:
+        policy = _live_policy(attestation)
+        if mode == "live" and policy["mode"] == "fixture-only":
+            report.results.append(
+                replace(
+                    _result(
+                        attestation["id"],
+                        attestation["sourceUrl"],
+                        "/livePolicy",
+                        "unsupported",
+                        {
+                            "mode": "fixture-only",
+                            "reason": policy["reason"],
+                            "manualReviewDays": policy[
+                                "manualReviewDays"
+                            ],
+                        },
+                        "reviewed live extraction",
+                        (
+                            "Perform manual official-source review within "
+                            f"{policy['manualReviewDays']} day(s); retain "
+                            "fixture-only until a bounded extractor can verify "
+                            "the live representation."
+                        ),
+                        context=policy,
+                        request_url=_request_url(attestation),
+                    ),
+                    requestKey=_public_request_key(attestation),
+                    attemptCount=0,
+                    requestFinalStatus="unsupported",
+                    latencyBucket="offline",
+                )
+            )
+            continue
         request_key = _request_key(attestation)
         if request_key not in cache:
             if mode == "offline":
-                cache[request_key] = _offline_response(root_path, attestation)
-            else:
-                cache[request_key] = _live_response(
-                    attestation, timeout, urlopen=urlopen
+                cache[request_key] = _offline_execution(
+                    root_path, attestation
                 )
+            else:
+                cache[request_key] = _live_execution(
+                    attestation,
+                    max_attempts=max_attempts,
+                    retry_backoff_ms=retry_backoff_ms,
+                    timeout=timeout,
+                    urlopen=urlopen,
+                    clock=clock,
+                    sleeper=sleeper,
+                )
+        execution = cache[request_key]
         report.results.append(
-            _evaluate_response(
-                attestation,
-                cache[request_key],
-                offline=mode == "offline",
-                root=root_path,
+            _attach_request_execution(
+                _evaluate_response(
+                    attestation,
+                    execution.response,
+                    offline=mode == "offline",
+                    root=root_path,
+                ),
+                execution,
             )
         )
     report.fetchedUrls = len(cache)
+    report.requests = sorted(
+        cache.values(), key=lambda item: item.requestKey
+    )
     return report
 
 
@@ -2531,6 +3236,26 @@ def _build_parser() -> argparse.ArgumentParser:
         type=float,
         default=DEFAULT_TIMEOUT,
     )
+    parser.add_argument(
+        "--max-attempts",
+        type=int,
+        default=DEFAULT_MAX_ATTEMPTS,
+        help=f"total attempts per transient request (1-{MAX_RETRY_ATTEMPTS})",
+    )
+    parser.add_argument(
+        "--retry-backoff-ms",
+        type=int,
+        default=DEFAULT_RETRY_BACKOFF_MS,
+        help=(
+            "base deterministic exponential retry delay in milliseconds "
+            f"(1-{MAX_RETRY_BACKOFF_MS})"
+        ),
+    )
+    parser.add_argument(
+        "--observation-id",
+        default=None,
+        help="stable workflow observation id for trend replay protection",
+    )
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument(
         "--no-fail",
@@ -2547,8 +3272,16 @@ def main(argv: list[str] | None = None) -> int:
     except RegistryError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
-    if args.timeout <= 0 or args.timeout > 60:
-        print("ERROR: --timeout must be >0 and <=60 seconds", file=sys.stderr)
+    try:
+        _validate_execution_settings(
+            args.mode,
+            max_attempts=args.max_attempts,
+            retry_backoff_ms=args.retry_backoff_ms,
+            timeout=args.timeout,
+            observation_id=args.observation_id,
+        )
+    except ValueError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
         return 2
     report = verify_source_attestations(
         args.root,
@@ -2558,6 +3291,9 @@ def main(argv: list[str] | None = None) -> int:
         mode=args.mode,
         today=today,
         timeout=args.timeout,
+        max_attempts=args.max_attempts,
+        retry_backoff_ms=args.retry_backoff_ms,
+        observation_id=args.observation_id,
     )
     payload = report.to_json()
     if args.output is not None:
@@ -2582,6 +3318,7 @@ def main(argv: list[str] | None = None) -> int:
         f"{'passed' if not non_matches else 'completed'}: "
         f"{len(report.results)} attestation result(s), "
         f"{report.fetchedUrls} URL fetch(es), "
+        f"{payload['requestAudit']['totalAttemptCount']} total attempt(s), "
         f"audit={json.dumps(report.audit, sort_keys=True, separators=(',', ':'))}, "
         + ", ".join(
             f"{status}={summary[status]}"

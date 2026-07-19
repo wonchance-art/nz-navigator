@@ -742,23 +742,43 @@
     {
       "id": "au-whm-runtime",
       "jurisdiction": "AU",
-      "sourceUrl": "https://www.ato.gov.au/tax-rates-and-codes/tax-rates-working-holiday-makers",
+      "sourceUrl": "https://www.ato.gov.au/law/view/print?DocID=PAC%2F20240003%2FSch1-Cl4&PiT=99991231235958",
       "request": {"method": "GET"},
       "verifiedAt": "2026-07-19",
-      "effectiveFrom": "2026-07-01",
+      "effectiveFrom": "2024-07-01",
       "reviewAfterDays": 45,
-      "extractor": {"mode": "json-pointer", "params": {"pointer": "/records/whm"}},
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Repeal the table, substitute:",
+          "headers": [
+            "Item",
+            "For the part of the taxpayer's working holiday taxable income that:",
+            "The rate is:"
+          ],
+          "result": "scalar",
+          "fields": [
+            {
+              "key": "whm",
+              "rowLabels": ["1"],
+              "valueHeader": "The rate is:",
+              "transform": "ato-law-first-tax-band",
+              "unit": {"cap": "AUD", "rate": "decimal rate"}
+            }
+          ]
+        }
+      },
       "expected": {
         "type": "object",
         "unit": {"cap": "AUD", "rate": "decimal rate"},
         "value": {"cap": 45000, "rate": 0.15}
       },
       "fixture": {
-        "path": "data/attestation-fixtures/au-tax-reviewed.json",
-        "mediaType": "application/json",
-        "sha256": "sha256:e6ed17b06dc9561b76c70f890544cea52d0b7e9926e84f0638c6aea32a42fc3b",
+        "path": "data/attestation-fixtures/au-whm-tax-law.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:9687e9644f4ce0a68c62dbd0f8fdd1bfa6f89701b492a4241c9a3b4517fc43b2",
         "httpStatus": 200,
-        "finalUrl": "https://www.ato.gov.au/tax-rates-and-codes/tax-rates-working-holiday-makers"
+        "finalUrl": "https://www.ato.gov.au/law/view/print?DocID=PAC%2F20240003%2FSch1-Cl4&PiT=99991231235958"
       },
       "targets": [{"targetId": "au-tax", "reviewedPath": "/whm"}]
     },
@@ -770,6 +790,11 @@
       "verifiedAt": "2026-07-19",
       "effectiveFrom": "2026-07-01",
       "reviewAfterDays": 45,
+      "livePolicy": {
+        "mode": "fixture-only",
+        "reason": "The official 2025 Act PDF uses compressed PDF features outside the restricted parser; an authorised human review is required.",
+        "manualReviewDays": 7
+      },
       "extractor": {"mode": "json-pointer", "params": {"pointer": "/records/residentBrackets"}},
       "expected": {
         "type": "array",
@@ -777,9 +802,9 @@
         "value": [[18200, 0], [45000, 0.15], [135000, 0.3], [190000, 0.37], [null, 0.45]]
       },
       "fixture": {
-        "path": "data/attestation-fixtures/au-tax-reviewed.json",
+        "path": "data/attestation-fixtures/au-resident-tax-reviewed.json",
         "mediaType": "application/json",
-        "sha256": "sha256:e6ed17b06dc9561b76c70f890544cea52d0b7e9926e84f0638c6aea32a42fc3b",
+        "sha256": "sha256:015ad844b975e2463cda0c2c66149d9b76e4111155ee17085f4b76b96e1a3ad4",
         "httpStatus": 200,
         "finalUrl": "https://www.ato.gov.au/law/view/pdf/acts/20250028.pdf"
       },
@@ -793,12 +818,19 @@
       "verifiedAt": "2026-07-19",
       "effectiveFrom": "2026-07-01",
       "reviewAfterDays": 45,
-      "extractor": {"mode": "json-pointer", "params": {"pointer": "/records/medicareRate"}},
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "The rate of levy payable by a person upon a taxable income is 2%.",
+          "transform": "percent-to-decimal",
+          "unit": "decimal rate"
+        }
+      },
       "expected": {"type": "number", "unit": "decimal rate", "value": 0.02},
       "fixture": {
-        "path": "data/attestation-fixtures/au-tax-reviewed.json",
-        "mediaType": "application/json",
-        "sha256": "sha256:e6ed17b06dc9561b76c70f890544cea52d0b7e9926e84f0638c6aea32a42fc3b",
+        "path": "data/attestation-fixtures/au-medicare-rate.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:e54dc44ada3371a139054407579cf54c5efbe9eb9e1aebb848fd547df0d2dd93",
         "httpStatus": 200,
         "finalUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19860110%2F6"
       },
@@ -811,14 +843,34 @@
       "sourceUrl": "https://www.ato.gov.au/tax-rates-and-codes/key-superannuation-rates-and-thresholds/super-guarantee",
       "request": {"method": "GET"},
       "verifiedAt": "2026-07-19",
-      "effectiveFrom": "2025-07-01",
+      "effectiveFrom": "2026-07-01",
       "reviewAfterDays": 45,
-      "extractor": {"mode": "json-pointer", "params": {"pointer": "/records/superRate"}},
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Table 21: Super guarantee percentage",
+          "headers": [
+            "Period",
+            "General super guarantee (%)",
+            "Super guarantee (%) for Norfolk Island (transitional rate) (from 1 July 2016)"
+          ],
+          "result": "scalar",
+          "fields": [
+            {
+              "key": "rate",
+              "rowLabels": ["1 July 2026 – 30 June 2027"],
+              "valueHeader": "General super guarantee (%)",
+              "transform": "percentage-number-to-decimal",
+              "unit": "decimal rate"
+            }
+          ]
+        }
+      },
       "expected": {"type": "number", "unit": "decimal rate", "value": 0.12},
       "fixture": {
-        "path": "data/attestation-fixtures/au-tax-reviewed.json",
-        "mediaType": "application/json",
-        "sha256": "sha256:e6ed17b06dc9561b76c70f890544cea52d0b7e9926e84f0638c6aea32a42fc3b",
+        "path": "data/attestation-fixtures/au-super-guarantee.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:f7809de345486166c6d7654529f585e3637d67910005200ce8e6788bcb296a34",
         "httpStatus": 200,
         "finalUrl": "https://www.ato.gov.au/tax-rates-and-codes/key-superannuation-rates-and-thresholds/super-guarantee"
       },
@@ -828,12 +880,27 @@
     {
       "id": "au-lito",
       "jurisdiction": "AU",
-      "sourceUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-110",
+      "sourceUrl": "https://www.ato.gov.au/api/public/content/0-2319183b-9958-4848-88f9-ea9dc64b121e",
       "request": {"method": "GET"},
       "verifiedAt": "2026-07-19",
-      "effectiveFrom": "2026-07-01",
+      "effectiveFrom": "2022-07-01",
       "reviewAfterDays": 45,
-      "extractor": {"mode": "json-pointer", "params": {"pointer": "/records/lito"}},
+      "livePolicy": {
+        "mode": "fixture-only",
+        "reason": "The official ATO content representation is served as a PDF to browsers and rejects unattended HTML requests; the restricted verifier cannot safely extract it.",
+        "manualReviewDays": 7
+      },
+      "extractor": {
+        "mode": "ato-lito",
+        "params": {
+          "anchor": "Low income tax offset",
+          "items": [
+            "$37,500 or less, you will get the maximum offset of $700",
+            "between $37,501 and $45,000, you will get $700 minus 5 cents for every $1 above $37,500",
+            "between $45,001 and $66,667, you will get $325 minus 1.5 cents for every $1 above $45,000."
+          ]
+        }
+      },
       "expected": {
         "type": "object",
         "unit": {
@@ -854,11 +921,11 @@
         }
       },
       "fixture": {
-        "path": "data/attestation-fixtures/au-tax-reviewed.json",
-        "mediaType": "application/json",
-        "sha256": "sha256:e6ed17b06dc9561b76c70f890544cea52d0b7e9926e84f0638c6aea32a42fc3b",
+        "path": "data/attestation-fixtures/au-lito.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:c9a79a44c6e38555de8d576b1e47ba15479e90d9b0c096ab4e7b9de83638303d",
         "httpStatus": 200,
-        "finalUrl": "https://www.ato.gov.au/law/view/document?docid=PAC%2F19970038%2F61-110"
+        "finalUrl": "https://www.ato.gov.au/api/public/content/0-2319183b-9958-4848-88f9-ea9dc64b121e"
       },
       "targets": [{"targetId": "au-tax", "reviewedPath": "/resident/lito"}]
     },

@@ -29,6 +29,11 @@ exact root keys:
       "verifiedAt": "2026-07-19",
       "effectiveFrom": "2026-07-01",
       "reviewAfterDays": 90,
+      "livePolicy": {
+        "mode": "extract",
+        "reason": "Official bounded JSON representation is available.",
+        "manualReviewDays": 7
+      },
       "claims": [{"claimId": "au-ko-whv-fee", "expectedPath": "/"}],
       "extractor": {
         "mode": "api-json-record",
@@ -52,11 +57,21 @@ exact root keys:
 }
 ```
 
-`effectiveTo` is the only optional date field. `targets` and `claims` are
+`effectiveTo` and `livePolicy` are optional. `targets` and `claims` are
 individually optional, but at least one must be a non-empty array. All other
 entry keys above are required. A target mapping is exactly
 `{targetId,reviewedPath}`. A claim mapping is `{claimId}` or
 `{claimId,expectedPath}`; `/` is the default expected path.
+
+`livePolicy`, when present, is exactly
+`{mode,reason,manualReviewDays}`. `mode` is `extract` or `fixture-only`,
+`reason` is non-empty bounded text, and `manualReviewDays` is an integer from
+1 through 30. Omission is backward-compatible `extract`. `fixture-only`
+continues to require an exact offline fixture match, but live mode does not
+request or extract that source: it emits `unsupported` with the reason and
+manual-review SLA and can never become `match`. This is used for official
+representations such as compressed PDFs that the reviewed parser cannot
+safely consume.
 
 Every boundary reviewed scalar leaf must be covered exactly once. Parent
 pointers may cover a cohort, but overlapping parent/child mappings are
@@ -83,8 +98,21 @@ non-finite values, and non-official URLs fail closed.
 against each claim. It must be HTTPS on the jurisdiction allowlist with no
 userinfo.
 
-A GET request is exactly `{"method":"GET"}` and fetches `sourceUrl`. GET may
-not override the URL. A POST request is exactly:
+A legacy GET request is exactly `{"method":"GET"}` and fetches `sourceUrl`.
+A machine-readable representation on the same canonical official host may
+instead use exactly:
+
+```json
+{
+  "method": "GET",
+  "url": "https://www.ato.gov.au/api/public/content/REVIEWED-ID"
+}
+```
+
+The override is HTTPS, at most 2,048 characters, contains no userinfo, query,
+fragment, body, or arbitrary headers, and has exactly the same canonical
+hostname as `sourceUrl`. This keeps the human citation distinct from a
+site-published machine representation. A POST request is exactly:
 
 ```json
 {
@@ -103,9 +131,9 @@ preserves user evidence and the same-host endpoint supplies deterministic
 machine evidence.
 
 The cache key is request URL, method, and canonical JSON body. An identical
-request is fetched once. Redirect final hosts are rechecked against the
-official jurisdiction allowlist. Reports preserve both `source` and
-`requestUrl`.
+request is fetched once per attempt and is shared by every linked attestation.
+Redirect final hosts are rechecked against the official jurisdiction
+allowlist. Reports preserve both `source` and `requestUrl`.
 
 ## Reviewed extractors
 
@@ -122,9 +150,19 @@ code. Only these code-reviewed modes and bounded parameters run:
   structures. All bounded paragraphs under the label are tested; exactly one
   must satisfy the fixed transform. Thus helper text such as `Up to` cannot be
   mistaken for `12 months`.
-- `html-text-anchor`: one exact normalized `p` or `li` block (up to 2,000
-  characters), one fixed transform, and one unit. Nested block parents are not
-  duplicated.
+- `html-text-anchor`: one exact normalized `p`, leaf `li`, heading, or
+  non-empty loose text node outside tracked table/block containers (up to
+  2,000 characters), one fixed transform, and one unit. Nested block parents
+  are not duplicated. Split/nested loose text and duplicate nodes do not
+  satisfy exact cardinality.
+- `ato-lito`: exact heading `anchor` plus exactly three reviewed leaf `li`
+  strings in order. Its code-fixed grammar accepts the indexed ATO wording
+  `$37,500 or less ... get ...`, then the two `between $N and $M ... get ...`
+  rules. It verifies integer continuity, the $325 intermediate amount, and a
+  cut-out residual within one cent, then returns the reviewed LITO object and
+  fixed unit tree. It remains available for a future safe HTML
+  representation; production may mark the current PDF representation
+  `fixture-only`.
 - `api-json-record`: `arrayPointer`, 1–3 exact string `match` fields,
   `valuePointer`, and optional fixed transform. Zero or multiple matching
   records is drift. `currency-to-number` requires an actual `AUD`, `CAD`, or
@@ -147,6 +185,22 @@ HTML field transforms are fixed enums:
   currency token at the beginning
 - `embedded-percent` and `embedded-percent-to-decimal`, which accept only
   `$N per $100 (P%)`, require `N == P`, and return `P` or `P/100`
+- `percentage-number-to-decimal`, which accepts one unsigned finite numeric
+  cell in `0..100` with no `%` token and returns `P/100` (for example,
+  ATO Super `12.00` becomes `0.12`)
+- `ato-first-tax-band`, which accepts exactly one ATO WHM row label
+  `0 – $N` and value `Pc for each $1`, returning
+  `{cap:N,rate:P/100}` with fixed `{cap:"AUD",rate:"decimal rate"}` units
+- `ato-law-first-tax-band`, which binds the current ATO law table titled
+  `Tax rates for working holiday makers for the 2024-25 year of income or a
+  later year of income`. It requires section `Repeal the table, substitute:`,
+  the exact three headers, item `1`, middle cell `does not exceed $N`, and
+  rate cell `P%`, then returns `{cap:N,rate:P/100}` with the same fixed unit
+  tree. Exactly one title must match: either the caption or a header-width
+  title row computed as `[TITLE] + [""] * (len(headers) - 1)` before the
+  headers. Exactly one complete item row must also match. The guidance
+  transform remains a regression check; production should prefer this law
+  transform when binding 2026–27 applicability.
 - `tax-brackets`, which returns the v4 reviewed shape
   `[[upper,rate],...,[null,rate]]`, checks zero start, continuity, and an open
   last cap
@@ -170,14 +224,18 @@ Every result is one of:
 - `changed`: policy value/unit, expected structure/cardinality, 4xx location,
   empty response, or fixture content changed.
 - `blocked`: authentication, bot protection, CAPTCHA, 401, or 403 prevented a
-  check. This does not assert that a policy value changed.
+  check. Body challenge detection applies only to successful 2xx responses;
+  401/403 remain blocked. This does not assert that a policy value changed.
 - `transient`: 429, 5xx, network, DNS, TLS, or timeout failure. Retry before
-  factual review.
+  factual review. HTTP 429/5xx takes precedence over challenge-like error
+  bodies, so a 503 CAPTCHA page is retried as transient.
 - `unsupported`: media, redirect policy, schema, or safe extraction capability
   cannot verify the source. This does not assert that a policy value changed.
 
 Only `match` is green. All other statuses are non-match and fail scheduled
-verification.
+verification. A live `fixture-only` result is `unsupported` without a network
+attempt; its reason and `manualReviewDays` are included in the result and
+issue.
 
 Successful reports deterministically include:
 
@@ -186,12 +244,68 @@ Successful reports deterministically include:
   "attestationCount": 35,
   "claimCount": 42,
   "reviewedLeafCount": 136,
-  "liveCapableCount": 35
+  "liveCapableCount": 35,
+  "liveExtractableCount": 33,
+  "fixtureOnlyCount": 2
 }
 ```
 
 If `data/claims.json` contains `audit.sourceAttestations`, it must exactly equal
-these four generated counts.
+these six generated counts.
+`liveCapableCount` is retained as the legacy total attestation count; the
+strict new partition is
+`liveExtractableCount + fixtureOnlyCount == attestationCount`.
+
+## Bounded retry and report v2
+
+Live retries apply only when the request-level status is `transient`: network,
+DNS, TLS, timeout, HTTP 429, or HTTP 5xx. `changed`, `blocked`,
+`unsupported`, and successfully fetched responses are never retried.
+`--max-attempts` is the total attempt count (`1..4`),
+`--retry-backoff-ms` is the deterministic exponential base (`1..2000`), and
+`--timeout` is finite, greater than zero, and no more than 60 seconds. There
+is no jitter or registry-supplied code. Offline mode requires one attempt and
+never sleeps or fetches.
+
+Report schema version 2 adds `observationId`, `retryPolicy`, and
+`requestAudit`. Each result includes `requestKey`, `attemptCount`,
+`requestFinalStatus`, and `latencyBucket`. The public request key is only a
+SHA-256 digest of canonical URL/method/body; request bodies are not reported.
+`requestAudit.requests[]` contains:
+
+```json
+{
+  "requestKey": "sha256:...",
+  "requestUrl": "https://official.example/path",
+  "method": "GET",
+  "attemptCount": 2,
+  "finalStatus": "ready",
+  "latencyBucket": "250ms-999ms",
+  "attempts": [
+    {"number": 1, "status": "transient", "latencyBucket": "lt250ms"},
+    {"number": 2, "status": "ready", "latencyBucket": "lt250ms"}
+  ]
+}
+```
+
+Request final states are `ready|transient|blocked|changed|unsupported`.
+Latency is content-free and bucketed as
+`offline|lt250ms|250ms-999ms|1s-4.999s|5s-14.999s|15s-plus`.
+Latency is visible in the current-run table but excluded from substantive
+issue fingerprinting. The existing six-key source-attestation audit is
+separate from retry telemetry.
+The current-run table also shows the HTML-escaped request method and official
+endpoint, and active/recovered trend rows join the current endpoint by request
+hash when available. URLs are not copied into the hidden trend marker and do
+not affect the issue fingerprint because the canonical request hash already
+binds the transport.
+
+The scheduled workflow supplies an explicit `observationId`. When live mode
+is run without one, the verifier derives a stable SHA-256 observation ID from
+sorted substantive results, request final states, and attempt status
+sequences. It excludes `generatedAt` and latency, so an identical manual run
+is a replay while a semantic or retry-history change becomes a new
+observation. Offline reports retain the fixed `offline` observation ID.
 
 ## Commands and operations
 
@@ -212,6 +326,10 @@ python3 scripts/verify_source_attestations.py \
   --attestations data/source-attestations.json \
   --claims data/claims.json \
   --mode live \
+  --timeout 15 \
+  --max-attempts 3 \
+  --retry-backoff-ms 500 \
+  --observation-id "WORKFLOW_RUN_ID.WORKFLOW_ATTEMPT" \
   --output source-attestation-report.json
 ```
 
@@ -226,11 +344,42 @@ production registry offline when present. The separate scheduled workflow has
 trigger. It fetches each canonical request once, reduces the report to one
 exact-title issue, and creates, updates, reopens, closes, or no-ops
 idempotently. Duplicate exact-title issues fail closed. Changed, blocked,
-transient, and unsupported results render in distinct issue sections. The
-reducer returns `bodyFingerprint`, computed from sorted substantive findings
-and audit data while excluding volatile `generatedAt`. The same fingerprint is
-embedded in the issue body; an open issue with the same marker is a `noop` even
-when the next report has a new timestamp or result order.
+transient, and unsupported results render in distinct issue sections.
+
+The issue body also contains one hidden, versioned marker:
+
+```text
+<!-- source-attestation-trend:v1:BASE64URL_CANONICAL_JSON -->
+```
+
+It stores only canonical request hashes, consecutive transient count,
+first/last/recovery UTC timestamps, last status/observation ID, and at most
+eight status events per request. It stores no response body, URL, token, or
+other source content; it is limited to 128 requests, 48 KiB decoded, and
+64 KiB encoded. Malformed, duplicate, unsupported-version, or oversized
+markers fail closed. Replaying the same request/observation does not increment
+the streak. One transient waits for the next schedule, two trigger endpoint
+investigation, and three or more require manual official-source review.
+Recovery is recorded explicitly. `changed`, `blocked`, and `unsupported`
+retain their distinct immediate-review wording.
+
+Marker validation also enforces `firstSeen <= lastSeen`, chronological events,
+last event status/observation/timestamp equality with the request state,
+`recoveredAt == lastSeen` for recovered entries, and no `recoveredAt` on an
+active transient streak.
+
+The reducer returns `bodyFingerprint`, computed from sorted substantive
+findings, audit data, normalized trend state, request keys/final states, and
+attempt status sequences/counts while excluding volatile `generatedAt`,
+result order, and latency. A result `contextFingerprint` is substantive only
+for non-match statuses; a matching extracted value/unit/structure does not
+create a new observation or issue update merely because unrelated page bytes
+changed. Thus a one-attempt ready response versus a
+transient-then-ready recovery updates the issue, but latency-bucket-only drift
+does not. The same fingerprint is embedded in the issue body; an open issue
+with the same marker is a `noop`. A v5 issue
+without the trend marker and a v1 report without `requestAudit` are accepted
+as legacy observations but never invent or increment a transient streak.
 
 To migrate a cohort:
 
@@ -240,13 +389,17 @@ To migrate a cohort:
 2. Record its raw SHA-256 and request final URL.
 3. Add non-overlapping target pointers and scoped claim mappings.
 4. Choose only a reviewed extractor enum and exact bounded parameters.
-5. Run offline verification and copy its four audit counts into the claims
+5. Declare `livePolicy`; use `fixture-only` for a representation the bounded
+   parser cannot safely verify live.
+6. Run offline verification and copy its six audit counts into the claims
    audit.
-6. Review the first scheduled live report; never promote blocked, transient,
+7. Review the first scheduled live report; never promote blocked, transient,
    or unsupported to match.
 
 Known limits: the HTML parser intentionally ignores styling and client-side
 rendering; the PDF parser is not a general PDF engine; bot-protected sources
 may remain blocked; and a human-reviewed structured PDF extract can prove
-fixture integrity offline but may be unsupported against the live PDF until a
-bounded extractor is reviewed.
+fixture integrity offline but remains explicitly `fixture-only`/`unsupported`
+against the live PDF until a bounded extractor is reviewed. Retries address
+short-lived transport failures only and do not turn access, layout, value, or
+safe-parser failures into matches.

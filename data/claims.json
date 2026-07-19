@@ -22,7 +22,9 @@
       "attestationCount": 35,
       "claimCount": 42,
       "reviewedLeafCount": 136,
-      "liveCapableCount": 35
+      "liveCapableCount": 35,
+      "liveExtractableCount": 33,
+      "fixtureOnlyCount": 2
     },
     "lastAuditDate": "2026-07-19"
   },
