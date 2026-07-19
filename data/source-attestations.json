@@ -34,6 +34,22 @@
     "nz-ja-partner-work-fee",
     "nz-ko-partner-resident-fee",
     "nz-ja-partner-resident-fee",
+    "nz-ko-resident-processing",
+    "nz-ja-resident-processing",
+    "nz-ko-straight-resident-processing",
+    "nz-ja-straight-resident-processing",
+    "nz-ko-work-resident-processing",
+    "nz-ja-work-resident-processing",
+    "nz-ko-whv-quota-2026",
+    "nz-ko-whv-funds",
+    "nz-ja-whv-funds",
+    "nz-ko-ivl-component",
+    "nz-ja-ivl-component",
+    "nz-ko-job-check-fee",
+    "nz-ja-job-check-fee",
+    "nz-ko-non-notified-tax",
+    "nz-ja-non-notified-tax",
+    "nz-ko-overstay-42-days",
     "nz-ko-acc-rate-2026",
     "nz-ja-acc-rate-2026",
     "nz-ko-acc-cap-2026",
@@ -361,19 +377,20 @@
             {"key": "duration", "label": "Length of stay", "transform": "duration-months", "unit": "months"},
             {"key": "cost", "label": "Cost", "transform": "currency-to-number", "unit": "NZD"},
             {"key": "processing", "label": "Processing time", "transform": "duration-weeks", "unit": "weeks"},
-            {"key": "age", "label": "Age range", "transform": "inclusive-range", "unit": "years"}
+            {"key": "age", "label": "Age range", "transform": "inclusive-range", "unit": "years"},
+            {"key": "quota", "label": "Visas available", "transform": "integer", "unit": "visas"}
           ]
         }
       },
       "expected": {
         "type": "object",
-        "unit": {"duration": "months", "cost": "NZD", "processing": "weeks", "age": "years"},
-        "value": {"duration": 12, "cost": 770, "processing": 3, "age": "18-30"}
+        "unit": {"duration": "months", "cost": "NZD", "processing": "weeks", "age": "years", "quota": "visas"},
+        "value": {"duration": 12, "cost": 770, "processing": 3, "age": "18-30", "quota": 3000}
       },
       "fixture": {
         "path": "data/attestation-fixtures/nz-korea-whv.html",
         "mediaType": "text/html",
-        "sha256": "sha256:6028c54dbca5eb4f018f9963c0fabb83dc029ddcad7357065c15355c8f4804a7",
+        "sha256": "sha256:2e1314f393725830a2528b567c50b2d3f95ed2a506c44c34e3e0dc11e7322f37",
         "httpStatus": 200,
         "finalUrl": "https://www.immigration.govt.nz/visas/korea-working-holiday-visa/"
       },
@@ -381,7 +398,8 @@
         {"claimId": "nz-ko-whv-duration", "expectedPath": "/duration"},
         {"claimId": "nz-ko-whv-fee", "expectedPath": "/cost"},
         {"claimId": "nz-ko-whv-processing", "expectedPath": "/processing"},
-        {"claimId": "nz-ko-whv-age", "expectedPath": "/age"}
+        {"claimId": "nz-ko-whv-age", "expectedPath": "/age"},
+        {"claimId": "nz-ko-whv-quota-2026", "expectedPath": "/quota"}
       ]
     },
     {
@@ -413,7 +431,7 @@
       "fixture": {
         "path": "data/attestation-fixtures/nz-japan-whv.html",
         "mediaType": "text/html",
-        "sha256": "sha256:ba00e3c3bab96115b01677e1cc2c9da498540b2b73ddc312997427daa79ff1c5",
+        "sha256": "sha256:15cfd87c7adbf5c83ceafbdabc352be56f2169cfe71f79e5181219ee87ab9a41",
         "httpStatus": 200,
         "finalUrl": "https://www.immigration.govt.nz/visas/japan-working-holiday-visa/"
       },
@@ -423,6 +441,171 @@
         {"claimId": "nz-ja-whv-processing", "expectedPath": "/processing"},
         {"claimId": "nz-ja-whv-age", "expectedPath": "/age"}
       ]
+    },
+    {
+      "id": "nz-korea-whv-funds",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/visas/korea-working-holiday-visa/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "You must have at least NZD $4,200 to cover your living expenses while in New Zealand.",
+          "transform": "currency-to-number",
+          "unit": "NZD"
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD", "value": 4200},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-korea-whv.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:2e1314f393725830a2528b567c50b2d3f95ed2a506c44c34e3e0dc11e7322f37",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/visas/korea-working-holiday-visa/"
+      },
+      "claims": [{"claimId": "nz-ko-whv-funds"}]
+    },
+    {
+      "id": "nz-japan-whv-funds",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/visas/japan-working-holiday-visa/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "You must have at least NZD $4,200 to cover your living expenses while in New Zealand.",
+          "transform": "currency-to-number",
+          "unit": "NZD"
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD", "value": 4200},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-japan-whv.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:15cfd87c7adbf5c83ceafbdabc352be56f2169cfe71f79e5181219ee87ab9a41",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/visas/japan-working-holiday-visa/"
+      },
+      "claims": [{"claimId": "nz-ja-whv-funds"}]
+    },
+    {
+      "id": "nz-ivl-amount",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/new-zealand-visas/preparing-a-visa-application/your-journey-to-new-zealand/before-you-travel-to-new-zealand/paying-ivl/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2024-10-01",
+      "reviewAfterDays": 45,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "Many tourists, people on working holidays, and some students and workers coming to New Zealand must pay an International Visitor Conservation and Tourism Levy (IVL) of NZD $100.",
+          "transform": "currency-to-number",
+          "unit": "NZD"
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD", "value": 100},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-ivl-amount.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:51e653e45310d1f3632c64c5da21e1d5478381c7103e55a49260a6727246c37d",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/new-zealand-visas/preparing-a-visa-application/your-journey-to-new-zealand/before-you-travel-to-new-zealand/paying-ivl/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-ivl-component"},
+        {"claimId": "nz-ja-ivl-component"}
+      ]
+    },
+    {
+      "id": "nz-aewv-job-check-fee",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/paying-for-aewv-employer-accreditation-and-job-checks/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 45,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "It costs NZD $735 to apply for a job check.",
+          "transform": "currency-to-number",
+          "unit": "NZD"
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD", "value": 735},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-aewv-job-check-fee.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:1ba861b6032493d6d6bd6054a4b2400ed1557ace487abb50493af1f039c43d4e",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/paying-for-aewv-employer-accreditation-and-job-checks/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-job-check-fee"},
+        {"claimId": "nz-ja-job-check-fee"}
+      ]
+    },
+    {
+      "id": "nz-non-notified-tax",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.ird.govt.nz/deductions-from-salary-and-wages",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-04-01",
+      "reviewAfterDays": 45,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "If your employee does not give you a completed IR330, you need to deduct PAYE at the non-notified rate of 45% plus ACC earners’ levy. Use ND as the tax code on the Employment Information return and the PAYE calculator.",
+          "transform": "percent-to-decimal",
+          "unit": "decimal rate"
+        }
+      },
+      "expected": {"type": "number", "unit": "decimal rate", "value": 0.45},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-non-notified-tax.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:beedf3edbe25049a203f2f0128ebe450773c32448736e8fd6aa7413167644c21",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ird.govt.nz/deductions-from-salary-and-wages"
+      },
+      "claims": [
+        {"claimId": "nz-ko-non-notified-tax"},
+        {"claimId": "nz-ja-non-notified-tax"}
+      ]
+    },
+    {
+      "id": "nz-overstay-42-days",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/process-to-apply/once-you-have-a-visa/if-you-stay-in-new-zealand-after-your-visa-expires/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 45,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "you may be banned from returning to New Zealand if you stay unlawfully for 42 days or more, and",
+          "transform": "integer",
+          "unit": "days"
+        }
+      },
+      "expected": {"type": "number", "unit": "days", "value": 42},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-overstay-42-days.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:579a7ab8c510301f8b8587c999c3ad74b44c7d67bfdf81f3d2d54b8730bff0aa",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/process-to-apply/once-you-have-a-visa/if-you-stay-in-new-zealand-after-your-visa-expires/"
+      },
+      "claims": [{"claimId": "nz-ko-overstay-42-days"}]
     },
     {
       "id": "nz-student-visa-hero",
@@ -703,6 +886,66 @@
       "claims": [
         {"claimId": "nz-ko-partner-resident-fee"},
         {"claimId": "nz-ja-partner-resident-fee"}
+      ]
+    },
+    {
+      "id": "nz-resident-visa-wait-times",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/process-to-apply/waiting-for-a-visa/processing-a-visa-application/how-long-it-takes-to-process-an-application/resident-visa-wait-times/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 7,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "Wait times for resident visa applications processed in the last 4 weeks",
+          "headers": ["Visa type", "Average wait time", "Most completed within"],
+          "result": "object",
+          "fields": [
+            {
+              "key": "smc",
+              "rowLabels": ["Skilled Migrant Category Resident Visa"],
+              "valueHeader": "Most completed within",
+              "transform": "duration-months",
+              "unit": "months"
+            },
+            {
+              "key": "straight",
+              "rowLabels": ["Straight to Residence Visa"],
+              "valueHeader": "Most completed within",
+              "transform": "duration-months",
+              "unit": "months"
+            },
+            {
+              "key": "work",
+              "rowLabels": ["Work to Residence Visa"],
+              "valueHeader": "Most completed within",
+              "transform": "duration-months",
+              "unit": "months"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "type": "object",
+        "unit": {"smc": "months", "straight": "months", "work": "months"},
+        "value": {"smc": 4.5, "straight": 4, "work": 3}
+      },
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-resident-visa-wait-times.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:ea9013e101e0c6a7f2a46f7559b878db32a2d9012c84a8fed243058000f927c9",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/process-to-apply/waiting-for-a-visa/processing-a-visa-application/how-long-it-takes-to-process-an-application/resident-visa-wait-times/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-resident-processing", "expectedPath": "/smc"},
+        {"claimId": "nz-ja-resident-processing", "expectedPath": "/smc"},
+        {"claimId": "nz-ko-straight-resident-processing", "expectedPath": "/straight"},
+        {"claimId": "nz-ja-straight-resident-processing", "expectedPath": "/straight"},
+        {"claimId": "nz-ko-work-resident-processing", "expectedPath": "/work"},
+        {"claimId": "nz-ja-work-resident-processing", "expectedPath": "/work"}
       ]
     },
     {
