@@ -321,9 +321,12 @@ code. Only these code-reviewed modes and bounded parameters run:
   and subsequent years, the separate 6.14% H2 payroll catch-up rate, and that
   Option 2 is not prorated. It returns only `{rate:0.056}`.
 - `cra-t4032-on`: params are exactly `{"effectiveDate":"2026-01-01"}`.
-  It requires the exact T4032ON H1, all six ordered Ontario health-premium
+  It requires the exact T4032ON H1, `T4032-ON(E) Rev. 26`, the
+  `What's new as of January 1, 2026` heading, both exact `For 2026` health and
+  tax-reduction lead paragraphs, all six ordered Ontario health-premium
   bullets, basic personal reduction amount `$300`, and the sentence that the
-  reduction is twice personal amounts. It returns only
+  reduction is twice personal amounts. Every year/revision anchor has
+  cardinality one. It returns only
   `{taxReduction:600,health:{...}}`; Ontario brackets, BPA, and surtax remain
   separate CSV-owned components and cannot overlap this cohort.
 - `api-json-record`: `arrayPointer`, 1–3 exact string `match` fields,
@@ -455,14 +458,18 @@ Cached canonical executions are shared across all attestations/candidates and
 consume no second reservation or fetch. Budget exhaustion never becomes
 `match`. Offline mode requires one attempt and never sleeps or fetches.
 
-Live requests use one code-owned transport profile:
-`User-Agent: curl/8.7.1 NZ-Navigator-Source-Attestation/1.0`,
+Live requests use a code-owned, exact-host compatibility map. The default
+profile retains `User-Agent: nz-navigator-source-attestation/1.0`,
 `Accept: text/html,application/xhtml+xml,application/pdf,application/json;q=0.9,*/*;q=0.1`,
-`Connection: close`, and `Accept-Encoding: identity`.
-Registry entries cannot add or override headers. Media-type validation remains
-extractor-specific after the response arrives. TLS certificate verification
-errors remain `transient` non-matches and are reported explicitly, including
-when the same attempt also exhausts its request budget.
+and `Connection: close`. Only exact canonical hosts `canada.ca`,
+`www.canada.ca`, and `ircc.canada.ca` use
+`User-Agent: curl/8.7.1 NZ-Navigator-Source-Attestation/1.0` plus
+`Accept-Encoding: identity`. Registry entries cannot add or override headers,
+and the selected profile is not part of the canonical request key, so shared
+requests still execute once. Media-type validation remains extractor-specific
+after the response arrives. TLS certificate verification errors remain
+`transient` non-matches and are reported explicitly, including when the same
+attempt also exhausts its request budget.
 
 Report schema version 2 adds `observationId`, `retryPolicy`, and
 `requestAudit`. Each result includes `requestKey`, `attemptCount`,

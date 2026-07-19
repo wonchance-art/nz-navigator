@@ -37,15 +37,20 @@ MAX_RETRY_ATTEMPTS = 4
 MAX_RETRY_BACKOFF_MS = 2_000
 MAX_REQUEST_BUDGET_SECONDS = 60.0
 MAX_ATTESTATION_BUDGET_SECONDS = 120.0
-LIVE_REQUEST_HEADERS = {
-    "User-Agent": "curl/8.7.1 NZ-Navigator-Source-Attestation/1.0",
+DEFAULT_LIVE_REQUEST_HEADERS = {
+    "User-Agent": "nz-navigator-source-attestation/1.0",
     "Accept": (
         "text/html,application/xhtml+xml,application/pdf,"
         "application/json;q=0.9,*/*;q=0.1"
     ),
     "Connection": "close",
-    "Accept-Encoding": "identity",
 }
+CANADA_CURL_COMPAT_HOSTS = frozenset(
+    {"canada.ca", "www.canada.ca", "ircc.canada.ca"}
+)
+CANADA_CURL_COMPAT_USER_AGENT = (
+    "curl/8.7.1 NZ-Navigator-Source-Attestation/1.0"
+)
 MAX_ATTESTATIONS = 256
 MAX_TARGETS_PER_ATTESTATION = 16
 MAX_REQUEST_CANDIDATES = 3
@@ -3941,6 +3946,12 @@ CRA_T4032_ON_HEALTH_BLOCKS = (
     "the lesser of (i) $900 and (ii) $750 plus 25% of taxable income greater "
     "than $200,000",
 )
+CRA_T4032_ON_REVISION = "T4032-ON(E) Rev. 26"
+CRA_T4032_ON_EFFECTIVE_HEADING = "What's new as of January 1, 2026"
+CRA_T4032_ON_HEALTH_LEAD = "For 2026, the Ontario health premium is:"
+CRA_T4032_ON_REDUCTION_LEAD = (
+    "For 2026, Ontario's tax reduction amounts are:"
+)
 CRA_T4032_ON_REDUCTION_SENTENCE = (
     "The reduction is equal to twice the individual's personal amounts minus "
     "the provincial tax payable before reduction. The reduction cannot be "
@@ -3959,6 +3970,20 @@ def _extract_cra_t4032_on(
     h1 = "Payroll Deductions Tables - CPP, EI, and income tax deductions - Ontario"
     if parser.heading_records.count((1, h1)) != 1:
         raise ChangedExtraction("CRA T4032ON exact H1 cardinality changed")
+    if parser.block_texts.count(CRA_T4032_ON_REVISION) != 1:
+        raise ChangedExtraction("CRA T4032ON Rev. 26 evidence changed")
+    if parser.headings.count(CRA_T4032_ON_EFFECTIVE_HEADING) != 1:
+        raise ChangedExtraction(
+            "CRA T4032ON January 1, 2026 heading cardinality changed"
+        )
+    if parser.block_texts.count(CRA_T4032_ON_HEALTH_LEAD) != 1:
+        raise ChangedExtraction(
+            "CRA T4032ON 2026 health lead cardinality changed"
+        )
+    if parser.block_texts.count(CRA_T4032_ON_REDUCTION_LEAD) != 1:
+        raise ChangedExtraction(
+            "CRA T4032ON 2026 tax-reduction lead cardinality changed"
+        )
     if parser.headings.count("Ontario health premium") != 1:
         raise ChangedExtraction("CRA T4032ON health section cardinality changed")
     health_items = [
@@ -4687,6 +4712,14 @@ def _transport_error_message(exc: Exception) -> str:
     return f"{type(exc).__name__}: {exc}"
 
 
+def _live_request_headers(url: str) -> dict[str, str]:
+    headers = dict(DEFAULT_LIVE_REQUEST_HEADERS)
+    if _canonical_hostname(url) in CANADA_CURL_COMPAT_HOSTS:
+        headers["User-Agent"] = CANADA_CURL_COMPAT_USER_AGENT
+        headers["Accept-Encoding"] = "identity"
+    return headers
+
+
 def _latency_bucket(seconds: float) -> str:
     if not isinstance(seconds, (int, float)) or not math.isfinite(seconds):
         raise ValueError("latency must be finite")
@@ -4812,7 +4845,7 @@ def _live_response(
     request_spec = attestation["request"]
     url = _request_url(attestation)
     data = None
-    headers = dict(LIVE_REQUEST_HEADERS)
+    headers = _live_request_headers(url)
     if request_spec["method"] == "POST":
         data = json.dumps(
             request_spec["jsonBody"],

@@ -907,7 +907,7 @@ class SourceAttestationTests(unittest.TestCase):
         self.write_json("attestations.json", self.registry)
 
         outcomes = iter([503, 200])
-        calls: list[str] = []
+        calls: list[tuple[str, str]] = []
 
         class Response:
             headers = {"Content-Type": "text/html"}
@@ -933,7 +933,10 @@ class SourceAttestationTests(unittest.TestCase):
                 return self.status
 
         def opener(request, **_kwargs):
-            calls.append(request.full_url)
+            calls.append((
+                request.full_url,
+                request.get_header("User-agent"),
+            ))
             return Response(next(outcomes))
 
         clocks = iter([0.0, 0.1, 1.0, 1.4])
@@ -954,6 +957,10 @@ class SourceAttestationTests(unittest.TestCase):
         )
         self.assertTrue(report.ok, [item.render() for item in report.results])
         self.assertEqual(len(calls), 2)
+        self.assertEqual(
+            {user_agent for _url, user_agent in calls},
+            {"nz-navigator-source-attestation/1.0"},
+        )
         self.assertEqual(sleeps, [0.01])
         self.assertEqual(report.fetchedUrls, 1)
         self.assertEqual(report.requests[0].attemptCount, 2)
@@ -2521,8 +2528,13 @@ class SourceAttestationTests(unittest.TestCase):
         )
         ontario = (
             "<h1>Payroll Deductions Tables - CPP, EI, and income tax deductions - Ontario</h1>"
-            f"<h3>Ontario health premium</h3><ul>{health_items}</ul>"
+            f"<p>{verifier.CRA_T4032_ON_REVISION}</p>"
+            f"<h2>{verifier.CRA_T4032_ON_EFFECTIVE_HEADING}</h2>"
+            "<h3>Ontario health premium</h3>"
+            f"<p>{verifier.CRA_T4032_ON_HEALTH_LEAD}</p>"
+            f"<ul>{health_items}</ul>"
             "<h3>Tax reduction</h3>"
+            f"<p>{verifier.CRA_T4032_ON_REDUCTION_LEAD}</p>"
             "<p>Basic personal amount........................................ $300</p>"
             f"<p>{verifier.CRA_T4032_ON_REDUCTION_SENTENCE}</p>"
         )
@@ -2533,6 +2545,18 @@ class SourceAttestationTests(unittest.TestCase):
         self.assertEqual(value["taxReduction"], 600)
         self.assertEqual(value["health"]["above"]["cap"], 900)
         for mutation in (
+            ontario.replace("Rev. 26", "Rev. 25", 1),
+            ontario.replace("January 1, 2026", "January 1, 2025", 1),
+            ontario.replace(
+                "For 2026, the Ontario health premium is:",
+                "For 2025, the Ontario health premium is:",
+                1,
+            ),
+            ontario.replace(
+                "For 2026, Ontario's tax reduction amounts are:",
+                "For 2025, Ontario's tax reduction amounts are:",
+                1,
+            ),
             ontario.replace("$36,000", "$36,001", 1),
             ontario.replace("$300</p>", "$301</p>"),
             ontario + ontario,
@@ -2650,7 +2674,6 @@ class SourceAttestationTests(unittest.TestCase):
     def test_live_transport_headers_and_certificate_error_are_explicit(
         self,
     ) -> None:
-        attestation = self.html_attestation()
         captured: list[dict[str, str]] = []
 
         def certificate_failure(request, **_kwargs):
@@ -2663,6 +2686,9 @@ class SourceAttestationTests(unittest.TestCase):
             )
             raise urllib_error.URLError(reason)
 
+        attestation = self.html_attestation()
+        attestation["sourceUrl"] = "https://www.canada.ca/reviewed-source"
+        attestation["request"] = {"method": "GET"}
         clocks = iter([0.0, 1.1])
         execution = verifier._live_execution(
             attestation,
@@ -2702,6 +2728,37 @@ class SourceAttestationTests(unittest.TestCase):
         )
         self.assertEqual(result.status, "transient")
         self.assertIn("TLS certificate verification failed", result.actual)
+
+        profiles: list[dict[str, str]] = []
+
+        def capture_and_timeout(request, **_kwargs):
+            profiles.append({
+                key.lower(): value
+                for key, value in request.header_items()
+            })
+            raise TimeoutError("reviewed header capture")
+
+        for url in (
+            "https://ircc.canada.ca/representation",
+            "https://www.ato.gov.au/representation",
+            "https://www.immigration.govt.nz/representation",
+        ):
+            verifier._live_response(
+                {"sourceUrl": url, "request": {"method": "GET"}},
+                1,
+                urlopen=capture_and_timeout,
+            )
+        self.assertEqual(
+            profiles[0]["user-agent"],
+            "curl/8.7.1 NZ-Navigator-Source-Attestation/1.0",
+        )
+        self.assertEqual(profiles[0]["accept-encoding"], "identity")
+        for profile in profiles[1:]:
+            self.assertEqual(
+                profile["user-agent"],
+                "nz-navigator-source-attestation/1.0",
+            )
+            self.assertNotIn("accept-encoding", profile)
 
 
 if __name__ == "__main__":
