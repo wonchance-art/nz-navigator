@@ -117,22 +117,34 @@ class ClaimLineageTests(unittest.TestCase):
         by_id[open_work["id"]] = open_work
         crs_source = (
             "https://www.canada.ca/en/immigration-refugees-citizenship/"
-            "services/immigrate-canada/express-entry/eligibility/"
-            "comprehensive-ranking-system/grid.html"
+            "services/immigrate-canada/express-entry/check-score/"
+            "crs-criteria.html"
         )
         crs_components = {
-            "ca-ko-crs-age35-no-spouse": ("CRS age 35, no spouse", 77),
-            "ca-ko-crs-bachelor-no-spouse": ("CRS bachelor, no spouse", 120),
-            "ca-ko-crs-clb7-four-no-spouse": ("CRS CLB 7 in four abilities, no spouse", 68),
-            "ca-ko-crs-canadian-work1-no-spouse": ("CRS one year Canadian work, no spouse", 40),
+            "ca-ko-crs-age35-no-spouse": ("CRS age 35, no spouse", 77, "points"),
+            "ca-ko-crs-bachelor-no-spouse": (
+                "CRS bachelor, no spouse",
+                120,
+                "points",
+            ),
+            "ca-ko-crs-clb7-per-ability-no-spouse": (
+                "CRS CLB 7 per ability, no spouse",
+                17,
+                "points/ability",
+            ),
+            "ca-ko-crs-canadian-work1-no-spouse": (
+                "CRS one year Canadian work, no spouse",
+                40,
+                "points",
+            ),
         }
-        for claim_id, (label, value) in crs_components.items():
+        for claim_id, (label, value, unit) in crs_components.items():
             component = copy.deepcopy(by_id["ca-ko-crs-core-maximum"])
             component.update({
                 "id": claim_id,
                 "label": label,
                 "value": value,
-                "unit": "points",
+                "unit": unit,
                 "status": "official",
                 "severity": "critical",
                 "verifiedAt": "2026-07-19",
@@ -147,7 +159,7 @@ class ClaimLineageTests(unittest.TestCase):
 
         fixture = {
             "openWorkPermitHolder": 100,
-            "crs": {"age": 77, "education": 120, "language": 68, "experience": 40},
+            "crs": {"age": 77, "education": 120, "language": 17, "experience": 40},
         }
         fixture_path = self.root / "data" / "attestation-fixtures" / "lineage-inputs.json"
         fixture_bytes = json.dumps(fixture, separators=(",", ":")).encode()
@@ -179,7 +191,7 @@ class ClaimLineageTests(unittest.TestCase):
                     "unit": {
                         "age": "points",
                         "education": "points",
-                        "language": "points",
+                        "language": "points/ability",
                         "experience": "points",
                     },
                 },
@@ -189,7 +201,7 @@ class ClaimLineageTests(unittest.TestCase):
                     for key, claim_id in (
                         ("age", "ca-ko-crs-age35-no-spouse"),
                         ("education", "ca-ko-crs-bachelor-no-spouse"),
-                        ("language", "ca-ko-crs-clb7-four-no-spouse"),
+                        ("language", "ca-ko-crs-clb7-per-ability-no-spouse"),
                         ("experience", "ca-ko-crs-canadian-work1-no-spouse"),
                     )
                 ],
@@ -347,7 +359,25 @@ class ClaimLineageTests(unittest.TestCase):
         self.write_json(self.attestations_path, attestations)
         wrong_unit = self.run_runner()
         self.assertEqual(wrong_unit.returncode, 1)
-        self.assertIn("CRS component inputs must use exact points units", wrong_unit.stderr)
+        self.assertIn("CRS age input unit score != points", wrong_unit.stderr)
+
+    def test_crs_per_ability_input_is_multiplied_by_four(self) -> None:
+        ca_page = self.root / "ca" / "index.html"
+        source = ca_page.read_text(encoding="utf-8").replace(
+            "l7: 68,",
+            "l7: 17,",
+            1,
+        )
+        ca_page.write_text(source, encoding="utf-8")
+
+        result = self.run_runner()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn(
+            "CRS language runtime 17 != official input 17 × 4 = 68",
+            result.stderr,
+        )
+        self.assertNotIn("official transformed component sum 254", result.stderr)
 
     def test_cycle_unknown_and_stale_input_fail_closed(self) -> None:
         lineage = self.read_json(self.lineage_path)

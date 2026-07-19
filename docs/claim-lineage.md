@@ -91,7 +91,7 @@ No registry-provided program is evaluated. The supported transforms and targets 
 
 - `sum`: IRCC IEC `184.75 + 100 = 284.75` and PGWP `155 + 100 = 255`, with exact CAD units.
 - `calculator-execution`: NZ/JA PAYE plus ACC, CA Ontario tax, and AU WHM/resident tax. The actual production functions are lexically extracted into a minimal Node VM. Independently reviewed boundary formulas calculate the expected result.
-- `crs-fixed-profile`: the production CRS renderer runs the fixed `a35/e120/l7/x1` profile, while four official component claims independently sum to 305.
+- `crs-fixed-profile`: the production CRS renderer runs the fixed `a35/e120/l7/x1` profile. The official inputs are age 77, bachelor 120, CLB 7 at 17 points **per ability**, and Canadian experience 40; the code-owned transform independently computes `77 + 120 + (17 × 4) + 40 = 305`. Treating the four raw inputs as the false sum 254 fails.
 - `boundary-serialization`: serializes the two ATO-attested resident bracket cohorts into the exact five-pair public claim.
 - `uncapped-availability`: requires the exact, exhaustive four-field Japan WHV hero cohort and zero availability/quota fields.
 - `constant-absence-zero`: requires the exact Home Affairs combined 820/801 plus ceased-record cohort, zero standalone 801 records, and exact fee/unit parity.
@@ -145,7 +145,7 @@ The default root is the repository root. All registry/fixture paths must remain 
 
 1. Change `au-ko-tax-brackets-2026` to `status: derived` while retaining its exact ATO-derived value/unit/date contract.
 2. Add the 11 mappings from `tests/fixtures/claim-lineage.json` to `data/claim-lineage.json`.
-3. Add source-attested official component claims `ca-ko-open-work-permit-holder-fee` (100 CAD), `ca-ko-crs-age35-no-spouse` (77 points), `ca-ko-crs-bachelor-no-spouse` (120), `ca-ko-crs-clb7-four-no-spouse` (68), and `ca-ko-crs-canadian-work1-no-spouse` (40). Keep `ca-ko-tax-on-60000` effective from the T4127 123rd-edition cohort (`2026-07-01`).
+3. Add source-attested official component claims `ca-ko-open-work-permit-holder-fee` (100 CAD), `ca-ko-crs-age35-no-spouse` (77 points), `ca-ko-crs-bachelor-no-spouse` (120 points), `ca-ko-crs-clb7-per-ability-no-spouse` (17 points/ability), and `ca-ko-crs-canadian-work1-no-spouse` (40 points). Keep `ca-ko-tax-on-60000` effective from the T4127 123rd-edition cohort (`2026-07-01`).
 4. Preserve the two AU resident boundary attestations exactly; do not replace them with a synthetic combined official claim.
 5. Correct any direct-source effective-window mismatch, run without coverage first, then run `--require-critical-coverage` and publish the exact audit only after it reports zero remaining.
 

@@ -135,7 +135,7 @@
       "inputClaimIds": [
         "ca-ko-crs-age35-no-spouse",
         "ca-ko-crs-bachelor-no-spouse",
-        "ca-ko-crs-clb7-four-no-spouse",
+        "ca-ko-crs-clb7-per-ability-no-spouse",
         "ca-ko-crs-canadian-work1-no-spouse"
       ],
       "transform": "crs-fixed-profile",

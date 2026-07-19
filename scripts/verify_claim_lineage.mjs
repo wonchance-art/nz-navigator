@@ -104,7 +104,7 @@ const TARGETS = Object.freeze({
     inputClaimIds: [
       'ca-ko-crs-age35-no-spouse',
       'ca-ko-crs-bachelor-no-spouse',
-      'ca-ko-crs-clb7-four-no-spouse',
+      'ca-ko-crs-clb7-per-ability-no-spouse',
       'ca-ko-crs-canadian-work1-no-spouse',
     ],
     profile: Object.freeze({
@@ -114,10 +114,26 @@ const TARGETS = Object.freeze({
       experience: 'x1',
     }),
     componentClaims: Object.freeze({
-      age: 'ca-ko-crs-age35-no-spouse',
-      education: 'ca-ko-crs-bachelor-no-spouse',
-      language: 'ca-ko-crs-clb7-four-no-spouse',
-      experience: 'ca-ko-crs-canadian-work1-no-spouse',
+      age: Object.freeze({
+        claimId: 'ca-ko-crs-age35-no-spouse',
+        unit: 'points',
+        multiplier: 1,
+      }),
+      education: Object.freeze({
+        claimId: 'ca-ko-crs-bachelor-no-spouse',
+        unit: 'points',
+        multiplier: 1,
+      }),
+      language: Object.freeze({
+        claimId: 'ca-ko-crs-clb7-per-ability-no-spouse',
+        unit: 'points/ability',
+        multiplier: 4,
+      }),
+      experience: Object.freeze({
+        claimId: 'ca-ko-crs-canadian-work1-no-spouse',
+        unit: 'points',
+        multiplier: 1,
+      }),
     }),
   }),
   'ca-on-netpay-60000': Object.freeze({
@@ -1529,25 +1545,36 @@ export function verifyClaimLineage({
         }
         actual = sample.actual;
       } else if (mapping.transform === 'crs-fixed-profile') {
-        if (inputs.some(input => input.unit !== 'points')) {
-          throw new Error('CRS component inputs must use exact points units');
-        }
         const sample = executeReviewedCrsProfile({
           root,
           page: mapping.page,
           profile: target.profile,
         });
         const inputMap = new Map(inputs.map(input => [input.id, input]));
-        for (const [component, claimId] of Object.entries(target.componentClaims)) {
-          if (!deepEqual(sample.components[component], inputMap.get(claimId)?.value)) {
+        let independent = 0;
+        for (const [component, contract] of Object.entries(target.componentClaims)) {
+          const input = inputMap.get(contract.claimId);
+          if (!input || input.unit !== contract.unit) {
             throw new Error(
-              `CRS ${component} runtime ${sample.components[component]} != official input ${inputMap.get(claimId)?.value}`,
+              `CRS ${component} input unit ${input?.unit} != ${contract.unit}`,
             );
           }
+          if (typeof input.value !== 'number' || !Number.isFinite(input.value)) {
+            throw new Error(`CRS ${component} input must be a finite number`);
+          }
+          const expectedComponent = input.value * contract.multiplier;
+          if (!deepEqual(sample.components[component], expectedComponent)) {
+            throw new Error(
+              `CRS ${component} runtime ${sample.components[component]} != ` +
+              `official input ${input.value} × ${contract.multiplier} = ${expectedComponent}`,
+            );
+          }
+          independent += expectedComponent;
         }
-        const independent = inputs.reduce((total, input) => total + input.value, 0);
         if (sample.actual !== independent) {
-          throw new Error(`CRS runtime ${sample.actual} != official component sum ${independent}`);
+          throw new Error(
+            `CRS runtime ${sample.actual} != official transformed component sum ${independent}`,
+          );
         }
         actual = sample.actual;
       } else if (mapping.transform === 'boundary-serialization') {
