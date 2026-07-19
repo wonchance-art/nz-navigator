@@ -37,6 +37,15 @@ MAX_RETRY_ATTEMPTS = 4
 MAX_RETRY_BACKOFF_MS = 2_000
 MAX_REQUEST_BUDGET_SECONDS = 60.0
 MAX_ATTESTATION_BUDGET_SECONDS = 120.0
+LIVE_REQUEST_HEADERS = {
+    "User-Agent": "curl/8.7.1 NZ-Navigator-Source-Attestation/1.0",
+    "Accept": (
+        "text/html,application/xhtml+xml,application/pdf,"
+        "application/json;q=0.9,*/*;q=0.1"
+    ),
+    "Connection": "close",
+    "Accept-Encoding": "identity",
+}
 MAX_ATTESTATIONS = 256
 MAX_TARGETS_PER_ATTESTATION = 16
 MAX_REQUEST_CANDIDATES = 3
@@ -4669,6 +4678,15 @@ def _ssl_context() -> ssl.SSLContext:
     return ssl.create_default_context()
 
 
+def _transport_error_message(exc: Exception) -> str:
+    reason = exc.reason if isinstance(exc, urllib_error.URLError) else exc
+    if isinstance(reason, ssl.SSLCertVerificationError) or (
+        "CERTIFICATE_VERIFY_FAILED" in str(reason).upper()
+    ):
+        return f"TLS certificate verification failed: {reason}"
+    return f"{type(exc).__name__}: {exc}"
+
+
 def _latency_bucket(seconds: float) -> str:
     if not isinstance(seconds, (int, float)) or not math.isfinite(seconds):
         raise ValueError("latency must be finite")
@@ -4794,14 +4812,7 @@ def _live_response(
     request_spec = attestation["request"]
     url = _request_url(attestation)
     data = None
-    headers = {
-        "User-Agent": "nz-navigator-source-attestation/1.0",
-        "Accept": (
-            "text/html,application/xhtml+xml,application/pdf,"
-            "application/json;q=0.9,*/*;q=0.1"
-        ),
-        "Connection": "close",
-    }
+    headers = dict(LIVE_REQUEST_HEADERS)
     if request_spec["method"] == "POST":
         data = json.dumps(
             request_spec["jsonBody"],
@@ -4856,7 +4867,7 @@ def _live_response(
             url,
             "application/octet-stream",
             b"",
-            error=f"{type(exc).__name__}: {exc}",
+            error=_transport_error_message(exc),
         )
 
 
@@ -4905,12 +4916,15 @@ def _live_execution(
         total_latency += elapsed
         if total_latency > request_budget_seconds + 0.001:
             budget_exhausted = True
+            transport_error = (
+                f"{response.error}; " if response.error is not None else ""
+            )
             response = SourceResponse(
                 None,
                 _request_url(attestation),
                 "application/octet-stream",
                 b"",
-                error="request time budget exhausted",
+                error=transport_error + "request time budget exhausted",
             )
             final_status = "transient"
         else:

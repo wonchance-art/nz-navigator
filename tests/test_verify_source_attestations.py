@@ -6,9 +6,11 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import ssl
 import sys
 import tempfile
 import unittest
+from urllib import error as urllib_error
 import zlib
 
 
@@ -2644,6 +2646,62 @@ class SourceAttestationTests(unittest.TestCase):
             [item["attemptCount"] for item in result.candidateChain], [1, 0]
         )
         self.assertTrue(result.candidateChain[1]["budgetExhausted"])
+
+    def test_live_transport_headers_and_certificate_error_are_explicit(
+        self,
+    ) -> None:
+        attestation = self.html_attestation()
+        captured: list[dict[str, str]] = []
+
+        def certificate_failure(request, **_kwargs):
+            captured.append({
+                key.lower(): value
+                for key, value in request.header_items()
+            })
+            reason = ssl.SSLCertVerificationError(
+                1, "certificate verify failed: reviewed test"
+            )
+            raise urllib_error.URLError(reason)
+
+        clocks = iter([0.0, 1.1])
+        execution = verifier._live_execution(
+            attestation,
+            max_attempts=1,
+            retry_backoff_ms=1,
+            timeout=1,
+            request_budget_seconds=1,
+            urlopen=certificate_failure,
+            clock=lambda: next(clocks),
+            sleeper=lambda _delay: self.fail("unexpected retry"),
+        )
+        self.assertEqual(captured, [{
+            "user-agent": (
+                "curl/8.7.1 NZ-Navigator-Source-Attestation/1.0"
+            ),
+            "accept": (
+                "text/html,application/xhtml+xml,application/pdf,"
+                "application/json;q=0.9,*/*;q=0.1"
+            ),
+            "connection": "close",
+            "accept-encoding": "identity",
+        }])
+        self.assertEqual(execution.finalStatus, "transient")
+        self.assertTrue(execution.budgetExhausted)
+        self.assertIn(
+            "TLS certificate verification failed",
+            execution.response.error,
+        )
+        self.assertIn(
+            "request time budget exhausted", execution.response.error
+        )
+        result = verifier._evaluate_response(
+            attestation,
+            execution.response,
+            offline=False,
+            root=self.root,
+        )
+        self.assertEqual(result.status, "transient")
+        self.assertIn("TLS certificate verification failed", result.actual)
 
 
 if __name__ == "__main__":

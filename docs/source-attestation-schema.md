@@ -455,6 +455,15 @@ Cached canonical executions are shared across all attestations/candidates and
 consume no second reservation or fetch. Budget exhaustion never becomes
 `match`. Offline mode requires one attempt and never sleeps or fetches.
 
+Live requests use one code-owned transport profile:
+`User-Agent: curl/8.7.1 NZ-Navigator-Source-Attestation/1.0`,
+`Accept: text/html,application/xhtml+xml,application/pdf,application/json;q=0.9,*/*;q=0.1`,
+`Connection: close`, and `Accept-Encoding: identity`.
+Registry entries cannot add or override headers. Media-type validation remains
+extractor-specific after the response arrives. TLS certificate verification
+errors remain `transient` non-matches and are reported explicitly, including
+when the same attempt also exhausts its request budget.
+
 Report schema version 2 adds `observationId`, `retryPolicy`, and
 `requestAudit`. Each result includes `requestKey`, `attemptCount`,
 `requestFinalStatus`, and `latencyBucket`. The public request key is only a
