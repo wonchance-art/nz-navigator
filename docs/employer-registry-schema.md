@@ -261,10 +261,10 @@ The synchronized 300-row production target audit is:
   "employerCount": 300,
   "countryCounts": {"NZ": 187, "AU": 113},
   "statusCounts": {"active": 269, "uncertain": 4, "expired": 27},
-  "contactableCount": 150,
+  "contactableCount": 148,
   "expiredCount": 27,
   "nearDuplicateCandidateCount": 0,
-  "linkUrlCount": 122
+  "linkUrlCount": 125
 }
 ```
 
