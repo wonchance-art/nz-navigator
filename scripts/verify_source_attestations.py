@@ -282,6 +282,10 @@ ATO_LITO_UNIT = {
     "cutOut": "AUD",
     "taper2Rate": "decimal rate",
 }
+ATO_GROUPED_INTEGER_PATTERN = (
+    r"(?:0|[1-9][0-9]*|[1-9][0-9]{0,2}(?:,[0-9]{3})+)"
+)
+ATO_UNSIGNED_DECIMAL_PATTERN = r"(?:0|[1-9][0-9]*)(?:\.[0-9]+)?"
 HTML_VALUE_TRANSFORMS = frozenset(
     {
         "number",
@@ -3265,9 +3269,9 @@ def _transform_html_value(value: str, transform: str) -> Any:
         )
         return _finite_number(match.group(1)) / 100
     if transform == "percentage-number-to-decimal":
-        if not re.fullmatch(r"[0-9]+(?:\.[0-9]+)?", normalized):
+        if not re.fullmatch(ATO_UNSIGNED_DECIMAL_PATTERN, normalized):
             raise ChangedExtraction(
-                f"{value!r} is not one exact unsigned percentage number"
+                f"{value!r} is not one canonical unsigned percentage number"
             )
         percent = _finite_number(normalized)
         if not 0 <= percent <= 100:
@@ -3384,14 +3388,15 @@ def _parse_ato_first_tax_band(
     label: str, rate_text: str
 ) -> dict[str, int | float]:
     label_match = re.fullmatch(
-        r"0 \u2013 \$([0-9][0-9,]*)", _normalize_text(label)
+        rf"0 \u2013 \$({ATO_GROUPED_INTEGER_PATTERN})",
+        _normalize_text(label),
     )
     if not label_match:
         raise ChangedExtraction(
             f"ATO first-band label {label!r} is not exact '0 – $N'"
         )
     rate_match = re.fullmatch(
-        r"([0-9]+(?:\.[0-9]+)?)c for each \$1",
+        rf"({ATO_UNSIGNED_DECIMAL_PATTERN})c for each \$1",
         _normalize_text(rate_text),
     )
     if not rate_match:
@@ -3732,22 +3737,24 @@ def _extract_ato_lito(
 
     normalized = [_normalize_text(item) for item in items]
     first = re.fullmatch(
-        r"\$([0-9][0-9,]*) or less, you will get "
-        r"the maximum offset of \$([0-9][0-9,]*)",
+        rf"\$({ATO_GROUPED_INTEGER_PATTERN}) or less, you will get "
+        rf"the maximum offset of \$({ATO_GROUPED_INTEGER_PATTERN})",
         normalized[0],
     )
     second = re.fullmatch(
-        r"between \$([0-9][0-9,]*) and \$([0-9][0-9,]*), "
-        r"you will get \$([0-9][0-9,]*) minus "
-        r"([0-9]+(?:\.[0-9]+)?) cents? for every \$1 above "
-        r"\$([0-9][0-9,]*)",
+        rf"between \$({ATO_GROUPED_INTEGER_PATTERN}) and "
+        rf"\$({ATO_GROUPED_INTEGER_PATTERN}), "
+        rf"you will get \$({ATO_GROUPED_INTEGER_PATTERN}) minus "
+        rf"({ATO_UNSIGNED_DECIMAL_PATTERN}) cents? for every \$1 above "
+        rf"\$({ATO_GROUPED_INTEGER_PATTERN})",
         normalized[1],
     )
     third = re.fullmatch(
-        r"between \$([0-9][0-9,]*) and \$([0-9][0-9,]*), "
-        r"you will get \$([0-9][0-9,]*) minus "
-        r"([0-9]+(?:\.[0-9]+)?) cents? for every \$1 above "
-        r"\$([0-9][0-9,]*)\.",
+        rf"between \$({ATO_GROUPED_INTEGER_PATTERN}) and "
+        rf"\$({ATO_GROUPED_INTEGER_PATTERN}), "
+        rf"you will get \$({ATO_GROUPED_INTEGER_PATTERN}) minus "
+        rf"({ATO_UNSIGNED_DECIMAL_PATTERN}) cents? for every \$1 above "
+        rf"\$({ATO_GROUPED_INTEGER_PATTERN})\.",
         normalized[2],
     )
     if first is None or second is None or third is None:

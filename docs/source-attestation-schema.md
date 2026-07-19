@@ -400,12 +400,14 @@ HTML field transforms are fixed enums:
   code-fixed full ATO sentence grammars and reject threshold/rate ambiguity
 - `embedded-percent` and `embedded-percent-to-decimal`, which accept only
   `$N per $100 (P%)`, require `N == P`, and return `P` or `P/100`
-- `percentage-number-to-decimal`, which accepts one unsigned finite numeric
-  cell in `0..100` with no `%` token and returns `P/100` (for example,
-  ATO Super `12.00` becomes `0.12`)
+- `percentage-number-to-decimal`, which accepts one canonical unsigned finite
+  numeric cell in `0..100` with no `%` token or leading zero and returns
+  `P/100` (for example, ATO Super `12.00` becomes `0.12`)
 - `ato-first-tax-band`, which accepts exactly one ATO WHM row label
   `0 – $N` and value `Pc for each $1`, returning
-  `{cap:N,rate:P/100}` with fixed `{cap:"AUD",rate:"decimal rate"}` units
+  `{cap:N,rate:P/100}` with fixed `{cap:"AUD",rate:"decimal rate"}` units.
+  Comma grouping must be canonical (`45,000`, not `4,5000` or `045,000`);
+  the lower bound, dash, `$1` base, and one-row cardinality are exact.
 - `ato-law-first-tax-band`, which binds the current ATO law table titled
   `Tax rates for working holiday makers for the 2024-25 year of income or a
   later year of income`. It requires section `Repeal the table, substitute:`,
@@ -427,6 +429,31 @@ HTML field transforms are fixed enums:
 
 The API record transform enum is `identity` or `currency-to-number`.
 `identity` requires the selected value itself to be exact `{unit,value}`.
+
+### ATO contract gate
+
+The focused network-free contract suite is:
+
+```sh
+python3 -m unittest tests.test_verify_ato_extractors -v
+```
+
+It fixes the guidance-table WHM object shape, its aligned value/unit trees,
+Super's bare numeric percentage conversion, LITO list order/cardinality and
+boundary arithmetic, and the body-free same-host ATO content GET override.
+Missing or duplicate table/list records, non-canonical numeric grouping,
+formula discontinuity, a mismatched unit-tree leaf, query/body/header
+injection, or a different canonical host fails closed. The complete source
+attestation suite and production offline registry check remain the authoritative
+integration gate.
+
+The guidance `ato-first-tax-band` and list `ato-lito` modes prove reviewed
+fixture structures but do not by themselves guarantee that a live
+representation is fetchable. A production entry marked `fixture-only` remains
+`unsupported` in live mode until its source is migrated to a bounded,
+live-readable representation. The law-table WHM and LITO extractors are the
+preferred live contracts when their exact official HTML representations are
+available.
 
 ## Fixture and live semantics
 

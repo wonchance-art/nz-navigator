@@ -123,6 +123,9 @@ jobs:
           tests.test_render_attestation_issue
           -v
 
+      - name: Verify strict ATO extractor contract
+        run: python3 -m unittest tests.test_verify_ato_extractors -v
+
       - name: Verify production source attestations when present
         shell: bash
         run: |
