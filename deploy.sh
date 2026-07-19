@@ -1,5 +1,5 @@
 #!/bin/bash
-# 볼트 원본 수정 후 실행: 래핑 빌드 → 커밋 → 푸시 (GitHub Pages 자동 배포)
+# Git 원본 검증·파생 자산 빌드 → 커밋 → 푸시 (GitHub Pages 자동 배포)
 set -e
 cd "$(dirname "$0")"
 python3 build.py
