@@ -34,7 +34,7 @@ only this exact versioned enum list:
       "au-netpay-whm",
       "au-netpay-resident"
     ],
-    "verification": ["trust-v8"]
+    "verification": ["trust-v9"]
   }
 }
 ```
@@ -106,9 +106,9 @@ Calculator cases open their real disclosure widgets and dispatch form events:
 - Australia resident 60,000 → 50,380.
 
 `verification.html` must fetch and render
-`52 / 43 / 136 / 52 / 52 / 0` for source attestations, claims, reviewed
+`75 / 91 / 136 / 75 / 75 / 0` for source attestations, claims, reviewed
 leaves, live-capable, live-extractable, and fixture-only. It must also contain
-exactly one visible v8 history entry.
+exactly one visible v9 history entry.
 
 Failures use:
 

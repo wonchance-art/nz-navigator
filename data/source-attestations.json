@@ -47,6 +47,16 @@
     "nz-ja-ivl-component",
     "nz-ko-job-check-fee",
     "nz-ja-job-check-fee",
+    "nz-ko-accreditation-fee",
+    "nz-ja-accreditation-fee",
+    "nz-ko-median-wage-2026",
+    "nz-ja-median-wage-2026",
+    "nz-ko-median-15-2026",
+    "nz-ja-median-15-2026",
+    "nz-ko-median-20-2026",
+    "nz-ja-median-20-2026",
+    "nz-ko-median-30-2026",
+    "nz-ja-median-30-2026",
     "nz-ko-non-notified-tax",
     "nz-ja-non-notified-tax",
     "nz-ko-overstay-42-days",
@@ -62,6 +72,10 @@
     "ca-ko-ee-fee",
     "ca-ko-rprf-fee",
     "ca-ko-biometrics-fee",
+    "ca-ko-federal-min-wage-2026",
+    "ca-ko-ontario-min-wage-current",
+    "ca-ko-bc-min-wage-2026",
+    "ca-ko-alberta-min-wage",
     "ca-ko-tax-constants-2026",
     "au-ko-whv-age",
     "au-ko-whv-fee",
@@ -75,6 +89,8 @@
     "au-ko-482-fee",
     "au-ko-186-fee",
     "au-ko-partner-820-fee",
+    "au-ko-min-wage-2026",
+    "au-ko-casual-min-wage-2026",
     "au-ko-tax-medicare-rate-2026",
     "au-ko-tax-super-rate-2026"
   ],
@@ -454,7 +470,7 @@
         "mode": "html-text-anchor",
         "params": {
           "anchor": "You must have at least NZD $4,200 to cover your living expenses while in New Zealand.",
-          "transform": "currency-to-number",
+          "transform": "single-iso-currency-to-number",
           "unit": "NZD"
         }
       },
@@ -480,7 +496,7 @@
         "mode": "html-text-anchor",
         "params": {
           "anchor": "You must have at least NZD $4,200 to cover your living expenses while in New Zealand.",
-          "transform": "currency-to-number",
+          "transform": "single-iso-currency-to-number",
           "unit": "NZD"
         }
       },
@@ -506,7 +522,7 @@
         "mode": "html-text-anchor",
         "params": {
           "anchor": "Many tourists, people on working holidays, and some students and workers coming to New Zealand must pay an International Visitor Conservation and Tourism Levy (IVL) of NZD $100.",
-          "transform": "currency-to-number",
+          "transform": "single-iso-currency-to-number",
           "unit": "NZD"
         }
       },
@@ -535,7 +551,7 @@
         "mode": "html-text-anchor",
         "params": {
           "anchor": "It costs NZD $735 to apply for a job check.",
-          "transform": "currency-to-number",
+          "transform": "single-iso-currency-to-number",
           "unit": "NZD"
         }
       },
@@ -543,13 +559,42 @@
       "fixture": {
         "path": "data/attestation-fixtures/nz-aewv-job-check-fee.html",
         "mediaType": "text/html",
-        "sha256": "sha256:1ba861b6032493d6d6bd6054a4b2400ed1557ace487abb50493af1f039c43d4e",
+        "sha256": "sha256:5f16c74c4a58343e6b87bd243de2bd7d7ca3a2728d36d1621d326de8670f6ece",
         "httpStatus": 200,
         "finalUrl": "https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/paying-for-aewv-employer-accreditation-and-job-checks/"
       },
       "claims": [
         {"claimId": "nz-ko-job-check-fee"},
         {"claimId": "nz-ja-job-check-fee"}
+      ]
+    },
+    {
+      "id": "nz-aewv-standard-accreditation-fee",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/paying-for-aewv-employer-accreditation-and-job-checks/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-19",
+      "reviewAfterDays": 45,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "Standard accreditation — for businesses hiring up to 5 migrants — is NZD $775.",
+          "transform": "single-iso-currency-to-number",
+          "unit": "NZD"
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD", "value": 775},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-aewv-job-check-fee.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:5f16c74c4a58343e6b87bd243de2bd7d7ca3a2728d36d1621d326de8670f6ece",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/work/for-employers/getting-accreditation-or-approval-to-hire/employer-accreditation-for-the-aewv/aewv-employer-accreditation-and-job-check-process/paying-for-aewv-employer-accreditation-and-job-checks/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-accreditation-fee"},
+        {"claimId": "nz-ja-accreditation-fee"}
       ]
     },
     {
@@ -815,7 +860,7 @@
       "fixture": {
         "path": "data/attestation-fixtures/nz-skilled-migrant-category-resident-visa.html",
         "mediaType": "text/html",
-        "sha256": "sha256:e454e2d56a013b011488ba1160dbce4d577b27c33178b20623f34f73b67e7fed",
+        "sha256": "sha256:533f85507f21a39943fa07eff27d5ae8b5312652774e0c6bb592327c5646b129",
         "httpStatus": 200,
         "finalUrl": "https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/"
       },
@@ -824,6 +869,122 @@
         {"claimId": "nz-ja-residence-fee", "expectedPath": "/cost"},
         {"claimId": "nz-ko-skilled-residence-age", "expectedPath": "/age"},
         {"claimId": "nz-ja-skilled-residence-age", "expectedPath": "/age"}
+      ]
+    },
+    {
+      "id": "nz-smc-income-threshold-1-5x",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-03-09",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "3 points — if the job is at 1.5 times the 2025 median wage (currently NZD $52.50 an hour) or more.",
+          "transform": "single-iso-currency-to-number",
+          "unit": "NZD/hour"
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD/hour", "value": 52.5},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-skilled-migrant-category-resident-visa.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:533f85507f21a39943fa07eff27d5ae8b5312652774e0c6bb592327c5646b129",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-median-15-2026"},
+        {"claimId": "nz-ja-median-15-2026"}
+      ]
+    },
+    {
+      "id": "nz-smc-income-threshold-2x",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-03-09",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "4 points — if the job is at 2 times the 2025 median wage (currently NZD $70.00 an hour) or more",
+          "transform": "single-iso-currency-to-number",
+          "unit": "NZD/hour"
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD/hour", "value": 70},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-skilled-migrant-category-resident-visa.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:533f85507f21a39943fa07eff27d5ae8b5312652774e0c6bb592327c5646b129",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-median-20-2026"},
+        {"claimId": "nz-ja-median-20-2026"}
+      ]
+    },
+    {
+      "id": "nz-smc-income-threshold-3x",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-03-09",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "6 points — if the job is at 3 times the 2025 median wage (currently NZD $105.00 an hour) or more",
+          "transform": "single-iso-currency-to-number",
+          "unit": "NZD/hour"
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD/hour", "value": 105},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-skilled-migrant-category-resident-visa.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:533f85507f21a39943fa07eff27d5ae8b5312652774e0c6bb592327c5646b129",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/visas/skilled-migrant-category-resident-visa/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-median-30-2026"},
+        {"claimId": "nz-ja-median-30-2026"}
+      ]
+    },
+    {
+      "id": "nz-immigration-median-wage-2026",
+      "jurisdiction": "NZ",
+      "sourceUrl": "https://www.immigration.govt.nz/about-us/news-centre/new-occupations-recognised-under-the-national-occupation-list-and-annual-median-wage-increase/",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-03-09",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "From 9 March 2026, the immigration median wage will increase to NZD $35.00 per hour, based on June 2025 data. This affects several AEWV related and family visa settings.",
+          "transform": "single-iso-currency-to-number",
+          "unit": "NZD/hour"
+        }
+      },
+      "expected": {"type": "number", "unit": "NZD/hour", "value": 35},
+      "fixture": {
+        "path": "data/attestation-fixtures/nz-median-wage-2026.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:66c8760989d2e2b84c3492b0659b1fa5c0c7134544425440f389b34374163a98",
+        "httpStatus": 200,
+        "finalUrl": "https://www.immigration.govt.nz/about-us/news-centre/new-occupations-recognised-under-the-national-occupation-list-and-annual-median-wage-increase/"
+      },
+      "claims": [
+        {"claimId": "nz-ko-median-wage-2026"},
+        {"claimId": "nz-ja-median-wage-2026"}
       ]
     },
     {
@@ -2605,6 +2766,183 @@
         "finalUrl": "https://immi.homeaffairs.gov.au/_layouts/15/api/data.aspx/GetPriceList"
       },
       "claims": [{"claimId": "au-ko-partner-820-fee"}]
+    },
+    {
+      "id": "ca-federal-minimum-wage-2026",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/employment-social-development/news/2026/03/government-of-canada-raises-the-federal-minimum-wage.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-04-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "Employers in federally regulated private sectors are required to adjust their payrolls to ensure their employees are paid at least $18.15 per hour starting April 1, 2026. Should the provincial or territorial minimum wage rate exceed the federal rate, federally regulated employers must pay their employees the higher of the two.",
+          "transform": "single-dollar-amount-to-number",
+          "unit": "CAD/hour"
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD/hour", "value": 18.15},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-federal-minimum-wage-2026.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:2613a4e760b0d9e476ebcaddc251ece8b2a533a2b7010e08a839d40a1997a569",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/employment-social-development/news/2026/03/government-of-canada-raises-the-federal-minimum-wage.html"
+      },
+      "claims": [{"claimId": "ca-ko-federal-min-wage-2026"}]
+    },
+    {
+      "id": "ca-bc-minimum-wage-2026",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/wages/minimum-wage",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-06-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "The minimum wage in B.C. is currently $18.25 per hour (as of June 1, 2026).",
+          "transform": "single-dollar-amount-to-number",
+          "unit": "CAD/hour"
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD/hour", "value": 18.25},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-bc-minimum-wage-2026.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:98512af5644d1a37c8dc27df7fca2145aa5dee5fe3a375b94de9b1989dec7d1b",
+        "httpStatus": 200,
+        "finalUrl": "https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards/wages/minimum-wage"
+      },
+      "claims": [{"claimId": "ca-ko-bc-min-wage-2026"}]
+    },
+    {
+      "id": "ca-alberta-minimum-wage",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.alberta.ca/minimum-wage",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2018-10-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "The following minimum wage rates are set out in the Employment Standards Regulation:",
+          "headers": ["Type of employee", "Minimum wage"],
+          "result": "scalar",
+          "fields": [{
+            "key": "general",
+            "rowLabels": ["Most employees (general minimum wage)"],
+            "valueHeader": "Minimum wage",
+            "transform": "currency-to-number",
+            "unit": "CAD/hour"
+          }]
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD/hour", "value": 15},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-alberta-minimum-wage.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:7da21b7677bda0b04513bb6b5468ed56c527d63791fca045f1a2cec0da5c15e3",
+        "httpStatus": 200,
+        "finalUrl": "https://www.alberta.ca/minimum-wage"
+      },
+      "claims": [{"claimId": "ca-ko-alberta-min-wage"}]
+    },
+    {
+      "id": "ca-ontario-minimum-wage-current",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.ontario.ca/document/your-guide-employment-standards-act-0/minimum-wage",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2025-10-01",
+      "effectiveTo": "2026-09-30",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "The general and specialized minimum wage rates are detailed in the chart below.",
+          "headers": [
+            "Minimum wage rate",
+            "Rates from October 1, 2026 to September 30, 2027",
+            "Rates from October 1, 2025 to September 30, 2026",
+            "Rates from October 1, 2024 to September 30, 2025",
+            "Rates from October 1, 2023 to September 30, 2024"
+          ],
+          "result": "scalar",
+          "fields": [{
+            "key": "general",
+            "rowLabels": ["General minimum wage"],
+            "valueHeader": "Rates from October 1, 2025 to September 30, 2026",
+            "transform": "currency-to-number",
+            "unit": "CAD/hour"
+          }]
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD/hour", "value": 17.6},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-ontario-minimum-wage.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:060cdeda5677da8ea3d7134d1a98ecb269591555fe1182f75027e977a2dee273",
+        "httpStatus": 200,
+        "finalUrl": "https://www.ontario.ca/document/your-guide-employment-standards-act-0/minimum-wage"
+      },
+      "claims": [{"claimId": "ca-ko-ontario-min-wage-current"}]
+    },
+    {
+      "id": "au-national-minimum-wage-2026",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://www.fairwork.gov.au/pay-and-wages/minimum-wages",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "As of 1 July 2026, the National Minimum Wage is $26.44 per hour or $1004.90 per week.",
+          "transform": "single-hourly-dollar-amount-to-number",
+          "unit": "AUD/hour"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD/hour", "value": 26.44},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-national-minimum-wage-2026.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:8f7590d308ae439f03c5eba7180e22fb3ee0027c0c5f55432ab82fc5e71118bf",
+        "httpStatus": 200,
+        "finalUrl": "https://www.fairwork.gov.au/pay-and-wages/minimum-wages"
+      },
+      "claims": [{"claimId": "au-ko-min-wage-2026"}]
+    },
+    {
+      "id": "au-casual-minimum-wage-2026",
+      "jurisdiction": "AU",
+      "sourceUrl": "https://www.fairwork.gov.au/newsroom/media-releases/2026-media-releases/july-2026/20260701-minimum-wage-increase-media-release",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-07-01",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "Casual employees entitled to the National Minimum Wage must receive at least $33.05 per hour, which includes the 25 per cent casual loading.",
+          "transform": "single-hourly-dollar-amount-to-number",
+          "unit": "AUD/hour"
+        }
+      },
+      "expected": {"type": "number", "unit": "AUD/hour", "value": 33.05},
+      "fixture": {
+        "path": "data/attestation-fixtures/au-casual-minimum-wage-2026.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:e7d6bb029ddec1d6408a68c433091caba04c0157d60e2866fc4d32069d659f13",
+        "httpStatus": 200,
+        "finalUrl": "https://www.fairwork.gov.au/newsroom/media-releases/2026-media-releases/july-2026/20260701-minimum-wage-increase-media-release"
+      },
+      "claims": [{"claimId": "au-ko-casual-min-wage-2026"}]
     }
   ]
 }

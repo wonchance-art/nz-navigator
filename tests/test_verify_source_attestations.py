@@ -362,6 +362,10 @@ class SourceAttestationTests(unittest.TestCase):
              "final-inclusive-range", "years", "18-35"),
             ("Eligible participants may receive a work permit for up to 24 months.",
              "duration-months", "months", 24),
+            ("From 9 March 2026, the immigration median wage will increase "
+             "to NZD $35.00 per hour, based on June 2025 data. This affects "
+             "several AEWV related and family visa settings.",
+             "single-iso-currency-to-number", "NZD/hour", 35),
         ]
         for anchor, transform, unit, expected in cases:
             with self.subTest(transform=transform):
@@ -370,6 +374,51 @@ class SourceAttestationTests(unittest.TestCase):
                         body, {"anchor": anchor, "transform": transform, "unit": unit}
                     ),
                     (unit, expected),
+                )
+        for malformed in (
+            "The threshold is $35.00.",
+            "The thresholds are NZD $35.00 and NZD $52.50.",
+            "The threshold is USD $35.00.",
+        ):
+            with self.subTest(malformed=malformed), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._transform_html_value(
+                    malformed, "single-iso-currency-to-number"
+                )
+        self.assertEqual(
+            verifier._transform_html_value(
+                "As of June 1, 2026, minimum wage is $18.25 per hour.",
+                "single-dollar-amount-to-number",
+            ),
+            18.25,
+        )
+        for malformed in (
+            "The threshold is 18.25.",
+            "The thresholds are $17.60 and $17.95.",
+        ):
+            with self.subTest(malformed=malformed), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._transform_html_value(
+                    malformed, "single-dollar-amount-to-number"
+                )
+        self.assertEqual(
+            verifier._transform_html_value(
+                "The wage is $26.44 per hour or $1,004.90 per week.",
+                "single-hourly-dollar-amount-to-number",
+            ),
+            26.44,
+        )
+        for malformed in (
+            "The wage is $26.44 per week.",
+            "The rates are $26.44 per hour and $33.05 an hour.",
+        ):
+            with self.subTest(malformed=malformed), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._transform_html_value(
+                    malformed, "single-hourly-dollar-amount-to-number"
                 )
 
     def test_nested_list_paragraph_is_not_double_counted(self) -> None:

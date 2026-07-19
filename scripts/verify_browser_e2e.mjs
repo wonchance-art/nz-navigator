@@ -225,16 +225,16 @@ const CALCULATOR_CASES = Object.freeze({
 });
 
 const VERIFICATION_CASES = Object.freeze({
-  "trust-v8": Object.freeze({
+  "trust-v9": Object.freeze({
     audit: Object.freeze({
-      sourceAttestations: "52",
-      attestedClaims: "43",
+      sourceAttestations: "75",
+      attestedClaims: "91",
       attestedLeaves: "136",
-      liveCapable: "52",
-      liveExtractable: "52",
+      liveCapable: "75",
+      liveExtractable: "75",
       fixtureOnly: "0",
     }),
-    historyIncludes: "2026-07-19 · 신뢰 기반 v8:",
+    historyIncludes: "2026-07-19 · 신뢰 기반 v9:",
   }),
 });
 
@@ -481,13 +481,13 @@ export function validateVerificationSnapshot(caseId, snapshot) {
   const spec = VERIFICATION_CASES[caseId];
   if (!spec) fail("verification", caseId, "case-enum", caseId, Object.keys(VERIFICATION_CASES), "Use a reviewed verification enum.");
   if (JSON.stringify(snapshot.audit) !== JSON.stringify(spec.audit)) {
-    fail("verification", caseId, "audit", snapshot.audit, spec.audit, "Restore the public v8 audit counters from claims.json.");
+    fail("verification", caseId, "audit", snapshot.audit, spec.audit, "Restore the public v9 audit counters from claims.json.");
   }
   if (snapshot.gateCount !== 1 || !Object.values(spec.audit).every((value) => snapshot.gateText.includes(value))) {
     fail("verification", caseId, "attestation-gate", snapshot, "one gate containing all six audit values", "Restore the rendered source-attestation gate.");
   }
   if (snapshot.historyMatches !== 1) {
-    fail("verification", caseId, "v8-history", snapshot.historyMatches, 1, "Restore exactly one v8 trust history entry.");
+    fail("verification", caseId, "v9-history", snapshot.historyMatches, 1, "Restore exactly one v9 trust history entry.");
   }
 }
 

@@ -18,6 +18,6 @@
       "au-netpay-whm",
       "au-netpay-resident"
     ],
-    "verification": ["trust-v8"]
+    "verification": ["trust-v9"]
   }
 }

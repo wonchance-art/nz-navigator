@@ -221,8 +221,8 @@ test("wrong calculator output and non-finite UI text fail closed", () => {
   );
 });
 
-test("verification audit or v8 history drift fails closed", () => {
-  const expected = REVIEWED_CONTRACT.verificationCases["trust-v8"];
+test("verification audit or v9 history drift fails closed", () => {
+  const expected = REVIEWED_CONTRACT.verificationCases["trust-v9"];
   const snapshot = {
     audit: clone(expected.audit),
     gateCount: 1,
@@ -230,20 +230,20 @@ test("verification audit or v8 history drift fails closed", () => {
     historyMatches: 1,
   };
   assert.doesNotThrow(() =>
-    validateVerificationSnapshot("trust-v8", snapshot)
+    validateVerificationSnapshot("trust-v9", snapshot)
   );
   const drift = clone(snapshot);
   drift.audit.sourceAttestations = "51";
   assert.throws(
-    () => validateVerificationSnapshot("trust-v8", drift),
+    () => validateVerificationSnapshot("trust-v9", drift),
     /step=audit/,
   );
   assert.throws(
     () => validateVerificationSnapshot(
-      "trust-v8",
+      "trust-v9",
       { ...snapshot, historyMatches: 0 },
     ),
-    /v8-history/,
+    /v9-history/,
   );
 });
 
