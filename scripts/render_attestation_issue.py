@@ -791,6 +791,14 @@ def reduce_issue(
     if len(exact) > 1:
         raise IssueContractError("multiple exact-title drift issues exist")
     issue = exact[0] if exact else None
+    issue_state = None
+    if issue is not None:
+        raw_state = issue.get("state")
+        if not isinstance(raw_state, str):
+            raise IssueContractError("exact-title issue state is malformed")
+        issue_state = raw_state.casefold()
+        if issue_state not in {"open", "closed"}:
+            raise IssueContractError("exact-title issue state is unsupported")
     previous_trend = _decode_trend_marker(
         issue.get("body") if issue is not None else ""
     )
@@ -817,13 +825,13 @@ def reduce_issue(
     if has_non_match:
         if issue is None:
             action = "create"
-        elif issue.get("state") == "closed":
+        elif issue_state == "closed":
             action = "reopen"
         elif _body_fingerprint(issue.get("body")) == body_fingerprint:
             action = "noop"
         else:
             action = "update"
-    elif issue is not None and issue.get("state") == "open":
+    elif issue is not None and issue_state == "open":
         action = "close"
     else:
         action = "noop"

@@ -165,6 +165,24 @@ class AttestationIssueTests(unittest.TestCase):
         self.assertEqual(
             reduce_issue(matched, [closed_issue])["action"], "noop"
         )
+        github_open_issue = dict(open_issue, state="OPEN")
+        github_closed_issue = dict(open_issue, state="CLOSED")
+        self.assertEqual(
+            reduce_issue(matched, [github_open_issue])["action"], "close"
+        )
+        self.assertEqual(
+            reduce_issue(changed_report, [github_closed_issue])["action"],
+            "reopen",
+        )
+
+        for invalid_state in (None, "", "unknown"):
+            with self.subTest(invalid_state=invalid_state), self.assertRaises(
+                IssueContractError
+            ):
+                reduce_issue(
+                    matched,
+                    [dict(open_issue, state=invalid_state)],
+                )
 
     def test_duplicate_exact_title_fails_closed(self) -> None:
         issue = {"number": 1, "title": ISSUE_TITLE, "state": "open", "body": ""}
