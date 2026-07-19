@@ -202,8 +202,10 @@
       <div class="method">
         <strong>구직 디렉터리 신뢰 경계</strong>
         <div id="employerGate" class="coverage-list"></div>
-        <p class="meta">NZ·AU 지도 항목은 실시간 공고가 아닌 사업체 지점·운영지·구직 경로 디렉터리입니다. 사업체명 중복과 다지점을 고유 ID로 분리하고, 공식 등록부·산업협회·사업체 공식·정부 구직·미검증 후보를 구별합니다. 주소·도시·지역 대표 좌표, 연락 링크 유형, 만료·재검토일을 공개하며, NZ WHE는 실제 원예·포도 직무를, AU 417은 실제 직무·근무지 postcode·작업일을 별도로 확인해야 합니다.</p>
+        <p class="meta">NZ·AU 지도 항목은 실시간 공고가 아닌 사업체 지점·운영지·구직 경로 디렉터리입니다. 300개 행을 모두 근거 binding에 연결하되 자동 추출, 공식 회원+검토 지점 혼합, 수동 검토 snapshot, 제한 후보를 구별합니다. INZ RSE는 이름만이 아니라 고유 record ID·공식 전체 주소·좌표·만료일까지 결속합니다. NZ WHE는 실제 원예·포도 직무를, AU 417은 실제 직무·근무지 postcode·작업일을 별도로 확인해야 합니다.</p>
         <a class="meta" href="./data/employers.json">machine-readable 사업체·지점 원장 →</a>
+        <br>
+        <a class="meta" href="./data/employer-evidence.json">machine-readable 행별 근거 계보 →</a>
       </div>
     </section>
 
@@ -222,6 +224,7 @@
     <h2>변경이력</h2>
     <section class="history">
       <ul>
+        <li><strong>2026-07-19 · 구직 근거 계보 v12:</strong> 사업체 300개를 70개 출처 묶음의 정확한 행별 binding에 연결. INZ RSE 167개와 NZKGI 20개는 공식 원문에서 기계 대조하고, AFPA 11개는 공식 회원사명과 별도 검토 지점을 분리했으며, AU 이질적 웹 근거 100개와 제한 후보 2개는 자동 추출로 과장하지 않고 검토 snapshot·한계를 공개. 동일 회사 다지점은 이름이 아니라 INZ record ID로 구분하고, 잘려 있던 등록 주소 89개를 공식 전체 주소로 복원.</li>
         <li><strong>2026-07-19 · 구직 연결 v11:</strong> NZ 187개·AU 113개 사업체/지점/구직 경로를 고유 ID가 있는 공개 원장으로 정규화. 실제 주소·postcode·도시·지역 대표 좌표를 구별하고, 채용 페이지·회사 홈·이메일·연락처 없음 및 공식 등록부·산업협회·사업체 공식·정부 구직·미검증 후보를 분리. 만료 27건과 재확인 필요 항목을 필터링하며, 디렉터리 등재가 현재 공고나 NZ WHE·AU 417 적격성을 보장하지 않음을 각 카드에 표시.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v10:</strong> 모든 치명 official 주장을 공식 원문 감시에 직접 결속하고, 직접 발표값이 아닌 치명 derived 11개는 공식 입력 23개→고정 변환·실제 계산→공개값 계보로 분리. IEC·PGWP 합산비, CRS 305, NZ/JA·CA·AU 실수령, 일본 WHV 무정원, 801 별도 수수료 0, AU 거주자 세율 직렬화를 경계 실행과 함께 검증해 치명 미결속 0개를 CI에서 강제. ATO의 WHM 세율·no-TFN·2026–27 거주자 세율·Medicare·LITO 결속 7개는 반복 403을 성공으로 숨기지 않고 실제 브라우저 검토·공식 fixture 지문·30일 수동 재검토로 공개.</li>
         <li><strong>2026-07-19 · 신뢰 기반 v9:</strong> NZ 공식 비자·처리기간·IVL·고용주·IRD, CA 연방·주정부 임금·IRCC, AU Fair Work 페이지 25개 감시를 추가해 비용·자금·쿼터·처리기간·연령·세율·임금 50개 주장을 원문 구조와 직접 결속. PSWV 80% 처리기간을 5주→3주로 정정하고, 하나의 4개월 값으로 합쳐져 있던 SMC·Straight to Residence·Work to Residence를 각각 4.5·4·3개월로 분리했으며, 고용주 인증비·2026 중위임금·SMC 1.5/2/3배, CA 연방·ON·BC·AB, FSW 정착자금·IEC 56일 및 AU 일반·캐주얼 최저임금까지 원장과 직접 대조.</li>
@@ -334,9 +337,10 @@
       fetch('./data/boundary-executions.json', { cache: 'no-store' }),
       fetch('./data/source-attestations.json', { cache: 'no-store' }),
       fetch('./data/claim-lineage.json', { cache: 'no-store' }),
-      fetch('./data/employers.json', { cache: 'no-store' })
+      fetch('./data/employers.json', { cache: 'no-store' }),
+      fetch('./data/employer-evidence.json', { cache: 'no-store' })
     ])
-      .then(async ([claimsResponse, exemptionsResponse, runtimeResponse, boundaryResponse, attestationResponse, lineageResponse, employerResponse]) => {
+      .then(async ([claimsResponse, exemptionsResponse, runtimeResponse, boundaryResponse, attestationResponse, lineageResponse, employerResponse, employerEvidenceResponse]) => {
         if (!claimsResponse.ok) throw new Error(`claims HTTP ${claimsResponse.status}`);
         if (!exemptionsResponse.ok) throw new Error(`exemptions HTTP ${exemptionsResponse.status}`);
         if (!runtimeResponse.ok) throw new Error(`runtime bindings HTTP ${runtimeResponse.status}`);
@@ -344,9 +348,10 @@
         if (!attestationResponse.ok) throw new Error(`source attestations HTTP ${attestationResponse.status}`);
         if (!lineageResponse.ok) throw new Error(`claim lineage HTTP ${lineageResponse.status}`);
         if (!employerResponse.ok) throw new Error(`employers HTTP ${employerResponse.status}`);
-        return [await claimsResponse.json(), await exemptionsResponse.json(), await runtimeResponse.json(), await boundaryResponse.json(), await attestationResponse.json(), await lineageResponse.json(), await employerResponse.json()];
+        if (!employerEvidenceResponse.ok) throw new Error(`employer evidence HTTP ${employerEvidenceResponse.status}`);
+        return [await claimsResponse.json(), await exemptionsResponse.json(), await runtimeResponse.json(), await boundaryResponse.json(), await attestationResponse.json(), await lineageResponse.json(), await employerResponse.json(), await employerEvidenceResponse.json()];
       })
-      .then(([registry, exemptionRegistry, runtimeRegistry, boundaryRegistry, attestationRegistry, lineageRegistry, employerRegistry]) => {
+      .then(([registry, exemptionRegistry, runtimeRegistry, boundaryRegistry, attestationRegistry, lineageRegistry, employerRegistry, employerEvidenceRegistry]) => {
         state.claims = registry.claims;
         state.runtimeByClaim = new Map(runtimeRegistry.bindings.map(binding => [binding.claimId, binding]));
         const sourceAttestations = attestationRegistry.attestations || [];
@@ -474,6 +479,7 @@
           `<span>치명 미결속 ${lineageAudit.remainingCriticalCount ?? '—'}</span>`
         ].join('');
         const employerAudit = employerRegistry.audit || {};
+        const employerEvidenceAudit = employerEvidenceRegistry.audit || {};
         document.getElementById('employerGate').innerHTML = [
           `<span>전체 ${employerAudit.employerCount ?? '—'}</span>`,
           `<span>NZ ${employerAudit.countryCounts?.NZ ?? '—'}</span>`,
@@ -483,7 +489,13 @@
           `<span>표시 만료 ${employerAudit.statusCounts?.expired ?? '—'}</span>`,
           `<span>직접 연락 ${employerAudit.contactableCount ?? '—'}</span>`,
           `<span>고유 링크 ${employerAudit.linkUrlCount ?? '—'}</span>`,
-          `<span>근접 중복 후보 ${employerAudit.nearDuplicateCandidateCount ?? '—'}</span>`
+          `<span>근접 중복 후보 ${employerAudit.nearDuplicateCandidateCount ?? '—'}</span>`,
+          `<span>근거 binding ${employerEvidenceAudit.bindingCount ?? '—'}</span>`,
+          `<span>출처 묶음 ${employerEvidenceAudit.sourceCount ?? '—'}</span>`,
+          `<span>자동 원문 대조 ${employerEvidenceAudit.machineExtractedCount ?? '—'}</span>`,
+          `<span>회원+검토 지점 ${employerEvidenceAudit.hybridCount ?? '—'}</span>`,
+          `<span>검토 snapshot ${employerEvidenceAudit.reviewedSnapshotCount ?? '—'}</span>`,
+          `<span>제한 후보 ${employerEvidenceAudit.limitedCandidateCount ?? '—'}</span>`
         ].join('');
         render();
       })

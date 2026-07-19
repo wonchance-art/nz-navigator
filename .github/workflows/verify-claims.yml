@@ -229,6 +229,11 @@ jobs:
           --today 2026-07-19
           --dump-duplicates
 
+      - name: Verify employer evidence lineage
+        run: |
+          node --test tests/test_build_employer_evidence.mjs
+          node scripts/build_employer_evidence.mjs --check
+
       - name: Verify production employer registry when present
         shell: bash
         run: |
