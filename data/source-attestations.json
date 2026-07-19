@@ -76,6 +76,8 @@
     "ca-ko-ontario-min-wage-current",
     "ca-ko-bc-min-wage-2026",
     "ca-ko-alberta-min-wage",
+    "ca-ko-fsw-funds-one",
+    "ca-ko-iec-processing",
     "ca-ko-tax-constants-2026",
     "au-ko-whv-age",
     "au-ko-whv-fee",
@@ -2943,6 +2945,68 @@
         "finalUrl": "https://www.fairwork.gov.au/newsroom/media-releases/2026-media-releases/july-2026/20260701-minimum-wage-increase-media-release"
       },
       "claims": [{"claimId": "au-ko-casual-min-wage-2026"}]
+    },
+    {
+      "id": "ca-fsw-proof-of-funds-one-person",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/documents/proof-funds.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2025-07-07",
+      "reviewAfterDays": 30,
+      "extractor": {
+        "mode": "html-table-record",
+        "params": {
+          "section": "This table shows the minimum amount you need to immigrate to Canada. If you have more money, you should list the full amount in your profile or application.",
+          "headers": [
+            "Number of family members",
+            "Funds you need (CAD) Updated July 7, 2025"
+          ],
+          "result": "scalar",
+          "fields": [{
+            "key": "one",
+            "rowLabels": ["1"],
+            "valueHeader": "Funds you need (CAD) Updated July 7, 2025",
+            "transform": "currency-to-number",
+            "unit": "CAD"
+          }]
+        }
+      },
+      "expected": {"type": "number", "unit": "CAD", "value": 15263},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-fsw-proof-of-funds.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:14455fc3e6a88bfb9a151ae72623ea7fb23f0cbe227a5d6e750611b08febfb2a",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/documents/proof-funds.html"
+      },
+      "claims": [{"claimId": "ca-ko-fsw-funds-one"}]
+    },
+    {
+      "id": "ca-iec-service-standard",
+      "jurisdiction": "CA",
+      "sourceUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/after-apply-next-steps.html",
+      "request": {"method": "GET"},
+      "verifiedAt": "2026-07-19",
+      "effectiveFrom": "2026-01-01",
+      "reviewAfterDays": 14,
+      "extractor": {
+        "mode": "html-text-anchor",
+        "params": {
+          "anchor": "The IEC service standard is 56 days for applications with complete information and all required supporting documents. If we take longer than 56 days to process your application, you may be eligible for a partial refund of the IEC fee under the Service Fees Act. Refunds are processed automatically.",
+          "transform": "identical-duration-days",
+          "unit": "days"
+        }
+      },
+      "expected": {"type": "number", "unit": "days", "value": 56},
+      "fixture": {
+        "path": "data/attestation-fixtures/ca-iec-service-standard.html",
+        "mediaType": "text/html",
+        "sha256": "sha256:71565f9d5427ba88e604071ca6104ddad5539909dcb33887eba6ea57f91c152d",
+        "httpStatus": 200,
+        "finalUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/after-apply-next-steps.html"
+      },
+      "claims": [{"claimId": "ca-ko-iec-processing"}]
     }
   ]
 }

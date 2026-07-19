@@ -420,6 +420,24 @@ class SourceAttestationTests(unittest.TestCase):
                 verifier._transform_html_value(
                     malformed, "single-hourly-dollar-amount-to-number"
                 )
+        self.assertEqual(
+            verifier._transform_html_value(
+                "The service standard is 56 days. If it takes longer than "
+                "56 days, a refund may apply.",
+                "identical-duration-days",
+            ),
+            56,
+        )
+        for malformed in (
+            "The service standard is 56 days.",
+            "The service standard is 56 days, but this took 57 days.",
+        ):
+            with self.subTest(malformed=malformed), self.assertRaises(
+                verifier.ChangedExtraction
+            ):
+                verifier._transform_html_value(
+                    malformed, "identical-duration-days"
+                )
 
     def test_nested_list_paragraph_is_not_double_counted(self) -> None:
         body = (

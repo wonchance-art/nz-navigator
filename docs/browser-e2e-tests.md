@@ -106,7 +106,7 @@ Calculator cases open their real disclosure widgets and dispatch form events:
 - Australia resident 60,000 → 50,380.
 
 `verification.html` must fetch and render
-`75 / 91 / 136 / 75 / 75 / 0` for source attestations, claims, reviewed
+`77 / 93 / 136 / 77 / 77 / 0` for source attestations, claims, reviewed
 leaves, live-capable, live-extractable, and fixture-only. It must also contain
 exactly one visible v9 history entry.
 

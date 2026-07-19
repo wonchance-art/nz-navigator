@@ -227,11 +227,11 @@ const CALCULATOR_CASES = Object.freeze({
 const VERIFICATION_CASES = Object.freeze({
   "trust-v9": Object.freeze({
     audit: Object.freeze({
-      sourceAttestations: "75",
-      attestedClaims: "91",
+      sourceAttestations: "77",
+      attestedClaims: "93",
       attestedLeaves: "136",
-      liveCapable: "75",
-      liveExtractable: "75",
+      liveCapable: "77",
+      liveExtractable: "77",
       fixtureOnly: "0",
     }),
     historyIncludes: "2026-07-19 · 신뢰 기반 v9:",

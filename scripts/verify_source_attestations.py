@@ -279,6 +279,7 @@ HTML_VALUE_TRANSFORMS = frozenset(
         "tax-brackets-serialization",
         "duration-months",
         "duration-weeks",
+        "identical-duration-days",
         "inclusive-range",
         "embedded-percent",
         "embedded-percent-to-decimal",
@@ -2683,6 +2684,20 @@ def _transform_html_value(value: str, transform: str) -> Any:
                 "amounts; exactly 1 required"
             )
         return _finite_number(matches[0].group(1))
+    if transform == "identical-duration-days":
+        matches = [
+            _finite_number(match.group(1))
+            for match in re.finditer(
+                r"(?<![A-Za-z0-9])([0-9][0-9,]*)\s+days?\b",
+                normalized,
+                flags=re.IGNORECASE,
+            )
+        ]
+        if len(matches) < 2 or len(set(matches)) != 1:
+            raise ChangedExtraction(
+                f"{value!r} must contain at least 2 identical day durations"
+            )
+        return matches[0]
     if transform == "single-iso-currency-to-number":
         matches = list(
             re.finditer(
